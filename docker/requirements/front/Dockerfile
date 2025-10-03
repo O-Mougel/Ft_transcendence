@@ -1,0 +1,1 @@
+FROM sirehna/tailwindcss

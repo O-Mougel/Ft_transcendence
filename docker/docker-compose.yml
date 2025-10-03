@@ -1,0 +1,64 @@
+services:
+  nginx:
+    build: requirements/nginx/.
+      #    env_file: .env
+    container_name: nginx
+    depends_on:
+      - front
+      - back
+      - db
+    ports:
+      - "443:443"
+        #    volumes:
+        #      - front:/
+    networks:
+      - transcendence
+    restart: on-failure
+
+  front:
+    build: requirements/front/.
+      #    env_file: .env
+    container_name: front
+    depends_on:
+      - back
+      - db
+        #    volumes:
+        #      - front:/
+    networks:
+      - transcendence
+    restart: on-failure
+      #    expose:
+      #      - ""
+
+  back:
+    build: requirements/back/.
+   #    env_file: .env
+    container_name: back 
+    depends_on:
+      - db
+       #    volumes:
+       #      - back:/
+    networks:
+      - transcendence
+    restart: on-failure
+      #    expose:
+      #      - ""
+
+  db:
+    build: requirements/db/.
+    #    env_file: .env
+    container_name: db
+    #    volumes:
+    #      - db:/
+    networks:
+      - transcendence
+    restart: on-failure
+    #    expose:
+    #      - ""
+
+
+networks:
+  transcendence:
+    driver: bridge
+
+#volumes:
