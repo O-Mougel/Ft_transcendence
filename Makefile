@@ -1,12 +1,12 @@
 .PHONY: all clean fclean re
 
-DOCKER_FILES = ./docker/requirements/nginx/Dockerfile\
-			   ./docker/requirements/db/Dockerfile\
-			   ./docker/requirements/front/Dockerfile\
-			   ./docker/requirements/back/Dockerfile\
-			   ./docker/docker-compose.yml
+DOCKER_FILES = ./srcs/requirements/nginx/Dockerfile\
+			   ./srcs/requirements/db/Dockerfile\
+			   ./srcs/requirements/front/Dockerfile\
+			   ./srcs/requirements/back/Dockerfile\
+			   ./srcs/docker-compose.yml
 
-DOCKER_DIR = docker
+DOCKER_DIR = srcs
 
 all: $(DOCKER_FILES)
 	cd ${DOCKER_DIR} && docker compose up --build
