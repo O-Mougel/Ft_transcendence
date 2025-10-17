@@ -1,9 +1,12 @@
-FROM alpine:3.22.0
+FROM node:alpine
 
-RUN apk update && apk add yarn && yarn add fastify
+RUN apk update
+RUN apk add yarn
+RUN yarn add fastify 
 
-COPY server/server.js /home/.
+COPY server/* /home/.
 
 WORKDIR home/
 
+#CMD ["tail", "-f"]
 CMD ["node", "server"]
