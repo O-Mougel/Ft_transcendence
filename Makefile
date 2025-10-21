@@ -6,15 +6,16 @@ DOCKER_FILES = ./srcs/requirements/nginx/Dockerfile\
 			   ./srcs/requirements/back/Dockerfile\
 			   ./srcs/docker-compose.yml
 
-DOCKER_DIR = srcs
+DOCKER_COMPOSE_PATH =	./srcs/docker-compose.yml
+
 
 all: $(DOCKER_FILES)
-	cd ${DOCKER_DIR} && docker compose up --build
+	docker compose -f ${DOCKER_COMPOSE_PATH} up -d --build
 
 clean:
-	cd ${DOCKER_DIR} && docker compose stop && docker compose rm
+	docker compose -f ${DOCKER_COMPOSE_PATH} stop && docker compose -f ${DOCKER_COMPOSE_PATH} rm
 
 fclean:
-	docker system prune -af
+	docker system prune -af --volumes
 
 re: fclean all
