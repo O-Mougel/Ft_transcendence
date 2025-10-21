@@ -1,6 +1,7 @@
 services:
   nginx:
     build: requirements/nginx/.
+    image: nginx
       #    env_file: .env
     container_name: nginx
     depends_on:
@@ -8,7 +9,7 @@ services:
       - back
       - db
     ports:
-      - "443:443"
+      - "8443:8443"
         #    volumes:
         #      - front:/
     networks:
@@ -17,6 +18,7 @@ services:
 
   front:
     build: requirements/front/.
+    image: front
       #    env_file: .env
     container_name: front
     depends_on:
@@ -32,6 +34,7 @@ services:
 
   back:
     build: requirements/back/.
+    image: back
    #    env_file: .env
     container_name: back 
     depends_on:
@@ -46,6 +49,7 @@ services:
 
   db:
     build: requirements/db/.
+    image: db
     #    env_file: .env
     container_name: db
     #    volumes:
