@@ -34,6 +34,10 @@ fastify.route({
   }
 })
 
+const options = {}
+fastify.post('/post', options, async (request, reply) => {
+  return request.body
+})
 
 // Declare a route
 fastify.get('/', function (request, reply) {
@@ -44,10 +48,6 @@ fastify.get('/path', function (request, reply) {
   reply.send({ hello: 'world with a path' })
 })
 
-/**
- * @type {import('fastify').RouteShorthandOptions}
- * @const
- */
 const opts = {
   schema: {
     body: {
