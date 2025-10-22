@@ -1,7 +1,7 @@
 services:
   nginx:
     build: docker/nginx/.
-    env_file: .env
+    env_file: ../.env
     container_name: nginx
     depends_on:
       - front
@@ -17,7 +17,7 @@ services:
 
   front:
     build: docker/front/.
-    env_file: .env
+    env_file: ../.env
     container_name: front
     depends_on:
       - back
@@ -32,7 +32,7 @@ services:
 
   back:
     build: docker/back/.
-    env_file: .env
+    env_file: ../.env
     container_name: back 
     depends_on:
       - db
@@ -48,7 +48,7 @@ services:
 
   db:
     build: docker/db/.
-    env_file: .env
+    env_file: ../.env
     container_name: db
     volumes:
       - db:/home
