@@ -1,7 +1,7 @@
 services:
   nginx:
-    build: requirements/nginx/.
-      #    env_file: .env
+    build: docker/nginx/.
+    env_file: ../.env
     container_name: nginx
     depends_on:
       - front
@@ -16,14 +16,14 @@ services:
     restart: on-failure
 
   front:
-    build: requirements/front/.
-      #    env_file: .env
+    build: docker/front/.
+    env_file: ../.env
     container_name: front
     depends_on:
       - back
       - db
-        #    volumes:
-        #      - front:/
+    volumes:
+      - front:/home
     networks:
       - transcendence
     restart: on-failure
@@ -31,34 +31,55 @@ services:
       #      - ""
 
   back:
-    build: requirements/back/.
-   #    env_file: .env
+    build: docker/back/.
+    env_file: ../.env
     container_name: back 
     depends_on:
       - db
-       #    volumes:
-       #      - back:/
+    volumes:
+      - back:/home
     networks:
       - transcendence
     restart: on-failure
-      #    expose:
-      #      - ""
+      #    ports:
+      #- "3000:3000"
+    expose:
+      - "3000"
 
   db:
-    build: requirements/db/.
-    #    env_file: .env
+    build: docker/db/.
+    env_file: ../.env
     container_name: db
-    #    volumes:
-    #      - db:/
+    volumes:
+      - db:/home
     networks:
       - transcendence
     restart: on-failure
-    #    expose:
-    #      - ""
+    expose:
+      - "3306"
+      #- "8191"
 
 
 networks:
   transcendence:
     driver: bridge
 
-#volumes:
+volumes:
+  back:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: 'back/'
+  db:
+    driver: local
+    driver_opts:
+      type: 'none' 
+      o: 'bind'
+      device: 'db/'
+  front:
+    driver: local
+    driver_opts:
+      type: 'none' 
+      o: 'bind'
+      device: 'front/'
