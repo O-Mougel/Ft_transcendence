@@ -8,7 +8,7 @@ services:
       - back
       - db
     ports:
-      - "443:443"
+      - "8443:8443"
         #    volumes:
         #      - front:/
     networks:
