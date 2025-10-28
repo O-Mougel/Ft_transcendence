@@ -1,6 +1,18 @@
 {
-  "dependencies": {
-    "@tailwindcss/cli": "^4.1.16",
-    "tailwindcss": "^4.1.16"
+  "name": "ft_transcendance",
+  "version": "1.0",
+  "description": "very cool project",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tailwindcss -i ./src/css/input.css -o ./src/css/output.css --watch",
+    "dev:ts": "nodemon --watch src --ext ts --exec \"ts-node src/TP_test.ts\"",
+    "start": "browser-sync start --server 'src' --files 'src/**/*' --no-ui --port 3000 --reload-delay 10",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "browser-sync": "3.0.4",
+	"@tailwindcss/cli": "4.1.16",
+    "tailwindcss": "4.1.16"
   }
 }
