@@ -6,9 +6,8 @@ services:
     depends_on:
       - front
       - back
-      - db
-    ports:
-      - "443:443"
+        #ports:
+        #- "443:443"
         #    volumes:
         #      - front:/
     networks:
@@ -21,7 +20,6 @@ services:
     container_name: front
     depends_on:
       - back
-      - db
     volumes:
       - front:/home
     networks:
@@ -34,31 +32,15 @@ services:
     build: docker/back/.
     env_file: ../.env
     container_name: back 
-    depends_on:
-      - db
     volumes:
       - back:/home
     networks:
       - transcendence
     restart: on-failure
-      #    ports:
-      #- "3000:3000"
-    expose:
-      - "3000"
-
-  db:
-    build: docker/db/.
-    env_file: ../.env
-    container_name: db
-    volumes:
-      - db:/home
-    networks:
-      - transcendence
-    restart: on-failure
-    expose:
-      - "3306"
-      #- "8191"
-
+    ports:
+      - "3000:3000"
+        #expose:
+        #- "3000"
 
 networks:
   transcendence:
@@ -71,12 +53,7 @@ volumes:
       type: 'none'
       o: 'bind'
       device: 'back/'
-  db:
-    driver: local
-    driver_opts:
-      type: 'none' 
-      o: 'bind'
-      device: 'db/'
+
   front:
     driver: local
     driver_opts:

@@ -1,4 +1,29 @@
 import Fastify from 'fastify'
+import * as z from "zod";
+/*
+const { DatabaseSync } = require('node:sqlite');
+
+const db = new DatabaseSync('test.db');
+db.exec(`
+  CREATE TABLE t3(x, y);
+  INSERT INTO t3 VALUES ('a', 4),
+                        ('b', 5),
+                        ('c', 3),
+                        ('d', 8),
+                        ('e', 1);
+`);
+
+db.aggregate('sumint', {
+  start: 0,
+  step: (acc, value) => acc + value,
+});
+
+db.prepare('SELECT sumint(y) as total FROM t3').get(); // { total: 21 }
+*/
+
+
+
+
 const fastify = Fastify({
   logger: true
 })
@@ -48,6 +73,10 @@ fastify.get('/path', function (request, reply) {
   reply.send({ hello: 'world with a path' })
 })
 
+fastify.get('/newpath', function (request, reply) {
+  reply.send({ hello: 'from a lizzzzzard' })
+})
+
 const opts = {
   schema: {
     body: {
@@ -64,6 +93,15 @@ fastify.post('/', opts, async (request, reply) => {
   return { hello: 'world' }
 })
 
+const User = z.object({
+  name: z.string(),
+});
+ 
+fastify.post('/zod', async (request, reply) => {
+	const data = User.parse(request.body);
+  return data.name
+})
+
 // Run the server!
 fastify.listen({ port: 3000, host: '0.0.0.0' }, function (err, address) {
   if (err) {
@@ -72,3 +110,4 @@ fastify.listen({ port: 3000, host: '0.0.0.0' }, function (err, address) {
   }
   // Server is now listening on ${address}
 })
+
