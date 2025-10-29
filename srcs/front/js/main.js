@@ -14,15 +14,21 @@ document.documentElement.style.overflow = 'hidden'; // if some browsers still sc
 const startButton = document.getElementById('startButton');
 startButton.addEventListener('click', startGame);
 
-const socket = io("http://localhost", {
-    transports: ['websocket']
-});
-
 let ball = new Ball(canvas.width / 2, canvas.height / 2, 20, 'white');
 let leftPaddle = new Paddle(10, canvas.height / 2 - 40, 10, 80, 'blue');
 let rightPaddle = new Paddle(canvas.width - 20, canvas.height / 2 - 40, 10, 80, 'red');
 
 let isGameStarted = false;
+
+
+const socket = io("http://localhost:3000", {
+    transports: ['websocket']
+});
+
+// if(socket.connected) {
+    socket.emit('join', 'Hello server from client');
+// }
+
 
 function startGame() {
     console.log('Game Started');
@@ -40,7 +46,6 @@ function startGame() {
     gameLoop();
 }
 
-socket.on()
 
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
