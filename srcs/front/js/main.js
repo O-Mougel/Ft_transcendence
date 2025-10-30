@@ -1,10 +1,26 @@
-import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
+import { io } from "https://cdn.socket.io/4.7.2/socket.io.esm.min.js";
 
 import Ball from './ball.js';
 import Paddle from './paddle.js';
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
+
+console.log('Attempting to connect to WebSocket server...');
+
+var socket = io("http://localhost:3000", {
+    transports: ['websocket']
+});
+
+
+socket.on('connect', () => {
+    console.log('Connected to WebSocket server');
+    socket.emit('join', 'Hello server from client');
+});
+
+socket.on('connect_error', (err) => {
+    console.log('Failed to connect to WebSocket:', err);
+});
 
 
 const body = document.body;
@@ -20,16 +36,6 @@ let rightPaddle = new Paddle(canvas.width - 20, canvas.height / 2 - 40, 10, 80, 
 
 let isGameStarted = false;
 
-
-const socket = io("http://localhost:3000", {
-    transports: ['websocket']
-});
-
-// if(socket.connected) {
-    socket.emit('join', 'Hello server from client');
-// }
-
-
 function startGame() {
     console.log('Game Started');
     startButton.style.display = 'none';
@@ -43,17 +49,21 @@ function startGame() {
     }
 
     isGameStarted = true;
-    gameLoop();
+    gameInit();
 }
 
+let leftPaddleDir = 0;
+let rightPaddleDir = 0;
 
-function gameLoop() {
+
+function gameInit() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ball.move();
+
     ball.draw(ctx);
     leftPaddle.draw(ctx);
     rightPaddle.draw(ctx); 
-    draw() 
+    draw();
 }
 
 window.addEventListener('keydown', (e) => {
@@ -61,47 +71,80 @@ window.addEventListener('keydown', (e) => {
         const key = e.key; // use KeyboardEvent.key ('ArrowUp', 'ArrowDown', ...)
         if (key === 'ArrowUp') {
             console.log("player 2 move up")
-            if (rightPaddle.y > 0)
-                rightPaddle.moveUp();
+            rightPaddleDir = 1;
+            // if (rightPaddle.y > 0)
+            //     rightPaddle.moveUp();
             // socket.emit("move", {
             //     roomID: roomID,
             //     playerNo: playerNo,
             //     direction: 'up'
             // })
-        } else if (key === 'ArrowDown') {
+        }
+        if (key === 'ArrowDown') {
             console.log("player 2 move down")
-            if (rightPaddle.y + rightPaddle.height < canvas.height)
-                rightPaddle.moveDown();
+            rightPaddleDir = -1;
+            // if (rightPaddle.y + rightPaddle.height < canvas.height)
+            //     rightPaddle.moveDown();
             // socket.emit("move", {
             //     roomID: roomID,
             //     playerNo: playerNo,
             //     direction: 'down'
             // })
-        } else if (key === 'w' || key === 'W') {
+        }
+        if (key === 'w' || key === 'W') {
             console.log("player 1 move up")
-            if (leftPaddle.y > 0)
-                leftPaddle.moveUp();
+            leftPaddleDir = 1;
+            // if (leftPaddle.y > 0)
+            //     leftPaddle.moveUp();
             // socket.emit("move", {
             //     roomID: roomID,
             //     playerNo: playerNo,
             //     direction: 'up'
             // })
-        } else if (key === 's' || key === 'S') {
+        }
+        if (key === 's' || key === 'S') {
             console.log("player 1 move down")
-            if (leftPaddle.y + leftPaddle.height < canvas.height)
-                leftPaddle.moveDown();
+            leftPaddleDir = -1;
+            // if (leftPaddle.y + leftPaddle.height < canvas.height)
+            //     leftPaddle.moveDown();
             // socket.emit("move", {
             //     roomID: roomID,
             //     playerNo: playerNo,
             //     direction: 'down'
             // })
-        } else if (key === 'Escape') {
+        }
+
+        
+        if (key === 'Escape') {
             isGameStarted = false;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             startButton.style.display = 'block';
             return;
         }
+        
+        if (rightPaddleDir === 1 && rightPaddle.y > 0)
+            rightPaddle.moveUp();
+        else if (rightPaddleDir === -1 && rightPaddle.y + rightPaddle.height < canvas.height)
+            rightPaddle.moveDown();
+
+        if (leftPaddleDir === 1 && leftPaddle.y > 0)
+            leftPaddle.moveUp();
+        else if (leftPaddleDir === -1 && leftPaddle.y + leftPaddle.height < canvas.height)
+            leftPaddle.moveDown();
         draw();
+    }
+});
+
+
+window.addEventListener('keyup', (e) => {
+    if (isGameStarted) {
+        const key = e.key; // use KeyboardEvent.key ('ArrowUp', 'ArrowDown', ...)
+        if (key === 'ArrowUp' || key === 'ArrowDown') {
+            rightPaddleDir = 0;
+        }
+        if (key === 'w' || key === 'W' || key === 's' || key === 'S') {
+            leftPaddleDir = 0;
+        }
     }
 });
 

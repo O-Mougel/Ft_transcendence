@@ -12,19 +12,22 @@ app.use(cors({
   origin: "*"
 }));
 
-
-app.get('/', (req, res) => {
-  res.send('<h1>Hello world -- </h1>');
-});
-
-let rooms = [];
-
-io.on('connection', (socket) => {
+io.on('connect', (socket) => {
   console.log('a user connected');
+
+  socket.on('join', (message) => {
+    console.log(message);
+  });
 
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });
+});
+
+app.use(express.static('/home/vdomasch/Documents/42git/transcendence/srcs/front/'));
+
+app.get('/', (req, res) => {
+  res.sendFile('/home/vdomasch/Documents/42git/transcendence/srcs/front/index.html');
 });
 
 server.listen(3000, () => {
