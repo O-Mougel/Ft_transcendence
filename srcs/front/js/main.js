@@ -52,10 +52,6 @@ function startGame() {
     gameInit();
 }
 
-let leftPaddleDir = 0;
-let rightPaddleDir = 0;
-
-
 function gameInit() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ball.move();
@@ -70,48 +66,41 @@ window.addEventListener('keydown', (e) => {
     if (isGameStarted) {
         const key = e.key; // use KeyboardEvent.key ('ArrowUp', 'ArrowDown', ...)
         if (key === 'ArrowUp') {
-            console.log("player 2 move up")
-            rightPaddleDir = 1;
+            console.log("Paddle right move up")
             // if (rightPaddle.y > 0)
             //     rightPaddle.moveUp();
-            // socket.emit("move", {
-            //     roomID: roomID,
-            //     playerNo: playerNo,
-            //     direction: 'up'
-            // })
+            socket.emit("move", {
+                Paddle: 'right',
+                Direction: 'up'
+            });
         }
         if (key === 'ArrowDown') {
-            console.log("player 2 move down")
-            rightPaddleDir = -1;
+            console.log("Paddle right move down")
             // if (rightPaddle.y + rightPaddle.height < canvas.height)
             //     rightPaddle.moveDown();
-            // socket.emit("move", {
-            //     roomID: roomID,
-            //     playerNo: playerNo,
-            //     direction: 'down'
-            // })
+            socket.emit("move", {
+                Paddle: 'right',
+                Direction: 'down'
+            });
         }
         if (key === 'w' || key === 'W') {
-            console.log("player 1 move up")
-            leftPaddleDir = 1;
+            console.log("Paddle left move up")
             // if (leftPaddle.y > 0)
             //     leftPaddle.moveUp();
-            // socket.emit("move", {
-            //     roomID: roomID,
-            //     playerNo: playerNo,
-            //     direction: 'up'
-            // })
+             socket.emit("move", {
+                Paddle: 'left',
+                Direction: 'up'
+            });
         }
         if (key === 's' || key === 'S') {
-            console.log("player 1 move down")
-            leftPaddleDir = -1;
+            console.log("Paddle left move down")
             // if (leftPaddle.y + leftPaddle.height < canvas.height)
             //     leftPaddle.moveDown();
             // socket.emit("move", {
-            //     roomID: roomID,
-            //     playerNo: playerNo,
-            //     direction: 'down'
-            // })
+            socket.emit("move", {
+                Paddle: 'left',
+                Direction: 'down'
+            });
         }
 
         
@@ -121,29 +110,23 @@ window.addEventListener('keydown', (e) => {
             startButton.style.display = 'block';
             return;
         }
-        
-        if (rightPaddleDir === 1 && rightPaddle.y > 0)
-            rightPaddle.moveUp();
-        else if (rightPaddleDir === -1 && rightPaddle.y + rightPaddle.height < canvas.height)
-            rightPaddle.moveDown();
-
-        if (leftPaddleDir === 1 && leftPaddle.y > 0)
-            leftPaddle.moveUp();
-        else if (leftPaddleDir === -1 && leftPaddle.y + leftPaddle.height < canvas.height)
-            leftPaddle.moveDown();
-        draw();
     }
 });
-
 
 window.addEventListener('keyup', (e) => {
     if (isGameStarted) {
         const key = e.key; // use KeyboardEvent.key ('ArrowUp', 'ArrowDown', ...)
         if (key === 'ArrowUp' || key === 'ArrowDown') {
-            rightPaddleDir = 0;
+            socket.emit("move", {
+                Paddle: 'right',
+                Direction: 'none'
+            });
         }
         if (key === 'w' || key === 'W' || key === 's' || key === 'S') {
-            leftPaddleDir = 0;
+            socket.emit("move", {
+                Paddle: 'left',
+                Direction: 'none'
+            });
         }
     }
 });
@@ -154,11 +137,24 @@ function draw() {
     leftPaddle.draw(ctx);
     rightPaddle.draw(ctx);
     ball.draw(ctx);
-
-    // ctx.strokeStyle = 'white';
-    // ctx.beginPath();
-    // ctx.setLineDash([10, 10])
-    // ctx.moveTo(400, 5);
-    // ctx.lineTo(400, 495);
-    // ctx.stroke();
 }
+
+function updateGameScene(data) {
+  // Update ball position
+  ball.x = data.ball.x;
+  ball.y = data.ball.y;
+
+  // Update left paddle position
+  leftPaddle.y = data.leftPaddle.y;
+
+  // Update right paddle position
+  rightPaddle.y = data.rightPaddle.y;
+
+  // Redraw the game scene
+  draw();
+}
+
+socket.on('state', data => {
+  // Smoothly animate towards new positions
+  updateGameScene(data);
+});
