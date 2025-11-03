@@ -69,10 +69,10 @@ window.addEventListener('keydown', (e) => {
 });
 
 window.addEventListener('keyup', (e) => {
-    if (!isGameStarted) return;
+    // if (!isGameStarted) return;
 
     const key = e.key;
-    if (isGameStarted) {
+    // if (isGameStarted) {
         if (key === 'Escape') {
             console.log('Game Stopped');
             if (socket.connected) {
@@ -80,7 +80,7 @@ window.addEventListener('keyup', (e) => {
             }
             return;
         }
-    }
+    // }
     keysPressed.delete(key);
 
     updateDirections();
@@ -106,48 +106,31 @@ function updateDirections() {
     }
 }
 
-// window.addEventListener('keydown', (e) => {
-//     if (isGameStarted) {
-//         const key = e.key; // use KeyboardEvent.key ('ArrowUp', 'ArrowDown', ...)
-//         if (key === 'ArrowUp') rightPaddle.direction = 'up';
-//         if (key === 'ArrowDown') rightPaddle.direction = 'down';
-//         if (key === 'w' || key === 'W') leftPaddle.direction = 'up';
-//         if (key === 's' || key === 'S') leftPaddle.direction = 'down';
-
-//         if (key === 'Escape') {
-//             console.log('Game Stopped');
-//             if (socket.connected) {
-//                 socket.emit('stopGame');
-//             }
-//             return;
-//         }
-//     }
-// });
-
-// window.addEventListener('keyup', (e) => {
-//     if (isGameStarted) {
-//         const key = e.key;
-//         if (key === 'ArrowUp') {
-//             if (rightPaddle.direction === 'up') rightPaddle.direction = 'none';
-//         }
-//         if (key === 'ArrowDown' ) {
-//             if (rightPaddle.direction === 'down') rightPaddle.direction = 'none';
-//         }
-//         if (key === 'w' || key === 'W') {
-//             if (leftPaddle.direction === 'up') leftPaddle.direction = 'none';
-//         }
-//         if (key === 's' || key === 'S') {
-//             if (leftPaddle.direction === 'down') leftPaddle.direction = 'none';
-//         }
-//     }
-// });
-
 function draw() {
     ctx.clearRect(0, 0, 800, 500);
 
     leftPaddle.draw(ctx);
     rightPaddle.draw(ctx);
     ball.draw(ctx);
+    drawScore();
+    drawCenterLine();
+}
+
+function drawCenterLine() {
+    ctx.strokeStyle = 'white';
+    ctx.setLineDash([10, 10]);
+    ctx.beginPath();
+    ctx.moveTo(canvas.width / 2, 0);
+    ctx.lineTo(canvas.width / 2, canvas.height);
+    ctx.stroke();
+    ctx.setLineDash([]);
+}
+
+function drawScore() {
+    ctx.fillStyle = 'white';
+    ctx.font = '30px Arial';
+    ctx.fillText(leftPaddle.score, (canvas.width * 3) / 8, 50);
+    ctx.fillText(rightPaddle.score, (canvas.width * 5) / 8, 50);
 }
 
 function updateGameScene(data) {
@@ -205,5 +188,27 @@ function updateGameState() {
             Direction: rightPaddle.direction
         });
     }
+}
+
+socket.on('gameOver', (data) => {
+    console.log('Game Over. Final Score:', data);
+    isGameStarted = false;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    printGameOver(data);
+});
+
+function printGameOver(data) {
+    ctx.fillStyle = 'white';
+    ctx.font = '40px Arial';
+    const message = `Game Over!`;
+    const textWidth = ctx.measureText(message).width;
+    ctx.fillText(message, (canvas.width - textWidth) / 2, canvas.height / 2);
+    const messageScore = `${data.left} - ${data.right}`;
+    const textWidthScore = ctx.measureText(messageScore).width;
+    ctx.fillText(messageScore, (canvas.width - textWidthScore) / 2, canvas.height / 2 + 40);
+    ctx.font = '20px Arial';
+    const restartMessage = 'Press Escape to Restart';
+    const restartTextWidth = ctx.measureText(restartMessage).width;
+    ctx.fillText(restartMessage, (canvas.width - restartTextWidth) / 2, canvas.height / 2 + 80);
 }
 
