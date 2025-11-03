@@ -15,7 +15,6 @@ var socket = io("http://localhost:3000", {
 
 socket.on('connect', () => {
     console.log('Connected to WebSocket server');
-    socket.emit('join', 'Hello server from client');
 });
 
 socket.on('connect_error', (err) => {
@@ -41,11 +40,7 @@ function startGame() {
     startButton.style.display = 'none';
 
     if (socket.connected) {
-        socket.emit('joinGame');
-        console.log('Player connected');
-    }
-    else {
-        console.log('Player not connected');
+        socket.emit('startGame');
     }
 
     isGameStarted = true;
@@ -56,80 +51,96 @@ function gameInit() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ball.move();
 
-    ball.draw(ctx);
-    leftPaddle.draw(ctx);
-    rightPaddle.draw(ctx); 
+    // ball.draw(ctx);
+    // leftPaddle.draw(ctx);
+    // rightPaddle.draw(ctx); 
     draw();
 }
 
-window.addEventListener('keydown', (e) => {
-    if (isGameStarted) {
-        const key = e.key; // use KeyboardEvent.key ('ArrowUp', 'ArrowDown', ...)
-        if (key === 'ArrowUp') {
-            console.log("Paddle right move up")
-            // if (rightPaddle.y > 0)
-            //     rightPaddle.moveUp();
-            socket.emit("move", {
-                Paddle: 'right',
-                Direction: 'up'
-            });
-        }
-        if (key === 'ArrowDown') {
-            console.log("Paddle right move down")
-            // if (rightPaddle.y + rightPaddle.height < canvas.height)
-            //     rightPaddle.moveDown();
-            socket.emit("move", {
-                Paddle: 'right',
-                Direction: 'down'
-            });
-        }
-        if (key === 'w' || key === 'W') {
-            console.log("Paddle left move up")
-            // if (leftPaddle.y > 0)
-            //     leftPaddle.moveUp();
-             socket.emit("move", {
-                Paddle: 'left',
-                Direction: 'up'
-            });
-        }
-        if (key === 's' || key === 'S') {
-            console.log("Paddle left move down")
-            // if (leftPaddle.y + leftPaddle.height < canvas.height)
-            //     leftPaddle.moveDown();
-            // socket.emit("move", {
-            socket.emit("move", {
-                Paddle: 'left',
-                Direction: 'down'
-            });
-        }
+const keysPressed = new Set();
 
-        
-        if (key === 'Escape') {
-            isGameStarted = false;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            startButton.style.display = 'block';
-            return;
-        }
-    }
+window.addEventListener('keydown', (e) => {
+    if (!isGameStarted) return;
+
+    const key = e.key;
+    keysPressed.add(key);
+
+    updateDirections();
 });
 
 window.addEventListener('keyup', (e) => {
+    if (!isGameStarted) return;
+
+    const key = e.key;
     if (isGameStarted) {
-        const key = e.key; // use KeyboardEvent.key ('ArrowUp', 'ArrowDown', ...)
-        if (key === 'ArrowUp' || key === 'ArrowDown') {
-            socket.emit("move", {
-                Paddle: 'right',
-                Direction: 'none'
-            });
-        }
-        if (key === 'w' || key === 'W' || key === 's' || key === 'S') {
-            socket.emit("move", {
-                Paddle: 'left',
-                Direction: 'none'
-            });
+        if (key === 'Escape') {
+            console.log('Game Stopped');
+            if (socket.connected) {
+                socket.emit('stopGame');
+            }
+            return;
         }
     }
+    keysPressed.delete(key);
+
+    updateDirections();
 });
+
+function updateDirections() {
+    // Right paddle
+    if (keysPressed.has('ArrowUp') && !keysPressed.has('ArrowDown')) {
+        rightPaddle.direction = 'up';
+    } else if (keysPressed.has('ArrowDown') && !keysPressed.has('ArrowUp')) {
+        rightPaddle.direction = 'down';
+    } else {
+        rightPaddle.direction = 'none';
+    }
+
+    // Left paddle
+    if ((keysPressed.has('w') || keysPressed.has('W')) && !(keysPressed.has('s') || keysPressed.has('S'))) {
+        leftPaddle.direction = 'up';
+    } else if ((keysPressed.has('s') || keysPressed.has('S')) && !(keysPressed.has('w') || keysPressed.has('W'))) {
+        leftPaddle.direction = 'down';
+    } else {
+        leftPaddle.direction = 'none';
+    }
+}
+
+// window.addEventListener('keydown', (e) => {
+//     if (isGameStarted) {
+//         const key = e.key; // use KeyboardEvent.key ('ArrowUp', 'ArrowDown', ...)
+//         if (key === 'ArrowUp') rightPaddle.direction = 'up';
+//         if (key === 'ArrowDown') rightPaddle.direction = 'down';
+//         if (key === 'w' || key === 'W') leftPaddle.direction = 'up';
+//         if (key === 's' || key === 'S') leftPaddle.direction = 'down';
+
+//         if (key === 'Escape') {
+//             console.log('Game Stopped');
+//             if (socket.connected) {
+//                 socket.emit('stopGame');
+//             }
+//             return;
+//         }
+//     }
+// });
+
+// window.addEventListener('keyup', (e) => {
+//     if (isGameStarted) {
+//         const key = e.key;
+//         if (key === 'ArrowUp') {
+//             if (rightPaddle.direction === 'up') rightPaddle.direction = 'none';
+//         }
+//         if (key === 'ArrowDown' ) {
+//             if (rightPaddle.direction === 'down') rightPaddle.direction = 'none';
+//         }
+//         if (key === 'w' || key === 'W') {
+//             if (leftPaddle.direction === 'up') leftPaddle.direction = 'none';
+//         }
+//         if (key === 's' || key === 'S') {
+//             if (leftPaddle.direction === 'down') leftPaddle.direction = 'none';
+//         }
+//     }
+// });
 
 function draw() {
     ctx.clearRect(0, 0, 800, 500);
@@ -140,21 +151,59 @@ function draw() {
 }
 
 function updateGameScene(data) {
-  // Update ball position
-  ball.x = data.ball.x;
-  ball.y = data.ball.y;
+    if (!data) return;
 
-  // Update left paddle position
-  leftPaddle.y = data.leftPaddle.y;
+    // Ball: handle server shape { ball: { x, y } }
+    // console.log('Received game state from server:', data);
+    if (typeof data.ball.x === 'number') ball.x = data.ball.x;
+    if (typeof data.ball.y === 'number') ball.y = data.ball.y;
+    if (typeof data.ball.vx === 'number') ball.speedX = data.ball.vx;
+    if (typeof data.ball.vy === 'number') ball.speedY = data.ball.vy;
+    if (typeof data.ball.radius === 'number') ball.radius = data.ball.radius;
 
-  // Update right paddle position
-  rightPaddle.y = data.rightPaddle.y;
+    // Paddles: support either data.leftPaddle/.rightPaddle or data.paddles.{left,right}
+    const leftY = data.leftPaddle?.y ?? data.paddles?.left;
+    const rightY = data.rightPaddle?.y ?? data.paddles?.right;
 
-  // Redraw the game scene
-  draw();
+    if (typeof leftY === 'number') leftPaddle.y = leftY;
+    if (typeof rightY === 'number') rightPaddle.y = rightY;
+
+    if (data.score) {
+        if (typeof data.score.left === 'number' && typeof data.score.right === 'number' && (data.score.left !== leftPaddle.score || data.score.right !== rightPaddle.score)) {
+            leftPaddle.score = data.score.left;
+            rightPaddle.score = data.score.right;
+            console.log(`Score - Left: ${data.score.left}, Right: ${data.score.right}`);
+        }
+    }
+
+    // Redraw the game scene
+    if (isGameStarted) 
+        draw();
 }
 
 socket.on('state', data => {
-  // Smoothly animate towards new positions
-  updateGameScene(data);
+    updateGameScene(data);
 });
+
+socket.on('gameStopped', () => {
+    console.log('Game Stopped by server');
+    isGameStarted = false;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    startButton.style.display = 'block';
+});
+
+setInterval(updateGameState, 1000 / 60);
+function updateGameState() {
+    if (isGameStarted) {
+        // Send current paddle directions to server
+        socket.emit("move", {
+            Paddle: 'left',
+            Direction: leftPaddle.direction
+        });
+        socket.emit("move", {
+            Paddle: 'right',
+            Direction: rightPaddle.direction
+        });
+    }
+}
+
