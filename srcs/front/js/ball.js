@@ -20,12 +20,6 @@ export default class Ball {
         this.y += this.speedY;
     }
 
-    resetPosition(x, y) {
-        this.x = x;
-        this.y = y;
-        this.speedX = -this.speedX; // Change direction
-    }
-
     setSpeed(newSpeedX, newSpeedY) {
         this.speedX = newSpeedX;
         this.speedY = newSpeedY;

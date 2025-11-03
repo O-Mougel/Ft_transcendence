@@ -26,6 +26,7 @@ await fastify.register(fastifyStatic, {
 });
 
 fastify.get('/', (req, res) => {
+  console.log('Serving index.html');
   res.sendFile('index.html')
 });
 
@@ -36,13 +37,13 @@ fastify.listen({ port: 3000 }, function (err, address) {
   }
 });
 
-
+let isGameStarted = false;
 
 let ball = {
   x: 400,
   y: 250,
-  vx: 5,
-  vy: 5,
+  vx: 2,
+  vy: 2,
   radius: 10,
   move: function() {
     this.x += this.vx;
@@ -52,13 +53,44 @@ let ball = {
     if (this.y + this.radius > 500 || this.y - this.radius < 0) {
       this.vy = -this.vy;
     }
+
+    // Bounce off paddles taking into account their positions and width
+    if (this.x - this.radius < leftPaddle.width + 10) {
+      if (this.y > leftPaddle.y && this.y < leftPaddle.y + leftPaddle.height) {
+        this.vx = -this.vx;
+      }
+    }
+    if (this.x - this.radius > 800 - 2 * rightPaddle.width - 20) {
+      if (this.y > rightPaddle.y && this.y < rightPaddle.y + rightPaddle.height) {
+        this.vx = -this.vx;
+      }
+    }
+  },
+
+  // Scoring when ball goes past paddles
+  checkScore: function() {
+    if (this.x - this.radius < 0) {
+      // Right player scores
+      rightScore += 1;
+      this.reset();
+    } else if (this.x + this.radius > 800) {
+      // Left player scores
+      leftScore += 1;
+      this.reset();
+    }
+  },
+
+  // Reset after scoring
+  reset: function() {
+    this.x = 400;
+    this.y = 250;
   }
 };
 
 let leftPaddle = {
-  y: 250,
   height: 80,
   width: 10,
+  y: 250 - 80 / 2,
   moveUp: function() {
     if (this.y > 0) this.y -= 10;
   },
@@ -68,9 +100,9 @@ let leftPaddle = {
 };
 
 let rightPaddle = {
-  y: 250,
   height: 80,
   width: 10,
+  y: 250 - 80 / 2,
   moveUp: function() {
     if (this.y > 0) this.y -= 10;
   },
@@ -85,32 +117,65 @@ let rightScore = 0;
 io.on('connection', (socket) => {
   console.log('a user connected');
 
-  socket.on('join', (message) => {
-    console.log(message);
+  socket.on('startGame', () => {
+    console.log('Player joined the game');
+    isGameStarted = true;
+  });
+
+  socket.on('stopGame', () => {
+    console.log('Player left the game');
+    ball.reset();
+    leftPaddle.y = 250 - 80 / 2;
+    rightPaddle.y = 250 - 80 / 2;
+    leftScore = 0;
+    rightScore = 0;
+    socket.emit('state', {
+      paddles: { left: 250 - 80/2, right: 250 - 80/2 },
+      ball: { x: 400, y: 250, radius: ball.radius, vx: ball.vx, vy: ball.vy },
+      score: { left: 0, right: 0 }
+    });
+    socket.emit('gameStopped');
+    isGameStarted = false;
   });
 
   socket.on('move', (data) => {
-    console.log(`Paddle: ${data.Paddle}, Direction: ${data.Direction}`);
+    // console.log(`Paddle: ${data.Paddle}, Direction: ${data.Direction}`);
+    if (data.Paddle === 'left')
+    {
+      if (data.Direction === 'up' && leftPaddle.y > 0) leftPaddle.moveUp();
+      if (data.Direction === 'down' && leftPaddle.y + leftPaddle.height < 500) leftPaddle.moveDown();
+    }
+    if (data.Paddle === 'right')
+    {
+      if (data.Direction === 'up' && rightPaddle.y > 0) rightPaddle.moveUp();
+      if (data.Direction === 'down' && rightPaddle.y + rightPaddle.height < 500) rightPaddle.moveDown();
+    }
     // Here you can add logic to update paddle positions and broadcast to other clients
   });
 
   socket.on('disconnect', () => {
+    isGameStarted = false;
     console.log('user disconnected');
   });
+  isGameStarted = false;
 });
 
 setInterval(updateGameState, 1000 / 60);
 
 function updateGameState() {
+  if (!isGameStarted) return;
   // Update ball position
   ball.move();
-
+  ball.checkScore();
+  // console.log(`Ball position: (${ball.x}, ${ball.y})`);
+  
   // Check for collisions and update scores as necessary
-
+  
   // Broadcast updated state to all connected clients
   io.emit('state', {
     paddles: { left: leftPaddle.y, right: rightPaddle.y },
-    ball: { x: ball.x, y: ball.y },
-    score: { left: leftScore, right: rightScore }
+    ball: { x: ball.x, y: ball.y, radius: ball.radius, vx: ball.vx, vy: ball.vy },
+     score: { left: leftScore, right: rightScore }
   });
 }
+

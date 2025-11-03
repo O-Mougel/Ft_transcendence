@@ -7,6 +7,7 @@ export default class Paddle {
         this.color = color;
         this.score = 0;
         this.speed = 10;
+        this.direction = 'none';
     }
 
     draw(ctx) {
