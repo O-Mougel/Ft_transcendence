@@ -78,6 +78,11 @@ let ball = {
       leftScore += 1;
       this.reset();
     }
+    if (leftScore >= 2 || rightScore >= 2) {
+      console.log(`Game Over - Left: ${leftScore}, Right: ${rightScore}`);
+      io.emit('gameOver', { left: leftScore, right: rightScore });
+      resetGame();
+    }
   },
 
   // Reset after scoring
@@ -124,18 +129,8 @@ io.on('connection', (socket) => {
 
   socket.on('stopGame', () => {
     console.log('Player left the game');
-    ball.reset();
-    leftPaddle.y = 250 - 80 / 2;
-    rightPaddle.y = 250 - 80 / 2;
-    leftScore = 0;
-    rightScore = 0;
-    socket.emit('state', {
-      paddles: { left: 250 - 80/2, right: 250 - 80/2 },
-      ball: { x: 400, y: 250, radius: ball.radius, vx: ball.vx, vy: ball.vy },
-      score: { left: 0, right: 0 }
-    });
+    resetGame();
     socket.emit('gameStopped');
-    isGameStarted = false;
   });
 
   socket.on('move', (data) => {
@@ -159,6 +154,15 @@ io.on('connection', (socket) => {
   });
   isGameStarted = false;
 });
+
+function resetGame() {
+  ball.reset();
+  leftPaddle.y = 250 - 80 / 2;
+  rightPaddle.y = 250 - 80 / 2;
+  leftScore = 0;
+  rightScore = 0;
+  isGameStarted = false;
+}
 
 setInterval(updateGameState, 1000 / 60);
 
