@@ -1,10 +1,10 @@
 {
-  "watch": [
-    "index.js"
-  ],
-  "ext": "js",
-  "ignore": [
-    "node_modules/"
-  ],
-  "delay": 1
+	"watch": [
+		"server.js"
+	],
+	"ext": "js",
+	"ignore": [
+		"node_modules/"
+	],
+	"delay": 1
 }

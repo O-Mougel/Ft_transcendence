@@ -5,7 +5,7 @@
     "moduleResolution": "nodenext",                        
 	"sourceMap": true,
 	"skipLibCheck": true,
-    "outDir": "dist",                            // Write compiled .js files into the "dist" folder
+    "outDir": "./src/js",                            // Write compiled .js files into the "dist" folder
   },
   "include": ["./src/**/*.ts"],                     // Files to include (glob relative to this tsconfig). Matches files under src
 }
