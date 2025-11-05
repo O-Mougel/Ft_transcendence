@@ -59,8 +59,8 @@ let ball = {
     if (this.x - this.radius < leftPaddle.width + 10) {
       if (this.y > leftPaddle.y && this.y < leftPaddle.y + leftPaddle.height) {
         this.vx = -this.vx;
-        this.vx += 0.2; // Increase speed after each hit
-        this.vy += 0.2; // Increase speed after each hit
+        this.vx += 0.5; // Increase speed after each hit
+        this.vy += 0.5; // Increase speed after each hit
         // Change angle based on where it hit the paddle
         let hitPos = this.y - (leftPaddle.y + leftPaddle.height / 2);
         this.vy = hitPos * 0.1;
@@ -69,8 +69,8 @@ let ball = {
     if (this.x - this.radius > 800 - 2 * rightPaddle.width - 20) {
       if (this.y > rightPaddle.y && this.y < rightPaddle.y + rightPaddle.height) {
         this.vx = -this.vx;
-        this.vx -= 0.2; // Increase speed after each hit
-        this.vy -= 0.2; // Increase speed after each hit
+        this.vx -= 0.5; // Increase speed after each hit
+        this.vy -= 0.5; // Increase speed after each hit
         // Change angle based on where it hit the paddle
         let hitPos = this.y - (rightPaddle.y + rightPaddle.height / 2);
         this.vy = hitPos * 0.1;
