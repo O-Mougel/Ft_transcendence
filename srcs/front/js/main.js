@@ -6,6 +6,19 @@ import Paddle from './paddle.js';
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
+// Ensure only one speed checkbox can be selected at a time
+document.getElementsByName('ball-color').forEach((checkbox) => {
+    checkbox.addEventListener('change', function() {
+        if (this.checked) {
+            document.getElementsByName('ball-color').forEach((otherCheckbox) => {
+                if (otherCheckbox !== this) {
+                    otherCheckbox.checked = false;
+                }
+            });
+        }
+    });
+});
+
 console.log('Attempting to connect to WebSocket server...');
 
 var socket = io("http://localhost:3000", {
@@ -22,6 +35,7 @@ socket.on('connect_error', (err) => {
 });
 
 
+// Prevent scrolling
 const body = document.body;
 body.style.overflow = 'hidden';
 document.documentElement.style.overflow = 'hidden'; // if some browsers still scroll (chrome)
@@ -29,22 +43,27 @@ document.documentElement.style.overflow = 'hidden'; // if some browsers still sc
 const startButton = document.getElementById('startButton');
 startButton.addEventListener('click', startGame);
 
-let ball = new Ball(canvas.width / 2, canvas.height / 2, 20, 'white');
+let ball = new Ball(canvas.width / 2, canvas.height / 2, 10, 'white');
 let leftPaddle = new Paddle(10, canvas.height / 2 - 40, 10, 80, 'blue');
 let rightPaddle = new Paddle(canvas.width - 20, canvas.height / 2 - 40, 10, 80, 'red');
 
 let isGameStarted = false;
 
 function startGame() {
-    console.log('Game Started');
-    startButton.style.display = 'none';
-
     if (socket.connected) {
-        socket.emit('startGame');
+        console.log('Game Started');
+        ball.color = Array.from(document.getElementsByName('ball-color')).find(checkbox => checkbox.checked)?.value || 'white';
+        socket.emit('startGame', {
+            speed: document.getElementById('ball-speed-value').textContent || 1.0
+        });
+        startButton.style.display = 'none';
+    
+        isGameStarted = true;
+        gameInit();
     }
-
-    isGameStarted = true;
-    gameInit();
+    else {
+        console.log('Cannot start game: Not connected to server');
+    }
 }
 
 function gameInit() {
@@ -172,10 +191,16 @@ socket.on('gameStopped', () => {
     console.log('Game Stopped by server');
     isGameStarted = false;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ball.reset();
+    leftPaddle.y = 250 - 80 / 2;
+    rightPaddle.y = 250 - 80 / 2;
+    leftPaddle.score = 0;
+    rightPaddle.score = 0;
     startButton.style.display = 'block';
 });
 
 setInterval(updateGameState, 1000 / 60);
+
 function updateGameState() {
     if (isGameStarted) {
         // Send current paddle directions to server
@@ -207,8 +232,23 @@ function printGameOver(data) {
     const textWidthScore = ctx.measureText(messageScore).width;
     ctx.fillText(messageScore, (canvas.width - textWidthScore) / 2, canvas.height / 2 + 40);
     ctx.font = '20px Arial';
-    const restartMessage = 'Press Escape to Restart';
+    const restartMessage = 'Press Escape to go back to menu.';
     const restartTextWidth = ctx.measureText(restartMessage).width;
     ctx.fillText(restartMessage, (canvas.width - restartTextWidth) / 2, canvas.height / 2 + 80);
 }
+
+
+
+const slider = document.getElementById('ball-speed');
+const output = document.getElementById('ball-speed-value');
+
+    // Function to update number and slider color
+function updateSlider() {
+    const value = parseFloat(slider.value);
+    output.textContent = value.toFixed(1);
+}
+
+// Initialize and update on input
+updateSlider();
+slider.addEventListener('input', updateSlider);
 
