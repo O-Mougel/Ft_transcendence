@@ -62,6 +62,24 @@
         #startButton:hover {
             filter: brightness(0.8);
         }
+
+
+.ball-speed-control {
+    text-align: center;
+}
+
+label {
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+/* Slider styling */
+input[type="range"] {
+  width: 200px;
+  height: 8px;
+  border-radius: 5px;
+}
+
     </style>
 </head>
 
@@ -76,6 +94,18 @@
             <button id="startButton">
                 START
             </button>
+        </div>
+        <form class="question-form">
+            <text style="font-size: 20px;">Ball color:</text>
+            <label class="checkbox-container"><input type="checkbox" name="ball-color" value="pink"><span class="checkmark"></span>pink</label>
+            <label class="checkbox-container"><input type="checkbox" name="ball-color" value="yellow"><span class="checkmark"></span>yellow</label>
+            <label class="checkbox-container"><input type="checkbox" name="ball-color" value="cyan"><span class="checkmark"></span>cyan</label>
+        </form>
+            
+        <div class="ball-speed-control">
+            <label>Ball Speed</label>
+            <input type="range" id="ball-speed" name="ball-speed" min="0.5" max="1.5" value="1.0" step="0.1">
+            <span id="ball-speed-value">1.0</span>
         </div>
     </div>
     <script src="/js/main.js" type="module"></script>

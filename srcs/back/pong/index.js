@@ -38,12 +38,13 @@ fastify.listen({ port: 3000 }, function (err, address) {
 });
 
 let isGameStarted = false;
+var speedMultiplier = 1.0;
 
 let ball = {
   x: 400,
   y: 250,
-  vx: 2,
-  vy: 2,
+  vx: Math.random() > 0.5 ? 3.0 : -3.0,
+  vy: Math.random() > 0.5 ? 3.0 : -3.0,
   radius: 10,
   move: function() {
     this.x += this.vx;
@@ -58,11 +59,21 @@ let ball = {
     if (this.x - this.radius < leftPaddle.width + 10) {
       if (this.y > leftPaddle.y && this.y < leftPaddle.y + leftPaddle.height) {
         this.vx = -this.vx;
+        this.vx += 0.2; // Increase speed after each hit
+        this.vy += 0.2; // Increase speed after each hit
+        // Change angle based on where it hit the paddle
+        let hitPos = this.y - (leftPaddle.y + leftPaddle.height / 2);
+        this.vy = hitPos * 0.1;
       }
     }
     if (this.x - this.radius > 800 - 2 * rightPaddle.width - 20) {
       if (this.y > rightPaddle.y && this.y < rightPaddle.y + rightPaddle.height) {
         this.vx = -this.vx;
+        this.vx -= 0.2; // Increase speed after each hit
+        this.vy -= 0.2; // Increase speed after each hit
+        // Change angle based on where it hit the paddle
+        let hitPos = this.y - (rightPaddle.y + rightPaddle.height / 2);
+        this.vy = hitPos * 0.1;
       }
     }
   },
@@ -89,6 +100,13 @@ let ball = {
   reset: function() {
     this.x = 400;
     this.y = 250;
+    if (isGameStarted) {
+      this.vx = this.vx < 0 ? -3.0 * speedMultiplier : 3.0 * speedMultiplier;
+      this.vy = Math.random() > 0.5 ? 3.0 * speedMultiplier : -3.0 * speedMultiplier;
+    } else {
+      this.vx = Math.random() > 0.5 ? 3.0 : -3.0;
+      this.vy = Math.random() > 0.5 ? 3.0 : -3.0;
+    }
   }
 };
 
@@ -122,8 +140,14 @@ let rightScore = 0;
 io.on('connection', (socket) => {
   console.log('a user connected');
 
-  socket.on('startGame', () => {
+  socket.on('startGame', (data) => {
     console.log('Player joined the game');
+    if (data.speed) {
+      speedMultiplier = parseFloat(data.speed);
+      console.log(`Game speed set to: ${data.speed}`);
+      ball.vx *= speedMultiplier;
+      ball.vy *= speedMultiplier;
+    }
     isGameStarted = true;
   });
 
@@ -156,12 +180,12 @@ io.on('connection', (socket) => {
 });
 
 function resetGame() {
+  isGameStarted = false;
   ball.reset();
   leftPaddle.y = 250 - 80 / 2;
   rightPaddle.y = 250 - 80 / 2;
   leftScore = 0;
   rightScore = 0;
-  isGameStarted = false;
 }
 
 setInterval(updateGameState, 1000 / 60);
@@ -179,7 +203,7 @@ function updateGameState() {
   io.emit('state', {
     paddles: { left: leftPaddle.y, right: rightPaddle.y },
     ball: { x: ball.x, y: ball.y, radius: ball.radius, vx: ball.vx, vy: ball.vy },
-     score: { left: leftScore, right: rightScore }
+    score: { left: leftScore, right: rightScore }
   });
 }
 

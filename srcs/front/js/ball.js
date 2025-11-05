@@ -24,4 +24,11 @@ export default class Ball {
         this.speedX = newSpeedX;
         this.speedY = newSpeedY;
     }
+
+    reset() {
+        this.x = 400;
+        this.y = 250;
+        this.speedX = 3.0;
+        this.speedY = 3.0;
+    }
 }
