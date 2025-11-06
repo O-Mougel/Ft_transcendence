@@ -44,7 +44,7 @@ const startButton = document.getElementById('startButton');
 startButton.addEventListener('click', startGame);
 
 let ball = new Ball(canvas.width / 2, canvas.height / 2, 10, 'white');
-let leftPaddle = new Paddle(10, canvas.height / 2 - 40, 10, 80, 'blue');
+let leftPaddle = new Paddle(10, canvas.height / 2 - 40, 10, 80, 'dodgerblue');
 let rightPaddle = new Paddle(canvas.width - 20, canvas.height / 2 - 40, 10, 80, 'red');
 
 let isGameStarted = false;
