@@ -26,8 +26,8 @@ await fastify.register(fastifyStatic, {
 });
 
 fastify.get('/', (req, res) => {
-  console.log('Serving index.html');
-  res.sendFile('index.html')
+  console.log('Serving pong.html');
+  res.sendFile('pong.html')
 });
 
 fastify.listen({ port: 3000 }, function (err, address) {
