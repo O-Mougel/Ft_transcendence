@@ -10,9 +10,16 @@ fastify.register(require('@fastify/static'), {
 
 // Declare a route
 fastify.get('/', function handler (request, reply) {
-	const stream = fs.createReadStream('./src/index.html')
-	reply.type('text/html').send(stream)
-//   reply.send({ hello: 'world' })
+	// const stream = fs.createReadStream('./src/index.html')
+	// reply.type('text/html').send(stream)
+  	reply.sendFile('index.html')
+})
+
+// Declare a route
+fastify.get('/selectModes.html', function handler (request, reply) {
+	// const stream = fs.createReadStream('./src/index.html')
+	// reply.type('text/html').send(stream)
+  	reply.sendFile('selectModes.html')
 })
 
 

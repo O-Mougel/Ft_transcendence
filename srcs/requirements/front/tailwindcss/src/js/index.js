@@ -1,16 +1,18 @@
 const router = async () => {
-	const routes = [
-		{ path: "/", view: () => console.log("In root !") },
-		{ path: "/modes", view: () => console.log("Selecting modes !") },
-	];
+	// const routes = [
+	// 	{ path: "/", view: () => console.log("In root !") },
+	// 	{ path: "/modes", view: () => console.log("Selecting modes !") },
+	// ];
 
-	const potentialMan = routes.map(route => {
-		return {
-			route : route,
-			isMatch: location.pathname === route.path
-		};
-	});
-	console.log(potentialMan);
+	// const potentialMan = routes.map(route => {
+	// 	return {
+	// 		route : route,
+	// 		isMatch: location.pathname === route.path
+	// 	};
+	// });
+	// console.log(potentialMan);
+
+	console.log('Gougougaga');
 };
 
 document.addEventListener("DOMContentLoaded", () => {
