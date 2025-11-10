@@ -1,20 +1,27 @@
 {
-  "name": "server",
+  "name": "fastify_api",
   "version": "1.0.0",
   "description": "",
-  "license": "ISC",
-  "author": "lezard",
-  "type": "module",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node server",
-    "dev": "nodemon server",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsnd --respawn --transpile-only --exit-child src/app.ts"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "fastify": "^5.6.1"
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/jwt": "^10.0.0",
+    "@prisma/client": "^6.19.0",
+    "dotenv": "^17.2.3",
+    "fastify": "^5.6.1",
+    "fastify-zod": "^1.4.0",
+    "zod": "^3.25.76",
+    "zod-to-json-schema": "^3.24.6"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "@types/node": "^24.10.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.3"
   }
 }
