@@ -7,23 +7,8 @@
   <link rel="icon" href="/img/Goug.ico">
   <title>Single page app</title>
 </head>
-<body class="h-screen bg-[url(/img/loginUnblured.jpg)] backdrop-blur-[10px] pt-15">
-	<div class="text-center ml-auto mr-auto w-[400px]">
-		<img class ="mx-auto mb-[75px]" id="logo" src="./img/sillyDog.gif">
-		<form>
-			<div class="content-center">
-				<input tabindex="1" class="mx-auto text-white w-[400px] h-[35px] text-[21px] rounded-s border border-2 border-black pt-[8px] pb-[5px] pr-[20px] pl-[20px] mb-[25px]" name="playerUsername" value="" type="text" autofocus autocomplete="off" placeholder="Enter your login" aria-invalid>
-			</div>
-			<div class="content-center">
-				<input tabindex="2" class="mx-auto text-white w-[400px] h-[35px] text-[21px] rounded-sm border border-2 border-black pt-[8px] pb-[5px] pr-[20px] pl-[20px] mb-[35px]" name="playerPassword" value="" type="text" autocomplete="off" placeholder="Enter your password" aria-invalid>
-			</div>
-			<div class="">
-                <!-- <input type="hidden" id="id-hidden-input" name="credentialId"> -->
-                <input tabindex="3" class="uppercase text-4xl bg-blue-500 w-100 font-bold pt-[8px] pb-[8px] rounded-lg text-white" name="login" type="submit" value="Sign In">
-            </div>
-			<a href="/selectModes.html" >Gougou ?</a>
-		</form>
-	</div>
-	<!-- <script type="module" src="/js/index.js"></script> -->
+<body>
+	<div id ="app"></div>
+	<script type="module" src="/js/index.js"></script>
 </body>
 </html>
