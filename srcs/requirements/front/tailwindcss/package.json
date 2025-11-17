@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tailwindcss -i ./src/css/input.css -o ./src/css/output.css --watch",
     "dev:ts": "nodemon server.js",
-    "start": "browser-sync start --server 'src' --files 'src/**/*' --no-ui --port 3000 --reload-delay 10",
+    "start": "browser-sync start --server 'src' --files 'src/**/*' --no-ui --no-open --port 3000 --reload-delay 10",
     "build": "tsc"
   },
   "devDependencies": {
