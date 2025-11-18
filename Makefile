@@ -11,10 +11,13 @@ DOCKER_DIR = srcs
 all: $(DOCKER_FILES)
 	cd ${DOCKER_DIR} && docker compose up --build -d
 
-clean:
-	cd ${DOCKER_DIR} && docker compose stop && docker compose rm
+stop:
+	cd ${DOCKER_DIR} && docker compose stop
 
-fclean:
+clean: stop
+	cd ${DOCKER_DIR} && docker compose rm
+
+fclean: clean
 	docker system prune -af
 
 re: fclean all
