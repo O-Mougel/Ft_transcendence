@@ -4,7 +4,7 @@ const fs = require('fs')
 const path = require('node:path')
 
 fastify.register(require('@fastify/static'), {
-  root: path.join(__dirname, 'src'),
+  root: path.join(__dirname, './'),
   prefix: '/', // optional: default '/'
 })
 
@@ -23,7 +23,7 @@ fastify.get("/modes", function handler (request, reply) {
 })
 
 // Run the server!
-fastify.listen({ port: 3001 }, (err) => {
+fastify.listen({ port: 3001, host: '0.0.0.0' }, (err) => {
   if (err) {
     fastify.log.error(err)
     process.exit(1)

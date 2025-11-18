@@ -6,13 +6,12 @@ WORKDIR /usr/src/app
 #faster for cache
 COPY package.json ./
 COPY package-lock.json ./
+COPY tsconfig.json ./
 
-RUN npm install
-
-COPY . .
+RUN npm ci
 
 # ???
-EXPOSE 3000
+EXPOSE 3001
 
 
 CMD ["npm", "start"]
