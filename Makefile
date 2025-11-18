@@ -9,7 +9,7 @@ DOCKER_FILES = ./srcs/requirements/nginx/Dockerfile\
 DOCKER_DIR = srcs
 
 all: $(DOCKER_FILES)
-	cd ${DOCKER_DIR} && docker compose up --build
+	cd ${DOCKER_DIR} && docker compose up --build -d
 
 clean:
 	cd ${DOCKER_DIR} && docker compose stop && docker compose rm
