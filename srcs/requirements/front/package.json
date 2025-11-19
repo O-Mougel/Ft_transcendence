@@ -4,11 +4,9 @@
   "description": "very cool project",
   "main": "index.js",
   "scripts": {
-    "dev:tw": "tailwindcss -i ./src/css/input.css -o ./src/css/output.css --watch",
-    "dev:ts": "nodemon server.js",
-    "dev:bs": "browser-sync start --server 'src' --files 'src/**/*' --no-ui --port 3000 --reload-delay 10",
+    "dev": "tailwindcss -i ./src/css/input.css -o ./src/css/output.css --watch",
     "build": "tsc",
-	"start": "node src/server.js"
+	"start": "nodemon src/server.js"
   },
   "devDependencies": {
     "@tailwindcss/cli": "4.1.16",
