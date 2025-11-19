@@ -16,6 +16,7 @@ export default class extends ViewTemplate {
 				<li class="flex items-center text-white bg-[#302f2f] hover:bg-[#1c1b1b]"><a class="block p-5 m-[0px] h-full w-full" href="/modes" data-link>Modes</a></li>
 				<li class="flex items-center text-white bg-[#302f2f] hover:bg-[#1c1b1b]"><a class="block p-5 m-[0px] h-full w-full" href="/nav" data-link>Navbar</a></li>
 				<li class="flex items-center text-white bg-[#302f2f] hover:bg-[#1c1b1b]"><a class="block p-5 m-[0px] h-full w-full" href="/" data-link>About</a></li>
+				<li class="flex items-center text-white bg-[#302f2f] hover:bg-[#1c1b1b]"><a class="block p-5 m-[0px] h-full w-full" href="/tournament" data-link>Tournament</a></li>
 			</ul>
 			<div class="h-[93%] w-full grow basis-full">
 				<div class="h-full w-full flex">
