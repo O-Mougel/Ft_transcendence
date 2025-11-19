@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 * {
-	--primary: #4a4e69;
-	--secondary: #eaac8b;
+	--white: #98c6f8;
+	--red: #ff0000;
 	--tertiary: #e56b6f;
 	--quaternary: #b56576;
 	--quinary: #6d597a;
