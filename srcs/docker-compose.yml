@@ -9,7 +9,7 @@ services:
     ports:
      - "4430:443"
     volumes:
-     - front:/
+     - front:/nginx
     networks:
      - transcendence
     restart: on-failure
@@ -21,7 +21,7 @@ services:
     depends_on:
      - back
     volumes:
-     - front:/home
+     - front:/usr/src/app
     networks:
      - transcendence
     restart: on-failure
