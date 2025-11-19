@@ -1,5 +1,6 @@
 import selectModes from "../views/selectModes.js";
 import startingFile from "../views/startingFile.js";
+import navBar from "../views/navBar.js";
 
 const loadURL = url => {
 	history.pushState(null, null, url);
@@ -10,6 +11,7 @@ const router = async () => {
 	const routes = [
 		{ path: "/", view: startingFile },
 		{ path: "/modes", view: selectModes },
+		{ path: "/nav", view: navBar },
 	];
 
 	const potentialMan = routes.map(mapElement => { //mapElement is the name of each array element for routes
