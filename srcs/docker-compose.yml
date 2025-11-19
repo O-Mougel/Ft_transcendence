@@ -1,33 +1,33 @@
 services:
-#  nginx:
-#    build: docker/nginx/.
-#    env_file: ../.env
-#    container_name: nginx
-#    depends_on:
-#      - front
-#      - back
-#    ports:
-#      - "443:443"
-#    volumes:
-#      - front:/
-#    networks:
-#      - transcendence
-#    restart: on-failure
+  nginx:
+    build: docker/nginx/.
+    env_file: ../.env
+    container_name: nginx
+    depends_on:
+     - front
+     - back
+    ports:
+     - "4430:443"
+    volumes:
+     - front:/
+    networks:
+     - transcendence
+    restart: on-failure
 
-#  front:
-#    build: docker/front/.
-#    env_file: ../.env
-#    container_name: front
-#    depends_on:
-#      - back
-#    volumes:
-#      - front:/home
-#    networks:
-#      - transcendence
-#    restart: on-failure
-#      #    expose:
-#      #      - ""
-#
+  front:
+    build: docker/front/.
+    env_file: ../.env
+    container_name: front
+    depends_on:
+     - back
+    volumes:
+     - front:/home
+    networks:
+     - transcendence
+    restart: on-failure
+     #    expose:
+     #      - ""
+
   back:
     build: docker/back/.
     env_file: ../.env
@@ -38,9 +38,7 @@ services:
       - transcendence
     restart: on-failure
     ports:
-      - "3000:3000"
-        #expose:
-        #- "3000"
+      - "8080:3001"
 
 networks:
   transcendence:
