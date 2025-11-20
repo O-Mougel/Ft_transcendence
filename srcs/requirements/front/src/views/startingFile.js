@@ -21,8 +21,8 @@ export default class extends ViewTemplate {
 					<div class="">
 						<input tabindex="3" class="uppercase text-sm md:text-base xl:text-2xl text-white focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis w-1/2 md:w-1/4 border hover:border-[#98c6f8] border-white pt-2 pb-2 rounded-lg " name="login" type="submit" value="Sign In">
 					</div>
-					<a href="/modes" data-link>Click for modes !</a>
-					<a href="/nav" data-link>Click for nav !</a>
+					<a href="/modes" data-link class="text-red-200">Click for modes !</a>
+					<a href="/nav" data-link class="text-red-200">Click for nav !</a>
 				</form>
 			</div>`
 	}
