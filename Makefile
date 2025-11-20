@@ -1,14 +1,34 @@
-.PHONY: all clean fclean re
+.PHONY: all build up stop down downv clean fclean again re
 
 DOCKER_DIR = srcs
 
-all:
-	cd ${DOCKER_DIR} && docker compose up --build -d
+DOCKER_COMPOSE_PATH = ${DOCKER_DIR}/docker-compose.yml
+
+all: build up
+
+build:
+	docker compose -f ${DOCKER_COMPOSE_PATH} build
+
+up:
+	docker compose -f ${DOCKER_COMPOSE_PATH} up -d
+
+stop:
+	docker compose -f ${DOCKER_COMPOSE_PATH} stop
 
 down:
-	cd ${DOCKER_DIR} && docker compose stop && docker compose rm 
+	docker compose -f ${DOCKER_COMPOSE_PATH} down
 
-clean:
-	docker system prune -af
+downv:
+	docker compose -f ${DOCKER_COMPOSE_PATH} down -v
 
-re: down all
+clean: down
+	docker compose -f ${DOCKER_COMPOSE_PATH} rm -f
+
+fclean: downv
+	docker system prune -af --volumes
+
+again: down all
+
+re: fclean all
+
+

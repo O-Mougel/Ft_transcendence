@@ -1,0 +1,19 @@
+@import "tailwindcss";
+@font-face {
+	font-family: 'space';
+	src: url('/fonts/space-webfont.woff2') format("woff2");
+	src: url('/fonts/space-webfont.woff') format("woff");
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+
+* {
+	font-family: space;
+	--white: #98c6f8;
+	--red: #ff0000;
+	--tertiary: #e56b6f;
+	--quaternary: #b56576;
+	--quinary: #6d597a;
+	--senary: #355070;
+}
