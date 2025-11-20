@@ -22,6 +22,8 @@ services:
     container_name: front
     depends_on:
      - back
+    ports: 
+     - "8080:3001"
     volumes:
      - front:/usr/src/app
     networks:
