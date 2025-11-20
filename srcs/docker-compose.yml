@@ -15,7 +15,9 @@ services:
     restart: on-failure
 
   front:
-    build: docker/front/.
+    build:
+      context: .
+      dockerfile: docker/front/Dockerfile
     env_file: ../.env
     container_name: front
     depends_on:
