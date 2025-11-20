@@ -13,7 +13,6 @@ RUN npm install -g nodemon
 
 # COPY . .
 
-# ???
 EXPOSE 3001
 
 
