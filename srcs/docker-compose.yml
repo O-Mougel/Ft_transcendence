@@ -7,9 +7,15 @@ services:
      - front
      - back
     ports:
+<<<<<<< HEAD
      - "4430:443"
     volumes:
      - front:/nginx
+=======
+      - "8443:8443"
+        #    volumes:
+        #      - front:/
+>>>>>>> pong
     networks:
      - transcendence
     restart: on-failure
