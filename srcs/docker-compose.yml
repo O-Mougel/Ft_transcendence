@@ -4,61 +4,45 @@ services:
     env_file: ../.env
     container_name: nginx
     depends_on:
-      - front
-      - back
-      - db
+     - front
+     - back
     ports:
-      - "443:443"
-        #    volumes:
-        #      - front:/
+     - "4430:443"
+    volumes:
+     - front:/nginx
     networks:
-      - transcendence
+     - transcendence
     restart: on-failure
 
   front:
-    build: docker/front/.
+    build:
+      context: .
+      dockerfile: docker/front/Dockerfile
     env_file: ../.env
     container_name: front
     depends_on:
-      - back
-      - db
+     - back
+    ports: 
+     - "8080:3001"
     volumes:
-      - front:/home
+     - front:/usr/src/app
     networks:
-      - transcendence
+     - transcendence
     restart: on-failure
-      #    expose:
-      #      - ""
+     #    expose:
+     #      - ""
 
   back:
     build: docker/back/.
     env_file: ../.env
     container_name: back 
-    depends_on:
-      - db
     volumes:
       - back:/home
     networks:
       - transcendence
     restart: on-failure
-      #    ports:
-      #- "3000:3000"
-    expose:
-      - "3000"
-
-  db:
-    build: docker/db/.
-    env_file: ../.env
-    container_name: db
-    volumes:
-      - db:/home
-    networks:
-      - transcendence
-    restart: on-failure
-    expose:
-      - "3306"
-      #- "8191"
-
+    ports:
+      - "8080:3001"
 
 networks:
   transcendence:
@@ -70,13 +54,8 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: 'back/'
-  db:
-    driver: local
-    driver_opts:
-      type: 'none' 
-      o: 'bind'
-      device: 'db/'
+      device: 'back/server'
+
   front:
     driver: local
     driver_opts:
