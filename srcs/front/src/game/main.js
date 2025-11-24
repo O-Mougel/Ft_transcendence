@@ -21,7 +21,7 @@ document.getElementsByName('ball-color').forEach((checkbox) => {
 
 console.log('Attempting to connect to WebSocket server...');
 
-var socket = io("http://localhost:3000", {
+var socket = io("http://localhost:3002", {
     transports: ['websocket']
 });
 
@@ -236,8 +236,6 @@ function printGameOver(data) {
     const restartTextWidth = ctx.measureText(restartMessage).width;
     ctx.fillText(restartMessage, (canvas.width - restartTextWidth) / 2, canvas.height / 2 + 80);
 }
-
-
 
 const slider = document.getElementById('ball-speed');
 const output = document.getElementById('ball-speed-value');

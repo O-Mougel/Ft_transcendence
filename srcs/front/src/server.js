@@ -15,6 +15,9 @@ fastify.get("/", function handler (request, reply) {
   	reply.sendFile('index.html')
 })
 
+fastify.get("/pong", function handler (request, reply) {
+	reply.sendFile('pong.html')
+})
 
 fastify.get("/modes", function handler (request, reply) {
 	// const stream = fs.createReadStream('./src/index.html')
