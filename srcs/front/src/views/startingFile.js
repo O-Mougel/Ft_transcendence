@@ -9,7 +9,7 @@ export default class extends ViewTemplate {
 
 	async getHTML() {
 		return `
-			<div class="min-h-screen w-screen bg-[url(/img/starField.gif)] bg-cover bg-center backdrop-blur-[10px] pt-35 text-center ml-auto mr-auto">
+			<div class="text-center ml-auto mr-auto pt-[5%]">
 				<img class ="mx-auto mb-[75px]" id="logo" src="./img/sillyDog.gif">
 				<form>
 					<div class="content-center">
