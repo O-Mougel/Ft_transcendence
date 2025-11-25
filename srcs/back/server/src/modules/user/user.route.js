@@ -1,0 +1,37 @@
+// user.route.ts
+
+import { loginHandler, registerUserHandler } from "./user.controller.js";
+import { $ref } from "./user.schema.js";
+
+async function userRoutes(server) {
+	server.get('/helloworld', async (req, res) => {
+    return { message: 'Hello World!' }
+})
+    server.post(
+        '/', 
+        {
+            schema: {
+                body: $ref("createUserSchema"),
+                response: {
+                    201: $ref("createUserResponseSchema"),
+                },
+            },
+        }, 
+        registerUserHandler,
+    );
+
+	server.post(
+        '/login', 
+        {
+            schema: {
+                body: $ref("loginSchema"),
+                response: {
+                    201: $ref("loginResponseSchema"),
+                }
+            }
+        }, 
+        loginHandler
+    );
+}
+
+export default userRoutes;

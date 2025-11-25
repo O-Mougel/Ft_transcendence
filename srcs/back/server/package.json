@@ -1,27 +1,23 @@
 {
   "name": "fastify_api",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "type": "module",
+  "main": "app.js",
   "scripts": {
-    "dev": "tsnd --respawn --transpile-only --exit-child src/app.ts"
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@fastify/cookie": "^11.0.2",
-    "@fastify/jwt": "^10.0.0",
-    "@prisma/client": "^6.19.0",
-    "dotenv": "^17.2.3",
-    "fastify": "^5.6.1",
-    "fastify-zod": "^1.4.0",
-    "zod": "^3.25.76",
-    "zod-to-json-schema": "^3.24.6"
+    "@fastify/cookie": "9.3.1",
+    "@fastify/jwt": "8.0.0",
+    "@prisma/client": "5.13.0",
+    "fastify": "4.29.1",
+    "fastify-zod": "1.4.0",
+    "prisma": "5.13.0",
+    "zod": "3.23.8",
+    "zod-to-json-schema": "3.23.0"
   },
   "devDependencies": {
-    "@types/node": "^24.10.0",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.9.3"
+    "nodemon": "3.1.11"
   }
 }
