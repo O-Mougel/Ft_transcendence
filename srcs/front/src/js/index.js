@@ -1,6 +1,5 @@
 import selectModes from "../views/selectModes.js";
 import startingFile from "../views/startingFile.js";
-import navBar from "../views/navBar.js";
 import tournamentSize from "../views/tournamentSize.js";
 
 
@@ -13,7 +12,6 @@ const router = async () => {
 	const routes = [
 		{ path: "/", view: startingFile },
 		{ path: "/modes", view: selectModes },
-		{ path: "/nav", view: navBar },
 		{ path: "/tournament", view: tournamentSize },
 	];
 
