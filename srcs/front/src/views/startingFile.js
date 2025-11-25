@@ -9,21 +9,9 @@ export default class extends ViewTemplate {
 
 	async getHTML() {
 		return `
-			<div class="text-center ml-auto mr-auto pt-[5%]">
-				<img class ="mx-auto mb-[75px]" id="logo" src="./img/sillyDog.gif">
-				<form>
-					<div class="content-center">
-						<input tabindex="1" class="mx-auto text-white hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] w-1/2 md:w-1/4 h-[35px] text-sm md:text-base rounded-sm border border-[#c2dbf6] pt-2 pb-[5px] pr-5 pl-5 mb-[25px]" name="playerUsername" value="" type="text" autofocus autocomplete="off" placeholder="Enter your login" aria-invalid>
-					</div>
-					<div class="content-center">
-						<input tabindex="2" class="mx-auto text-white hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] w-1/2 md:w-1/4 h-[35px] text-sm md:text-base rounded-sm border border-[#c2dbf6] pt-2 pb-[5px] pr-5 pl-5 mb-[35px]" name="playerPassword" value="" type="text" autocomplete="off" placeholder="Enter your password" aria-invalid>
-					</div>
-					<div class="">
-						<input tabindex="3" class="uppercase text-sm md:text-base xl:text-2xl text-white focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis w-1/2 md:w-1/4 border hover:border-[#98c6f8] border-white pt-2 pb-2 rounded-lg " name="login" type="submit" value="Sign In">
-					</div>
-					<a href="/modes" data-link class="text-red-200">Click for modes !</a>
-					<a href="/nav" data-link class="text-red-200">Click for nav !</a>
-				</form>
+			<div class="text-center opacity-0 h-full hover:opacity-100 transition duration-4000 ease-in-out ml-auto mr-auto pt-[5%]">
+				<h1 class="text-base  sm:text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl">FT-Transcendence</h1>
+				<p>Start</p>
 			</div>`
 	}
 }

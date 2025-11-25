@@ -10,7 +10,7 @@ export default class extends ViewTemplate {
 	async getHTML() {
 		return `
 
-		<div class="h-screen w-screen flex flex-col">
+		<div class="h-full w-full flex flex-col">
 			<div class="h-[93%] w-full grow basis-full bg-[url(/img/starField.gif)] bg-cover bg-center backdrop-blur-[10px] pt-35 text-center ml-auto mr-auto">
 				<h1 class="text-white sm:text-2xl xl:text-3xl">Select the number of players in the tournament</h1>
 				<div class="flex w-2/5 gap-5 justify-center mt-8 mx-auto flex-col sm:flex-row sm:w-4/5 sm:text-2xl xl:text-3xl">
