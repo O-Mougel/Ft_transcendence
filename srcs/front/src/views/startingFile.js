@@ -10,18 +10,17 @@ export default class extends ViewTemplate {
 	async getHTML() {
 		return `
 			<div id="profilePanel" class="flex absolute right-0 top-0 h-full w-[15%] bg-[url(/img/stars.gif)] z-50 shadow-md border border-[#98c6f8] border border-[#98c6f8]">
-					<div class="flex flex-col text-center w-full">
+					<div class="flex flex-col text-center w-full ">
 						<div class="grid h-[30%] place-items-center">
   							<div class="bg-[url(/img/sillyDog.gif)] bg-cover w-[50%] h-[50%] p-4 rounded-[50%] shadow"></div>
 						</div>
 						<h1 class="text-white text-bold h-1/5 text-4xl">Goofy ahh player</h1>
 						<p class="text-white">Plaisantin</p>
 						<p class="text-white">Wow what a great person</p>
-						<button class="text-white">Click for stats !</button>
+						<a href="/profileOverview" name="profileLink" data-link>See profile</a>
 					</div>
 			</div>
 			<div class="text-center ml-auto mr-auto pt-[5%]">
-			
 				<img class ="mx-auto mb-[75px]" id="logo" src="./img/sillyDog.gif">
 				<form>
 					<div class="content-center">
