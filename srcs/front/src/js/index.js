@@ -1,5 +1,6 @@
 import selectModes from "../views/selectModes.js";
 import startingFile from "../views/startingFile.js";
+import profileOverview from "../views/profileOverview.js";
 import tournamentSize from "../views/tournamentSize.js";
 
 
@@ -12,6 +13,7 @@ const router = async () => {
 	const routes = [
 		{ path: "/", view: startingFile },
 		{ path: "/modes", view: selectModes },
+		{ path: "/profileOverview", view: profileOverview },
 		{ path: "/tournament", view: tournamentSize },
 	];
 
@@ -44,6 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	document.addEventListener("click", element => {
 		if (element.target.matches("[data-link]")){
 			element.preventDefault();
+			console.log(element.target.href);
 			loadURL(element.target.href);
 		}
 	})
