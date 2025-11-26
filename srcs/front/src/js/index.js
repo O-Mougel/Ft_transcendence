@@ -2,6 +2,7 @@ import selectModes from "../views/selectModes.js";
 import startingFile from "../views/startingFile.js";
 import navBar from "../views/navBar.js";
 import tournamentSize from "../views/tournamentSize.js";
+import pong from "../views/pong.js";
 
 
 const loadURL = url => {
@@ -15,6 +16,7 @@ const router = async () => {
 		{ path: "/modes", view: selectModes },
 		{ path: "/nav", view: navBar },
 		{ path: "/tournament", view: tournamentSize },
+		{ path: "/pong", view: pong },
 	];
 
 	const potentialMan = routes.map(mapElement => { //mapElement is the name of each array element for routes
