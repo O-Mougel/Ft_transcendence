@@ -10,15 +10,19 @@ export default class extends ViewTemplate {
 	async getHTML() {
 		return `
 			
-			<div class="w-full h-full bg-[url(/img/stars.gif)] bg-cover bg-center flex flex-col focus:outline-none focus:border-[#9ecaed] focus:ring-4 focus:ring-[#9ecaed]">
-				<form class="pt-20 ">
-					<h2 class="flex items-start">Current username : Goug</h2>
-					<div class="flex items-start w-[50%] pt-5">
-						<input tabindex="1" class=" text-white hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] md:w-1/2 h-[35px] text-sm md:text-base rounded-sm border border-[#c2dbf6] pt-2 pb-[5px] pr-5 pl-5 mb-[25px]" name="newUsername" value="" type="text" autofocus autocomplete="off" placeholder="Enter new username" aria-invalid>
+			<div class="absolute inset-[3%] box-border border border-amber-300 bg-[url(/img/stars.gif)] bg-cover bg-center flex flex-col">
+				<form class="py-[3%] px-[3%] ">
+					<h2 class="flex items-start text-amber-50">Choose your new username :</h2>
+					<div class="flex items-start w-[50%] py-5">
+						<input tabindex="1" class=" text-white hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] md:w-1/2 h-[35px] text-sm md:text-base rounded-sm border border-[#c2dbf6] pt-2 pb-[5px] pr-5 pl-5 mb-[25px]" name="newUsername" value="" type="text" autofocus autocomplete="off" placeholder="[old username]" aria-invalid>
 					</div>
-					<h2 class="flex items-start">Current profile picture :</h2>
-					<label for="myfile">Select a file:</label>
-						<input type="file" id="myfile" name="myfile">
+					<h2 class="flex items-start text-amber-50">Choose your new profile picture :</h2>
+					<div class="overflow-hidden h-[30%] flex items-center gap-4">
+  						<img id="logo" src="./img/pipotam.gif" alt="logo" class="ml-5 mb-0" />
+ 						<input type="file" id="myfile" name="myfile" class="hidden" />
+						<label for="myfile" class="border border-amber-50 ml-2 py-2 px-3 cursor-pointer">Select file</label>
+					</div>
+					<h2 class="flex items-start text-amber-50 pt-5">Confirm your password :</h2>
 					<div class="flex items-start w-[50%] pt-5">
 						<input tabindex="2" class=" text-white hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] md:w-1/2 h-[35px] text-sm md:text-base rounded-sm border border-[#c2dbf6] pt-2 pb-[5px] pr-5 pl-5 mb-[35px]" name="confirmPassword" value="" type="text" autocomplete="off" placeholder="Enter your password" aria-invalid>
 					</div>
