@@ -39,8 +39,10 @@ services:
     networks:
       - transcendence
     restart: on-failure
-    expose:
-      - "3000"
+    ports:
+      - "3000:3000" #ne pas oublier d'enlever au moment de rendre le projet
+    # expose: 
+    #   - "3000"
 
 networks:
   transcendence:
