@@ -9,10 +9,31 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  name     String  @unique
-  password String
-  salt	   String
+  id               Int      @id @default(autoincrement())
+  email            String   @unique
+  name             String   @unique
+  password         String   
+  salt	           String   
+  avatar           String   @default("srcs/ressources/default.png")
+  friends          User[]   @relation("UserFriends")
+  friendOf         User[]   @relation("UserFriends")
+  request          User[]   @relation("FriendRequest")
+  requestOf        User[]   @relation("FriendRequest")
+  auth2fa          Boolean  @default(false)
+  onfile           Boolean  @default(false)
+  ai               Boolean  @default(false)
+  matchesAsPlayer1 Match[]  @relation("Player1Matches")
+  matchesAsPlayer2 Match[]  @relation("Player2Matches")
+  createdAt        DateTime @default(now())
+}
+
+model Match {
+  id        Int      @id @default(autoincrement())
+  player1Id Int
+  player2Id Int
+  player1   User     @relation("Player1Matches", fields: [player1Id], references: [id])
+  player2   User     @relation("Player2Matches", fields: [player2Id], references: [id])
+  score1    Int
+  score2    Int
   createdAt DateTime @default(now())
 }
