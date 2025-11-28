@@ -22,6 +22,7 @@ model User {
   auth2fa          Boolean  @default(false)
   onfile           Boolean  @default(false)
   ai               Boolean  @default(false)
+  invited          Boolean  @default(false) 
   matchesAsPlayer1 Match[]  @relation("Player1Matches")
   matchesAsPlayer2 Match[]  @relation("Player2Matches")
   createdAt        DateTime @default(now())
