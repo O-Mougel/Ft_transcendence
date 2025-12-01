@@ -5,12 +5,26 @@ import fjwt from '@fastify/jwt'
 import fCookie from '@fastify/cookie'
 import userRoutes from "./modules/user/user.route.js";
 import { userSchemas } from './modules/user/user.schema.js';
+import { matchSchemas } from './modules/match/match.schema.js'
 
 const fastify = Fastify({logger: true});
 
 fastify.register(fjwt, {
     secret: process.env.JWT_SECRET
 });
+
+fastify.decorate(
+    'authenticate',
+    async (request, reply) => {
+        const token = request.cookies.access_token;
+
+        if (!token) {
+            return reply.status(401).send({ message: 'Authentication required' })
+        }
+        const decoded = request.jwt.verify(token)
+        request.user = decoded
+    }
+);
 
 fastify.addHook('preHandler', (req, res, next) => {
     req.jwt = fastify.jwt
@@ -23,11 +37,11 @@ fastify.register(fCookie, {
 })
 
 async function main() {
-    for (const schema of userSchemas) {         // should be add these schemas before you register your routes
+    for (const schema of [...userSchemas, ...matchSchemas]) {
         fastify.addSchema(schema);
     }
 
-    fastify.register(userRoutes, {prefix: 'api/users'})
+    fastify.register(userRoutes)//, {prefix: 'api/users'})
 
     try {
         await fastify.listen({ port: 3000, host: "0.0.0.0" });
