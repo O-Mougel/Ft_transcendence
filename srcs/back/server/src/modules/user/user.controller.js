@@ -1,6 +1,6 @@
 // user.controller.ts
 
-import { createUser, findUserByEmail } from "./user.service.js";
+import { createUser, findUserByEmail, getUsers } from "./user.service.js";
 import { verifyPassword } from "../../utils/hash.js";
 
 export async function registerUserHandler(request, reply) {
@@ -49,14 +49,26 @@ export async function loginHandler(request, reply) {
         email: user.email,
         name: user.name,
     }
-    const token = request.jwt.sign(payload);
+    const token = request.jwt.sign(payload, { expiresIn: "30μs" } );
 
     reply.setCookie('access_token', token, {
         path: '/',
-        maxAge: 1000 * 60 * 60 * 24 * 7,    // for a week
+        maxAge: 1000,
         httpOnly: true,
         secure: true,
     })
 
     return { accessToken: token }
+}
+
+export async function getUsersHandler() {
+    const users = await getUsers();
+
+    return users;
+}
+
+export async function logoutHandler(request, reply) {
+    reply.clearCookie('access_token');
+
+    return reply.status(201).send({ message: 'Logout successfully' })
 }
