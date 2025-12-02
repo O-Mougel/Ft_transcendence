@@ -4,9 +4,9 @@ import * as z from "zod";
 import { buildJsonSchemas } from 'fastify-zod';
 
 const createMatchSchema = z.object({
-    player1name: z.string(),
+    player1id: z.number(),
 	player1score: z.number(),
-    player2name: z.string(),
+    player2id: z.number(),
 	player2score: z.number(),
 });
 
