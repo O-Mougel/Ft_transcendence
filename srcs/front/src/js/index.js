@@ -1,6 +1,7 @@
 import versusAI from "../views/versusAI.js";
 import playerBattle from "../views/playerBattle.js";
 import startingFile from "../views/startingFile.js";
+import aboutFile from "../views/aboutFile.js";
 import profileOverview from "../views/profileOverview.js";
 import tournamentSize from "../views/tournamentSize.js";
 
@@ -31,9 +32,13 @@ const adjustNavbar = path => {
 	if (!profilePanel) return;
 	profilePanel.classList.toggle('hidden');
 
-	 const cb = document.getElementById('modListBox');
-	 if (!cb) return;
-	 cb.checked = false;
+	const cb = document.getElementById('modListBox');
+	if (!cb) return;
+	cb.checked = false;
+
+	const cb2 = document.getElementById('modListBoxSmall');
+	if (!cb2) return;
+	cb2.checked = false;
 }
 
 const router = async () => {
@@ -41,6 +46,7 @@ const router = async () => {
 		{ path: "/", view: startingFile },
 		{ path: "/versusAI", view: versusAI },
 		{ path: "/playerBattle", view: playerBattle },
+		{ path: "/about", view: aboutFile },
 		{ path: "/profileOverview", view: profileOverview },
 		{ path: "/tournament", view: tournamentSize },
 	];
