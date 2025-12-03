@@ -1,4 +1,4 @@
-// user.schema.ts
+// user.schema.js
 
 import * as z from "zod";
 import { buildJsonSchemas } from 'fastify-zod';
