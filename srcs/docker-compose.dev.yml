@@ -36,13 +36,13 @@ services:
     container_name: back 
     volumes:
       - db:/home/prisma
+      - ./back/server/src:/home/src
     networks:
       - transcendence
     restart: on-failure
     ports:
-      - "3000:3000" #ne pas oublier d'enlever au moment de rendre le projet
-    # expose: 
-    #   - "3000"
+      - "3000:3000"
+    command: npm run dev
 
 networks:
   transcendence:
