@@ -1,12 +1,12 @@
-// match.schema.ts
+// match.schema.js
 
 import * as z from "zod";
 import { buildJsonSchemas } from 'fastify-zod';
 
 const createMatchSchema = z.object({
-    player1id: z.number(),
+    player1Id: z.number(),
 	player1score: z.number(),
-    player2id: z.number(),
+    player2Id: z.number(),
 	player2score: z.number(),
 });
 
