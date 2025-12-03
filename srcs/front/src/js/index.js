@@ -1,4 +1,5 @@
-import selectModes from "../views/selectModes.js";
+import versusAI from "../views/versusAI.js";
+import playerBattle from "../views/playerBattle.js";
 import startingFile from "../views/startingFile.js";
 import profileOverview from "../views/profileOverview.js";
 import tournamentSize from "../views/tournamentSize.js";
@@ -26,15 +27,20 @@ const adjustNavbar = path => {
 		btsmall.style.display = 'flex';
 	}
 
-	const panel = document.getElementById('profilePanel');
-	if (!panel) return;
-	panel.classList.toggle('hidden');
+	const profilePanel = document.getElementById('profilePanel'); 
+	if (!profilePanel) return;
+	profilePanel.classList.toggle('hidden');
+
+	 const cb = document.getElementById('modListBox');
+	 if (!cb) return;
+	 cb.checked = false;
 }
 
 const router = async () => {
 	const routes = [
 		{ path: "/", view: startingFile },
-		{ path: "/modes", view: selectModes },
+		{ path: "/versusAI", view: versusAI },
+		{ path: "/playerBattle", view: playerBattle },
 		{ path: "/profileOverview", view: profileOverview },
 		{ path: "/tournament", view: tournamentSize },
 	];
