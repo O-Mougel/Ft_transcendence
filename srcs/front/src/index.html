@@ -7,16 +7,22 @@
   <link rel="icon" href="/img/Goug.ico">
   <title>Single page app</title>
 </head>
-<body class="min-h-screen w-screen">
-	<ul class="flex w-full bg-[#302f2f] h-[7%]">
-		<li class="flex items-center text-white bg-[#10732a] hover:bg-[#0a4a1b]"><a class="block p-5 m-[0px] h-full w-full" href="/" data-link>Home</a></li>
-		<li class="flex items-center text-white bg-[#302f2f] hover:bg-[#1c1b1b]"><a class="block p-5 m-[0px] h-full w-full" href="/modes" data-link>Modes</a></li>
-		<li class="flex items-center text-white bg-[#302f2f] hover:bg-[#1c1b1b]"><a class="block p-5 m-[0px] h-full w-full" href="/nav" data-link>Navbar</a></li>
-		<li class="flex items-center text-white bg-[#302f2f] hover:bg-[#1c1b1b]"><a class="block p-5 m-[0px] h-full w-full" href="/" data-link>About</a></li>
-		<li class="flex items-center text-white bg-[#302f2f] hover:bg-[#1c1b1b]"><a class="block p-5 m-[0px] h-full w-full" href="/tournament" data-link>Tournament</a></li>
-	</ul>
-	<div id ="app" class="flex min-h-screen flex-col"></div>
-	<!-- <div id ="app" class="h-[93%] w-full grow basis-full"></div> 'Je ne sais pas :)' -->
+<body class="h-screen w-screen m-0 bg-[url(/img/starField.gif)] bg-cover bg-center backdrop-blur-[2px] text-center text-xs text-white sm:text-sm sm:text-green-200 md:text-base md:text-green-400 lg:text-lg lg:text-yellow-400 xl:text-xl xl:text-orange-500 2xl:text-2xl 2xl:text-red-600">
+	<ul class="sm:hidden flex h-[5%] w-full m-0 p-0 list-none items-center">
+        <li class="h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/" data-link>H</a></li>
+        <li class="h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/modes" data-link>M</a></li>
+        <li class="h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/nav" data-link>N</a></li>
+        <li class="h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/" data-link>A</a></li>
+        <li class="h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/tournament" data-link>T</a></li>
+    </ul>
+	<ul class="hidden sm:flex h-[5%] w-full m-0 p-0 list-none items-center">
+        <li class="h-full w-auto hover:text-[#f8a598] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/" data-link>Home</a></li>
+        <li class="h-full w-auto hover:text-[#f8a598] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/modes" data-link>Modes</a></li>
+        <li class="h-full w-auto hover:text-[#f8a598] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/nav" data-link>Navbar</a></li>
+        <li class="h-full w-auto hover:text-[#f8a598] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/" data-link>About</a></li>
+        <li class="h-full w-auto hover:text-[#f8a598] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/tournament" data-link>Tournament</a></li>
+    </ul>
+	<div id="app" class="h-[95%]"></div>
 	<script type="module" src="/js/index.js"></script>
 </body>
 </html>
