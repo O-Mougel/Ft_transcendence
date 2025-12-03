@@ -19,8 +19,8 @@ export default class extends ViewTemplate {
 					<h2 class="flex items-start text-amber-50">► Choose your new profile picture :</h2>
 					<div class="overflow-hidden h-[30%] flex items-center gap-4">
   						<img id="logo" src="./img/pipotam.gif" alt="logo" class="ml-5 mb-0" />
- 						<input type="file" id="myfile" name="myfile" class="hidden" />
-						<label for="myfile" class="border border-amber-50 ml-2 py-2 px-3 cursor-pointer">🗁 Select file</label>
+ 						<input type="file" id="myfileSelector" name="fileSelector" class="hidden" />
+						<label for="myfileSelector" class="border border-amber-50 ml-2 py-2 px-3 cursor-pointer">🗁 Select file</label>
 					</div>
 					<h2 class="flex items-start text-amber-50 pt-5">► Confirm your password :</h2>
 					<div class="flex items-start w-[50%] pt-5">
