@@ -1,17 +1,19 @@
-FROM alpine:3.18
+FROM node:20-alpine
 
-RUN apk update
+ENV DATABASE_URL="file:./dev.db"
+
 WORKDIR /home
-RUN apk add --no-cache nodejs-current npm sqlite
 
-RUN npm init -y
-RUN npm install -g typescript
-RUN npx tsc --init
-RUN npm install @prisma/client fastify fastify-zod zod zod-to-json-schema @fastify/jwt
-RUN npm install ts-node-dev typescript @types/node --save-dev
+RUN apk add --no-cache bash sqlite openssl
 
-RUN npm install dotenv
+COPY package.json ./
 
-RUN npm install sqlite3 sqlite
+RUN npm install
 
-CMD ["npm", "run", "dev"]
+COPY . .
+
+RUN npx prisma generate
+
+RUN npx prisma migrate dev --name init
+
+CMD ["npm", "run", "start"]
