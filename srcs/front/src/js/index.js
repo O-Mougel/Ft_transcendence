@@ -9,6 +9,28 @@ const loadURL = url => {
 	router();
 }
 
+const adjustNavbar = path => {
+
+	const btsmall = document.getElementById('profileButton');
+	const bt = document.getElementById('profileButton2');
+
+	if (!bt && !btsmall) return;
+	if (path == "/profileOverview")
+	{
+		bt.style.display = 'none';
+		btsmall.style.display = 'none';
+	}
+	else
+	{
+		bt.style.display = 'flex';
+		btsmall.style.display = 'flex';
+	}
+
+	const panel = document.getElementById('profilePanel');
+	if (!panel) return;
+	panel.classList.toggle('hidden');
+}
+
 const router = async () => {
 	const routes = [
 		{ path: "/", view: startingFile },
@@ -37,7 +59,7 @@ const router = async () => {
 
 	const view = new match.mapElement.view();
 	document.querySelector("#app").innerHTML = await view.getHTML();
-
+	adjustNavbar(match.mapElement.path);
 };
 
 window.addEventListener("popstate", router);
