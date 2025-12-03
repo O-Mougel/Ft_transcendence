@@ -49,7 +49,7 @@ export async function loginHandler(request, reply) {
         email: user.email,
         name: user.name,
     }
-    const token = request.jwt.sign(payload, { expiresIn: "30μs" } );
+    const token = request.jwt.sign(payload, secret, { expiresIn: "30s" } );
 
     reply.setCookie('access_token', token, {
         path: '/',

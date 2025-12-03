@@ -1,4 +1,4 @@
-// user.service.ts
+// user.service.js
 
 import { db } from "../../utils/prisma.js";
 import { hashPassword } from "../../utils/hash.js";
