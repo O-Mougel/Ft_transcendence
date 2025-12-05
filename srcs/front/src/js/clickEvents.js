@@ -4,8 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (element.target.matches('#profileButton') || element.target.matches('#profileButton2'))
 		{
 			const panel = document.getElementById('profilePanel');
-			if (!panel) return;
-			panel.classList.toggle('hidden');
+			if (panel)
+				panel.classList.toggle('hidden');
 		}
 	})
 });
