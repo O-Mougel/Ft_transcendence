@@ -39,6 +39,9 @@ const router = async () => {
 
 	const view = new match.mapElement.view();
 	document.querySelector("#app").innerHTML = await view.getHTML();
+	if (typeof view.init === "function") {
+ 		await view.init();
+}
 
 };
 
