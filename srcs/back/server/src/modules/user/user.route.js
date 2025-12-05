@@ -1,7 +1,7 @@
 // user.route.ts
 
 import { $ref } from "./user.schema.js";
-import { logoutHandler, getUsersHandler, loginHandler, registerUserHandler } from "./user.controller.js";
+import { logoutHandler, loginHandler, registerUserHandler } from "./user.controller.js";
 
 async function userRoutes(fastify) {
     fastify.post(
@@ -28,14 +28,6 @@ async function userRoutes(fastify) {
             }
         }, 
         loginHandler
-    );
-
-    fastify.get(
-        '/',
-        {
-            preHandler: [fastify.authenticate],
-        },
-        getUsersHandler
     );
 
     fastify.delete(

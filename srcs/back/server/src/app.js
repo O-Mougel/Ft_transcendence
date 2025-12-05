@@ -4,6 +4,7 @@ import Fastify from "fastify";
 import fjwt from '@fastify/jwt'
 import fCookie from '@fastify/cookie'
 import userRoutes from "./modules/user/user.route.js";
+import matchRoutes from "./modules/match/match.route.js";
 import { userSchemas } from './modules/user/user.schema.js';
 import { matchSchemas } from './modules/match/match.schema.js'
 
@@ -36,12 +37,15 @@ fastify.register(fCookie, {
     hook: 'preHandler',
 })
 
+//create ia and invited player in database 
+
 async function main() {
     for (const schema of [...userSchemas, ...matchSchemas]) {
         fastify.addSchema(schema);
     }
 
     fastify.register(userRoutes)//, {prefix: 'api/users'})
+    fastify.register(matchRoutes)
 
     try {
         await fastify.listen({ port: 3000, host: "0.0.0.0" });
