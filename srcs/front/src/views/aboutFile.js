@@ -27,9 +27,16 @@ export default class extends ViewTemplate {
 						</div>
 					</div>
 			</div>
-		<div class="h-full w-screen flex flex-col">
-			<div class="h-[93%] w-full grow basis-full bg-emerald-500">
-			</div>
-		</div>`
+				<form class="py-[3%] px-[2%] ">
+					<h2 class="flex items-start text-amber-50">✦ Who did this ?</h2>
+					<div class="flex items-start w-[50%] py-5">
+						<h3 class="flex items-start text-sm pl-6 text-[#44494f]">Only lchapard, truly the best out there</h2>
+					</div>
+					<h2 class="flex items-start text-amber-50">✦ Why the space theme ?</h2>
+					<div class="flex items-start w-[50%] py-5">
+						<h3 class="flex items-start text-sm text-[#44494f] pl-6">Because the blackhole was near, makes sense if you ask me</h2>
+					</div>
+					
+				</form>`
 	}
 }
