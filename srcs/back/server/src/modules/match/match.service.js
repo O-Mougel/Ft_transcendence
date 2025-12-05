@@ -2,22 +2,23 @@
 
 import { db } from "../../utils/prisma.js";
 
-export async function createUser(input) {
+export async function createMatch(input)
+{
     const { player1Id, player2Id , ...rest } = input;
 
-	const player1 = db.findUnique({
-		where: {
-			id: player1Id,
-		},
-	})
-	const player2 = db.findUnique({
-		where: {
-			id: player2Id,
-		},
-	})
-    const match = await db.user.create({
-        data: {input, player1, player2}
+	const match = await db.match.create({
+        data: {...rest, player1Id, player2Id}
     });
 
     return match;
+}
+
+export async function getMatchs(playerId) {
+	return db.user.findUnique({
+		where: { id: playerId },
+		include: {
+			matchesAsPlayer1: true,
+			matchesAsPlayer2: true
+		}
+	});
 }

@@ -18,4 +18,7 @@ const createMatchResponseSchema = z.object({
 export const { schemas: matchSchemas, $ref } = buildJsonSchemas({
 	createMatchSchema,
 	createMatchResponseSchema,
-});
+	},
+	{ $id: 'matchSchemas' }, 
+);
+
