@@ -15,7 +15,6 @@ const adjustNavbar = path => {
 
 	const btsmall = document.getElementById('profileButton');
 	const bt = document.getElementById('profileButton2');
-	console.log("1");
 	if (!bt && !btsmall) return;
 	if (path == "/profileOverview")
 	{
