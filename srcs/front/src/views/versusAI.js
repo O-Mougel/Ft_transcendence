@@ -18,7 +18,7 @@ export default class extends ViewTemplate {
 						<a href="/profileOverview" class="mx-4 text-2xl mb-15 border p-4 text-[#798490]" name="profileLink" data-link>Update profile</a>
 						<div class="self-start">
 							<input class="sr-only peer" id="friendCheck" type="checkbox"/>
-							<label for="friendCheck" class="text-2xl cursor-pointer px-3 py-2 select-none">► Online friends</label>
+							<label for="friendCheck" class="text-2xl cursor-pointer px-3 py-2 select-none hover:text-[#98c6f8]">► Online friends</label>
 							<ul class="select-none peer-checked:block hidden mt-3 self-start text-left" id="friendlist">
 							<li><a class="text-xl pl-2">• Goug ?</a></li>
 							<li><a class="text-xl pl-2">• Gougou ?</a></li>
