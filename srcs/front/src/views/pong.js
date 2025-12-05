@@ -9,31 +9,42 @@ export default class extends ViewTemplate {
 
 	async getHTML() {
 		return `
-			<div class="container">
-			    <h1 id="heading">
-			        PONG GAME
-			    </h1>
-			    <div class="game">
-			        <canvas id="canvas" width="800" height="500"></canvas>
-			        <p id="message"> </p>
-			        <button id="startButton">
-			            START
-			        </button>
-			    </div>
-			    <form class="question-form">
-			        <text style="font-size: 20px;">Ball color:</text>
-			        <label class="checkbox-container"><input type="checkbox" name="ball-color" value="pink"><span class="checkmark"></span>pink</label>
-			        <label class="checkbox-container"><input type="checkbox" name="ball-color" value="yellow"><span class="checkmark"></span>yellow</label>
-			        <label class="checkbox-container"><input type="checkbox" name="ball-color" value="cyan"><span class="checkmark"></span>cyan</label>
-			    </form>
-			
-			    <div class="ball-speed-control">
-			        <label>Ball Speed</label>
-			        <input type="range" id="ball-speed" name="ball-speed" min="0.5" max="2.5" value="1.0" step="0.1">
-			        <span id="ball-speed-value">1.0</span>
-			    </div>
+	<div class="h-full flex w-full justify-center text-white">
+		<div class="pt-5 flex flex-col gap-4 items-center">
+			<canvas id="canvas" class="border-4 rounded-[2%] border-[#98c6f8] w-[64dvw] aspect-[16/10]"></canvas>
+			<div id="GameOver" class="hidden absolute border-4 rounded-[10%] border-[#98c6f8] justify-center items-center p-4 mt-4">
+				<div class="flex items-center">
+					<span>Game Over</span>
+				</div>
+				<div class="flex justify-center items-center">					
+					<span id="GameOverScore">0 - 0</span>
+				</div>
 			</div>
-			<script src="./game/main.js" type="module"></script>
+			<button id="startButton" class="px-6 py-3 bg-[#98c6f8] text-white font-bold rounded-lg hover:bg-[#7aaedc]">Start Game</button>
+			
+			<!-- Score row under the canvas -->
+			<div id="Scores" class="flex justify-center items-center text-white font-bold hidden">
+				<div class="flex items-center">
+					<span>Left</span>
+					<h3 class="p-4" id="ScoreLeft" value="0">0</h3>
+				</div>
+				<span></span>
+				<div class="flex items-center">
+					<h3 class="p-4" id="ScoreRight" value="0">0</h3>
+					<span>Right</span>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<script src="/game/main.js" type="module"></script>
 			`
 	}
+
+	async init() {
+    	const module = await import("/game/main.js");
+   		if (typeof module.initPong === "function") {
+      		module.initPong();
+    }
+  }
 }
