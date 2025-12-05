@@ -1,6 +1,6 @@
-// user.controller.ts
+// user.controller.js
 
-import { createUser, findUserByEmail } from "./user.service.js";
+import { createUser, findUserByName } from "./user.service.js";
 import { verifyPassword } from "../../utils/hash.js";
 
 export async function registerUserHandler(request, reply) {
@@ -23,11 +23,11 @@ export async function loginHandler(request, reply) {
     const body = request.body;
 
     // Find a user by email 
-    const user = await findUserByEmail(body.email);
+    const user = await findUserByName(body.name);
 
     if (!user) {
         return reply.status(400).send({
-            message: "Invalid email address. Try again!"
+            message: "Invalid name. Try again!"
         });
     };
 

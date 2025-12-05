@@ -15,10 +15,10 @@ export async function createUser(input) {
     return user;
 }
 
-export async function findUserByEmail(email) {
+export async function findUserByName(name) {
 	const user = await db.user.findUnique({
 		where: {
-			email: email,
+			name: name,
 		},
 	})
 

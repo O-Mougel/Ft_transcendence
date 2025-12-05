@@ -1,4 +1,4 @@
-// user.route.ts
+// match.route.js
 
 import { $ref } from "./match.schema.js";
 import { createMatchHandler, getMatchsHandler } from "./match.controller.js";

@@ -1,4 +1,4 @@
-// user.route.ts
+// user.route.js
 
 import { $ref } from "./user.schema.js";
 import { logoutHandler, loginHandler, registerUserHandler } from "./user.controller.js";
@@ -27,7 +27,7 @@ async function userRoutes(fastify) {
                 }
             }
         }, 
-        loginHandler
+        loginHandler //add basic authentication scheme base 64 name:password in header
     );
 
     fastify.delete(
