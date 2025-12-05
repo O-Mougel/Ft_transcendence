@@ -52,6 +52,7 @@ export class Game {
   resetBall() {
     this.ball.x = WIDTH / 2;
     this.ball.y = HEIGHT / 2;
+    this.ball.speed = BASE_SPEED;
 
     if (this.isGameStarted) {
       this.ball.vx =
@@ -65,38 +66,50 @@ export class Game {
   }
 
   moveBall() {
+    
+        const angle = Math.atan2(this.ball.vy, this.ball.vx); // atan2 gives the angle in radians
+        const speed = Math.sqrt(this.ball.vx * this.ball.vx + this.ball.vy * this.ball.vy); // Calculate the current speed
+    
+        // Adjust the ball's velocity using the new speed and the angle
+        this.ball.vx = speed * Math.cos(angle); // Set vx based on the angle and speed
+        this.ball.vy = speed * Math.sin(angle); // Set vy based on the angle and speed
+
+
+    
     this.ball.x += this.ball.vx;
     this.ball.y += this.ball.vy;
 
-    // Top/bottom
+    // Top/bottom collision
     if (this.ball.y + this.ball.radius > HEIGHT || this.ball.y - this.ball.radius < 0) {
       this.ball.vy = -this.ball.vy;
     }
 
-    // Left paddle
+    // Left paddle collision
     if (this.ball.x - this.ball.radius < this.leftPaddle.width + 10) {
       if (
         this.ball.y > this.leftPaddle.y &&
         this.ball.y < this.leftPaddle.y + this.leftPaddle.height
       ) {
         this.ball.vx = -this.ball.vx;
-        this.ball.vx += 0.5;
-        this.ball.vy += 0.5;
+        this.ball.vx += 0.8;
+        this.ball.vy += 0.8;
+        // this.ball.speed += 1;
 
         const hitPos = this.ball.y - (this.leftPaddle.y + this.leftPaddle.height / 2);
         this.ball.vy = hitPos * 0.1;
       }
     }
 
-    // Right paddle
+    // Right paddle collision
     if (this.ball.x - this.ball.radius > WIDTH - 2 * this.rightPaddle.width - 20) {
       if (
         this.ball.y > this.rightPaddle.y &&
         this.ball.y < this.rightPaddle.y + this.rightPaddle.height
       ) {
         this.ball.vx = -this.ball.vx;
-        this.ball.vx -= 0.5;
-        this.ball.vy -= 0.5;
+        this.ball.vx -= 0.8;
+        this.ball.vy -= 0.8;
+        // this.ball.speed += 1;
 
         const hitPos = this.ball.y - (this.rightPaddle.y + this.rightPaddle.height / 2);
         this.ball.vy = hitPos * 0.1;
@@ -173,10 +186,10 @@ export class Game {
 
   getState() {
     return {
-      paddles: { left: this.leftPaddle.y, right: this.rightPaddle.y },
+      paddles: { left: this.leftPaddle.y / 500, right: this.rightPaddle.y / 500},
       ball: {
-        x: this.ball.x, y: this.ball.y,
-        radius: this.ball.radius,
+        x: this.ball.x / 800, y: this.ball.y / 500,
+        radius: this.ball.radius / 800,
         vx: this.ball.vx, vy: this.ball.vy,
       },
       score: { left: this.leftScore, right: this.rightScore },
