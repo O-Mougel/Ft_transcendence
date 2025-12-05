@@ -1,4 +1,4 @@
-// app.ts
+// app.js
 
 import Fastify from "fastify";
 import fjwt from '@fastify/jwt'
