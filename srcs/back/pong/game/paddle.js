@@ -1,7 +1,7 @@
 export default class Paddle {
     constructor(x, y, width, height, color) {
-        this.x = this.spawnX = x;
-        this.y = this.spawnY = y - (height / 2);
+        this.x = x;
+        this.y = y;
         this.width = width;
         this.height = height;
         this.color = color;
@@ -16,7 +16,7 @@ export default class Paddle {
     }
 
     reset() {
-        this.y = this.spawnY;
+        this.y = 250 - this.height / 2;
         this.score = 0;
     }
 }
