@@ -4,6 +4,7 @@ import startingFile from "../views/startingFile.js";
 import aboutFile from "../views/aboutFile.js";
 import profileOverview from "../views/profileOverview.js";
 import tournamentSize from "../views/tournamentSize.js";
+import pong from "../views/pong.js";
 
 
 const loadURL = url => {
@@ -49,6 +50,7 @@ const router = async () => {
 		{ path: "/about", view: aboutFile },
 		{ path: "/profileOverview", view: profileOverview },
 		{ path: "/tournament", view: tournamentSize },
+		{ path: "/pong", view: pong },
 	];
 
 	const potentialMan = routes.map(mapElement => { //mapElement is the name of each array element for routes
@@ -72,6 +74,10 @@ const router = async () => {
 	const view = new match.mapElement.view();
 	document.querySelector("#app").innerHTML = await view.getHTML();
 	adjustNavbar(match.mapElement.path);
+	if (typeof view.init === "function") {
+ 		await view.init();
+}
+
 };
 
 window.addEventListener("popstate", router);
