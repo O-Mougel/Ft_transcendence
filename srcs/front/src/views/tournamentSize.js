@@ -12,11 +12,11 @@ export default class extends ViewTemplate {
 
 		<div class="h-full w-full flex flex-col">
 			<div class="h-[93%] w-full pt-[5%] text-center ml-auto mr-auto">
-				<h1 class="text-white sm:text-2xl xl:text-3xl">Select the number of players in the tournament</h1>
-				<div class="flex w-2/5 gap-5 justify-center mt-8 mx-auto flex-col sm:flex-row sm:w-4/5 sm:text-2xl xl:text-3xl">
-					<div class="flex-1 min-w-0 flex items-center justify-center aspect-square px-4 py-2  text-white hover:text-[#98c6f8] rounded-[10%] font-bold border-5 ">4</div>
-					<div class="flex-1 min-w-0 flex items-center justify-center aspect-square px-4 py-2  text-white hover:text-[#98c6f8] rounded-[10%] font-bold border-5 ">8</div>
-					<div class="flex-1 min-w-0 flex items-center justify-center aspect-square px-4 py-2  text-white hover:text-[#98c6f8] rounded-[10%] font-bold border-5 ">16</div>
+				<h1 class="">Select the number of players in the tournament</h1>
+				<div class=" text-[5vw] flex gap-5 px-[5%] justify-around mt-8 mx-auto flex-col sm:flex-row">
+					<div class="flex-1 flex items-center justify-center aspect-square px-4 py-2 hover:text-[#98c6f8] rounded-[10%] font-bold border-[1vw]">4</div>
+					<div class="flex-1 flex items-center justify-center aspect-square px-4 py-2 hover:text-[#98c6f8] rounded-[10%] font-bold border-[1vw]">8</div>
+					<div class="flex-1 flex items-center justify-center aspect-square px-4 py-2 hover:text-[#98c6f8] rounded-[10%] font-bold border-[1vw]">16</div>
 				</div>
 			</div>
 		</div>`
