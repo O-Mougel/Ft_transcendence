@@ -15,7 +15,7 @@ const adjustNavbar = path => {
 
 	const btsmall = document.getElementById('profileButton');
 	const bt = document.getElementById('profileButton2');
-
+	console.log("1");
 	if (!bt && !btsmall) return;
 	if (path == "/profileOverview")
 	{
@@ -29,16 +29,16 @@ const adjustNavbar = path => {
 	}
 
 	const profilePanel = document.getElementById('profilePanel'); 
-	if (!profilePanel) return;
-	profilePanel.classList.toggle('hidden');
+	if (profilePanel)
+		profilePanel.classList.toggle('hidden');
 
 	const cb = document.getElementById('modListBox');
-	if (!cb) return;
-	cb.checked = false;
+	if (cb)
+		cb.checked = false;
 
 	const cb2 = document.getElementById('modListBoxSmall');
-	if (!cb2) return;
-	cb2.checked = false;
+	if (cb2)
+		cb2.checked = false;
 }
 
 const router = async () => {
