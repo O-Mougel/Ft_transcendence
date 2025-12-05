@@ -46,6 +46,12 @@ fastify.get("/tournament", function handler (request, reply) {
   	reply.sendFile('index.html')
 })
 
+fastify.get("/pong", function handler (request, reply) {
+	// const stream = fs.createReadStream('./src/index.html')
+	// reply.type('text/html').send(stream)
+  	reply.sendFile('index.html')
+})
+
 // Run the server!
 fastify.listen({ port: 3001, host: '0.0.0.0' }, (err) => {
   if (err) {
