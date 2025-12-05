@@ -1,7 +1,7 @@
 // user.route.ts
 
 import { $ref } from "./match.schema.js";
-import { createMatchHandler } from "./user.controller.js";
+import { createMatchHandler, getMatchsHandler } from "./match.controller.js";
 
 async function matchRoutes(fastify) {
 	fastify.post(
@@ -16,6 +16,14 @@ async function matchRoutes(fastify) {
 			},
 		},
 		createMatchHandler,
+	)
+
+	fastify.get(
+		'/match',
+		{
+			preHandler: [fastify.authenticate],
+		},
+		getMatchsHandler,
 	)
 }
 
