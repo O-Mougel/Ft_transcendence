@@ -92,21 +92,23 @@ export class Game {
 
   moveBall() {
     
-        const angle = Math.atan2(this.ball.vy, this.ball.vx); // atan2 gives the angle in radians
-        const speed = Math.sqrt(this.ball.vx * this.ball.vx + this.ball.vy * this.ball.vy); // Calculate the current speed
+    const angle = Math.atan2(this.ball.vy, this.ball.vx); // atan2 gives the angle in radians
+    const speed = Math.sqrt(this.ball.vx * this.ball.vx + this.ball.vy * this.ball.vy); // Calculate the current speed
     
-        // Adjust the ball's velocity using the new speed and the angle
-        this.ball.vx = speed * Math.cos(angle); // Set vx based on the angle and speed
-        this.ball.vy = speed * Math.sin(angle); // Set vy based on the angle and speed
+    // Adjust the ball's velocity using the new speed and the angle
+    this.ball.vx = speed * Math.cos(angle); // Set vx based on the angle and speed
+    this.ball.vy = speed * Math.sin(angle); // Set vy based on the angle and speed
 
-
-    
     this.ball.x += this.ball.vx;
     this.ball.y += this.ball.vy;
 
     // Top/bottom collision
     if (this.ball.y + this.ball.radius > HEIGHT || this.ball.y - this.ball.radius < 0) {
       this.ball.vy = -this.ball.vy;
+    }
+
+    if (this.ball.y + this.ball.radius <= HEIGHT || this.ball.y - this.ball.radius <= 0) {
+      this.ball.y = Math.max(this.ball.radius, Math.min(this.ball.y, HEIGHT - this.ball.radius));
     }
 
     // Left paddle collision
@@ -128,16 +130,17 @@ export class Game {
     // Right paddle collision
     if (this.ball.x - this.ball.radius > WIDTH - 2 * this.rightPaddle.width - 20) {
       if (
-        this.ball.y > this.rightPaddle.y &&
-        this.ball.y < this.rightPaddle.y + this.rightPaddle.height
+        // this.ball.y > this.rightPaddle.y &&
+        // this.ball.y < this.rightPaddle.y + this.rightPaddle.height
+        1
       ) {
         this.ball.vx = -this.ball.vx;
         this.ball.vx -= 0.8;
         this.ball.vy -= 0.8;
         // this.ball.speed += 1;
 
-        const hitPos = this.ball.y - (this.rightPaddle.y + this.rightPaddle.height / 2);
-        this.ball.vy = hitPos * 0.1;
+        // const hitPos = this.ball.y - (this.rightPaddle.y + this.rightPaddle.height / 2);
+        // this.ball.vy = hitPos * 0.1;
       }
     }
 
@@ -232,13 +235,15 @@ export class Game {
       if (direction === 'up') this.rightPaddle.moveUp();
       if (direction === 'down') this.rightPaddle.moveDown();
     }
-    if (side === 'left2') {
-      if (direction === 'up') this.leftPaddle2.moveUp();
-      if (direction === 'down') this.leftPaddle2.moveDown();
-    }
-    if (side === 'right2') {
-      if (direction === 'up') this.rightPaddle2.moveUp();
-      if (direction === 'down') this.rightPaddle2.moveDown();
+    if (this.mode === 2) {
+      if (side === 'left2') {
+        if (direction === 'up') this.leftPaddle2.moveUp();
+        if (direction === 'down') this.leftPaddle2.moveDown();
+      }
+      if (side === 'right2') {
+        if (direction === 'up') this.rightPaddle2.moveUp();
+        if (direction === 'down') this.rightPaddle2.moveDown();
+      }
     }
   }
 

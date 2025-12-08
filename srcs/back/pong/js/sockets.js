@@ -4,13 +4,14 @@ export function registerSocketHandlers(io, game) {
 
     socket.on('startGame', (data) => {
       console.log('Player joined the game');
+      game.mode = 1;
       game.start(data?.speed);
     });
 
     socket.on('startGame2', (data) => {
       console.log('Player joined the game 2');
-      game.start(data?.speed);
       game.mode = 2;
+      game.start(data?.speed);
     });
 
     socket.on('stopGame', () => {

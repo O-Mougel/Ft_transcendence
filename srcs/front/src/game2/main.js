@@ -223,13 +223,13 @@ function updateDirections() {
 
 	// Left paddle 2: C/V
 	if (
-		(keysPressed.has("c") || keysPressed.has("C")) &&
-		!(keysPressed.has("v") || keysPressed.has("V"))
+		(keysPressed.has("j") || keysPressed.has("J")) &&
+		!(keysPressed.has("m") || keysPressed.has("M"))
 	) {
 		leftPaddle2.direction = "up";
 	} else if (
-		(keysPressed.has("v") || keysPressed.has("V")) &&
-		!(keysPressed.has("c") || keysPressed.has("C"))
+		(keysPressed.has("m") || keysPressed.has("M")) &&
+		!(keysPressed.has("j") || keysPressed.has("J"))
 	) {
 		leftPaddle2.direction = "down";
 	} else {
