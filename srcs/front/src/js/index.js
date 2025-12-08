@@ -1,7 +1,10 @@
-import selectModes from "../views/selectModes.js";
+import versusAI from "../views/versusAI.js";
+import playerBattle from "../views/playerBattle.js";
 import startingFile from "../views/startingFile.js";
-import navBar from "../views/navBar.js";
+import aboutFile from "../views/aboutFile.js";
+import profileOverview from "../views/profileOverview.js";
 import tournamentSize from "../views/tournamentSize.js";
+import pong from "../views/pong.js";
 
 
 const loadURL = url => {
@@ -9,12 +12,44 @@ const loadURL = url => {
 	router();
 }
 
+const adjustNavbar = path => {
+
+	const btsmall = document.getElementById('profileButton');
+	const bt = document.getElementById('profileButton2');
+	if (!bt && !btsmall) return;
+	if (path == "/profileOverview")
+	{
+		bt.style.display = 'none';
+		btsmall.style.display = 'none';
+	}
+	else
+	{
+		bt.style.display = 'flex';
+		btsmall.style.display = 'flex';
+	}
+
+	const profilePanel = document.getElementById('profilePanel'); 
+	if (profilePanel)
+		profilePanel.classList.toggle('hidden');
+
+	const cb = document.getElementById('modListBox');
+	if (cb)
+		cb.checked = false;
+
+	const cb2 = document.getElementById('modListBoxSmall');
+	if (cb2)
+		cb2.checked = false;
+}
+
 const router = async () => {
 	const routes = [
 		{ path: "/", view: startingFile },
-		{ path: "/modes", view: selectModes },
-		{ path: "/nav", view: navBar },
+		{ path: "/versusAI", view: versusAI },
+		{ path: "/playerBattle", view: playerBattle },
+		{ path: "/about", view: aboutFile },
+		{ path: "/profileOverview", view: profileOverview },
 		{ path: "/tournament", view: tournamentSize },
+		{ path: "/pong", view: pong },
 	];
 
 	const potentialMan = routes.map(mapElement => { //mapElement is the name of each array element for routes
@@ -37,6 +72,10 @@ const router = async () => {
 
 	const view = new match.mapElement.view();
 	document.querySelector("#app").innerHTML = await view.getHTML();
+	adjustNavbar(match.mapElement.path);
+	if (typeof view.init === "function") {
+ 		await view.init();
+}
 
 };
 
@@ -46,6 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	document.addEventListener("click", element => {
 		if (element.target.matches("[data-link]")){
 			element.preventDefault();
+			console.log(element.target.href);
 			loadURL(element.target.href);
 		}
 	})

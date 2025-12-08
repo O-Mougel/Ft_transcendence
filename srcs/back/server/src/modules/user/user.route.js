@@ -1,13 +1,10 @@
-// user.route.ts
+// user.route.js
 
-import { loginHandler, registerUserHandler } from "./user.controller.js";
 import { $ref } from "./user.schema.js";
+import { logoutHandler, loginHandler, registerUserHandler } from "./user.controller.js";
 
-async function userRoutes(server) {
-	server.get('/helloworld', async (req, res) => {
-    return { message: 'Hello World!' }
-})
-    server.post(
+async function userRoutes(fastify) {
+    fastify.post(
         '/', 
         {
             schema: {
@@ -20,7 +17,7 @@ async function userRoutes(server) {
         registerUserHandler,
     );
 
-	server.post(
+	fastify.post(
         '/login', 
         {
             schema: {
@@ -30,8 +27,16 @@ async function userRoutes(server) {
                 }
             }
         }, 
-        loginHandler
+        loginHandler //add basic authentication scheme base 64 name:password in header
     );
+
+    fastify.delete(
+        '/logout',
+        {
+            preHandler: [fastify.authenticate],
+        },
+        logoutHandler
+    )
 }
 
 export default userRoutes;
