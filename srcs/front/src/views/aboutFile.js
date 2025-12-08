@@ -4,7 +4,7 @@ export default class extends ViewTemplate {
 	constructor()
 	{
 		super();
-		this.setTitle("Select Tournament Size");
+		this.setTitle("About");
 	}
 
 	async getHTML() {
@@ -27,15 +27,16 @@ export default class extends ViewTemplate {
 						</div>
 					</div>
 			</div>
-		<div class="h-full w-full flex flex-col">
-			<div class="h-[93%] w-full pt-[5%] text-center ml-auto mr-auto">
-				<h1 class="">Select the number of players in the tournament</h1>
-				<div class=" text-[5vw] flex gap-5 px-[5%] justify-around mt-8 mx-auto flex-col sm:flex-row">
-					<div class="flex-1 flex items-center justify-center aspect-square px-4 py-2 hover:text-[#98c6f8] rounded-[10%] font-bold border-[1vw]">4</div>
-					<div class="flex-1 flex items-center justify-center aspect-square px-4 py-2 hover:text-[#98c6f8] rounded-[10%] font-bold border-[1vw]">8</div>
-					<div class="flex-1 flex items-center justify-center aspect-square px-4 py-2 hover:text-[#98c6f8] rounded-[10%] font-bold border-[1vw]">16</div>
-				</div>
-			</div>
-		</div>`
+				<form class="py-[3%] px-[2%] ">
+					<h2 class="flex items-start text-amber-50">✦ Who did this ?</h2>
+					<div class="flex items-start w-[50%] py-5">
+						<h3 class="flex items-start text-sm pl-6 text-[#44494f]">Only lchapard, truly the best out there</h2>
+					</div>
+					<h2 class="flex items-start text-amber-50">✦ Why the space theme ?</h2>
+					<div class="flex items-start w-[50%] py-5">
+						<h3 class="flex items-start text-sm text-[#44494f] pl-6">Because the blackhole was near, makes sense if you ask me</h2>
+					</div>
+					
+				</form>`
 	}
 }
