@@ -5,6 +5,7 @@ import aboutFile from "../views/aboutFile.js";
 import profileOverview from "../views/profileOverview.js";
 import tournamentSize from "../views/tournamentSize.js";
 import pong from "../views/pong.js";
+import pong2 from "../views/pong2.js";
 
 
 const loadURL = url => {
@@ -50,6 +51,7 @@ const router = async () => {
 		{ path: "/profileOverview", view: profileOverview },
 		{ path: "/tournament", view: tournamentSize },
 		{ path: "/pong", view: pong },
+		{ path: "/pong2", view: pong2 },
 	];
 
 	const potentialMan = routes.map(mapElement => { //mapElement is the name of each array element for routes

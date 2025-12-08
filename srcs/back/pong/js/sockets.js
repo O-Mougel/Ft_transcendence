@@ -7,6 +7,12 @@ export function registerSocketHandlers(io, game) {
       game.start(data?.speed);
     });
 
+    socket.on('startGame2', (data) => {
+      console.log('Player joined the game 2');
+      game.start(data?.speed);
+      game.mode = 2;
+    });
+
     socket.on('stopGame', () => {
       console.log('Player left the game');
       game.stop();
