@@ -1,4 +1,4 @@
-// user.service.ts
+// user.service.js
 
 import { db } from "../../utils/prisma.js";
 import { hashPassword } from "../../utils/hash.js";
@@ -15,13 +15,12 @@ export async function createUser(input) {
     return user;
 }
 
-export async function findUserByEmail(email) {
+export async function findUserByName(name) {
 	const user = await db.user.findUnique({
 		where: {
-			email: email,
+			name: name,
 		},
 	})
 
     return user;
 }
-
