@@ -10,6 +10,7 @@ import {
 
 export class Game {
   constructor() {
+    this.mode = 1;
     this.isGameStarted = false;
     this.speedMultiplier = 1.0;
 
@@ -29,6 +30,30 @@ export class Game {
     };
 
     this.rightPaddle = {
+      height: PADDLE_HEIGHT,
+      width: PADDLE_WIDTH,
+      y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
+      moveUp() {
+        if (this.y > 0) this.y -= 10;
+      },
+      moveDown() {
+        if (this.y + this.height < HEIGHT) this.y += 10;
+      },
+    };
+
+    this.leftPaddle2 = {
+      height: PADDLE_HEIGHT,
+      width: PADDLE_WIDTH,
+      y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
+      moveUp() {
+        if (this.y > 0) this.y -= 10;
+      },
+      moveDown() {
+        if (this.y + this.height < HEIGHT) this.y += 10;
+      },
+    };
+
+    this.rightPaddle2 = {
       height: PADDLE_HEIGHT,
       width: PADDLE_WIDTH,
       y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
@@ -115,6 +140,39 @@ export class Game {
         this.ball.vy = hitPos * 0.1;
       }
     }
+
+    // Additional paddles for mode 2
+    if (this.mode === 2) {
+      // Left2 paddle collision
+      if (this.ball.x - this.ball.radius < WIDTH / 4 + this.leftPaddle2.width && this.ball.x - this.ball.radius > WIDTH / 4) {
+        if (
+          this.ball.y > this.leftPaddle2.y &&
+          this.ball.y < this.leftPaddle2.y + this.leftPaddle2.height
+        ) {
+          this.ball.vx = -this.ball.vx;
+          this.ball.vx += 0.8;
+          this.ball.vy += 0.8;
+  
+          const hitPos = this.ball.y - (this.leftPaddle2.y + this.leftPaddle2.height / 2);
+          this.ball.vy = hitPos * 0.1;
+        }
+      }
+  
+      // Right2 paddle collision
+      if (this.ball.x - this.ball.radius > WIDTH * 3 / 4 - 2 * this.rightPaddle.width && this.ball.x - this.ball.radius < WIDTH * 3 / 4) {
+        if (
+          this.ball.y > this.rightPaddle2.y &&
+          this.ball.y < this.rightPaddle2.y + this.rightPaddle2.height
+        ) {
+          this.ball.vx = -this.ball.vx;
+          this.ball.vx -= 0.8;
+          this.ball.vy -= 0.8;
+  
+          const hitPos = this.ball.y - (this.rightPaddle2.y + this.rightPaddle2.height / 2);
+          this.ball.vy = hitPos * 0.1;
+        }
+      }
+    }
   }
 
   checkScore() {
@@ -157,6 +215,10 @@ export class Game {
     this.resetBall();
     this.leftPaddle.y = HEIGHT / 2 - PADDLE_HEIGHT / 2;
     this.rightPaddle.y = HEIGHT / 2 - PADDLE_HEIGHT / 2;
+    if (this.mode === 2) {
+      this.leftPaddle2.y = HEIGHT / 2 - PADDLE_HEIGHT / 2;
+      this.rightPaddle2.y = HEIGHT / 2 - PADDLE_HEIGHT / 2;
+    }
     this.leftScore = 0;
     this.rightScore = 0;
   }
@@ -169,6 +231,14 @@ export class Game {
     if (side === 'right') {
       if (direction === 'up') this.rightPaddle.moveUp();
       if (direction === 'down') this.rightPaddle.moveDown();
+    }
+    if (side === 'left2') {
+      if (direction === 'up') this.leftPaddle2.moveUp();
+      if (direction === 'down') this.leftPaddle2.moveDown();
+    }
+    if (side === 'right2') {
+      if (direction === 'up') this.rightPaddle2.moveUp();
+      if (direction === 'down') this.rightPaddle2.moveDown();
     }
   }
 
@@ -185,6 +255,24 @@ export class Game {
   }
 
   getState() {
+    if (this.mode === 2) {
+      return {
+        paddles: {
+          left: this.leftPaddle.y / 500,
+          right: this.rightPaddle.y / 500,
+          left2: this.leftPaddle2.y / 500,
+          right2: this.rightPaddle2.y / 500,
+        },
+        ball: {
+          x: this.ball.x / 800,
+          y: this.ball.y / 500,
+          radius: this.ball.radius / 800,
+          vx: this.ball.vx,
+          vy: this.ball.vy,
+        },
+        score: { left: this.leftScore, right: this.rightScore },
+      };
+    }
     return {
       paddles: { left: this.leftPaddle.y / 500, right: this.rightPaddle.y / 500},
       ball: {
