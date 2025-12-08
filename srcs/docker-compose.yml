@@ -22,8 +22,8 @@ services:
      - back
     ports: 
      - "8080:3001"
-    # volumes:
-    #  - front:/usr/src/app
+    volumes:
+     - front:/usr/src/app
     networks:
      - transcendence
     restart: on-failure
@@ -55,3 +55,10 @@ volumes:
       type: 'none'
       o: 'bind'
       device: 'back/volume'
+
+  front:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: 'front'
