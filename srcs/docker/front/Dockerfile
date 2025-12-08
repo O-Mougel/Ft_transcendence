@@ -11,7 +11,7 @@ COPY front/tsconfig.json ./
 RUN npm ci
 RUN npm install -g nodemon
 
-# COPY . .
+COPY . .
 
 EXPOSE 3001
 
