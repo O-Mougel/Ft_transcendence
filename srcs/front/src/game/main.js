@@ -1,254 +1,336 @@
 import { io } from "https://cdn.socket.io/4.7.2/socket.io.esm.min.js";
+import Ball from "./ball.js";
+import Paddle from "./paddle.js";
 
-import Ball from './ball.js';
-import Paddle from './paddle.js';
+// --- Module-scope variables (kept across initPong calls) ---
+let canvas, ctx;
+let socket = null;
 
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-
-// Ensure only one speed checkbox can be selected at a time
-document.getElementsByName('ball-color').forEach((checkbox) => {
-    checkbox.addEventListener('change', function() {
-        if (this.checked) {
-            document.getElementsByName('ball-color').forEach((otherCheckbox) => {
-                if (otherCheckbox !== this) {
-                    otherCheckbox.checked = false;
-                }
-            });
-        }
-    });
-});
-
-console.log('Attempting to connect to WebSocket server...');
-
-var socket = io("http://localhost:3000", {
-    transports: ['websocket']
-});
-
-
-socket.on('connect', () => {
-    console.log('Connected to WebSocket server');
-});
-
-socket.on('connect_error', (err) => {
-    console.log('Failed to connect to WebSocket:', err);
-});
-
-
-// Prevent scrolling
-const body = document.body;
-body.style.overflow = 'hidden';
-document.documentElement.style.overflow = 'hidden'; // if some browsers still scroll (chrome)
-
-const startButton = document.getElementById('startButton');
-startButton.addEventListener('click', startGame);
-
-let ball = new Ball(canvas.width / 2, canvas.height / 2, 10, 'white');
-let leftPaddle = new Paddle(10, canvas.height / 2 - 40, 10, 80, 'dodgerblue');
-let rightPaddle = new Paddle(canvas.width - 20, canvas.height / 2 - 40, 10, 80, 'red');
-
+let ball, leftPaddle, rightPaddle;
 let isGameStarted = false;
+const keysPressed = new Set();
+
+let updateIntervalId = null;
+let controlsBound = false;
+
+let GAME_WIDTH = 800;
+let GAME_HEIGHT = 500;
+
+let startButton, slider, output;
+
+let score, leftScore = 0, rightScore = 0;
+
+// --- Public entry point called by the SPA view ---
+export function initPong() {
+	// Get DOM elements created by the SPA view
+	canvas = document.getElementById("canvas");
+	startButton = document.getElementById("startButton");
+	slider = document.getElementById("ball-speed");
+	output = document.getElementById("ball-speed-value");
+	score = document.getElementById("Scores");
+	leftScore = document.getElementById("ScoreLeft");
+	rightScore = document.getElementById("ScoreRight");
+
+	if (!canvas || !startButton) {
+		console.error("Pong: canvas or startButton not found in DOM.");
+		return;
+	}
+
+	ctx = canvas.getContext("2d");
+
+    console.log(canvas.width, canvas.height, canvas.width, canvas.height);
+
+    GAME_HEIGHT = canvas.height;
+    GAME_WIDTH = canvas.width;
+
+	// Optional: prevent scrolling while Pong is active
+	document.body.style.overflow = "hidden";
+	document.documentElement.style.overflow = "hidden";
+
+	// Ensure only one ball-color checkbox is selected at a time
+	const colorCheckboxes = Array.from(document.getElementsByName("ball-color"));
+	colorCheckboxes.forEach((checkbox) => {
+		checkbox.addEventListener("change", function () {
+			if (this.checked) {
+				colorCheckboxes.forEach((otherCheckbox) => {
+					if (otherCheckbox !== this) {
+						otherCheckbox.checked = false;
+					}
+				});
+			}
+		});
+	});
+
+	// Initialize slider (if present)
+	if (slider && output) {
+		const updateSlider = () => {
+			const value = parseFloat(slider.value || "1.0");
+			output.textContent = value.toFixed(1);
+		};
+		updateSlider();
+		slider.addEventListener("input", updateSlider);
+	}
+
+	// Create game objects
+	ball = new Ball(GAME_WIDTH / 2, GAME_HEIGHT / 2, 10 / 800 * GAME_WIDTH, "white");
+	leftPaddle = new Paddle(10 / 800 * GAME_WIDTH, GAME_HEIGHT / 2, 10 / 800 * GAME_WIDTH, 80 / 500 * GAME_HEIGHT, "dodgerblue");
+	rightPaddle = new Paddle(GAME_WIDTH - 20 / 800 * GAME_WIDTH, GAME_HEIGHT / 2, 10 / 800 * GAME_WIDTH, 80 / 500 * GAME_HEIGHT, "red");
+
+	// Socket.io connection: create once
+	if (!socket) {
+		console.log("Attempting to connect to WebSocket server...");
+
+		socket = io("http://localhost:3002", {
+			transports: ["websocket"],
+		});
+
+		socket.on("connect", () => {
+			console.log("Connected to WebSocket server");
+		});
+
+		socket.on("connect_error", (err) => {
+			console.log("Failed to connect to WebSocket:", err);
+		});
+
+		socket.on("state", (data) => {
+			updateGameScene(data);
+		});
+
+		socket.on("gameStopped", handleGameStopped);
+		socket.on("gameOver", handleGameOver);
+	}
+
+	// Start button
+	startButton.style.display = "block";
+	startButton.onclick = startGame;
+	// Bind keyboard controls only once
+	if (!controlsBound) {
+		window.addEventListener("keydown", handleKeyDown);
+		window.addEventListener("keyup", handleKeyUp);
+		controlsBound = true;
+	}
+
+	// Send paddle moves at 60 FPS (only created once)
+	if (!updateIntervalId) {
+		updateIntervalId = setInterval(updateGameState, 1000 / 60);
+	}
+
+	// Initial draw
+	draw();
+}
+
+// --- Game control functions ---
 
 function startGame() {
-    if (socket.connected) {
-        console.log('Game Started');
-        ball.color = Array.from(document.getElementsByName('ball-color')).find(checkbox => checkbox.checked)?.value || 'white';
-        socket.emit('startGame', {
-            speed: document.getElementById('ball-speed-value').textContent || 1.0
-        });
-        startButton.style.display = 'none';
-    
-        isGameStarted = true;
-        gameInit();
-    }
-    else {
-        console.log('Cannot start game: Not connected to server');
-    }
+	if (!socket || !socket.connected) {
+		console.log("Cannot start game: Not connected to server");
+		return;
+	}
+
+	console.log("Game Started");
+
+	// Set ball color from selected checkbox (fallback white)
+	const selected = Array.from(
+		document.getElementsByName("ball-color")
+	).find((checkbox) => checkbox.checked);
+	ball.color = selected?.value || "white";
+
+	const speedText = output ? output.textContent : "1.0";
+
+	socket.emit("startGame", {
+		speed: speedText || 1.0,
+	});
+
+	startButton.style.display = "none";
+	score.style.display = "flex";
+	isGameStarted = true;
+
+	gameInit();
 }
 
 function gameInit() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ball.move();
-
-    // ball.draw(ctx);
-    // leftPaddle.draw(ctx);
-    // rightPaddle.draw(ctx); 
-    draw();
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ball.move(); // initial move step (same as your original logic)
+	draw();
 }
 
-const keysPressed = new Set();
+// --- Input handling ---
 
-window.addEventListener('keydown', (e) => {
-    if (!isGameStarted) return;
+function handleKeyDown(e) {
+	if (!isGameStarted) return;
 
-    const key = e.key;
-    keysPressed.add(key);
+	const key = e.key;
+	keysPressed.add(key);
+	updateDirections();
+}
 
-    updateDirections();
-});
+function handleKeyUp(e) {
+	const key = e.key;
 
-window.addEventListener('keyup', (e) => {
-    // if (!isGameStarted) return;
+	// ESC stops the game
+	if (key === "Escape") {
+		console.log("Game Stopped");
+		if (socket && socket.connected) {
+			socket.emit("stopGame");
+		}
+		return;
+	}
 
-    const key = e.key;
-    // if (isGameStarted) {
-        if (key === 'Escape') {
-            console.log('Game Stopped');
-            if (socket.connected) {
-                socket.emit('stopGame');
-            }
-            return;
-        }
-    // }
-    keysPressed.delete(key);
-
-    updateDirections();
-});
+	keysPressed.delete(key);
+	updateDirections();
+}
 
 function updateDirections() {
-    // Right paddle
-    if (keysPressed.has('ArrowUp') && !keysPressed.has('ArrowDown')) {
-        rightPaddle.direction = 'up';
-    } else if (keysPressed.has('ArrowDown') && !keysPressed.has('ArrowUp')) {
-        rightPaddle.direction = 'down';
-    } else {
-        rightPaddle.direction = 'none';
-    }
+	// Right paddle: arrow keys
+	if (keysPressed.has("ArrowUp") && !keysPressed.has("ArrowDown")) {
+		rightPaddle.direction = "up";
+	} else if (keysPressed.has("ArrowDown") && !keysPressed.has("ArrowUp")) {
+		rightPaddle.direction = "down";
+	} else {
+		rightPaddle.direction = "none";
+	}
 
-    // Left paddle
-    if ((keysPressed.has('w') || keysPressed.has('W')) && !(keysPressed.has('s') || keysPressed.has('S'))) {
-        leftPaddle.direction = 'up';
-    } else if ((keysPressed.has('s') || keysPressed.has('S')) && !(keysPressed.has('w') || keysPressed.has('W'))) {
-        leftPaddle.direction = 'down';
-    } else {
-        leftPaddle.direction = 'none';
-    }
+	// Left paddle: W/S
+	if (
+		(keysPressed.has("w") || keysPressed.has("W")) &&
+		!(keysPressed.has("s") || keysPressed.has("S"))
+	) {
+		leftPaddle.direction = "up";
+	} else if (
+		(keysPressed.has("s") || keysPressed.has("S")) &&
+		!(keysPressed.has("w") || keysPressed.has("W"))
+	) {
+		leftPaddle.direction = "down";
+	} else {
+		leftPaddle.direction = "none";
+	}
 }
 
-function draw() {
-    ctx.clearRect(0, 0, 800, 500);
+// --- Drawing ---
 
-    leftPaddle.draw(ctx);
-    rightPaddle.draw(ctx);
-    ball.draw(ctx);
-    drawScore();
-    drawCenterLine();
+function draw() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+	leftPaddle.draw(ctx);
+	rightPaddle.draw(ctx);
+	ball.draw(ctx);
+
+	// drawScore();
+	drawCenterLine();
 }
 
 function drawCenterLine() {
-    ctx.strokeStyle = 'white';
-    ctx.setLineDash([10, 10]);
-    ctx.beginPath();
-    ctx.moveTo(canvas.width / 2, 0);
-    ctx.lineTo(canvas.width / 2, canvas.height);
-    ctx.stroke();
-    ctx.setLineDash([]);
+	ctx.strokeStyle = "white";
+	ctx.setLineDash([10, 10]);
+	ctx.beginPath();
+	ctx.moveTo((GAME_WIDTH / 2), 0);
+	ctx.lineTo((GAME_WIDTH / 2), GAME_HEIGHT);
+	ctx.stroke();
+	ctx.setLineDash([]);
 }
 
 function drawScore() {
-    ctx.fillStyle = 'white';
-    ctx.font = '30px Arial';
-    ctx.fillText(leftPaddle.score, (canvas.width * 3) / 8, 50);
-    ctx.fillText(rightPaddle.score, (canvas.width * 5) / 8, 50);
+	console.log('Drawing score:', leftPaddle.score, rightPaddle.score);
+	if (leftScore) leftScore.textContent = String(leftPaddle.score);
+  	if (rightScore) rightScore.textContent = String(rightPaddle.score);
 }
+
+// --- Server state sync ---
 
 function updateGameScene(data) {
-    if (!data) return;
+	if (!data) return;
 
-    // Ball: handle server shape { ball: { x, y } }
-    // console.log('Received game state from server:', data);
-    if (typeof data.ball.x === 'number') ball.x = data.ball.x;
-    if (typeof data.ball.y === 'number') ball.y = data.ball.y;
-    if (typeof data.ball.vx === 'number') ball.speedX = data.ball.vx;
-    if (typeof data.ball.vy === 'number') ball.speedY = data.ball.vy;
-    if (typeof data.ball.radius === 'number') ball.radius = data.ball.radius;
+	// Ball
+	if (typeof data.ball?.x === "number") ball.x = data.ball.x * GAME_WIDTH;
+	if (typeof data.ball?.y === "number") ball.y = data.ball.y * GAME_HEIGHT;
+	if (typeof data.ball?.vx === "number") ball.speedX = data.ball.vx;
+	if (typeof data.ball?.vy === "number") ball.speedY = data.ball.vy;
 
-    // Paddles: support either data.leftPaddle/.rightPaddle or data.paddles.{left,right}
-    const leftY = data.leftPaddle?.y ?? data.paddles?.left;
-    const rightY = data.rightPaddle?.y ?? data.paddles?.right;
+	// Paddles (support both old and new shapes)
+	const leftY = data.leftPaddle?.y ?? data.paddles?.left;
+	const rightY = data.rightPaddle?.y ?? data.paddles?.right;
 
-    if (typeof leftY === 'number') leftPaddle.y = leftY;
-    if (typeof rightY === 'number') rightPaddle.y = rightY;
+	if (typeof leftY === "number") leftPaddle.y = leftY * GAME_HEIGHT;
+	if (typeof rightY === "number") rightPaddle.y = rightY * GAME_HEIGHT;
 
-    if (data.score) {
-        if (typeof data.score.left === 'number' && typeof data.score.right === 'number' && (data.score.left !== leftPaddle.score || data.score.right !== rightPaddle.score)) {
-            leftPaddle.score = data.score.left;
-            rightPaddle.score = data.score.right;
-            console.log(`Score - Left: ${data.score.left}, Right: ${data.score.right}`);
-        }
-    }
+	// Score
+	if (data.score) {
+		const { left, right } = data.score;
+		if (
+			typeof left === "number" &&
+			typeof right === "number" &&
+			(left !== leftPaddle.score || right !== rightPaddle.score)
+		) {
+			leftPaddle.score = left;
+			rightPaddle.score = right;
+			console.log(`Score - Left: ${left}, Right: ${right}`);
+			drawScore(left, right);
+		}
+	}
 
-    // Redraw the game scene
-    if (isGameStarted) 
-        draw();
+	if (isGameStarted) {
+		draw();
+	}
 }
-
-socket.on('state', data => {
-    updateGameScene(data);
-});
-
-socket.on('gameStopped', () => {
-    console.log('Game Stopped by server');
-    isGameStarted = false;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ball.reset();
-    leftPaddle.y = 250 - 80 / 2;
-    rightPaddle.y = 250 - 80 / 2;
-    leftPaddle.score = 0;
-    rightPaddle.score = 0;
-    startButton.style.display = 'block';
-});
-
-setInterval(updateGameState, 1000 / 60);
 
 function updateGameState() {
-    if (isGameStarted) {
-        // Send current paddle directions to server
-        socket.emit("move", {
-            Paddle: 'left',
-            Direction: leftPaddle.direction
-        });
-        socket.emit("move", {
-            Paddle: 'right',
-            Direction: rightPaddle.direction
-        });
-    }
+	if (!isGameStarted || !socket) return;
+
+	socket.emit("move", {
+		Paddle: "left",
+		Direction: leftPaddle.direction,
+	});
+
+	socket.emit("move", {
+		Paddle: "right",
+		Direction: rightPaddle.direction,
+	});
 }
 
-socket.on('gameOver', (data) => {
-    console.log('Game Over. Final Score:', data);
-    isGameStarted = false;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    printGameOver(data);
-});
+// --- Game stop / over handlers ---
+
+function handleGameStopped() {
+	console.log("Game Stopped by server");
+	isGameStarted = false;
+	resetLocalState();
+	draw();
+}
+
+function handleGameOver(data) {
+	console.log("Game Over. Final Score:", data);
+	isGameStarted = false;
+	resetLocalState();
+	printGameOver(data);
+}
+
+function resetLocalState() {
+	if (!ctx || !canvas) return;
+
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ball.reset();
+	leftPaddle.y = (canvas.height / 2 - leftPaddle.height / 2);
+	rightPaddle.y = (canvas.height / 2 - rightPaddle.height / 2);
+	leftPaddle.score = 0;
+	rightPaddle.score = 0;
+	drawScore();
+	score.style.display = "none";
+	const gameOverDiv = document.getElementById("GameOver");
+	if (gameOverDiv) {
+		gameOverDiv.style.display = "none";
+	}
+
+	if (startButton) {
+		startButton.style.display = "block";
+	}
+}
 
 function printGameOver(data) {
-    ctx.fillStyle = 'white';
-    ctx.font = '40px Arial';
-    const message = `Game Over!`;
-    const textWidth = ctx.measureText(message).width;
-    ctx.fillText(message, (canvas.width - textWidth) / 2, canvas.height / 2);
-    const messageScore = `${data.left} - ${data.right}`;
-    const textWidthScore = ctx.measureText(messageScore).width;
-    ctx.fillText(messageScore, (canvas.width - textWidthScore) / 2, canvas.height / 2 + 40);
-    ctx.font = '20px Arial';
-    const restartMessage = 'Press Escape to go back to menu.';
-    const restartTextWidth = ctx.measureText(restartMessage).width;
-    ctx.fillText(restartMessage, (canvas.width - restartTextWidth) / 2, canvas.height / 2 + 80);
+	const { left, right } = data;
+
+	const gameOverDiv = document.getElementById("GameOver");
+	const gameOverScore = document.getElementById("GameOverScore");
+	if (gameOverDiv && gameOverScore) {
+		gameOverScore.textContent = `${left} - ${right}`;
+		gameOverDiv.style.display = "block";
+	}
 }
-
-
-
-const slider = document.getElementById('ball-speed');
-const output = document.getElementById('ball-speed-value');
-
-    // Function to update number and slider color
-function updateSlider() {
-    const value = parseFloat(slider.value);
-    output.textContent = value.toFixed(1);
-}
-
-// Initialize and update on input
-updateSlider();
-slider.addEventListener('input', updateSlider);
-

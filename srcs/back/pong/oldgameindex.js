@@ -4,7 +4,6 @@ import path, { join } from 'path';
 import { fileURLToPath } from 'url';
 
 import { Server } from 'socket.io';
-import fs from 'fs'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,7 +29,7 @@ fastify.get('/', (req, res) => {
   res.sendFile('pong.html')
 });
 
-fastify.listen({ port: 3000 }, function (err, address) {
+fastify.listen({ port: 3002 }, function (err, address) {
   if (err) {
     fastify.log.error(err)
     process.exit(1)
