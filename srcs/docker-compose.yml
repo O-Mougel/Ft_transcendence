@@ -10,6 +10,8 @@ services:
      - "4430:443"
     networks:
      - transcendence
+    volumes:
+     - nginx:/var/www/html
     restart: on-failure
 
   front:
@@ -57,6 +59,13 @@ volumes:
       device: 'back/volume'
 
   front:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: 'front'
+  
+  nginx:
     driver: local
     driver_opts:
       type: 'none'
