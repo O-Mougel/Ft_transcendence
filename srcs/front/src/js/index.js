@@ -4,6 +4,9 @@ import startingFile from "../views/startingFile.js";
 import aboutFile from "../views/aboutFile.js";
 import profileOverview from "../views/profileOverview.js";
 import tournamentSize from "../views/tournamentSize.js";
+import tournamentSelect4Players from "../views/tournamentSelect_4Players.js";
+import tournamentSelect8Players from "../views/tournamentSelect_8Players.js";
+import tournamentSelect16Players from "../views/tournamentSelect_16Players.js";
 import pong from "../views/pong.js";
 
 
@@ -49,6 +52,9 @@ const router = async () => {
 		{ path: "/about", view: aboutFile },
 		{ path: "/profileOverview", view: profileOverview },
 		{ path: "/tournament", view: tournamentSize },
+		{ path: "/tournamentSelect_4Players", view: tournamentSelect4Players },
+		{ path: "/tournamentSelect_8Players", view: tournamentSelect8Players },
+		{ path: "/tournamentSelect_16Players", view: tournamentSelect16Players },
 		{ path: "/pong", view: pong },
 	];
 

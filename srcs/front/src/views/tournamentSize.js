@@ -30,10 +30,16 @@ export default class extends ViewTemplate {
 		<div class="h-full w-full flex flex-col">
 			<div class="h-[93%] w-full pt-[5%] text-center ml-auto mr-auto">
 				<h1 class="">Select the number of players in the tournament</h1>
-				<div class=" text-[5vw] flex gap-5 px-[5%] justify-around mt-8 mx-auto flex-col sm:flex-row">
-					<div class="flex-1 flex items-center justify-center aspect-square px-4 py-2 hover:text-[#98c6f8] rounded-[10%] font-bold border-[1vw]">4</div>
-					<div class="flex-1 flex items-center justify-center aspect-square px-4 py-2 hover:text-[#98c6f8] rounded-[10%] font-bold border-[1vw]">8</div>
-					<div class="flex-1 flex items-center justify-center aspect-square px-4 py-2 hover:text-[#98c6f8] rounded-[10%] font-bold border-[1vw]">16</div>
+				<div class=" text-[4vw] flex gap-5 px-[40%] justify-around mt-8 mx-auto flex-col sm:flex-row sm:px-[5%] sm:text-[5vw]">
+					<div class="flex-1 flex items-center justify-center aspect-square px-4 py-2 hover:text-[#98c6f8] rounded-[10%] font-bold border-[1vw]">
+						<a class="flex items-center justify-center h-full w-full" href="/tournamentSelect_4Players" data-link>4</a>
+					</div>
+					<div class="flex-1 flex items-center justify-center aspect-square px-4 py-2 hover:text-[#98c6f8] rounded-[10%] font-bold border-[1vw]">
+						<a class="flex items-center justify-center h-full w-full" href="/tournamentSelect_8Players" data-link>8</a>
+					</div>
+					<div class="flex-1 flex items-center justify-center aspect-square px-4 py-2 hover:text-[#98c6f8] rounded-[10%] font-bold border-[1vw]">
+						<a class="flex items-center justify-center h-full w-full" href="/tournamentSelect_16Players" data-link>16</a>
+					</div>
 				</div>
 			</div>
 		</div>`
