@@ -35,7 +35,7 @@ export default class extends ViewTemplate {
 					</div>
 				</div>
 				<div class="">
-						<input tabindex="17" class="w-[20vw] mt-[1vw] h-[4vw] focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] border hover:border-[#98c6f8] border-white rounded-lg " name="start4Players" type="submit" value="Start" onclick="get16PlayerName(event)">
+						<input tabindex="17" class="shadow-[0_0_20px_rgba(158,202,237,0.9)] w-[20vw] mt-[1vw] h-[4vw] focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] border hover:border-[#98c6f8] border-white rounded-lg " name="start4Players" type="submit" value="Start" onclick="get16PlayerName(event)">
 				</div>
 			</form>
 		</div>`

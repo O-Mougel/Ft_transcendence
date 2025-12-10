@@ -17,7 +17,7 @@ export default class extends ViewTemplate {
 					<input id="player3" tabindex="3" class="w-[50vw] mt-[1vw] pl-5 mx-auto hover:text-[#98c6f8]  focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]" type="text" autocomplete="off" placeholder="Player 3">
 					<input id="player4" tabindex="4" class="w-[50vw] mt-[1vw] pl-5 mx-auto hover:text-[#98c6f8]  focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]" type="text" autocomplete="off" placeholder="Player 4">
 				<div class="">
-					<input tabindex="5" class="w-[20vw] mt-[1vw] h-[4vw] focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] border hover:border-[#98c6f8] border-white rounded-lg " name="start4Players" type="submit" value="Start" onclick="get4PlayerName(event)">
+					<input tabindex="5" class="shadow-[0_0_20px_rgba(158,202,237,0.9)] w-[20vw] mt-[1vw] h-[4vw] focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] border hover:border-[#98c6f8] border-white rounded-lg " name="start4Players" type="submit" value="Start" onclick="get4PlayerName(event)">
 				</div>
 			</form>
 		</div>`
