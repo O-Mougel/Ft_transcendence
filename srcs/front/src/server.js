@@ -46,6 +46,24 @@ fastify.get("/tournament", function handler (request, reply) {
   	reply.sendFile('index.html')
 })
 
+fastify.get("/tournamentSelect_4Players", function handler (request, reply) {
+	// const stream = fs.createReadStream('./src/index.html')
+	// reply.type('text/html').send(stream)
+  	reply.sendFile('index.html')
+})
+
+fastify.get("/tournamentSelect_8Players", function handler (request, reply) {
+	// const stream = fs.createReadStream('./src/index.html')
+	// reply.type('text/html').send(stream)
+  	reply.sendFile('index.html')
+})
+
+fastify.get("/tournamentSelect_16Players", function handler (request, reply) {
+	// const stream = fs.createReadStream('./src/index.html')
+	// reply.type('text/html').send(stream)
+  	reply.sendFile('index.html')
+})
+
 fastify.get("/pong", function handler (request, reply) {
 	// const stream = fs.createReadStream('./src/index.html')
 	// reply.type('text/html').send(stream)
