@@ -14,16 +14,16 @@ export default class extends ViewTemplate {
 			<form id="tournamentForm8Players" class="pt-[5vw]">
 				<div class="flex flex-row justify-around">
 					<div class="flex flex-col w-[40vw] gap-4">
-						<input id="player1" tabindex="1" class="w-full pl-5 mx-auto hover:text-[#98c6f8]  focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]" type="text" autofocus autocomplete="off" placeholder="Player 1">
-						<input id="player2" tabindex="2" class="w-full pl-5 mx-auto hover:text-[#98c6f8]  focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]" type="text" autocomplete="off" placeholder="Player 2">
-						<input id="player3" tabindex="3" class="w-full pl-5 mx-auto hover:text-[#98c6f8]  focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]" type="text" autocomplete="off" placeholder="Player 3">
-						<input id="player4" tabindex="4" class="w-full pl-5 mx-auto hover:text-[#98c6f8]  focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]" type="text" autocomplete="off" placeholder="Player 4">
+						<input id="player1" tabindex="1" class="pb-2 w-full pl-5 mx-auto hover:text-[#98c6f8]  focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]" type="text" autofocus autocomplete="off" placeholder="Player 1">
+						<input id="player2" tabindex="2" class="pb-2 w-full pl-5 mx-auto hover:text-[#98c6f8]  focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]" type="text" autocomplete="off" placeholder="Player 2">
+						<input id="player3" tabindex="3" class="pb-2 w-full pl-5 mx-auto hover:text-[#98c6f8]  focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]" type="text" autocomplete="off" placeholder="Player 3">
+						<input id="player4" tabindex="4" class="pb-2 w-full pl-5 mx-auto hover:text-[#98c6f8]  focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]" type="text" autocomplete="off" placeholder="Player 4">
 					</div>
 					<div class="flex flex-col w-[40vw] gap-4">
-						<input id="player5" tabindex="5" class="w-full pl-5 mx-auto hover:text-[#98c6f8]  focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]" type="text" autocomplete="off" placeholder="Player 5">
-						<input id="player6" tabindex="6" class="w-full pl-5 mx-auto hover:text-[#98c6f8]  focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]" type="text" autocomplete="off" placeholder="Player 6">
-						<input id="player7" tabindex="7" class="w-full pl-5 mx-auto hover:text-[#98c6f8]  focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]" type="text" autocomplete="off" placeholder="Player 7">
-						<input id="player8" tabindex="8" class="w-full pl-5 mx-auto hover:text-[#98c6f8]  focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]" type="text" autocomplete="off" placeholder="Player 8">
+						<input id="player5" tabindex="5" class="pb-2 w-full pl-5 mx-auto hover:text-[#98c6f8]  focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]" type="text" autocomplete="off" placeholder="Player 5">
+						<input id="player6" tabindex="6" class="pb-2 w-full pl-5 mx-auto hover:text-[#98c6f8]  focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]" type="text" autocomplete="off" placeholder="Player 6">
+						<input id="player7" tabindex="7" class="pb-2 w-full pl-5 mx-auto hover:text-[#98c6f8]  focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]" type="text" autocomplete="off" placeholder="Player 7">
+						<input id="player8" tabindex="8" class="pb-2 w-full pl-5 mx-auto hover:text-[#98c6f8]  focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]" type="text" autocomplete="off" placeholder="Player 8">
 					</div>
 				</div>
 				<div class="">
