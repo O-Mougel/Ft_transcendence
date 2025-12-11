@@ -189,52 +189,36 @@ function handleKeyUp(e) {
 
 function updateDirections() {
 	// Right paddle: arrow keys
-	if (keysPressed.has("ArrowUp") && !keysPressed.has("ArrowDown")) {
+	if (keysPressed.has("ArrowUp") && !keysPressed.has("ArrowDown"))
 		rightPaddle2.direction = "up";
-	} else if (keysPressed.has("ArrowDown") && !keysPressed.has("ArrowUp")) {
+	else if (keysPressed.has("ArrowDown") && !keysPressed.has("ArrowUp"))
 		rightPaddle2.direction = "down";
-	} else {
+	else
 		rightPaddle2.direction = "none";
-	}
 
 	// Right paddle 2: 6/3 keys
-	if (keysPressed.has("6") && !keysPressed.has("3")) {
+	if (keysPressed.has("6") && !keysPressed.has("3"))
 		rightPaddle.direction = "up";
-	} else if (keysPressed.has("3") && !keysPressed.has("6")) {
+	else if (keysPressed.has("3") && !keysPressed.has("6"))
 		rightPaddle.direction = "down";
-	} else {
+	else
 		rightPaddle.direction = "none";
-	}
 
 	// Left paddle: W/S
-	if (
-		(keysPressed.has("w") || keysPressed.has("W")) &&
-		!(keysPressed.has("s") || keysPressed.has("S"))
-	) {
+	if ((keysPressed.has("w") || keysPressed.has("W")) && !(keysPressed.has("s") || keysPressed.has("S")))
 		leftPaddle.direction = "up";
-	} else if (
-		(keysPressed.has("s") || keysPressed.has("S")) &&
-		!(keysPressed.has("w") || keysPressed.has("W"))
-	) {
+	else if ((keysPressed.has("s") || keysPressed.has("S")) && !(keysPressed.has("w") || keysPressed.has("W")))
 		leftPaddle.direction = "down";
-	} else {
+	else
 		leftPaddle.direction = "none";
-	}
 
-	// Left paddle 2: C/V
-	if (
-		(keysPressed.has("j") || keysPressed.has("J")) &&
-		!(keysPressed.has("m") || keysPressed.has("M"))
-	) {
+	// Left paddle 2: J/M
+	if ((keysPressed.has("j") || keysPressed.has("J")) && !(keysPressed.has("m") || keysPressed.has("M")))
 		leftPaddle2.direction = "up";
-	} else if (
-		(keysPressed.has("m") || keysPressed.has("M")) &&
-		!(keysPressed.has("j") || keysPressed.has("J"))
-	) {
+	else if ((keysPressed.has("m") || keysPressed.has("M")) && !(keysPressed.has("j") || keysPressed.has("J")))
 		leftPaddle2.direction = "down";
-	} else {
+	else
 		leftPaddle2.direction = "none";
-	}
 }
 
 // --- Drawing ---
