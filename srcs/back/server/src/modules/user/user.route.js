@@ -1,7 +1,7 @@
 // user.route.js
 
 import { $ref } from "./user.schema.js";
-import { logoutHandler, loginHandler, registerUserHandler } from "./user.controller.js";
+import { logoutHandler, loginHandler, registerUserHandler, profileHandler, editProfileHandler, editPasswordHandler } from "./user.controller.js";
 
 async function userRoutes(fastify) {
     fastify.post(
@@ -37,6 +37,39 @@ async function userRoutes(fastify) {
         },
         logoutHandler
     )
+
+	fastify.get(
+		'/profile',
+		{
+            preHandler: [fastify.authenticate], //faire un scheme de reponse 
+		},
+		profileHandler
+	)
+
+	fastify.post(
+		'/profile/edit',
+		{
+			preHandler: [fastify.authenticate],
+			schema: {
+				body: $ref("editProfileSchema"),
+				response: {
+					201: $ref("editProfileResponseSchema")
+				},
+			},
+		},
+		editProfileHandler
+	)
+
+	fastify.post(
+		'/profile/password',
+		{
+			preHandler: [fastify.authenticate],
+			schema: {
+				body: $ref("editPasswordSchema"), //reponse et schema de reponse ?
+			},
+		},
+		editPasswordHandler
+	)
 }
 
 export default userRoutes;

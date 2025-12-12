@@ -3,7 +3,7 @@
 import * as z from "zod";
 import { buildJsonSchemas } from 'fastify-zod';
 
-const userCore = {          // define the common user schema
+const userCore = {
     email: z.string({
         required_error: "Email is required",
         invalid_type_error: "Email is not valid"
@@ -12,7 +12,7 @@ const userCore = {          // define the common user schema
 }
 
 const createUserSchema = z.object({
-    ...userCore,        // re-use the userCore object
+    ...userCore,
     password: z.string({
         required_error: "Password is required"
     })
@@ -32,11 +32,32 @@ const loginResponseSchema = z.object({
     accessToken: z.string(),
 });
 
+//response get profile schema 
+
+const editProfileSchema = z.object({
+	newname: z.string(),
+	newprofilepicture: z.string(),
+	password: z.string()
+})
+
+const editProfileResponseSchema = z.object({
+    id: z.number(),
+    ...userCore,
+})
+
+const editPasswordSchema = z.object({
+	oldpassword: z.string(),
+	newpassword: z.string(),
+})
+
 export const { schemas: userSchemas, $ref } = buildJsonSchemas({
-  createUserSchema,
-  createUserResponseSchema,
-  loginSchema,
-  loginResponseSchema,
+	createUserSchema,
+	createUserResponseSchema,
+	loginSchema,
+	loginResponseSchema,
+	editProfileSchema,
+	editProfileResponseSchema,
+	editPasswordSchema
 },
   { $id: 'userSchemas' },
 );
