@@ -4,15 +4,22 @@ import startingFile from "../views/startingFile.js";
 import aboutFile from "../views/aboutFile.js";
 import profileOverview from "../views/profileOverview.js";
 import tournamentSize from "../views/tournamentSize.js";
+import newUserRegistration from "../views/newUserRegistration.js";
 import pong from "../views/pong.js";
 
+
+var profileRefresh;
 
 const loadURL = url => {
 	history.pushState(null, null, url);
 	router();
 }
 
-const adjustNavbar = path => {
+const refreshProfile = () => {
+	console.log("Tick tick tick ...");
+}
+
+export const adjustNavbar = path => {
 
 	const btsmall = document.getElementById('profileButton');
 	const bt = document.getElementById('profileButton2');
@@ -21,11 +28,14 @@ const adjustNavbar = path => {
 	{
 		bt.style.display = 'none';
 		btsmall.style.display = 'none';
+		clearInterval(profileRefresh);
 	}
 	else
 	{
 		bt.style.display = 'flex';
 		btsmall.style.display = 'flex';
+		clearInterval(profileRefresh);
+		profileRefresh = setInterval(refreshProfile, 50000);
 	}
 
 	const profilePanel = document.getElementById('profilePanel'); 
@@ -49,6 +59,7 @@ const router = async () => {
 		{ path: "/about", view: aboutFile },
 		{ path: "/profileOverview", view: profileOverview },
 		{ path: "/tournament", view: tournamentSize },
+		{ path: "/newUserRegistration", view: newUserRegistration },
 		{ path: "/pong", view: pong },
 	];
 
