@@ -24,3 +24,38 @@ export async function findUserByName(name) {
 
     return user;
 }
+
+export async function findUserById(id) {
+	const user = await db.user.findUnique({
+		where: {
+			id: id,
+		},
+	})
+
+    return user;
+}
+
+export async function changeProfileInfo(id, newname, newprofilepicture) {
+	const user = await db.user.update({
+		where: { id: id },
+		data: {
+			name: newname,
+			avatar: newprofilepicture,
+		},
+	})
+	return user
+}
+
+export async function changePassword(id, newpassword) {
+  const { hash, salt } = hashPassword(newpassword);
+
+  const user = await db.user.update({
+    where: {id: id},
+    data:{
+      password: hash,
+      salt: salt,
+    },
+  })
+
+  return user;
+}

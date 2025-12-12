@@ -1,10 +1,18 @@
 // user.controller.js
 
-import { createUser, findUserByName } from "./user.service.js";
+import { createUser, findUserByName, findUserById, changeProfileInfo, changePassword } from "./user.service.js";
 import { verifyPassword } from "../../utils/hash.js";
 
-export async function registerUserHandler(request, reply) {
+export async function registerUserHandler(request, reply) { //respect 
     const body = request.body;
+
+    const name = await findUserByName(body.name);
+
+    if (name) {	
+        return reply.status(400).send({
+            message: "Username already used. Try again!"
+        });
+    };
 
     try {
         const user = await createUser(body);
@@ -22,7 +30,6 @@ export async function registerUserHandler(request, reply) {
 export async function loginHandler(request, reply) {
     const body = request.body;
 
-    // Find a user by email 
     const user = await findUserByName(body.name);
 
     if (!user) {
@@ -31,7 +38,6 @@ export async function loginHandler(request, reply) {
         });
     };
 
-    // Verify password
     const isValidPassword = verifyPassword(
         body.password,
         user.salt,
@@ -43,7 +49,8 @@ export async function loginHandler(request, reply) {
         });
     };
 
-    // Generate access token
+	//check 2fa and send 2fa if so 
+
     const payload = {
         id: user.id,
         email: user.email,
@@ -65,4 +72,72 @@ export async function logoutHandler(request, reply) {
     reply.clearCookie('access_token');
 
     return reply.status(201).send({ message: 'Logout successfully' })
+}
+
+export async function profileHandler(request, reply) {
+	return findUserById(request.user.id) //faire une autre fonction qui selectionne seulement ce qu'on veux renvoyer 
+}
+
+export async function editProfileHandler(request, reply) {
+	const body = request.body;
+
+    const user = await findUserById(request.user.id);
+
+    if (!user) {
+        return reply.status(400).send({
+            message: "Invalid id. Try again!"
+        });
+    };
+
+    const newname = await findUserByName(body.newname);
+
+    if (newname) {	
+        return reply.status(400).send({
+            message: "Username already used. Try again!"
+        });
+    };
+
+    const isValidPassword = verifyPassword(
+        body.password,
+        user.salt,
+        user.password);
+
+    if (!isValidPassword) {
+        return reply.status(400).send({
+            message: "Password is incorrect"
+        });
+    };
+
+	//avoir une meilleur gestion de la profile picture plutot que juste stocker le path ici mais comment faire ??
+
+	const newuser = changeProfileInfo(user.id, body.newname, body.newprofilepicture)
+
+    return { newuser }
+}
+
+export async function editPasswordHandler(request, reply) {
+	const body = request.body;
+
+    const user = await findUserById(request.user.id);
+
+    if (!user) {
+        return reply.status(400).send({
+            message: "Invalid id. Try again!"
+        });
+    };
+
+    const isValidPassword = verifyPassword(
+        body.oldpassword,
+        user.salt,
+        user.password);
+
+    if (!isValidPassword) {
+        return reply.status(400).send({
+            message: "Password is incorrect"
+        });
+    };
+
+	const newuser = changePassword(user.id, body.newpassword);
+
+    return { newuser }
 }

@@ -37,7 +37,7 @@ fastify.register(fCookie, {
     hook: 'preHandler',
 })
 
-//create ia and invited player in database 
+//if not exist create ia and invited player in database 
 
 async function main() {
     for (const schema of [...userSchemas, ...matchSchemas]) {
