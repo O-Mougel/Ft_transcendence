@@ -9,6 +9,7 @@ import tournamentSelect8Players from "../views/tournamentSelect_8Players.js";
 import tournamentSelect16Players from "../views/tournamentSelect_16Players.js";
 import newUserRegistration from "../views/newUserRegistration.js";
 import pong from "../views/pong.js";
+import logUser from "../views/login.js";
 
 
 var profileRefresh;
@@ -67,6 +68,7 @@ const router = async () => {
 		{ path: "/tournamentSelect_16Players", view: tournamentSelect16Players },
 		{ path: "/newUserRegistration", view: newUserRegistration },
 		{ path: "/pong", view: pong },
+		{ path: "/logUser", view: logUser },
 	];
 
 	const potentialMan = routes.map(mapElement => { //mapElement is the name of each array element for routes
