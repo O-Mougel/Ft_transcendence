@@ -13,5 +13,6 @@ export default class extends ViewTemplate {
 				<h1 class="text-[4vw] 2xl:text-6xl">FT_Transcendence</h1>
 				<img src="/img/moyai.gif">
 			</div>`
+			
 	}
 }
