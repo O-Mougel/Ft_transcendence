@@ -5,7 +5,7 @@ import { logoutHandler, loginHandler, registerUserHandler } from "./user.control
 
 async function userRoutes(fastify) {
     fastify.post(
-        '/', 
+        '/userCreation', 
         {
             schema: {
                 body: $ref("createUserSchema"),

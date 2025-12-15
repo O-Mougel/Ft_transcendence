@@ -22,28 +22,6 @@ function reportWindowSize() {
 
 window.addEventListener("resize", reportWindowSize);
 
-window.grabLogInfo = function () {
-
-	const username = document.getElementById('clientUsername');
-	const password = document.getElementById('clientPassword');
-	const logResult = document.getElementById('signInResult');
-
-	logResult.innerText = "";
-	if (!username.value)
-	{
-		logResult.innerText = "❌ Login cannot be empty !";
-		username.focus();
-		return ;
-		
-	}
-	else if (!password.value)
-	{
-		logResult.innerText = "❌ Enter your password !";
-		password.focus();
-		return ;
-	}
-		
-};
 
 window.onFileSelected = function (inputFileSelector) {
 
