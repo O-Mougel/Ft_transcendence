@@ -1,6 +1,6 @@
 // user.controller.js
 
-import { createUser, findUserByName } from "./user.service.js";
+import { createUser, findUserByName, grabUserByID } from "./user.service.js";
 import { verifyPassword } from "../../utils/hash.js";
 
 export async function registerUserHandler(request, reply) {
@@ -14,6 +14,26 @@ export async function registerUserHandler(request, reply) {
         console.error(error);
         return reply.status(500).send({
             message: "Email address already used. Try again!", //doesn't cover enough cases
+			error:error
+        });
+    }
+}
+
+export async function dataGrabHandler(request, reply) {
+
+	const userId = request.user && request.user.id;
+	if (!userId) return reply.code(401).send({ message: 'Not authenticated !' });
+
+    try {
+        const user = await grabUserByID(userId);
+		if (!user) return reply.code(404).send({ message: 'User not found using access token' });
+		// fields should be deleted if we send whole user, or instead just send username or stats
+        return reply.status(200).send(user);
+        
+    } catch (error) {
+        console.error(error);
+        return reply.status(500).send({
+            message: "User info could not be grabbed !",
 			error:error
         });
     }
@@ -64,5 +84,6 @@ export async function loginHandler(request, reply) {
 export async function logoutHandler(request, reply) {
     reply.clearCookie('access_token');
 
-    return reply.status(201).send({ message: 'Logout successfully' })
+    return reply.status(200).send({ message: 'Logout successfully' })
+	// i switched 201 into 200 but i'm mot sure
 }

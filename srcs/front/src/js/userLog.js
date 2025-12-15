@@ -1,4 +1,5 @@
 import startingFile from "../views/startingFile.js";
+import loginFile from "../views/login.js";
 import { adjustNavbar } from "./index.js";
 
 const backToDefaultPage = async () => {
@@ -7,13 +8,41 @@ const backToDefaultPage = async () => {
 	document.querySelector("#app").innerHTML = await view.getHTML();
 	adjustNavbar("/");
 
-	const btntext = document.getElementById('logoutButton');
-	if (btntext)
-		btntext.innerText = '➜] Log out';
+	// const btntext = document.getElementById('logoutButton');
+	// if (btntext)
+	// 	btntext.innerText = '➜] Log out';
 	if (typeof view.init === "function") {
 		 await view.init();
 	}
 	history.pushState(null, null, "/");
+	// console.log("I'm going back to five o fiveeee");
+}
+
+const backToLoginPage = async () => {
+
+	const view = new loginFile();
+	document.querySelector("#app").innerHTML = await view.getHTML();
+	adjustNavbar("/logUser");
+
+	// const btntext = document.getElementById('logoutButton');
+	// if (btntext)
+	// 	btntext.innerText = '➜] Log out';
+
+	const bar1 = document.getElementById('navBarHomeId');
+	const bar2 = document.getElementById('navBarModesId');
+	const bar3 = document.getElementById('navBarCupId');
+	const bar4 = document.getElementById('navBarAboutId');
+	const barProfile = document.getElementById('profileButton2');
+	bar1.style.display = 'none';
+	bar2.style.display = 'none';
+	bar3.style.display = 'none';
+	bar4.style.display = 'none';
+	barProfile.disabled=true;
+
+	if (typeof view.init === "function") {
+		 await view.init();
+	}
+	history.pushState(null, null, "/logUser");
 	// console.log("I'm going back to five o fiveeee");
 }
 
@@ -52,6 +81,38 @@ const fieldValidity = (username, pwd, pwdconf, requestR, email) => {
 	console.log('password.value :', pwd.value);
 }
 
+window.grabProfileInfo = async function () {
+
+	const profilePanel = document.getElementById('profilePanel');
+	const profileUsername = document.getElementById('playerGrabbedUsername');
+
+	if (!profilePanel) return;
+
+	try 
+	{
+		const dataRequestResponse = await fetch('/profileGrab', { //GET request by default without the "request" parameter
+				credentials: 'include',
+		});
+	
+		if (!dataRequestResponse.ok) {
+				const text = await dataRequestResponse.text().catch(() => dataRequestResponse.statusText);
+				throw new Error(`Request failed: ${dataRequestResponse.status} ${text}`);
+		}
+		const result = await dataRequestResponse.json();	
+		if (result)
+		{
+			console.log(result.name);
+			profileUsername.innerHTML = result.name;
+			profileUsername.style.color = 'white';
+		}
+	} 
+	catch (err) 
+	{
+		console.log(err);
+		console.error('Profile info grab failed :(', err);
+	}
+}
+
 window.logoutUser = async function () {
 
 	const btntext = document.getElementById('logoutButton');
@@ -72,8 +133,9 @@ window.logoutUser = async function () {
 	
 		if (result && result.message) 
 		{
-			btntext.innerText = '⏳ Logging out ...';
-			setTimeout(backToDefaultPage, 2500);
+			// btntext.innerText = '⏳ Logging out ...';
+			// setTimeout(backToLoginPage, 2500);
+			backToLoginPage();
 		}
 	} 
 	catch (err) 
@@ -118,12 +180,13 @@ window.handleNewUserCreate = async function (event) {
 			requestResult.innerText = result.message;
 		else
 		{
-			requestResult.innerText = '✅ User created';
+			// requestResult.innerText = '✅ User created';
 			username.value = "";
 			email.value = "";
 			password.value = "";
 			passwordConfirm.value = "";
-			const myTimeout = setTimeout(backToDefaultPage, 2500);
+			// const myTimeout = setTimeout(backToDefaultPage, 2000);
+			backToDefaultPage();
 		}
 	} 
 	catch (err) 
@@ -184,10 +247,21 @@ window.handleLoginClick = async function (event) {
 			logResult.innerText = result.message;
 		else
 		{
-			logResult.innerText = '✅ Logged in';
 			username.value = "";
 			password.value = "";
-			const myTimeout = setTimeout(backToDefaultPage, 2000);
+			const bar1 = document.getElementById('navBarHomeId');
+			const bar2 = document.getElementById('navBarModesId');
+			const bar3 = document.getElementById('navBarCupId');
+			const bar4 = document.getElementById('navBarAboutId');
+			const barProfile = document.getElementById('profileButton2');
+			bar1.style.display = 'block';
+			bar2.style.display = 'block';
+			bar3.style.display = 'block';
+			bar4.style.display = 'block';
+			barProfile.disabled=false;
+
+			// const myTimeout = setTimeout(backToDefaultPage, 2000);
+			backToDefaultPage();
 		}
 
 	} 

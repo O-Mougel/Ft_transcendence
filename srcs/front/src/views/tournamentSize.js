@@ -14,7 +14,7 @@ export default class extends ViewTemplate {
 						<div class="grid h-[30%] place-items-center">
   							<div class="bg-[url(/img/sillyDog.gif)] bg-cover w-[50%] h-[50%] p-4 rounded-[50%] shadow"></div>
 						</div>
-						<h1 class="text-white text-bold mx-4 mb-15 text-2xl ">[player username]</h1>
+						<h1 id="playerGrabbedUsername" class="text-black text-bold mx-4 mb-15 text-2xl ">[username]</h1>
 						<a href="/profileOverview" class="mx-4 text-2xl mb-5 border p-4 text-[#798490]" name="profileLink" data-link>Update profile</a>
 						<a id="logoutButton" class="mx-4 text-2xl mb-15 border p-4 cursor-pointer hover:text-[#dee9f4] hover:bg-[#882639] text-[#882639]" onclick=logoutUser() name="logoutButtonName">➜] Log out</a>						<div class="self-start">
 							<input class="sr-only peer" id="friendCheck" type="checkbox"/>
