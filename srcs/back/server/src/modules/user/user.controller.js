@@ -13,7 +13,7 @@ export async function registerUserHandler(request, reply) {
     } catch (error) {
         console.error(error);
         return reply.status(500).send({
-            message: "Email address already used. Try again!",
+            message: "Email address already used. Try again!", //doesn't cover enough cases
 			error:error
         });
     }
