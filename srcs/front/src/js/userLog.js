@@ -183,7 +183,12 @@ window.handleLoginClick = async function (event) {
 		if (result && result.message) 
 			logResult.innerText = result.message;
 		else
+		{
 			logResult.innerText = '✅ Logged in';
+			username.value = "";
+			password.value = "";
+			const myTimeout = setTimeout(backToDefaultPage, 2000);
+		}
 
 	} 
 	catch (err) 
