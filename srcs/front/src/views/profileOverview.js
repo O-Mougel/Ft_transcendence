@@ -17,8 +17,8 @@ export default class extends ViewTemplate {
 						<input id="newUsername" tabindex="1" class=" ml-4 text-white hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] md:w-1/2 h-[35px] text-sm md:text-base rounded-sm border border-[#c2dbf6] pt-2 pb-[5px] pr-5 pl-5 mb-[25px]" name="unameNew" value="" type="text" autofocus autocomplete="off" placeholder="[old username]" >
 					</div>
 					<h2 class="flex items-start text-amber-50">► Choose your new profile picture :</h2>
-					<div class="overflow-hidden h-[30%] flex items-center gap-4">
-  						<img id="logo" src="./img/pipotam.gif" alt="logo" class="ml-5 mb-0" />
+                    <div class="overflow-hidden h-[30%] flex items-center gap-4">
+   				<img id="userPfp" src="./img/pipotam.gif" alt="userPfpImg" class="ml-5 mb-0 w-[120px] h-[120px] object-cover flex-shrink-0" />
  						<input type="file" id="myfileSelector" name="fileSelector" onchange="onFileSelected(this)" accept="image/png, image/jpg, image/jpeg" class="hidden" />
 						<label for="myfileSelector" class="border border-amber-50 ml-2 py-2 px-3 cursor-pointer">🗁 Select file</label>
 						<p id="selectedFileName" class="mt-4 text-base text-ellipsis"></p>
