@@ -32,14 +32,11 @@ const loginResponseSchema = z.object({
     accessToken: z.string(),
 });
 
-// const infoGrabSchema = z.object({        
-//     accessToken: z.string()
-// });
-
 const infoGrabResponseSchema = z.object({
 	id: z.number(),
 	email: z.string(),
     name: z.string(),
+	avatar: z.string(),
 });
 
 export const { schemas: userSchemas, $ref } = buildJsonSchemas({
