@@ -43,6 +43,19 @@ async function userRoutes(fastify) {
         dataGrabHandler
     );
 
+	fastify.get(
+        '/userCustomization', 
+        {
+			preHandler: [fastify.authenticate], //forces log to see user profile
+            schema: {
+                response: {
+                    201: $ref("infoGrabResponseSchema"),
+                }
+            }
+        }, 
+        dataGrabHandler
+    );
+
     fastify.delete(
         '/logout',
         {

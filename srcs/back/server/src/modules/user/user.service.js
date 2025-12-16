@@ -11,6 +11,7 @@ export async function grabUserByID(userId) {
 			id: true,
 			email: true,
 			name: true,
+			avatar: true,
 		},
 	})
 
