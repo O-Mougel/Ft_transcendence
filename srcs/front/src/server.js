@@ -70,6 +70,12 @@ fastify.get("/pong", function handler (request, reply) {
   	reply.sendFile('index.html')
 })
 
+fastify.get("/pong2", function handler (request, reply) {
+	// const stream = fs.createReadStream('./src/index.html')
+	// reply.type('text/html').send(stream)
+  	reply.sendFile('index.html')
+})
+
 fastify.get("/newUserRegistration", function handler (request, reply) {
 	// const stream = fs.createReadStream('./src/index.html')
 	// reply.type('text/html').send(stream)

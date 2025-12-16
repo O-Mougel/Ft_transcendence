@@ -11,7 +11,6 @@ import newUserRegistration from "../views/newUserRegistration.js";
 import pong from "../views/pong.js";
 import logUser from "../views/login.js";
 
-
 var profileRefresh;
 
 const loadURL = url => {
@@ -68,6 +67,7 @@ const router = async () => {
 		{ path: "/tournamentSelect_16Players", view: tournamentSelect16Players },
 		{ path: "/newUserRegistration", view: newUserRegistration },
 		{ path: "/pong", view: pong },
+		{ path: "/pong2", view: pong },
 		{ path: "/logUser", view: logUser },
 	];
 
