@@ -44,24 +44,24 @@ export default class extends ViewTemplate {
 					<div id="Scores" class="flex justify-center items-center text-white font-bold hidden">
 						<div class="flex items-center">
 							<span>Left</span>
-							<h3 class="p-4" id="ScoreLeft" value="0">0</h3>
+							<h3 class="p-4" id="LeftScore" value="0">0</h3>
 						</div>
 						<span></span>
 						<div class="flex items-center">
-							<h3 class="p-4" id="ScoreRight" value="0">0</h3>
+							<h3 class="p-4" id="RightScore" value="0">0</h3>
 							<span>Right</span>
 						</div>
 					</div>
 				</div>
 
-			</div>
-			<script src="/game/main.js" type="module"></script>`
+			</div>`;
 	}
 
 	async init() {
-    	const module = await import("/game/main.js");
+    	const mode = (location.pathname === '/pong2') ? 2 : 1;
+	 	const module = await import("/game/pong.js");
    		if (typeof module.initPong === "function") {
-      		module.initPong();
+      		module.initPong({ mode });
+   		}
     }
-  }
 }
