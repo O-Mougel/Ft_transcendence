@@ -25,7 +25,7 @@ export class Game {
       height: PADDLE_HEIGHT,
       width: PADDLE_WIDTH,
       y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
-      x: 10 + PADDLE_WIDTH / 2,
+      x: 10,
       direction: "none",
       moveUp() { if (this.y > 0) this.y -= BASE_PADDLE_SPEED; },
       moveDown() { if (this.y + this.height < HEIGHT) this.y += BASE_PADDLE_SPEED; },
@@ -35,7 +35,7 @@ export class Game {
       height: PADDLE_HEIGHT,
       width: PADDLE_WIDTH,
       y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
-      x: WIDTH - (10 + PADDLE_WIDTH / 2),
+      x: WIDTH - (10 + PADDLE_WIDTH),
       direction: "none",
       moveUp() { if (this.y > 0) this.y -= BASE_PADDLE_SPEED; },
       moveDown() { if (this.y + this.height < HEIGHT) this.y += BASE_PADDLE_SPEED; },
@@ -46,7 +46,7 @@ export class Game {
       height: PADDLE_HEIGHT,
       width: PADDLE_WIDTH,
       y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
-      x: WIDTH * 1 / 4 + PADDLE_WIDTH / 2,
+      x: WIDTH / 4 - PADDLE_WIDTH,
       direction: "none",
       moveUp() { if (this.y > 0) this.y -= BASE_PADDLE_SPEED; },
       moveDown() { if (this.y + this.height < HEIGHT) this.y += BASE_PADDLE_SPEED; },
@@ -56,9 +56,8 @@ export class Game {
       height: PADDLE_HEIGHT,
       width: PADDLE_WIDTH,
       y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
-      x: WIDTH * 3 / 4 - PADDLE_WIDTH / 2,
+      x: WIDTH * 3 / 4,
       direction: "none",
-      // moveUp() { if (this.y > 0) this.y -= BASE_PADDLE_SPEED; },
       moveUp() { if (this.y > 0) this.y -= BASE_PADDLE_SPEED; },
       moveDown() { if (this.y + this.height < HEIGHT) this.y += BASE_PADDLE_SPEED; },
     };
@@ -75,6 +74,8 @@ export class Game {
       speed: BASE_BALL_SPEED,
       lastSidePossession: null,
     };
+
+    console.log("Paddles server positions:", this.leftPaddle.x, this.leftPaddle2.x, this.rightPaddle.x, this.rightPaddle2.x);
 
     this.normalizeBallVelocity();
   }
@@ -109,12 +110,8 @@ export class Game {
 
     this.ball.speed = BASE_BALL_SPEED;
 
-    // Keep serve direction if already moving, else random
-    const serveDirX =
-      this.ball.vx !== 0 ? (this.ball.vx < 0 ? -1 : 1) : (Math.random() > 0.5 ? 1 : -1);
-
-    this.ball.vx = serveDirX;
-    this.ball.vy = (Math.random() * 2 - 1);
+    this.ball.vx = this.ball.vx !== 0 ? (this.ball.vx < 0 ? -1 : 1) : (Math.random() > 0.5 ? 1 : -1);
+    this.ball.vy = 0;//(Math.random() * 2 - 1);
 
     this.normalizeBallVelocity();
     this.ball.lastSidePossession = null;
@@ -212,7 +209,7 @@ export class Game {
 
       if (this.mode === 2) { // 4-paddle mode
         if (this.handlePaddleCollisions(this.rightPaddle2, 'right', x0, y0, x1, y1, vx, vy)) return;  // RIGHT PADDLE 2
-        if (this.handlePaddleCollisions(this.leftPaddle2, 'left', x0, y0, x1, y1, vx, vy)) return;  // LEFT PADDLE 2
+        if (this.handlePaddleCollisions(this.leftPaddle2, 'left', x0, y0, x1, y1, vx, vy)) return;  // LEFT PADDLE 2 (bounce-back)
       }
     }
 
@@ -222,18 +219,13 @@ export class Game {
 
       if (this.mode === 2) { // 4-paddle mode
         if (this.handlePaddleCollisions(this.leftPaddle2, 'left', x0, y0, x1, y1, vx, vy)) return;  // LEFT PADDLE 2
-        if (this.handlePaddleCollisions(this.rightPaddle2, 'right', x0, y0, x1, y1, vx, vy)) return;  // RIGHT PADDLE 2
+        if (this.handlePaddleCollisions(this.rightPaddle2, 'right', x0, y0, x1, y1, vx, vy)) return;  // RIGHT PADDLE 2 (bounce-back)
       }
     }    
   }
 
   handlePaddleCollisions(paddle, side, x0, y0, x1, y1, vx, vy) {
-    const collision_offset = PADDLE_WIDTH / 2 + this.ball.radius;
-  	const collision_x = (side === 'right') ?
-              ((vx > 0) ? paddle.x - collision_offset : paddle.x + collision_offset)
-              :
-              ((vx < 0) ? paddle.x + collision_offset : paddle.x - collision_offset);
-  
+  	const collision_x = (vx > 0) ? (paddle.x - this.ball.radius) : (paddle.x + this.ball.radius + paddle.width);
     // check if ball crosses paddle x face this frame
     if (!((vx > 0) ? (x0 <= collision_x && x1 >= collision_x) : (x0 >= collision_x && x1 <= collision_x))) return false;
     
@@ -295,44 +287,6 @@ export class Game {
       this.rightPaddle2.moveDown();
     }
   }
-
-  //  handlePaddleCollisions(paddle, side, x0, y0, x1, y1, vx, vy) {
-  //   const collision_offset = PADDLE_WIDTH / 2 + this.ball.radius;
-  // 	const collision_x = (side === 'right') ?
-  //             ((vx > 0) ? paddle.x - collision_offset : paddle.x + collision_offset)
-  //             :
-  //             ((vx < 0) ? paddle.x + collision_offset : paddle.x - collision_offset);
-  
-  //   // check if ball crosses paddle x face this frame
-  //   if (!((vx > 0) ? (x0 <= collision_x && x1 >= collision_x) : (x0 >= collision_x && x1 <= collision_x))) return false;
-    
-  //   const timeOfImpact = (collision_x - x0) / vx;
-  //   const collision_y = y0 + vy * timeOfImpact;
-  
-  //   // check if within paddle vertical bounds
-  // 	if (collision_y < paddle.y || collision_y > paddle.y + paddle.height) return false
-  
-  //   // collision happens at time t
-  // 	this.ball.x = collision_x;
-  // 	this.ball.y = collision_y;
-  
-  //   // reflect horizontally
-  // 	this.ball.vx = -vx;
-  
-  //   // adjust vertical velocity based on where the ball hit the paddle
-  // 	const hitPos = collision_y - (paddle.y + paddle.height / 2);
-  // 	this.ball.vy = hitPos * 0.1;
-  
-  // 	this.normalizeBallVelocity();
-  
-  //   // move remaining time after collision
-  // 	const remaining_t = 1 - timeOfImpact;
-  // 	this.ball.x += this.ball.vx * remaining_t;
-  // 	this.ball.y += this.ball.vy * remaining_t;
-  
-  // 	this.incrementBallSpeed(side);
-  //   return true;
-  // }
 
   start(data) {
     this.isGameStarted = true;
