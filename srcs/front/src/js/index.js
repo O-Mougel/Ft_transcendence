@@ -32,7 +32,7 @@ const grabCustomizationPageInfo = async () =>
 
 	try 
 	{
-		const dataRequestResponse = await fetch('/userCustomization', { //GET request by default without the "request" parameter
+		const dataRequestResponse = await fetch('/userCustomizationInfoGrab', { //GET request by default without the "request" parameter
 				credentials: 'include',
 		});
 	

@@ -1,7 +1,7 @@
 // user.route.js
 
 import { $ref } from "./user.schema.js";
-import { logoutHandler, loginHandler, registerUserHandler, dataGrabHandler } from "./user.controller.js";
+import { logoutHandler, loginHandler, registerUserHandler, dataGrabHandler, alterUserHandler } from "./user.controller.js";
 
 async function userRoutes(fastify) {
     fastify.post(
@@ -15,6 +15,20 @@ async function userRoutes(fastify) {
             },
         }, 
         registerUserHandler,
+    );
+	
+	fastify.post(
+        '/saveCustomProfileChanges', 
+        {
+			preHandler: [fastify.authenticate], //forces log to see user profile
+            schema: {
+                body: $ref("profileChangesSchema"),
+                response: {
+                    200: $ref("profileChangesResponseSchema"),
+                },
+            },
+        }, 
+        alterUserHandler,
     );
 
 	fastify.post(
@@ -36,7 +50,7 @@ async function userRoutes(fastify) {
 			preHandler: [fastify.authenticate], //forces log to see user profile
             schema: {
                 response: {
-                    201: $ref("infoGrabResponseSchema"),
+                    200: $ref("infoGrabResponseSchema"),
                 }
             }
         }, 
@@ -44,12 +58,12 @@ async function userRoutes(fastify) {
     );
 
 	fastify.get(
-        '/userCustomization', 
+        '/userCustomizationInfoGrab', 
         {
 			preHandler: [fastify.authenticate], //forces log to see user profile
             schema: {
                 response: {
-                    201: $ref("infoGrabResponseSchema"),
+                    200: $ref("infoGrabResponseSchema"),
                 }
             }
         }, 

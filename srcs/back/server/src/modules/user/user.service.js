@@ -3,21 +3,29 @@
 import { db } from "../../utils/prisma.js";
 import { hashPassword } from "../../utils/hash.js";
 
-export async function grabUserByID(userId) {
+export async function grabUserByID(userId) {  //grabs every field from given id
 
 	const user = await db.user.findUnique({
 		where: { id: Number(userId) },
-		select: {
-			id: true,
-			email: true,
-			name: true,
-			avatar: true,
-		},
 	})
 
 	return user;
 }
 
+export async function alterUser(id, newName, newPath) { // add a check to see if new username exists already
+
+	const user = await db.user.update({
+		where: {
+			id: id,
+		},
+		data: {
+			name: newName,
+			avatar: newPath,
+		},
+	})
+
+	return (user);
+}
 
 export async function createUser(input) {
 	const { password, ...rest } = input;
@@ -31,7 +39,7 @@ export async function createUser(input) {
 	return user;
 }
 
-export async function findUserByName(name) {
+export async function findUserByName(name) { //grabs every field from given name
 	const user = await db.user.findUnique({
 		where: {
 			name: name,
