@@ -139,7 +139,7 @@ window.logoutUser = async function () {
 			window.sessionStorage.setItem('logStatus', 'loggedOut');
 
 			var isLogged = sessionStorage.getItem("logStatus");
-			backToLoginPage();
+			backToDefaultPage();
 		}
 	} 
 	catch (err) 
