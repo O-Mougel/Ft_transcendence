@@ -6,7 +6,7 @@ import { Server } from 'socket.io';
 
 import { registerSocketHandlers } from './sockets.js';
 import { Game } from './game.js';
-import { TICK_RATE } from './config.js';
+import { AI_REACTION_TIME, TICK_RATE } from './config.js';
 
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
@@ -46,6 +46,25 @@ export function scheduleClientUpdates() {
       game.reset();
     }
   }, TICK_RATE);
+}
+
+export function scheduleAIUpdates(mode, game) {
+  console.log('Scheduling AI updates for mode:', mode);
+  if (mode !== 0) return; // Only schedule AI updates in single-player mode
+  console.log('AI updates scheduled');
+  console.log('Game running status:', game.isGameStarted);
+  const aiUpdateIntervalId = setInterval(() => {
+    if (!game.isGameStarted) {
+      clearInterval(aiUpdateIntervalId);
+      return;
+    }
+    
+    console.log('AI update tick');
+    const aiPlayer = game.AIPlayer;
+    if (aiPlayer) {
+      aiPlayer.update();
+    }
+  }, AI_REACTION_TIME);
 }
 
 export function stopClientUpdates() {
