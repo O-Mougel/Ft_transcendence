@@ -1,4 +1,4 @@
-import { scheduleClientUpdates, stopClientUpdates } from "./server.js";
+import { scheduleClientUpdates, scheduleAIUpdates, stopClientUpdates } from "./server.js";
 
 export function registerSocketHandlers(io, game) {
   io.on('connection', (socket) => {
@@ -6,10 +6,11 @@ export function registerSocketHandlers(io, game) {
 
     socket.on('startGame', (data) => {
       if (!data) return;
-      if (!data.mode) data.mode = 1;
+      if (!data.mode) data.mode = 0;
       game.mode = data.mode;
       game.start(data);
       socket.emit('gameStarted', { mode: game.mode });
+      scheduleAIUpdates(game.mode, game);
       scheduleClientUpdates();
     });
 
