@@ -12,13 +12,16 @@ import {
 
 } from './config.js';
 
+import { AIPlayer } from './AI.js';
+
 export class Game {
   constructor() {
-    this.mode = 1; // 1 = 2 paddles, 2 = 4 paddles
+    this.mode = 0; // 0 = vs AI, 1 = 2 paddles, 2 = 4 paddles
     this.isGameStarted = false;
 
     this.leftScore = 0;
     this.rightScore = 0;
+    this.AIPlayer = null;
 
     // --- PADDLES ---
     this.leftPaddle = {
@@ -69,7 +72,7 @@ export class Game {
 
       // vx/vy store direction * speed (always normalized to `speed`)
       vx: Math.random() > 0.5 ? 1 : -1,
-      vy: 0, //(Math.random() * 2 - 1), // [-1, 1]
+      vy: (Math.random() * 2 - 1), // [-1, 1]
 
       speed: BASE_BALL_SPEED,
       lastSidePossession: null,
@@ -80,9 +83,8 @@ export class Game {
     this.normalizeBallVelocity();
   }
 
-  // ======================
   // Single-speed utilities
-  // ======================
+
   normalizeBallVelocity() {
     const mag = Math.hypot(this.ball.vx, this.ball.vy);
     if (mag < 1e-8) {
@@ -101,9 +103,8 @@ export class Game {
     this.normalizeBallVelocity();
   }
 
-  // ==============
   // Game lifecycle
-  // ==============
+
   resetBall() {
     this.ball.x = WIDTH / 2;
     this.ball.y = HEIGHT / 2;
@@ -121,7 +122,7 @@ export class Game {
     console.log('Ball speed: ', this.ball.speed);
     if (side !== this.ball.lastSidePossession) {
       if (this.ball.speed < MAX_BALL_SPEED) {
-        this.ball.speed = Math.min(MAX_BALL_SPEED, this.ball.speed + STEP);
+        this.ball.speed += STEP;
         this.normalizeBallVelocity();
       }
       this.ball.lastSidePossession = side;
@@ -150,9 +151,8 @@ export class Game {
     return gameOver;
   }
 
-  // =================
   // Core physics tick
-  // =================
+
   moveBall() {
     const x0 = this.ball.x;
     const y0 = this.ball.y;
@@ -186,7 +186,7 @@ export class Game {
       }
     } else if (vy < 0) {
       // bouncing top
-      const collision_y = 10 + this.ball.radius;
+      const collision_y = 5 + this.ball.radius;
       if (y0 >= collision_y && y1 <= collision_y) {
         const timeOfImpact = (collision_y - y0) / vy;
         this.ball.x = x0 + vx * timeOfImpact;
@@ -273,9 +273,7 @@ export class Game {
     return { t, nx, ny };
   }
 
-
-
-handlePaddleCollisionPrecise(paddle, side, x0, y0, vx, vy) {
+  handlePaddleCollisionPrecise(paddle, side, x0, y0, vx, vy) {
     const r = this.ball.radius;
   
     const minX = paddle.x - r;
@@ -304,9 +302,9 @@ handlePaddleCollisionPrecise(paddle, side, x0, y0, vx, vy) {
       let u = (impactY - (paddle.y + halfH)) / halfH; // [-1, 1]
       u = Math.max(-1, Math.min(1, u)); // clamp
     
-      const p = 2.5; // exponent for curve control; higher = more curve near edges
+      const p = 2; // exponent for curve control; higher = more curve near edges
       const curved = Math.sign(u) * Math.pow(Math.abs(u), p); // curved value in [-1, 1]
-      this.ball.vy = curved * 3; // scale factor for vertical speed; higher = more vertical
+      this.ball.vy = curved * 4; // scale factor for vertical speed; higher = more vertical
     } else if (Math.abs(hit.ny) > 0.5) {
       // hit top/bottom face -> optionally control vx instead
       const halfW = paddle.width / 2;
@@ -338,45 +336,56 @@ handlePaddleCollisionPrecise(paddle, side, x0, y0, vx, vy) {
 
   movePaddles() {
     // Left paddle
-    if (this.leftPaddle.direction === "up") {
+    if (this.leftPaddle.direction === "up")
       this.leftPaddle.moveUp();
-    } else if (this.leftPaddle.direction === "down") {
+    else if (this.leftPaddle.direction === "down")
       this.leftPaddle.moveDown();
-    }
     
     // Right paddle
-    if (this.rightPaddle.direction === "up") {
-      this.rightPaddle.moveUp();
-    } else if (this.rightPaddle.direction === "down") {
-      this.rightPaddle.moveDown();
+    if (this.mode !== 0) {
+      if (this.rightPaddle.direction === "up")
+        this.rightPaddle.moveUp();
+      else if (this.rightPaddle.direction === "down")
+        this.rightPaddle.moveDown();
+    }
+    else {
+      if (this.AIPlayer.predictedY - (this.rightPaddle.y) > BASE_PADDLE_SPEED)
+        this.rightPaddle.moveDown();
+      else if ((this.rightPaddle.y) - this.AIPlayer.predictedY > BASE_PADDLE_SPEED)
+        this.rightPaddle.moveUp();
     }
     
     if (this.mode !== 2) return;
     // Left paddle 2
-    if (this.leftPaddle2.direction === "up") {
+    if (this.leftPaddle2.direction === "up")
       this.leftPaddle2.moveUp();
-    } else if (this.leftPaddle2.direction === "down") {
+    else if (this.leftPaddle2.direction === "down")
       this.leftPaddle2.moveDown();
-    }
     
     // Right paddle 2
-    if (this.rightPaddle2.direction === "up") {
+    if (this.rightPaddle2.direction === "up")
       this.rightPaddle2.moveUp();
-    } else if (this.rightPaddle2.direction === "down") {
+    else if (this.rightPaddle2.direction === "down")
       this.rightPaddle2.moveDown();
-    }
   }
 
   start(data) {
     this.isGameStarted = true;
-    console.log('Game started', this.mode === 1 ? '2 Paddles' : '4 Paddles');
-    if (this.mode === 1) {
+    console.log('Game started', this.mode !== 2 ? '2 Paddles' : '4 Paddles');
+    if (this.mode === 0) {
+      if (data) {
+        this.leftPaddle.name = data.player1 || "Left Player";
+        this.rightPaddle.name = data.player2 || "AI Opponent";
+      }
+      this.AIPlayer = new AIPlayer(this.rightPaddle, this.leftPaddle, this);
+      console.log('Player name:', this.leftPaddle.name, this.rightPaddle.name);
+    } else if (this.mode === 1) {
       if (data) {
         this.leftPaddle.name = data.player1 || "Left Player";
         this.rightPaddle.name = data.player2 || "Right Player";
       }
       console.log('Player names:', this.leftPaddle.name, this.rightPaddle.name);
-    } else if (this.mode === 2) {
+    } else {
       if (data) {
         this.leftPaddle.name = data.player1 || "Left Player 1";
         this.rightPaddle.name = data.player2 || "Right Player 1";
@@ -421,21 +430,22 @@ handlePaddleCollisionPrecise(paddle, side, x0, y0, vx, vy) {
       if (direction === 'none') this.rightPaddle.direction = "none";
     }
 
-    if (this.mode === 2) {
-      if (side === 'left2') {
-        if (direction === 'up') this.leftPaddle2.direction = "up";
-        if (direction === 'down') this.leftPaddle2.direction = "down";
-        if (direction === 'none') this.leftPaddle2.direction = "none";
-      }
-      if (side === 'right2') {
-        if (direction === 'up') this.rightPaddle2.direction = "up";
-        if (direction === 'down') this.rightPaddle2.direction = "down";
-        if (direction === 'none') this.rightPaddle2.direction = "none";
-      }
+    if (this.mode !== 2) return;
+
+    if (side === 'left2') {
+      if (direction === 'up') this.leftPaddle2.direction = "up";
+      if (direction === 'down') this.leftPaddle2.direction = "down";
+      if (direction === 'none') this.leftPaddle2.direction = "none";
+    }
+    if (side === 'right2') {
+      if (direction === 'up') this.rightPaddle2.direction = "up";
+      if (direction === 'down') this.rightPaddle2.direction = "down";
+      if (direction === 'none') this.rightPaddle2.direction = "none";
     }
   }
 
   // Main tick
+
   update() {
     if (!this.isGameStarted) {
       return { gameOver: false };
