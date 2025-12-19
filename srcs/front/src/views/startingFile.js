@@ -9,30 +9,31 @@ export default class extends ViewTemplate {
 
 	async getHTML() {
 		return `
-			<div id="profilePanel" class="flex absolute right-0 top-0 h-full w-[15%] bg-[url(/img/stars.gif)] z-50 shadow-md border border-[#98c6f8] border border-[#98c6f8]">
-					<div class="flex flex-col text-center w-full ">
+			<div id="profilePanel" class="flex absolute right-0 top-0 h-full w-[20%] bg-[url(/img/stars.gif)] z-50 shadow-[0_0_20px_rgba(158,202,237,0.9)] border border-[#98c6f8]">
+					<div class="flex flex-col text-center w-full h-full">
 						<div class="grid h-[30%] place-items-center">
-  							<div class="bg-[url(/img/sillyDog.gif)] bg-cover w-[50%] h-[50%] p-4 rounded-[50%] shadow"></div>
+  							<div id="sidePannelPfp" class="bg-[url(/img/sillyDog.gif)] bg-cover p-4 rounded-[50%] opacity-0 shadow object-cover w-[170px] h-[170px]"></div>
 						</div>
-						<h1 class="text-white text-bold h-1/5 text-4xl">Goofy ahh player</h1>
-						<p class="text-white">Plaisantin</p>
-						<p class="text-white">Wow what a great person</p>
-						<a href="/profileOverview" name="profileLink" data-link>See profile</a>
+						<h1 id="playerGrabbedUsername" class="text-black text-bold mx-4 mb-15 text-2xl ">[username]</h1>
+						<a href="/profileOverview" class="mx-4 text-2xl mb-5 border p-4 text-[#798490]" name="profileLink" data-link>Update profile</a>
+						<a id="logoutButton" class="mx-4 text-2xl mb-15 border p-4 cursor-pointer hover:text-[#dee9f4] hover:bg-[#882639] text-[#882639]" onclick=logoutUser() name="logoutButtonName">➜] Log out</a>
+						<div class="self-start">
+							<input class="sr-only peer" id="friendCheck" type="checkbox"/>
+							<label for="friendCheck" class="text-2xl cursor-pointer px-3 py-2 select-none hover:text-[#98c6f8]">► Online friends</label>
+							<ul class="select-none peer-checked:block hidden mt-3 self-start text-left" id="friendlist">
+							<li><a class="text-xl pl-2">• Goug ?</a></li>
+							<li><a class="text-xl pl-2">• Gougou ?</a></li>
+							<li><a class="text-xl pl-2">• Gougougaga ?</a></li>
+							</ul>
+						</div>
 					</div>
 			</div>
-			<div class="text-center ml-auto mr-auto pt-[5%]">
-				<img class ="mx-auto mb-[75px]" id="logo" src="./img/sillyDog.gif">
-				<form>
-					<div class="content-center">
-						<input tabindex="1" class="mx-auto text-white hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] w-1/2 md:w-1/4 h-[35px] text-sm md:text-base rounded-sm border border-[#c2dbf6] pt-2 pb-[5px] pr-5 pl-5 mb-[25px]" name="playerUsername" value="" type="text" autofocus autocomplete="off" placeholder="Enter your login" aria-invalid>
-					</div>
-					<div class="content-center">
-						<input tabindex="2" class="mx-auto text-white hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] w-1/2 md:w-1/4 h-[35px] text-sm md:text-base rounded-sm border border-[#c2dbf6] pt-2 pb-[5px] pr-5 pl-5 mb-[35px]" name="playerPassword" value="" type="text" autocomplete="off" placeholder="Enter your password" aria-invalid>
-					</div>
-					<div class="">
-						<input tabindex="3" class="uppercase text-sm md:text-base xl:text-2xl text-white focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis w-1/2 md:w-1/4 border hover:border-[#98c6f8] border-white pt-2 pb-2 rounded-lg " name="login" type="submit" value="Sign In">
-					</div>
-				</form>
+			<div class="pt-[5vw] h-full w-full">
+				<h1 class="text-[4vw] my-6 2xl:text-6xl">FT_Transcendence</h1>
+				<div class=" w-full h-[25%] my-15 content-center m-auto">
+					<img src="/img/missile.gif" class="block w-[20%] h-full m-auto mb-15">
+					<a id="mainPageLoginButton" href="/logUser" class="hidden uppercase text-sm md:text-base xl:text-2xl text-white focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis w-1/2 md:w-1/4 border hover:border-[#98c6f8] border-white py-2 px-4 rounded-lg shadow-[0_0_20px_rgba(158,202,237,0.9)]" name="logPageLink" data-link> 🚀 Sign in </a>
+				</div>
 			</div>`
 	}
 }
