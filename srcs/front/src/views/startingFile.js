@@ -34,7 +34,6 @@ export default class extends ViewTemplate {
 					<img src="/img/missile.gif" class="block w-[20%] h-full m-auto mb-15">
 					<a id="mainPageLoginButton" href="/logUser" class="hidden uppercase text-sm md:text-base xl:text-2xl text-white focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis w-1/2 md:w-1/4 border hover:border-[#98c6f8] border-white py-2 px-4 rounded-lg shadow-[0_0_20px_rgba(158,202,237,0.9)]" name="logPageLink" data-link> 🚀 Sign in </a>
 				</div>
-				
 			</div>`
 	}
 }

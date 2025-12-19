@@ -15,20 +15,10 @@ export default class Ball {
         ctx.fill();
     }
 
-    move() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-    }
-
-    setSpeed(newSpeedX, newSpeedY) {
-        this.speedX = newSpeedX;
-        this.speedY = newSpeedY;
-    }
-
     reset() {
         this.x = this.spawnX;
         this.y = this.spawnY;
-        this.speedX = 3.0;
-        this.speedY = 3.0;
+        // this.speedX = 3.0;
+        // this.speedY = 3.0;
     }
 }

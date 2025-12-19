@@ -20,55 +20,65 @@ export const CONTEXT = {
 	keysPressed: new Set(),
 	updateIntervalId: null,
 	controlsBound: false,
-	gameMode: 1, // or 2
+	gameMode: 0, // or 2
 
 	// Dimensions
+	PADDLE_WIDTH: 10,
+	PADDLE_HEIGHT: 80,
+	BALL_RADIUS: 10,
 	GAME_WIDTH: 800,
 	GAME_HEIGHT: 500,
 };
 
 export function createGameElements() {
-	const { GAME_WIDTH, GAME_HEIGHT } = CONTEXT;
+	const { GAME_WIDTH, GAME_HEIGHT, BALL_RADIUS, PADDLE_WIDTH, PADDLE_HEIGHT } = CONTEXT;
+
+	const width_ratio = GAME_WIDTH / 800;
+	const height_ratio = GAME_HEIGHT / 500;
+
+	console.log("There Width ratio:", width_ratio, "Height ratio:", height_ratio);
 
 	CONTEXT.ball = new Ball(
 		GAME_WIDTH / 2,
 		GAME_HEIGHT / 2,
-		(10 / 800) * GAME_WIDTH,
+		BALL_RADIUS * width_ratio,
 		"white"
 	);
 
 	CONTEXT.leftPaddle = new Paddle(
-		(10 / 800) * GAME_WIDTH,
+		10 * width_ratio,
 		GAME_HEIGHT / 2,
-		(10 / 800) * GAME_WIDTH,
-		(80 / 500) * GAME_HEIGHT,
+		PADDLE_WIDTH * width_ratio,
+		PADDLE_HEIGHT * height_ratio,
 		"dodgerblue"
 	);
 
 	CONTEXT.rightPaddle = new Paddle(
-		CONTEXT.GAME_WIDTH - (20 / 800) * GAME_WIDTH,
+		GAME_WIDTH - (10 + PADDLE_WIDTH) * width_ratio,
 		GAME_HEIGHT / 2,
-		(10 / 800) * GAME_WIDTH,
-		(80 / 500) * GAME_HEIGHT,
+		PADDLE_WIDTH * width_ratio,
+		PADDLE_HEIGHT * height_ratio,
 		"red"
 	);
 
 	if (CONTEXT.gameMode !== 2) return;
 	
 	CONTEXT.leftPaddle2 = new Paddle(
-		CONTEXT.GAME_WIDTH / 4 + (10 / 800) * GAME_WIDTH,
+		GAME_WIDTH / 4 - PADDLE_WIDTH * width_ratio,
 		GAME_HEIGHT / 2,
-		(10 / 800) * GAME_WIDTH,
-		(80 / 500) * GAME_HEIGHT,
+		PADDLE_WIDTH * width_ratio,
+		PADDLE_HEIGHT * height_ratio,
 		"dodgerblue"
 	);
 
 	CONTEXT.rightPaddle2 = new Paddle(
-		3 * CONTEXT.GAME_WIDTH / 4 - (20 / 800) * GAME_WIDTH,
+		GAME_WIDTH * 3 / 4,
 		GAME_HEIGHT / 2,
-		(10 / 800) * GAME_WIDTH,
-		(80 / 500) * GAME_HEIGHT,
+		PADDLE_WIDTH * width_ratio,
+		PADDLE_HEIGHT * height_ratio,
 		"red"
 	);
+
+	console.log("Paddles clients positions:", CONTEXT.leftPaddle.x, CONTEXT.leftPaddle2.x, CONTEXT.rightPaddle.x, CONTEXT.rightPaddle2.x);
 
 }

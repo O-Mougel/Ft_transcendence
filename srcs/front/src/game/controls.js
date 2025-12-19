@@ -33,8 +33,7 @@ function updateDirections() {
     if (keysPressed.has("ArrowUp") && !keysPressed.has("ArrowDown")) rightPaddle.direction = "up";
     else if (keysPressed.has("ArrowDown") && !keysPressed.has("ArrowUp")) rightPaddle.direction = "down";
     else rightPaddle.direction = "none";
-  }
-  else {
+  } else if (CONTEXT.gameMode === 2) {
     if (keysPressed.has("ArrowUp") && !keysPressed.has("ArrowDown")) rightPaddle2.direction = "up";
     else if (keysPressed.has("ArrowDown") && !keysPressed.has("ArrowUp")) rightPaddle2.direction = "down";
     else rightPaddle2.direction = "none";
@@ -47,7 +46,7 @@ function updateDirections() {
   else if (s && !w) leftPaddle.direction = "down";
   else leftPaddle.direction = "none";
 
-  if (CONTEXT.gameMode === 1) return;
+  if (CONTEXT.gameMode !== 2) return;
 
   // Left paddle 2: O/L
   const o = keysPressed.has("o") || keysPressed.has("O");

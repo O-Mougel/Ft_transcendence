@@ -6,7 +6,7 @@ import { Server } from 'socket.io';
 
 import { registerSocketHandlers } from './sockets.js';
 import { Game } from './game.js';
-import { TICK_RATE } from './config.js';
+import { AI_REACTION_TIME, TICK_RATE } from './config.js';
 
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
@@ -48,6 +48,21 @@ export function scheduleClientUpdates() {
   }, TICK_RATE);
 }
 
+export function scheduleAIUpdates(mode, game) {
+  if (mode !== 0) return; // Only schedule AI updates in single-player mode
+  const aiUpdateIntervalId = setInterval(() => {
+    if (!game.isGameStarted) {
+      clearInterval(aiUpdateIntervalId);
+      return;
+    }
+    
+    const aiPlayer = game.AIPlayer;
+    if (aiPlayer) {
+      aiPlayer.update();
+    }
+  }, AI_REACTION_TIME);
+}
+
 export function stopClientUpdates() {
   if (updateIntervalId) {
     clearInterval(updateIntervalId);
@@ -60,5 +75,4 @@ fastify.listen({ port: 3002 }, (err, address) => {
     fastify.log.error(err);
     process.exit(1);
   }
-  // fastify.log.info(`Server listening at ${address}`);
 });
