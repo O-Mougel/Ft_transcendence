@@ -35,18 +35,29 @@ window.onFileSelected = function (inputFileSelector) {
 		document.getElementById('selectedFileName').textContent = '';
 };
 
-window.saveProfileInfo = function () {
+function uploadFileToServer(fileObj) {
+
+	const formData = new FormData();
+
+	formData.append("avatar", fileObj);
+}
+
+window.saveProfileInfo = async function () {
 
 	const username = document.getElementById('newUsername');
 	const password = document.getElementById('confirmPassword');
 	const confirmText = document.getElementById('confirmChangeResults');
 	const fileInput = document.getElementById("myfileSelector");
-	const selFile = fileInput.files[0];
+	const selectedFile = fileInput.files[0];
 
 	confirmText.innerText = "";
 
-	if (!username.value && !selFile)
+	if (!username.value && !selectedFile) // if nothing changed, do nothing
+	{
+		// console.log('img src',document.getElementById('userPfp').getAttribute("src"));
+		// console.log('placeholder is : ', username.placeholder);
 		return ;
+	}
 	if (username)
 	{
 		if (username.value.length > 12)
@@ -66,15 +77,60 @@ window.saveProfileInfo = function () {
 		password.focus();
 		return ;
 	}
-	if (selFile)
+	if (selectedFile && selectedFile.name)
 	{
-		console.log("Handle files...");
-		console.log(selFile.name);
+		console.log(selectedFile.name);
+		var fullFilename = "src/img/userPfp/" + selectedFile.name;
+		// uploadFileToServer(selectedFile);
 	}
+	else if (!selectedFile)
+	{
+		var fullFilename = document.getElementById('userPfp').getAttribute("src");
+	}
+		
 
-	confirmText.style.color = "#3ec745";
-	confirmText.innerText = "✅ User updated !";
-	username.value = "";
-	password.value = "";
-	document.getElementById('selectedFileName').textContent = '';
+	if (!username.value)
+		username.value = username.placeholder;
+
+
+	const data = {
+		name: username.value,
+		password: password.value,
+		avatar: fullFilename,
+	};
+
+	try 
+	{
+		const applyChangeResponse = await fetch('/saveCustomProfileChanges', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
+				body: JSON.stringify(data),
+		});
+	
+		if (!applyChangeResponse.ok) {
+				const text = await applyChangeResponse.text().catch(() => applyChangeResponse.statusText);
+				throw new Error(`Request failed: ${applyChangeResponse.status} ${text}`);
+		}
+		const result = await applyChangeResponse.json();
+	
+		if (result && result.message) 
+			confirmText.innerText = result.message;
+		else
+		{
+			confirmText.style.color = "#3ec745";
+			confirmText.innerText = "✅ User updated !";
+			
+			document.getElementById('selectedFileName').textContent = '';
+			username.placeholder = username.value;
+			document.getElementById('userPfp').setAttribute('src', fullFilename);
+			username.value = "";
+			password.value = "";
+		}
+	} 
+	catch (err) 
+	{
+		console.error('Edit user error ! ', err);
+		confirmText.innerText = '⚠️ Error: Network error';
+	}	
 };

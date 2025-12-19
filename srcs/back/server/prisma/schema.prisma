@@ -14,7 +14,7 @@ model User {
   name             String   @unique
   password         String   
   salt	           String   
-  avatar           String   @default("srcs/ressources/default.png")
+  avatar           String   @default("src/img/userPfp/default.png")
   friends          User[]   @relation("UserFriends")
   friendOf         User[]   @relation("UserFriends")
   request          User[]   @relation("FriendRequest")
