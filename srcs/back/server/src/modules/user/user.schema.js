@@ -49,14 +49,48 @@ const infoGrabResponseSchema = z.object({
 	avatar: z.string(),
 });
 
+const editPasswordSchema = z.object({
+	oldpassword: z.string(),
+	newpassword: z.string(),
+})
+
+const friendRequestSchema = z.object({
+	friendrequestname: z.string(),
+})
+
+const friendAcceptSchema = z.object({
+	friendacceptname: z.string(),
+})
+
+// const friendSchema = z.object({
+// 	name: z.string(),
+// 	avatar: z.string(),
+// 	online: z.boolean(),
+// })
+//
+// const friendRequestResponseSchema = z.object({
+// 	requests: friendSchema.array(),
+// })
+//
+// const friendResponseSchema = z.object({
+// 	friends: friendSchema.array(),
+// })
+
 export const { schemas: userSchemas, $ref } = buildJsonSchemas({
-  createUserSchema,
-  createUserResponseSchema,
-  loginSchema,
-  loginResponseSchema,
-  infoGrabResponseSchema,
-  profileChangesSchema,
-  profileChangesResponseSchema
+	createUserSchema,
+	createUserResponseSchema,
+	loginSchema,
+	loginResponseSchema,
+	infoGrabResponseSchema,
+	profileChangesSchema,
+	profileChangesResponseSchema
+	editProfileSchema,
+	editProfileResponseSchema,
+	editPasswordSchema,
+	friendRequestSchema,
+	friendAcceptSchema,
+	// friendResponseSchema,
+	// friendRequestResponseSchema,
 },
   { $id: 'userSchemas' },
 );
