@@ -1,6 +1,6 @@
 // user.controller.js
 
-import { createUser, findUserByName, grabUserByID } from "./user.service.js";
+import { createUser, findUserByName, grabUserByID, alterUser } from "./user.service.js";
 import { verifyPassword } from "../../utils/hash.js";
 
 export async function registerUserHandler(request, reply) {
@@ -81,9 +81,43 @@ export async function loginHandler(request, reply) {
     return { accessToken: token }
 }
 
+export async function alterUserHandler(request, reply) {
+
+    const body = request.body;  //what we want to change
+	const userId = request.user && request.user.id; // who made the request (token)
+	if (!userId) return reply.code(401).send({ message: 'Not authenticated !' });
+
+	const target = await grabUserByID(userId);
+    if (!target) {
+        return reply.status(400).send({
+            message: "Error ! Couln't find user !"
+        });
+    };
+
+    // Verify password
+    const isValidPassword = verifyPassword(
+        body.password,
+        target.salt,
+        target.password);
+
+    if (!isValidPassword) {
+        return reply.status(400).send({
+            message: "Password is incorrect"
+        });
+    };
+
+	const updatedUser = await alterUser(userId, body.name, body.avatar);
+	if (!updatedUser) {
+        return reply.status(400).send({
+            message: "Error ! Couln't modify user !"
+        });
+    };
+	return reply.status(200).send(updatedUser); // not really needed, just to send something
+}
+
 export async function logoutHandler(request, reply) {
     reply.clearCookie('access_token');
 
     return reply.status(200).send({ message: 'Logout successfully' })
-	// i switched 201 into 200 but i'm mot sure
+	// i switched 201 into 200 but i'm not sure
 }
