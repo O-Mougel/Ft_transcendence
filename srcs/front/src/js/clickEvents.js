@@ -37,9 +37,30 @@ window.onFileSelected = function (inputFileSelector) {
 
 function uploadFileToServer(fileObj) {
 
-	const formData = new FormData();
+	//fileObj = fileInput.files[0]
+	const fileInput = document.getElementById('myfileSelector');
+	const filenameStr = document.getElementById('selectedFileName');
 
-	formData.append("avatar", fileObj);
+	const formData = new FormData();
+	formData.append("myfileSelector", fileObj);
+	fetch("/file_upload", {
+	method: "POST",
+	body: formData
+	})
+	.then(response => {
+	return response.text().then(text => {
+	if (response.ok) {
+	filenameStr.innerText = "✅ File uploaded";
+	} else {
+	filenameStr.innerText = "❌ File upload failed";
+	}
+	fileInput.value = "";
+	});
+	})
+	.catch(error => {
+	filenameStr.innerText = "❌ Network Error : " + error;
+	});
+
 }
 
 window.saveProfileInfo = async function () {
@@ -81,7 +102,7 @@ window.saveProfileInfo = async function () {
 	{
 		console.log(selectedFile.name);
 		var fullFilename = "src/img/userPfp/" + selectedFile.name;
-		// uploadFileToServer(selectedFile);
+		uploadFileToServer(selectedFile);
 	}
 	else if (!selectedFile)
 	{
