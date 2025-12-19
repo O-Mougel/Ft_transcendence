@@ -49,17 +49,13 @@ export function scheduleClientUpdates() {
 }
 
 export function scheduleAIUpdates(mode, game) {
-  console.log('Scheduling AI updates for mode:', mode);
   if (mode !== 0) return; // Only schedule AI updates in single-player mode
-  console.log('AI updates scheduled');
-  console.log('Game running status:', game.isGameStarted);
   const aiUpdateIntervalId = setInterval(() => {
     if (!game.isGameStarted) {
       clearInterval(aiUpdateIntervalId);
       return;
     }
     
-    console.log('AI update tick');
     const aiPlayer = game.AIPlayer;
     if (aiPlayer) {
       aiPlayer.update();
@@ -79,5 +75,4 @@ fastify.listen({ port: 3002 }, (err, address) => {
     fastify.log.error(err);
     process.exit(1);
   }
-  // fastify.log.info(`Server listening at ${address}`);
 });
