@@ -45,7 +45,7 @@ export function emitStartGame() {
     socket.emit("startGame", { 
     mode: 0,
   	player1: "Player1",
-  	player2: "AI Opponent",
+  	player2: "AIOpponent",
     });
   }
   else if (CONTEXT.gameMode === 1) {
