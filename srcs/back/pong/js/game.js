@@ -72,13 +72,11 @@ export class Game {
 
       // vx/vy store direction * speed (always normalized to `speed`)
       vx: Math.random() > 0.5 ? 1 : -1,
-      vy: (Math.random() * 2 - 1), // [-1, 1]
+      vy: (Math.random() - 0.5) * 0.1, // small initial vertical component
 
       speed: BASE_BALL_SPEED,
       lastSidePossession: null,
     };
-
-    console.log("Paddles server positions:", this.leftPaddle.x, this.leftPaddle2.x, this.rightPaddle.x, this.rightPaddle2.x);
 
     this.normalizeBallVelocity();
   }
@@ -86,6 +84,7 @@ export class Game {
   // Single-speed utilities
 
   normalizeBallVelocity() {
+    // console.log('Normalizing ball velocity:', this.ball.vx, this.ball.vy);
     const mag = Math.hypot(this.ball.vx, this.ball.vy);
     if (mag < 1e-8) {
       // fallback if ever degenerate
@@ -96,6 +95,7 @@ export class Game {
     const s = this.ball.speed / mag;
     this.ball.vx *= s;
     this.ball.vy *= s;
+    // console.log('Normalized ball velocity:', this.ball.vx, this.ball.vy);
   }
 
   setBallSpeed(newSpeed) {
@@ -112,7 +112,7 @@ export class Game {
     this.ball.speed = BASE_BALL_SPEED;
 
     this.ball.vx = this.ball.vx !== 0 ? (this.ball.vx < 0 ? -1 : 1) : (Math.random() > 0.5 ? 1 : -1);
-    this.ball.vy = 0;//(Math.random() * 2 - 1);
+    this.ball.vy = (Math.random() - 0.5) * 0.1;
 
     this.normalizeBallVelocity();
     this.ball.lastSidePossession = null;
@@ -169,67 +169,122 @@ export class Game {
     this.ball.y = y1;
 
     // Top/bottom boundary collision
-    if (vy > 0) {
-      // bouncing bottom
-      const collision_y = HEIGHT - 5 - this.ball.radius;
-      if (y0 <= collision_y && y1 >= collision_y) {
-        const timeOfImpact = (collision_y - y0) / vy;
-        this.ball.x = x0 + vx * timeOfImpact;
-        this.ball.y = collision_y;
+    // if (vy > 0) {
+    //   // bouncing bottom
+    //   const collision_y = HEIGHT - 5 - this.ball.radius;
+    //   if (y0 <= collision_y && y1 >= collision_y) {
+    //     const timeOfImpact = (collision_y - y0) / vy;
+    //     this.ball.x = x0 + vx * timeOfImpact;
+    //     this.ball.y = collision_y;
 
-        this.ball.vy = -vy;
-        this.normalizeBallVelocity();
+    //     this.ball.vy = -vy;
+    //     this.normalizeBallVelocity();
 
-        const remaining_t = 1 - timeOfImpact;
-        this.ball.x += this.ball.vx * remaining_t;
-        this.ball.y += this.ball.vy * remaining_t;
+    //     const remaining_t = 1 - timeOfImpact;
+    //     this.ball.x += this.ball.vx * remaining_t;
+    //     this.ball.y += this.ball.vy * remaining_t;
+    //     if (this.ball.y > HEIGHT) this.ball.y = HEIGHT - 5 - BALL_RADIUS;
+    //     if (this.ball.y < 0) this.ball.y = 5 + BALL_RADIUS;
+    //   }
+    // } else if (vy < 0) {
+    //   // bouncing top
+    //   const collision_y = 5 + this.ball.radius;
+    //   if (y0 >= collision_y && y1 <= collision_y) {
+    //     const timeOfImpact = (collision_y - y0) / vy;
+    //     this.ball.x = x0 + vx * timeOfImpact;
+    //     this.ball.y = collision_y;
+
+    //     this.ball.vy = -vy;
+    //     this.normalizeBallVelocity();
+
+    //     const remaining_t = 1 - timeOfImpact;
+    //     this.ball.x += this.ball.vx * remaining_t;
+    //     this.ball.y += this.ball.vy * remaining_t;
+    //     if (this.ball.y > HEIGHT) this.ball.y = HEIGHT - 5 - BALL_RADIUS;
+    //     if (this.ball.y < 0) this.ball.y = 5 + BALL_RADIUS;
+    //   }
+    // }
+
+    {
+      const eps = 1e-12;
+      let tRemaining = 1;
+      // local copies for convenience (will be refreshed after each reflection)
+      let cx = x0, cy = y0;
+      let cvx = vx, cvy = vy;
+
+      const topLimit = 5 + this.ball.radius;
+      const bottomLimit = HEIGHT - 5 - this.ball.radius;
+
+      while (tRemaining > eps) {
+        // if almost no vertical movement, just advance remaining time and break
+        if (Math.abs(cvy) < eps) {
+          cx += cvx * tRemaining;
+          cy += cvy * tRemaining;
+          tRemaining = 0;
+          break;
+        }
+
+        // choose collision plane based on vertical direction
+        const collisionY = (cvy > 0) ? bottomLimit : topLimit;
+        const timeToPlane = (collisionY - cy) / cvy; // in ticks (0..1)
+
+        if (timeToPlane >= 0 && timeToPlane <= tRemaining) {
+          // move to impact
+          cx += cvx * timeToPlane;
+          cy = collisionY;
+
+          // update ball to impact point
+          this.ball.x = cx;
+          this.ball.y = cy;
+
+          // reflect vertical component and renormalize
+          // use current global vx/vy direction*speed for reflection
+          // reflect using current cvx/cvy (direction * speed)
+          cvy = -cvy;
+          // update the ball velocity components so normalize uses correct speed
+          this.ball.vx = cvx;
+          this.ball.vy = cvy;
+          this.normalizeBallVelocity();
+          // refresh cvx/cvy from normalized values
+          cvx = this.ball.vx;
+          cvy = this.ball.vy;
+
+          // consume elapsed time and continue to simulate remaining fragment
+          tRemaining -= timeToPlane;
+          // continue loop to handle possible second bounce in same tick
+        } else {
+          // no plane collision within remaining interval -> move full remaining
+          cx += cvx * tRemaining;
+          cy += cvy * tRemaining;
+          tRemaining = 0;
+          this.ball.x = cx;
+          this.ball.y = cy;
+          break;
+        }
       }
-    } else if (vy < 0) {
-      // bouncing top
-      const collision_y = 5 + this.ball.radius;
-      if (y0 >= collision_y && y1 <= collision_y) {
-        const timeOfImpact = (collision_y - y0) / vy;
-        this.ball.x = x0 + vx * timeOfImpact;
-        this.ball.y = collision_y;
 
-        this.ball.vy = -vy;
-        this.normalizeBallVelocity();
-
-        const remaining_t = 1 - timeOfImpact;
-        this.ball.x += this.ball.vx * remaining_t;
-        this.ball.y += this.ball.vy * remaining_t;
-      }
+      // final clamp safety (avoid visual penetration)
+      if (this.ball.y > bottomLimit) this.ball.y = bottomLimit;
+      if (this.ball.y < topLimit) this.ball.y = topLimit;
     }
 
     // Paddle collisions
 
     // Ball moving to the right -> check right paddles sides of rightPaddle, rightPaddle2, leftPaddle2 (bounce-back) 
     if (vx > 0) {
-    //   if (this.handlePaddleCollisions(this.rightPaddle, 'right', x0, y0, x1, y1, vx, vy)) return; // RIGHT PADDLE (main)
-    //   if (this.handleHorizontalPaddleCollision(this.rightPaddle, x0, y0, x1, y1, vx, vy)) return; // RIGHT PADDLE horizontal face
       if (this.handlePaddleCollisionPrecise(this.rightPaddle, 'right', x0, y0, vx, vy)) return; // RIGHT PADDLE (main)
 
       if (this.mode === 2) { // 4-paddle mode
-        // if (this.handlePaddleCollisions(this.rightPaddle2, 'right', x0, y0, x1, y1, vx, vy)) return;  // RIGHT PADDLE 2
-        // if (this.handleHorizontalPaddleCollision(this.rightPaddle2, x0, y0, x1, y1, vx, vy)) return;  // RIGHT PADDLE 2 horizontal face
           if (this.handlePaddleCollisionPrecise(this.rightPaddle2, 'right', x0, y0, vx, vy)) return;  // RIGHT PADDLE 2
-        // if (this.handlePaddleCollisions(this.leftPaddle2, 'left', x0, y0, x1, y1, vx, vy)) return;  // LEFT PADDLE 2 (bounce-back)
-        // if (this.handleHorizontalPaddleCollision(this.leftPaddle2, x0, y0, x1, y1, vx, vy)) return;  // LEFT PADDLE 2 horizontal face
           if (this.handlePaddleCollisionPrecise(this.leftPaddle2, 'left', x0, y0, vx, vy)) return;  // LEFT PADDLE 2
       }
     }
 
     // Ball moving to the left -> check left paddles sides of leftPaddle, leftPaddle2, rightPaddle2 (bounce-back)
     if (vx < 0) {
-      // if (this.handlePaddleCollisions(this.leftPaddle, 'left', x0, y0, x1, y1, vx, vy)) return; // LEFT PADDLE (main)
-      // if (this.handleHorizontalPaddleCollision(this.leftPaddle, x0, y0, x1, y1, vx, vy)) return; // LEFT PADDLE horizontal face
       if (this.handlePaddleCollisionPrecise(this.leftPaddle, 'left', x0, y0, vx, vy)) return; // LEFT PADDLE (main)
 
       if (this.mode === 2) { // 4-paddle mode
-        // if (this.handlePaddleCollisions(this.leftPaddle2, 'left', x0, y0, x1, y1, vx, vy)) return;  // LEFT PADDLE 2
-        // if (this.handleHorizontalPaddleCollision(this.leftPaddle2, x0, y0, x1, y1, vx, vy)) return;  // LEFT PADDLE 2 horizontal face
-        // if (this.handlePaddleCollisions(this.rightPaddle2, 'right', x0, y0, x1, y1, vx, vy)) return;  // RIGHT PADDLE 2 (bounce-back)
-        // if (this.handleHorizontalPaddleCollision(this.rightPaddle2, x0, y0, x1, y1, vx, vy)) return;  // RIGHT PADDLE 2 horizontal face
         if (this.handlePaddleCollisionPrecise(this.leftPaddle2, 'left', x0, y0, vx, vy)) return;  // LEFT PADDLE 2
         if (this.handlePaddleCollisionPrecise(this.rightPaddle2, 'right', x0, y0, vx, vy)) return;  // RIGHT PADDLE 2
       }
@@ -324,7 +379,7 @@ export class Game {
     this.ball.y += this.ball.vy * remaining;
 
     // Clamp to bounds
-    if (this.ball.x < 0) this.ball.x = BALL_RADIUS;
+    if (this.ball.x < 0) this.ball.x = 5 + BALL_RADIUS;
     if (this.ball.x > WIDTH) this.ball.x = WIDTH - BALL_RADIUS;
     if (this.ball.y < 0) this.ball.y = BALL_RADIUS;
     if (this.ball.y > HEIGHT) this.ball.y = HEIGHT - BALL_RADIUS;
@@ -342,20 +397,13 @@ export class Game {
       this.leftPaddle.moveDown();
     
     // Right paddle
-    if (this.mode !== 0) {
-      if (this.rightPaddle.direction === "up")
-        this.rightPaddle.moveUp();
-      else if (this.rightPaddle.direction === "down")
-        this.rightPaddle.moveDown();
-    }
-    else {
-      if (this.AIPlayer.predictedY - (this.rightPaddle.y) > BASE_PADDLE_SPEED)
-        this.rightPaddle.moveDown();
-      else if ((this.rightPaddle.y) - this.AIPlayer.predictedY > BASE_PADDLE_SPEED)
-        this.rightPaddle.moveUp();
-    }
+    if (this.rightPaddle.direction === "up")
+      this.rightPaddle.moveUp();
+    else if (this.rightPaddle.direction === "down")
+      this.rightPaddle.moveDown();
     
-    if (this.mode !== 2) return;
+    if (this.mode !== 2) return; // not 4-paddle mode
+
     // Left paddle 2
     if (this.leftPaddle2.direction === "up")
       this.leftPaddle2.moveUp();
@@ -373,6 +421,7 @@ export class Game {
     this.isGameStarted = true;
     console.log('Game started', this.mode !== 2 ? '2 Paddles' : '4 Paddles');
     if (this.mode === 0) {
+      this.ball.vx = -1;
       if (data) {
         this.leftPaddle.name = data.player1 || "Left Player";
         this.rightPaddle.name = data.player2 || "AI Opponent";
@@ -394,6 +443,7 @@ export class Game {
       }
       console.log('Player names:', this.leftPaddle.name, this.rightPaddle.name, this.leftPaddle2.name, this.rightPaddle2.name);
     }
+    this.normalizeBallVelocity();
   }
 
   stop() {
@@ -430,6 +480,7 @@ export class Game {
       if (direction === 'none') this.rightPaddle.direction = "none";
     }
 
+
     if (this.mode !== 2) return;
 
     if (side === 'left2') {
@@ -452,8 +503,12 @@ export class Game {
     }
 
     this.moveBall();
+    if (this.mode === 0)
+      this.AIPlayer.updateDirection(); // AI updates its paddle direction; should only be called once per frame?
     this.movePaddles();
     const gameOver = this.checkScore();
+
+    // console.log('Ball velocity:', Math.f16round(this.ball.vx), Math.f16round(this.ball.vy), 'Speed:', this.ball.speed);
 
     return { gameOver };
   }
