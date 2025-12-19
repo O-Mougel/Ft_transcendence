@@ -3,7 +3,7 @@
 import * as z from "zod";
 import { buildJsonSchemas } from 'fastify-zod';
 
-const userCore = {          // define the common user schema
+const userCore = {  // define the common user schema
     email: z.string({
         required_error: "Email is required",
         invalid_type_error: "Email is not valid"
@@ -12,7 +12,7 @@ const userCore = {          // define the common user schema
 }
 
 const createUserSchema = z.object({
-    ...userCore,        // re-use the userCore object
+    ...userCore,
     password: z.string({
         required_error: "Password is required"
     })
@@ -23,8 +23,18 @@ const createUserResponseSchema = z.object({
     ...userCore,
 });
 
+const profileChangesSchema = z.object({
+    name: z.string(),
+    password: z.string(),
+	avatar: z.string(),
+});
+
+const profileChangesResponseSchema = z.object({
+    id: z.number(),
+});
+
 const loginSchema = z.object({
-    name: z.string(),        
+    name: z.string(),
     password: z.string()
 });
 
@@ -32,11 +42,55 @@ const loginResponseSchema = z.object({
     accessToken: z.string(),
 });
 
+const infoGrabResponseSchema = z.object({
+	id: z.number(),
+	email: z.string(),
+    name: z.string(),
+	avatar: z.string(),
+});
+
+const editPasswordSchema = z.object({
+	oldpassword: z.string(),
+	newpassword: z.string(),
+})
+
+const friendRequestSchema = z.object({
+	friendrequestname: z.string(),
+})
+
+const friendAcceptSchema = z.object({
+	friendacceptname: z.string(),
+})
+
+// const friendSchema = z.object({
+// 	name: z.string(),
+// 	avatar: z.string(),
+// 	online: z.boolean(),
+// })
+//
+// const friendRequestResponseSchema = z.object({
+// 	requests: friendSchema.array(),
+// })
+//
+// const friendResponseSchema = z.object({
+// 	friends: friendSchema.array(),
+// })
+
 export const { schemas: userSchemas, $ref } = buildJsonSchemas({
-  createUserSchema,
-  createUserResponseSchema,
-  loginSchema,
-  loginResponseSchema,
+	createUserSchema,
+	createUserResponseSchema,
+	loginSchema,
+	loginResponseSchema,
+	infoGrabResponseSchema,
+	profileChangesSchema,
+	profileChangesResponseSchema
+	editProfileSchema,
+	editProfileResponseSchema,
+	editPasswordSchema,
+	friendRequestSchema,
+	friendAcceptSchema,
+	// friendResponseSchema,
+	// friendRequestResponseSchema,
 },
   { $id: 'userSchemas' },
 );
