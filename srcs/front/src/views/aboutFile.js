@@ -1,0 +1,43 @@
+import ViewTemplate from "./ViewTemplate.js";	
+
+export default class extends ViewTemplate {
+	constructor()
+	{
+		super();
+		this.setTitle("About");
+	}
+
+	async getHTML() {
+		return `
+			<div id="profilePanel" class="flex absolute right-0 top-0 h-full w-[20%] bg-[url(/img/stars.gif)] z-50 shadow-[0_0_20px_rgba(158,202,237,0.9)] border border-[#98c6f8]">
+					<div class="flex flex-col text-center w-full h-full">
+						<div class="grid h-[30%] place-items-center">
+  							<div id="sidePannelPfp" class="bg-[url(/img/sillyDog.gif)] bg-cover w-[50%] h-[50%] p-4 rounded-[50%] opacity-0 shadow"></div>
+						</div>
+						<h1 id="playerGrabbedUsername" class="text-black text-bold mx-4 mb-15 text-2xl ">[username]</h1>
+						<a href="/profileOverview" class="mx-4 text-2xl mb-5 border p-4 text-[#798490]" name="profileLink" data-link>Update profile</a>
+						<a id="logoutButton" class="mx-4 text-2xl mb-15 border p-4 cursor-pointer hover:text-[#dee9f4] hover:bg-[#882639] text-[#882639]" onclick=logoutUser() name="logoutButtonName">➜] Log out</a>
+						<div class="self-start">
+							<input class="sr-only peer" id="friendCheck" type="checkbox"/>
+							<label for="friendCheck" class="text-2xl cursor-pointer px-3 py-2 select-none hover:text-[#98c6f8]">► Online friends</label>
+							<ul class="select-none peer-checked:block hidden mt-3 self-start text-left" id="friendlist">
+							<li><a class="text-xl pl-2">• Goug ?</a></li>
+							<li><a class="text-xl pl-2">• Gougou ?</a></li>
+							<li><a class="text-xl pl-2">• Gougougaga ?</a></li>
+							</ul>
+						</div>
+					</div>
+			</div>
+				<form class="py-[3%] px-[2%] ">
+					<h2 class="flex items-start text-amber-50">✦ Who did this ?</h2>
+					<div class="flex items-start w-[50%] py-5">
+						<h3 class="flex items-start text-sm pl-6 text-[#44494f]">Only lchapard, truly the best out there</h2>
+					</div>
+					<h2 class="flex items-start text-amber-50">✦ Why the space theme ?</h2>
+					<div class="flex items-start w-[50%] py-5">
+						<h3 class="flex items-start text-sm text-[#44494f] pl-6">Because the blackhole was near, makes sense if you ask me</h2>
+					</div>
+					
+				</form>`
+	}
+}
