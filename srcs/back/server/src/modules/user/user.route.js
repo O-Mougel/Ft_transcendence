@@ -1,7 +1,7 @@
 // user.route.js
 
 import { $ref } from "./user.schema.js";
-import { logoutHandler, loginHandler, registerUserHandler, profileHandler, editProfileHandler, editPasswordHandler } from "./user.controller.js";
+import { logoutHandler, loginHandler, registerUserHandler, profileHandler, editProfileHandler, editPasswordHandler, friendRequestHandler, friendAcceptHandler, getFriendHandler, getFriendRequestHandler } from "./user.controller.js";
 
 async function userRoutes(fastify) {
     fastify.post(
@@ -70,6 +70,57 @@ async function userRoutes(fastify) {
 		},
 		editPasswordHandler
 	)
+
+	fastify.post(
+		'/friend/request',
+		{
+			preHandler: [fastify.authenticate],
+			schema: {
+				body: $ref("friendRequestSchema"), //reponse et schema de reponse ?
+			},
+		},
+		friendRequestHandler
+	)
+
+	fastify.post(
+		'/friend/accept',
+		{
+			preHandler: [fastify.authenticate],
+			schema: {
+				body: $ref("friendAcceptSchema"), //reponse et schema de reponse ?
+			},
+		},
+		friendAcceptHandler
+	)
+
+	fastify.get(
+		'/friend/requested',
+		{
+			preHandler: [fastify.authenticate],
+			// schema: {
+			// 	response: {
+			// 		200: $ref("friendRequestResponseSchema")
+			// 	},
+			// },
+		},
+		getFriendRequestHandler
+	)
+
+	fastify.get(
+		'/friend',
+		{
+			preHandler: [fastify.authenticate],
+			// schema: {
+			// 	response: {
+			// 		200: $ref("friendResponseSchema")
+			// 	},
+			// },
+		},
+		getFriendHandler
+	)
+
+	//ajouter reject and delete friend
+
 }
 
 export default userRoutes;
