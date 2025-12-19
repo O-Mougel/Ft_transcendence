@@ -8,10 +8,10 @@ services:
      - back
     ports:
      - "4430:443"
-    volumes:
-     - front:/nginx
     networks:
      - transcendence
+    volumes:
+     - nginx:/var/www/html
     restart: on-failure
 
   front:
@@ -29,36 +29,45 @@ services:
     networks:
      - transcendence
     restart: on-failure
-     #    expose:
-     #      - ""
 
   back:
-    build: docker/back/.
+    build: 
+      context: ./back/server/.
+      dockerfile: ../../docker/back/Dockerfile
     env_file: ../.env
     container_name: back 
     volumes:
-      - back:/home
+      - db:/home/prisma
     networks:
       - transcendence
     restart: on-failure
     ports:
-      - "8080:3001"
+      - "3000:3000" #ne pas oublier d'enlever au moment de rendre le projet
+    # expose: 
+    #   - "3000"
 
 networks:
   transcendence:
     driver: bridge
 
 volumes:
-  back:
+  db:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: 'back/server'
+      device: 'back/volume'
 
   front:
     driver: local
     driver_opts:
-      type: 'none' 
+      type: 'none'
       o: 'bind'
-      device: 'front/'
+      device: 'front'
+  
+  nginx:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: 'front'

@@ -1,0 +1,57 @@
+services:
+  nginx:
+    build: docker/nginx/.
+    env_file: ../.env
+    container_name: nginx
+    depends_on:
+     - front
+     - back
+    ports:
+     - "4430:443"
+    networks:
+     - transcendence
+    restart: on-failure
+
+  front:
+    build:
+      context: .
+      dockerfile: docker/front/Dockerfile
+    env_file: ../.env
+    container_name: front
+    depends_on:
+     - back
+    ports: 
+     - "8080:3001"
+    # volumes:
+    #  - front:/usr/src/app
+    networks:
+     - transcendence
+    restart: on-failure
+
+  back:
+    build: 
+      context: ./back/server/.
+      dockerfile: ../../docker/back/Dockerfile
+    env_file: ../.env
+    container_name: back 
+    volumes:
+      - db:/home/prisma
+      - ./back/server/src:/home/src
+    networks:
+      - transcendence
+    restart: on-failure
+    ports:
+      - "3000:3000"
+    command: npm run dev
+
+networks:
+  transcendence:
+    driver: bridge
+
+volumes:
+  db:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: 'back/volume'

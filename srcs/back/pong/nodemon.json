@@ -1,6 +1,6 @@
 {
   "watch": [
-    "index.js"
+    "js/server.js"
   ],
   "ext": "js",
   "ignore": [

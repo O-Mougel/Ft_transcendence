@@ -1,5 +1,4 @@
 .env
-todo.txt
 docker/.env
 node_modules
 output.css
