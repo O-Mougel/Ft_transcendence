@@ -24,20 +24,16 @@ const backToLoginPage = async () => {
 	document.querySelector("#app").innerHTML = await view.getHTML();
 	adjustNavbar("/logUser");
 
-	// const btntext = document.getElementById('logoutButton');
-	// if (btntext)
-	// 	btntext.innerText = '➜] Log out';
-
-	const bar1 = document.getElementById('navBarHomeId');
-	const bar2 = document.getElementById('navBarModesId');
-	const bar3 = document.getElementById('navBarCupId');
-	const bar4 = document.getElementById('navBarAboutId');
-	const barProfile = document.getElementById('profileButton2');
-	bar1.style.display = 'none';
-	bar2.style.display = 'none';
-	bar3.style.display = 'none';
-	bar4.style.display = 'none';
-	barProfile.disabled=true;
+	// const bar1 = document.getElementById('navBarHomeId');
+	// const bar2 = document.getElementById('navBarModesId');
+	// const bar3 = document.getElementById('navBarCupId');
+	// const bar4 = document.getElementById('navBarAboutId');
+	// const barProfile = document.getElementById('profileButton2');
+	// bar1.style.display = 'none';
+	// bar2.style.display = 'none';
+	// bar3.style.display = 'none';
+	// bar4.style.display = 'none';
+	// barProfile.disabled=true;
 
 	if (typeof view.init === "function") {
 		 await view.init();
@@ -77,14 +73,15 @@ const fieldValidity = (username, pwd, pwdconf, requestR, email) => {
 		return ;
 	}
 	
-	console.log('username.value :', username.value);
-	console.log('password.value :', pwd.value);
+	// console.log('username.value :', username.value);
+	// console.log('password.value :', pwd.value);
 }
 
 window.grabProfileInfo = async function () {
 
 	const profilePanel = document.getElementById('profilePanel');
 	const profileUsername = document.getElementById('playerGrabbedUsername');
+	const profilePicture = document.getElementById('sidePannelPfp');
 
 	if (!profilePanel) return;
 
@@ -101,14 +98,17 @@ window.grabProfileInfo = async function () {
 		const result = await dataRequestResponse.json();	
 		if (result)
 		{
-			console.log(result.name);
+			// console.log('sideName',result.name);
+			// console.log('sidePfp',result.avatar);
+			
 			profileUsername.innerHTML = result.name;
 			profileUsername.style.color = 'white';
+			profilePicture.style.backgroundImage = `url(${result.avatar})`;
+			profilePicture.style.opacity = "1";
 		}
 	} 
 	catch (err) 
 	{
-		console.log(err);
 		console.error('Profile info grab failed :(', err);
 	}
 }
@@ -129,13 +129,17 @@ window.logoutUser = async function () {
 				throw new Error(`Request failed: ${logoutResponse.status} ${text}`);
 		}
 		const result = await logoutResponse.json();
-		console.log('logout request results : ', result);
+		// console.log('logout request results : ', result);
 	
 		if (result && result.message) 
 		{
-			// btntext.innerText = '⏳ Logging out ...';
+			console.log('⏳ Logging out ...');
 			// setTimeout(backToLoginPage, 2500);
-			backToLoginPage();
+			// window.sessionStorage.removeItem('logStatus');
+			window.sessionStorage.setItem('logStatus', 'loggedOut');
+
+			var isLogged = sessionStorage.getItem("logStatus");
+			backToDefaultPage();
 		}
 	} 
 	catch (err) 
@@ -163,24 +167,24 @@ window.handleNewUserCreate = async function (event) {
 	
 	try 
 	{
-		const loginResponse = await fetch('/userCreation', {
+		const newUserResponse = await fetch('/userCreation', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(data),
 		});
 	
-		if (!loginResponse.ok) {
-				const text = await loginResponse.text().catch(() => loginResponse.statusText);
-				throw new Error(`Request failed: ${loginResponse.status} ${text}`);
+		if (!newUserResponse.ok) {
+				const text = await newUserResponse.text().catch(() => newUserResponse.statusText);
+				throw new Error(`Request failed: ${newUserResponse.status} ${text}`);
 		}
-		const result = await loginResponse.json();
-		console.log('login result', result);
+		const result = await newUserResponse.json();
+		// console.log('userCreation result', result);
 	
 		if (result && result.message) 
 			requestResult.innerText = result.message;
 		else
 		{
-			// requestResult.innerText = '✅ User created';
+			console.log('✅ User created');
 			username.value = "";
 			email.value = "";
 			password.value = "";
@@ -223,8 +227,8 @@ window.handleLoginClick = async function (event) {
 		password: password.value,
 	};
 	
-	console.log(username.value);
-	console.log(password.value);
+	// console.log("login username", username.value);
+	// console.log("login password", password.value);
 	
 	
 	try 
@@ -241,7 +245,7 @@ window.handleLoginClick = async function (event) {
 		}
 	
 		const result = await loginResponse.json();
-		console.log('login result', result);
+		// console.log('login result', result);
 	
 		if (result && result.message) 
 			logResult.innerText = result.message;
@@ -249,16 +253,19 @@ window.handleLoginClick = async function (event) {
 		{
 			username.value = "";
 			password.value = "";
-			const bar1 = document.getElementById('navBarHomeId');
-			const bar2 = document.getElementById('navBarModesId');
-			const bar3 = document.getElementById('navBarCupId');
-			const bar4 = document.getElementById('navBarAboutId');
-			const barProfile = document.getElementById('profileButton2');
-			bar1.style.display = 'block';
-			bar2.style.display = 'block';
-			bar3.style.display = 'block';
-			bar4.style.display = 'block';
-			barProfile.disabled=false;
+			// const bar1 = document.getElementById('navBarHomeId');
+			// const bar2 = document.getElementById('navBarModesId');
+			// const bar3 = document.getElementById('navBarCupId');
+			// const bar4 = document.getElementById('navBarAboutId');
+			// const barProfile = document.getElementById('profileButton2');
+			// bar1.style.display = 'block';
+			// bar2.style.display = 'block';
+			// bar3.style.display = 'block';
+			// bar4.style.display = 'block';
+			// barProfile.disabled=false;
+
+			window.sessionStorage.setItem('logStatus','loggedIn');
+			var isLogged = sessionStorage.getItem("logStatus");
 
 			// const myTimeout = setTimeout(backToDefaultPage, 2000);
 			backToDefaultPage();
