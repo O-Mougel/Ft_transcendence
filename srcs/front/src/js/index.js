@@ -134,6 +134,7 @@ const router = async () => {
 		{ path: "/tournamentSelect_8Players", view: tournamentSelect8Players },
 		{ path: "/tournamentSelect_16Players", view: tournamentSelect16Players },
 		{ path: "/newUserRegistration", view: newUserRegistration },
+		{ path: "/pongAI", view: pong },
 		{ path: "/pong", view: pong },
 		{ path: "/pong2", view: pong },
 		{ path: "/logUser", view: logUser },
