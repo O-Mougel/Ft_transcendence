@@ -3,7 +3,7 @@
 import * as z from "zod";
 import { buildJsonSchemas } from 'fastify-zod';
 
-const userCore = {          // define the common user schema
+const userCore = {  // define the common user schema
     email: z.string({
         required_error: "Email is required",
         invalid_type_error: "Email is not valid"
@@ -12,7 +12,7 @@ const userCore = {          // define the common user schema
 }
 
 const createUserSchema = z.object({
-    ...userCore,        // re-use the userCore object
+    ...userCore,
     password: z.string({
         required_error: "Password is required"
     })
@@ -23,8 +23,18 @@ const createUserResponseSchema = z.object({
     ...userCore,
 });
 
+const profileChangesSchema = z.object({
+    name: z.string(),
+    password: z.string(),
+	avatar: z.string(),
+});
+
+const profileChangesResponseSchema = z.object({
+    id: z.number(),
+});
+
 const loginSchema = z.object({
-    name: z.string(),        
+    name: z.string(),
     password: z.string()
 });
 
@@ -32,14 +42,11 @@ const loginResponseSchema = z.object({
     accessToken: z.string(),
 });
 
-// const infoGrabSchema = z.object({        
-//     accessToken: z.string()
-// });
-
 const infoGrabResponseSchema = z.object({
 	id: z.number(),
 	email: z.string(),
     name: z.string(),
+	avatar: z.string(),
 });
 
 export const { schemas: userSchemas, $ref } = buildJsonSchemas({
@@ -48,6 +55,8 @@ export const { schemas: userSchemas, $ref } = buildJsonSchemas({
   loginSchema,
   loginResponseSchema,
   infoGrabResponseSchema,
+  profileChangesSchema,
+  profileChangesResponseSchema
 },
   { $id: 'userSchemas' },
 );
