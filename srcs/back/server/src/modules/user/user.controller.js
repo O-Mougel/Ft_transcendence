@@ -1,10 +1,18 @@
 // user.controller.js
 
-import { createUser, findUserByName, grabUserByID, alterUser } from "./user.service.js";
+import { createUser, findUserByName, findUserById, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend } from "./user.service.js";
 import { verifyPassword } from "../../utils/hash.js";
 
-export async function registerUserHandler(request, reply) {
+export async function registerUserHandler(request, reply) { //respect 
     const body = request.body;
+
+    const name = await findUserByName(body.name);
+
+    if (name) {	
+        return reply.status(400).send({
+            message: "Username already used. Try again!"
+        });
+    };
 
     try {
         const user = await createUser(body);
@@ -25,7 +33,7 @@ export async function dataGrabHandler(request, reply) {
 	if (!userId) return reply.code(401).send({ message: 'Not authenticated !' });
 
     try {
-        const user = await grabUserByID(userId);
+        const user = await findUserById(userId);
 		if (!user) return reply.code(404).send({ message: 'User not found using access token' });
 		// fields should be deleted if we send whole user, or instead just send username or stats
         return reply.status(200).send(user);
@@ -42,7 +50,6 @@ export async function dataGrabHandler(request, reply) {
 export async function loginHandler(request, reply) {
     const body = request.body;
 
-    // Find a user by email 
     const user = await findUserByName(body.name);
 
     if (!user) {
@@ -51,7 +58,6 @@ export async function loginHandler(request, reply) {
         });
     };
 
-    // Verify password
     const isValidPassword = verifyPassword(
         body.password,
         user.salt,
@@ -63,7 +69,8 @@ export async function loginHandler(request, reply) {
         });
     };
 
-    // Generate access token
+	//check 2fa and send 2fa if so 
+
     const payload = {
         id: user.id,
         email: user.email,
@@ -78,6 +85,8 @@ export async function loginHandler(request, reply) {
         secure: true,
     })
 
+	setOnlineStatus(user.id, true)
+
     return { accessToken: token }
 }
 
@@ -87,7 +96,7 @@ export async function alterUserHandler(request, reply) {
 	const userId = request.user && request.user.id; // who made the request (token)
 	if (!userId) return reply.code(401).send({ message: 'Not authenticated !' });
 
-	const target = await grabUserByID(userId);
+	const target = await findUserById(userId);
     if (!target) {
         return reply.status(400).send({
             message: "Error ! Couln't find user !"
@@ -106,6 +115,14 @@ export async function alterUserHandler(request, reply) {
         });
     };
 
+    const newname = await findUserByName(body.newname);
+
+    if (newname) {	
+        return reply.status(400).send({
+            message: "Username already used. Try again!"
+        });
+    };
+
 	const updatedUser = await alterUser(userId, body.name, body.avatar);
 	if (!updatedUser) {
         return reply.status(400).send({
@@ -118,6 +135,89 @@ export async function alterUserHandler(request, reply) {
 export async function logoutHandler(request, reply) {
     reply.clearCookie('access_token');
 
+	setOnlineStatus(request.user.id, false)
+
     return reply.status(200).send({ message: 'Logout successfully' })
-	// i switched 201 into 200 but i'm not sure
+}
+
+export async function editPasswordHandler(request, reply) {
+	const body = request.body;
+
+    const isValidPassword = verifyPassword(
+        body.oldpassword,
+        user.salt,
+        user.password);
+
+    if (!isValidPassword) {
+        return reply.status(400).send({
+            message: "Password is incorrect"
+        });
+    };
+
+	const newuser = changePassword(user.id, body.newpassword);
+
+    return { newuser }
+}
+
+export async function friendRequestHandler(request, reply) {
+	const newfriendname = request.body.friendrequestname;
+
+	const newfriend = await findUserByName(newfriendname)
+
+	if (!newfriend)
+        return reply.status(400).send({
+            message: "Username doesn't exist. Try again!"
+        });
+	//ne pas se demander soit meme en ami
+	
+	if (alreadyrequested(request.user.id, newfriend.id))
+        return reply.status(400).send({
+            message: "You already requested this user as a friend, just be patient and wait for his response"
+        });
+
+	if (alreadyfriend(request.user.id, newfriend.id))
+        return reply.status(400).send({
+            message: "This user is already your friend!"
+        });
+
+	requestfriend(request.user.id, newfriend.id)
+	
+    return { newfriend }
+}
+
+export async function friendAcceptHandler(request, reply) {
+	const newfriendname = request.body.friendacceptname;
+
+	const newfriend = await findUserByName(newfriendname)
+
+	if (!newfriend)
+        return reply.status(400).send({
+            message: "Username doesn't exist. Try again!"
+        });
+	
+	if (!alreadyrequested(newfriend.id, request.user.id))
+        return reply.status(400).send({
+            message: "This user didn't send you request, make one yourself if you want to be friend with him"
+        });
+
+	if (alreadyfriend(request.user.id, newfriend.id))
+        return reply.status(400).send({
+            message: "This user is already your friend!"
+        });
+
+	await acceptfriend(request.user.id, newfriend.id)
+
+	return { newfriend }
+}
+
+export async function getFriendRequestHandler(request, reply) {
+	const requests = await findrequests(request.user.id)
+	
+	return { requests }
+}
+
+export async function getFriendHandler(request, reply) {
+	const friends = await findfriends(request.user.id)
+
+	return { friends }
 }

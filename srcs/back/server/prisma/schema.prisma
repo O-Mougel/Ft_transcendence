@@ -16,11 +16,11 @@ model User {
   salt	           String   
   avatar           String   @default("src/img/userPfp/default.png")
   friends          User[]   @relation("UserFriends")
-  friendOf         User[]   @relation("UserFriends")
+  symmetricFriends User[]   @relation("UserFriends")
   request          User[]   @relation("FriendRequest")
   requestOf        User[]   @relation("FriendRequest")
   auth2fa          Boolean  @default(false)
-  onfile           Boolean  @default(false)
+  online           Boolean  @default(false)
   ai               Boolean  @default(false)
   invited          Boolean  @default(false) 
   matchesAsPlayer1 Match[]  @relation("Player1Matches")
