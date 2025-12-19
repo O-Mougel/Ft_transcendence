@@ -41,7 +41,14 @@ export function emitStartGame() {
 	console.log("Cannot start game: Not connected to server");
 	return;
   }
-  if (CONTEXT.gameMode === 1) {
+  if (CONTEXT.gameMode === 0) {
+    socket.emit("startGame", { 
+    mode: 0,
+  	player1: "Player1",
+  	player2: "AIOpponent",
+    });
+  }
+  else if (CONTEXT.gameMode === 1) {
     socket.emit("startGame", { 
     mode: 1,
   	player1: "Player1",
@@ -57,8 +64,6 @@ export function emitStartGame() {
       player4: "Player4",
     });
   }
-
-
 }
 
 export function emitStopGame() {
