@@ -10,35 +10,37 @@
 <body class="h-screen w-screen m-0 bg-[url(/img/starField.gif)] bg-cover bg-center backdrop-blur-[2px] text-center text-[2vw] 2xl:text-3xl text-white">
 
 	<!-- SMALL NAVBAR --------------------------------->
-	<ul class="sm:hidden flex h-[5%] w-full m-0 p-0 list-none items-center">
-        <li class="h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/" data-link>H</a></li>
-        <li class="h-full w-auto relative">
+	<ul class="sm:hidden flex h-[5%] w-full m-0 p-0 pt-2 list-none items-center">
+        <li class="h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b] px-2"><a class="flex items-center justify-center bg-[url(/img/home.png)] bg-contain bg-no-repeat bg-center w-10 h-10" href="/" data-link></a></li>
+        <li class="h-full w-auto relative px-2">
 			<input class="sr-only peer" id="modListBoxSmall" type="checkbox"/>
-			<label for="modListBoxSmall" class="cursor-pointer select-none flex items-center justify-center px-5 h-full w-full hover:text-[#98c6f8] hover:bg-[#1c1b1b]">M</label>
+			<label for="modListBoxSmall" class="cursor-pointer select-none flex items-center justify-center hover:text-[#98c6f8] hover:bg-[#1c1b1b] bg-[url(/img/mode.png)] bg-contain bg-no-repeat bg-center w-10 h-10"></label>
 			<ul class="select-none absolute peer-checked:block hidden self-start text-left h-full w-full z-30" id="modlist">
-				<li class="h-full w-auto text-base bg-amber-400 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/versusAI" data-link>🦾</a></li>
-				<li class="h-full w-auto text-base bg-amber-500 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/playerBattle" data-link>⚔️</a></li>
+				<li class="h-full w-auto text-base bg-amber-400 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pongAI" data-link>🦾</a></li>
+				<li class="h-full w-auto text-base bg-amber-500 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong" data-link>⚔️</a></li>
+				<li class="h-full w-auto text-base bg-amber-500 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong2" data-link>⚔️⚔️</a></li>
 			</ul>
 		</li>
-        <li class="h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/tournament" data-link>T</a></li>
-        <li class="h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/about" data-link>A</a></li>
+        <li class="h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b] px-2"><a class="flex items-center justify-center bg-[url(/img/tournament.png)] bg-contain bg-no-repeat bg-center w-10 h-10" href="/tournament" data-link></a></li>
+        <li class="h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b] px-2"><a class="flex items-center justify-center bg-[url(/img/about.png)] bg-contain bg-no-repeat bg-center w-10 h-10" href="/about" data-link></a></li>
 		<input id="profileButton" type="button" value="Profile" class="flex items-center text-white bg-[#302f2f] hover:bg-[#1c1b1b] ml-auto px-5 m-0" />
     </ul>
 
 	<!-- DEFAULT NAVBAR -->
 	<ul class="hidden sm:flex h-[5%] w-full m-0 p-0 list-none items-center">
-		<li class="h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/" data-link>Home</a></li>
-		<li class="h-full w-auto relative">
+		<li id="navBarHomeId" class="hidden h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/" data-link>Home</a></li>
+		<li id="navBarModesId"class="hidden h-full w-auto relative">
 			<input class="sr-only peer" id="modListBox" type="checkbox"/>
 			<label for="modListBox" class="cursor-pointer select-none flex items-center justify-center px-5 h-full w-full hover:text-[#98c6f8] hover:bg-[#1c1b1b]">Modes</label>
 			<ul class="select-none absolute peer-checked:block hidden self-start text-left h-full w-full z-30" id="modlist">
-				<li class="h-full w-auto text-base bg-amber-400 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/versusAI" data-link>VS AI 🦾</a></li>
-				<li class="h-full w-auto text-base bg-amber-500 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/playerBattle" data-link>PVP ⚔️</a></li>
+				<li class="h-full w-auto text-base bg-amber-400 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pongAI" data-link>VS AI 🦾</a></li>
+				<li class="h-full w-auto text-base bg-amber-500 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong" data-link>P⚔️P</a></li>
+				<li class="h-full w-auto text-base bg-amber-500 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong2" data-link>PP⚔️PP</a></li>
 			</ul>
 		</li>
-        <li class="h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/tournament" data-link>Tournament</a></li>
-		<li class="h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/about" data-link>About</a></li>
-		<input id="profileButton2" type="button" value="Profile" class="flex items-center hover:text-[#98c6f8] hover:bg-[#1c1b1b] ml-auto px-5 m-0 h-full" />
+        <li id="navBarCupId" class="hidden h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/tournament" data-link>Tournament</a></li>
+		<li id="navBarAboutId" class="hidden h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/about" data-link>About</a></li>
+		<input id="profileButton2" type="button" value="Profile" class="flex items-center hover:text-[#98c6f8] hover:bg-[#1c1b1b] disabled:text-white disabled:opacity-10 disabled:cursor-not-allowed ml-auto px-5 m-0 h-full" onclick="grabProfileInfo(event)" disabled/>
     </ul>
 
 	<!--  MAIN DIV -->
@@ -47,5 +49,7 @@
 	<!-- SCRIPTS -->
 	<script type="module" src="/js/index.js"></script>
 	<script type="module" src="/js/clickEvents.js"></script>
+	<script type="module" src="/js/clickTournamentSelectPlayers.js"></script>
+	<script type="module" src="/js/userLog.js"></script>
 </body>
 </html>
