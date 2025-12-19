@@ -32,9 +32,8 @@ export default class extends ViewTemplate {
 				<h1 class="text-[4vw] my-6 2xl:text-6xl">FT_Transcendence</h1>
 				<div class=" w-full h-[25%] my-15 content-center m-auto">
 					<img src="/img/missile.gif" class="block w-[20%] h-full m-auto mb-15">
-					<a href="/logUser" class="uppercase text-sm md:text-base xl:text-2xl text-white focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis w-1/2 md:w-1/4 border hover:border-[#98c6f8] border-white pt-2 pb-2 rounded-lg shadow-[0_0_20px_rgba(158,202,237,0.9)]" name="logPageLink" data-link>LOGIN</a>
+					<a href="/logUser" class="uppercase text-sm md:text-base xl:text-2xl text-white focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis w-1/2 md:w-1/4 border hover:border-[#98c6f8] border-white p-2 rounded-lg shadow-[0_0_20px_rgba(158,202,237,0.9)]" name="logPageLink" data-link>LOGIN</a>
 				</div>
-				
 			</div>`
 	}
 }
