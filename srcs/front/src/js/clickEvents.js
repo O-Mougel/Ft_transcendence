@@ -102,7 +102,7 @@ window.saveProfileInfo = async function () {
 	{
 		console.log(selectedFile.name);
 		var fullFilename = "src/img/userPfp/" + selectedFile.name;
-		uploadFileToServer(selectedFile);
+		// uploadFileToServer(selectedFile);
 	}
 	else if (!selectedFile)
 	{

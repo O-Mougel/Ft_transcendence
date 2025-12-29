@@ -16,7 +16,7 @@ model User {
   salt	           String   
   avatar           String   @default("src/img/userPfp/default.png")
   friends          User[]   @relation("UserFriends")
-  symmetricFriends User[]   @relation("UserFriends")
+  friendOf         User[]   @relation("UserFriends")
   request          User[]   @relation("FriendRequest")
   requestOf        User[]   @relation("FriendRequest")
   auth2fa          Boolean  @default(false)
