@@ -30,6 +30,15 @@ export async function createUser(input) {
 	return user;
 }
 
+export async function checkIfUserExists(name) { // if count = 0, doesn't exist
+	const result = await db.user.count({
+  		where: {
+    		name: name,
+  		},
+	});
+
+	return result;
+}	
 export async function findUserByName(name) { //grabs every field from given name
 	const user = await db.user.findUnique({
 		where: {
@@ -39,6 +48,8 @@ export async function findUserByName(name) { //grabs every field from given name
 
 		return user;
 }
+
+
 
 export async function setOnlineStatus(id, status) {
 	await db.user.update({
