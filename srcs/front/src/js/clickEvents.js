@@ -143,6 +143,7 @@ window.saveProfileInfo = async function () {
 			confirmText.innerText = "✅ User updated !";
 			
 			document.getElementById('selectedFileName').textContent = '';
+			fileInput.value = "";
 			username.placeholder = username.value;
 			document.getElementById('userPfp').setAttribute('src', fullFilename);
 			username.value = "";
@@ -151,6 +152,10 @@ window.saveProfileInfo = async function () {
 	} 
 	catch (err) 
 	{
+		username.value = "";
+		password.value = "";
+		fileInput.value = "";
+		document.getElementById('selectedFileName').textContent = '';
 		console.error('Edit user error ! ', err);
 		confirmText.innerText = '⚠️ Error: Network error';
 	}	

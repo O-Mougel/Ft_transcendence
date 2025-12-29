@@ -48,21 +48,21 @@ const fieldValidity = (username, pwd, pwdconf, requestR, email) => {
 	{
 		requestR.innerText = "❌ Login cannot be empty !";
 		username.focus();
-		return ;
+		return false;
 		
 	}
 	else if (!email.value)
 	{
 		requestR.innerText = "❌ Email cannot be empty !";
 		email.focus();
-		return ;
+		return false;
 		
 	}
 	else if (!pwd.value)
 	{
 		requestR.innerText = "❌ Enter a password !";
 		pwd.focus();
-		return ;
+		return false;
 	}
 	if (pwd.value != pwdconf.value)
 	{
@@ -70,11 +70,12 @@ const fieldValidity = (username, pwd, pwdconf, requestR, email) => {
 		pwd.value = '';
 		pwdconf.value = '';
 		pwd.focus();
-		return ;
+		return false;
 	}
 	
 	// console.log('username.value :', username.value);
 	// console.log('password.value :', pwd.value);
+	return (true);
 }
 
 window.grabProfileInfo = async function () {
@@ -157,7 +158,8 @@ window.handleNewUserCreate = async function (event) {
 	const passwordConfirm = document.getElementById('confirmPasswordNewUser');
 	const requestResult = document.getElementById('saveNewUserInfo');
 
-	fieldValidity(username, password, passwordConfirm, requestResult, email)
+	if(fieldValidity(username, password, passwordConfirm, requestResult, email) == false)
+		return ;
 
 	const data = {
 		email: email.value,
@@ -195,6 +197,10 @@ window.handleNewUserCreate = async function (event) {
 	} 
 	catch (err) 
 	{
+		username.value = "";
+		email.value = "";
+		password.value = "";
+		passwordConfirm.value = "";
 		console.error('Login error', err);
 		requestResult.innerText = '⚠️ Error: Network error';
 	}
@@ -276,6 +282,8 @@ window.handleLoginClick = async function (event) {
 	{
 		console.error('Login error', err);
 		logResult.innerText = '⚠️ Error: Network error';
+		username.value = "";
+		password.value = "";
 	}
 };
 
