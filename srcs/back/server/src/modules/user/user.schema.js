@@ -83,9 +83,7 @@ export const { schemas: userSchemas, $ref } = buildJsonSchemas({
 	loginResponseSchema,
 	infoGrabResponseSchema,
 	profileChangesSchema,
-	profileChangesResponseSchema
-	editProfileSchema,
-	editProfileResponseSchema,
+	profileChangesResponseSchema,
 	editPasswordSchema,
 	friendRequestSchema,
 	friendAcceptSchema,

@@ -1,12 +1,13 @@
 // user.controller.js
 
-import { createUser, findUserByName, findUserById, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend } from "./user.service.js";
+import { createUser, findUserByName, findUserById, checkIfUserExists, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend } from "./user.service.js";
 import { verifyPassword } from "../../utils/hash.js";
 
 export async function registerUserHandler(request, reply) { //respect 
     const body = request.body;
 
-    const name = await findUserByName(body.name);
+    // const name = await findUserByName(body.name);
+	const name = await checkIfUserExists(body.name);
 
     if (name) {	
         return reply.status(400).send({

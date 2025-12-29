@@ -122,7 +122,7 @@ window.saveProfileInfo = async function () {
 
 	try 
 	{
-		const applyChangeResponse = await fetch('/saveCustomProfileChanges', {
+		const applyChangeResponse = await fetch('/profile/edit', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
