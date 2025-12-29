@@ -97,15 +97,15 @@ export const adjustNavbar = path => {
 	{
 		bt.style.display = 'none';
 		btsmall.style.display = 'none';
-		clearInterval(profileRefresh);
+		// clearInterval(profileRefresh);
 		grabCustomizationPageInfo();
 	}
 	else
 	{
 		bt.style.display = 'flex';
 		btsmall.style.display = 'flex';
-		clearInterval(profileRefresh);
-		profileRefresh = setInterval(refreshProfile, 50000);
+		// clearInterval(profileRefresh);
+		// profileRefresh = setInterval(refreshProfile, 50000);
 	}
 
 	//closes all opened panels when switching tabs
