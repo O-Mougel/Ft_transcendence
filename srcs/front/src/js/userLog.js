@@ -87,7 +87,7 @@ window.grabProfileInfo = async function () {
 
 	try 
 	{
-		const dataRequestResponse = await fetch('/profileGrab', { //GET request by default without the "request" parameter
+		const dataRequestResponse = await fetch('/profile/grab', { //GET request by default without the "request" parameter
 				credentials: 'include',
 		});
 	
@@ -167,7 +167,7 @@ window.handleNewUserCreate = async function (event) {
 	
 	try 
 	{
-		const newUserResponse = await fetch('/userCreation', {
+		const newUserResponse = await fetch('/register', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(data),
@@ -178,7 +178,7 @@ window.handleNewUserCreate = async function (event) {
 				throw new Error(`Request failed: ${newUserResponse.status} ${text}`);
 		}
 		const result = await newUserResponse.json();
-		// console.log('userCreation result', result);
+		// console.log('register result', result);
 	
 		if (result && result.message) 
 			requestResult.innerText = result.message;
