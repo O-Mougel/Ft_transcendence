@@ -116,13 +116,15 @@ export async function alterUserHandler(request, reply) {
         });
     };
 
-    const newname = await findUserByName(body.newname);
-
-    if (newname) {	
-        return reply.status(400).send({
-            message: "Username already used. Try again!"
-        });
-    };
+	if (target.name != body.name)
+	{
+		const newname = await findUserByName(body.name);
+		if (newname) {	
+			return reply.status(400).send({
+				message: "Username already used. Try again!"
+			});
+		};
+	}
 
 	const updatedUser = await alterUser(userId, body.name, body.avatar);
 	if (!updatedUser) {
