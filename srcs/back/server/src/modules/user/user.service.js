@@ -114,7 +114,7 @@ export async function alreadyfriend(id, friendid) {
 	return user
 }
 
-export async function requestfriend(id, friendid) {
+export async function requestFriend(id, friendid) {
 	await db.user.update({
 		where: {id: id},
 		data: {
@@ -172,7 +172,7 @@ export async function findrequests(id) {
 }
 
 export async function findfriends(id) {
-	const friends = await db.user.findUnique({
+	const friendsObj = await db.user.findUnique({
 		where: {id: id},
 		select: {
 			friends: {
@@ -185,5 +185,5 @@ export async function findfriends(id) {
 		},
 	})
 	
-	return friends
+	return friendsObj
 }

@@ -1,13 +1,13 @@
 // user.controller.js
 
-import { createUser, findUserByName, findUserById, checkIfUserExists, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend } from "./user.service.js";
+import { createUser, findUserByName, findUserById, checkIfUserExists, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestFriend } from "./user.service.js";
 import { verifyPassword } from "../../utils/hash.js";
 
 export async function registerUserHandler(request, reply) {
     const body = request.body;
 
-    // const name = await findUserByName(body.name);
-	const name = await checkIfUserExists(body.name);
+    const name = await findUserByName(body.name);
+	// const name = await checkIfUserExists(body.name);
 
     if (name) {	
         return reply.status(400).send({
@@ -162,7 +162,7 @@ export async function editPasswordHandler(request, reply) {
 }
 
 export async function friendRequestHandler(request, reply) {
-	const newfriendname = request.body.friendrequestname;
+	const newfriendname = request.body.friendRequestName;
 
 	const newfriend = await findUserByName(newfriendname)
 
@@ -182,13 +182,13 @@ export async function friendRequestHandler(request, reply) {
             message: "This user is already your friend!"
         });
 
-	requestfriend(request.user.id, newfriend.id)
+	requestFriend(request.user.id, newfriend.id)
 	
     return { newfriend }
 }
 
 export async function friendAcceptHandler(request, reply) {
-	const newfriendname = request.body.friendacceptname;
+	const newfriendname = request.body.friendAcceptName;
 
 	const newfriend = await findUserByName(newfriendname)
 
@@ -218,8 +218,8 @@ export async function getFriendRequestHandler(request, reply) {
 	return { requests }
 }
 
-export async function getFriendHandler(request, reply) {
-	const friends = await findfriends(request.user.id)
+export async function getFriendsHandler(request, reply) {
+	const friendsArray = await findfriends(request.user.id) //check if user.id is read before that ?
 
-	return { friends }
+	return reply.status(201).send(friendsArray);
 }
