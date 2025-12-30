@@ -1,7 +1,7 @@
 // user.route.js
 
 import { $ref } from "./user.schema.js";
-import { logoutHandler, loginHandler, registerUserHandler, dataGrabHandler, alterUserHandler, editPasswordHandler, friendRequestHandler, friendAcceptHandler, getFriendHandler, getFriendRequestHandler } from "./user.controller.js";
+import { logoutHandler, loginHandler, registerUserHandler, dataGrabHandler, alterUserHandler, editPasswordHandler, friendRequestHandler, friendAcceptHandler, getFriendHandler, getFriendRequestHandler, friendDeleteHandler, friendRejectHandler } from "./user.controller.js";
 
 async function userRoutes(fastify) {
     fastify.post(
@@ -96,6 +96,28 @@ async function userRoutes(fastify) {
 			},
 		},
 		friendAcceptHandler
+	)
+
+	fastify.delete(
+		'/friend/reject',
+		{
+			preHandler: [fastify.authenticate],
+			schema: {
+				body: $ref("friendRejectSchema"), //reponse et schema de reponse ?
+			},
+		},
+		friendRejectHandler
+	)
+
+	fastify.delete(
+		'/friend/delete',
+		{
+			preHandler: [fastify.authenticate],
+			schema: {
+				body: $ref("friendDeleteSchema"), //reponse et schema de reponse ?
+			},
+		},
+		friendDeleteHandler
 	)
 
 	fastify.get(

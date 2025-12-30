@@ -62,6 +62,14 @@ const friendAcceptSchema = z.object({
 	friendacceptname: z.string(),
 })
 
+const friendRejectSchema = z.object({
+	friendrejectname: z.string(),
+})
+
+const friendDeleteSchema = z.object({
+	frienddeletename: z.string(),
+})
+
 // const friendSchema = z.object({
 // 	name: z.string(),
 // 	avatar: z.string(),
@@ -83,12 +91,12 @@ export const { schemas: userSchemas, $ref } = buildJsonSchemas({
 	loginResponseSchema,
 	infoGrabResponseSchema,
 	profileChangesSchema,
-	profileChangesResponseSchema
-	editProfileSchema,
-	editProfileResponseSchema,
+	profileChangesResponseSchema,
 	editPasswordSchema,
 	friendRequestSchema,
 	friendAcceptSchema,
+	friendRejectSchema,
+	friendDeleteSchema,
 	// friendResponseSchema,
 	// friendRequestResponseSchema,
 },

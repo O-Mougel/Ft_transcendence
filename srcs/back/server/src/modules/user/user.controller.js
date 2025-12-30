@@ -1,6 +1,6 @@
 // user.controller.js
 
-import { createUser, findUserByName, findUserById, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend } from "./user.service.js";
+import { createUser, findUserByName, findUserById, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend, rejectfriend, deletefriend } from "./user.service.js";
 import { verifyPassword } from "../../utils/hash.js";
 
 export async function registerUserHandler(request, reply) { //respect 
@@ -209,6 +209,47 @@ export async function friendAcceptHandler(request, reply) {
 
 	return { newfriend }
 }
+
+export async function friendRejectHandler(request, reply) {
+	const friendname = request.body.friendrejectname;
+
+	const friend = await findUserByName(friendname)
+
+	if (!friend)
+        return reply.status(400).send({
+            message: "Username doesn't exist. Try again!"
+        });
+	
+	if (!alreadyrequested(newfriend.id, request.user.id))
+        return reply.status(400).send({
+            message: "This user didn't send you request"
+        });
+
+	if (alreadyfriend(request.user.id, newfriend.id))
+        return reply.status(400).send({
+            message: "This user is already your friend!"
+        });
+
+	await rejectfriend(request.user.id, newfriend.id)
+}
+
+export async function friendDeleteHandler(request, reply) {
+	const friendname = request.body.friendrejectname;
+
+	const friend = await findUserByName(friendname)
+
+	if (!friend)
+        return reply.status(400).send({
+            message: "Username doesn't exist. Try again!"
+        });
+
+	if (!alreadyfriend(request.user.id, newfriend.id))
+        return reply.status(400).send({
+            message: "This user is not your friend!"
+        });
+
+	await deletefriend(request.user.id, newfriend.id)
+} 
 
 export async function getFriendRequestHandler(request, reply) {
 	const requests = await findrequests(request.user.id)
