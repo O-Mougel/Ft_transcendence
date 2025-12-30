@@ -7,39 +7,10 @@ const backToDefaultPage = async () => {
 	const view = new startingFile();
 	document.querySelector("#app").innerHTML = await view.getHTML();
 	adjustNavbar("/");
-
-	// const btntext = document.getElementById('logoutButton');
-	// if (btntext)
-	// 	btntext.innerText = '➜] Log out';
 	if (typeof view.init === "function") {
 		 await view.init();
 	}
 	history.pushState(null, null, "/");
-	// console.log("I'm going back to five o fiveeee");
-}
-
-const backToLoginPage = async () => {
-
-	const view = new loginFile();
-	document.querySelector("#app").innerHTML = await view.getHTML();
-	adjustNavbar("/logUser");
-
-	// const bar1 = document.getElementById('navBarHomeId');
-	// const bar2 = document.getElementById('navBarModesId');
-	// const bar3 = document.getElementById('navBarCupId');
-	// const bar4 = document.getElementById('navBarAboutId');
-	// const barProfile = document.getElementById('profileButton2');
-	// bar1.style.display = 'none';
-	// bar2.style.display = 'none';
-	// bar3.style.display = 'none';
-	// bar4.style.display = 'none';
-	// barProfile.disabled=true;
-
-	if (typeof view.init === "function") {
-		 await view.init();
-	}
-	history.pushState(null, null, "/logUser");
-	// console.log("I'm going back to five o fiveeee");
 }
 
 const fieldValidity = (username, pwd, pwdconf, requestR, email) => {
@@ -72,9 +43,6 @@ const fieldValidity = (username, pwd, pwdconf, requestR, email) => {
 		pwd.focus();
 		return false;
 	}
-	
-	// console.log('username.value :', username.value);
-	// console.log('password.value :', pwd.value);
 	return (true);
 }
 
@@ -98,10 +66,7 @@ window.grabProfileInfo = async function () {
 		}
 		const result = await dataRequestResponse.json();	
 		if (result)
-		{
-			// console.log('sideName',result.name);
-			// console.log('sidePfp',result.avatar);
-			
+		{	
 			profileUsername.innerHTML = result.name;
 			profileUsername.style.color = 'white';
 			profilePicture.style.backgroundImage = `url(${result.avatar})`;
@@ -129,14 +94,10 @@ window.logoutUser = async function () {
 				const text = await logoutResponse.text().catch(() => logoutResponse.statusText);
 				throw new Error(`Request failed: ${logoutResponse.status} ${text}`);
 		}
-		const result = await logoutResponse.json();
-		// console.log('logout request results : ', result);
-	
+		const result = await logoutResponse.json();	
 		if (result && result.message) 
 		{
 			console.log('⏳ Logging out ...');
-			// setTimeout(backToLoginPage, 2500);
-			// window.sessionStorage.removeItem('logStatus');
 			window.sessionStorage.setItem('logStatus', 'loggedOut');
 
 			var isLogged = sessionStorage.getItem("logStatus");
@@ -180,7 +141,6 @@ window.handleNewUserCreate = async function (event) {
 				throw new Error(`Request failed: ${newUserResponse.status} ${text}`);
 		}
 		const result = await newUserResponse.json();
-		// console.log('register result', result);
 	
 		if (result && result.message) 
 			requestResult.innerText = result.message;
@@ -191,7 +151,6 @@ window.handleNewUserCreate = async function (event) {
 			email.value = "";
 			password.value = "";
 			passwordConfirm.value = "";
-			// const myTimeout = setTimeout(backToDefaultPage, 2000);
 			backToDefaultPage();
 		}
 	} 
@@ -231,12 +190,7 @@ window.handleLoginClick = async function (event) {
 	const data = {
 		name: username.value,
 		password: password.value,
-	};
-	
-	// console.log("login username", username.value);
-	// console.log("login password", password.value);
-	
-	
+	};		
 	try 
 	{
 		const loginResponse = await fetch('/login', {
@@ -250,30 +204,15 @@ window.handleLoginClick = async function (event) {
 				throw new Error(`Request failed: ${loginResponse.status} ${text}`);
 		}
 	
-		const result = await loginResponse.json();
-		// console.log('login result', result);
-	
+		const result = await loginResponse.json();	
 		if (result && result.message) 
 			logResult.innerText = result.message;
 		else
 		{
 			username.value = "";
 			password.value = "";
-			// const bar1 = document.getElementById('navBarHomeId');
-			// const bar2 = document.getElementById('navBarModesId');
-			// const bar3 = document.getElementById('navBarCupId');
-			// const bar4 = document.getElementById('navBarAboutId');
-			// const barProfile = document.getElementById('profileButton2');
-			// bar1.style.display = 'block';
-			// bar2.style.display = 'block';
-			// bar3.style.display = 'block';
-			// bar4.style.display = 'block';
-			// barProfile.disabled=false;
 
 			window.sessionStorage.setItem('logStatus','loggedIn');
-			var isLogged = sessionStorage.getItem("logStatus");
-
-			// const myTimeout = setTimeout(backToDefaultPage, 2000);
 			backToDefaultPage();
 		}
 
