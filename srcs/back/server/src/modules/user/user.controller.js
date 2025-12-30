@@ -11,8 +11,7 @@ export async function registerUserHandler(request, reply) {
 
     if (name) {	
         return reply.status(400).send({
-            message: "Username already used. Try again!",
-			error:error
+            message: "Username already used. Try again!"
         });
     };
 
@@ -32,11 +31,11 @@ export async function registerUserHandler(request, reply) {
 export async function dataGrabHandler(request, reply) {
 
 	const userId = request.user && request.user.id;
-	if (!userId) return reply.code(401).send({ message: 'Not authenticated !', error:error });
+	if (!userId) return reply.code(401).send({ message: 'Not authenticated !' });
 
     try {
         const user = await findUserById(userId);
-		if (!user) return reply.code(404).send({ message: 'User not found using access token', error:error });
+		if (!user) return reply.code(404).send({ message: 'User not found using access token'});
 		// fields should be deleted if we send whole user, or instead just send username or stats
         return reply.status(200).send(user);
         
@@ -56,8 +55,7 @@ export async function loginHandler(request, reply) {
 
     if (!user) {
         return reply.status(400).send({
-            message: "Invalid name. Try again!",
-			error:error
+            message: "Invalid name. Try again!"
         });
     };
 
@@ -68,8 +66,7 @@ export async function loginHandler(request, reply) {
 
     if (!isValidPassword) {
         return reply.status(400).send({
-            message: "Password is incorrect",
-			error:error
+            message: "Password is incorrect"
         });
     };
 
@@ -98,13 +95,12 @@ export async function alterUserHandler(request, reply) {
 
     const body = request.body;  //what we want to change
 	const userId = request.user && request.user.id; // who made the request (token)
-	if (!userId) return reply.code(401).send({ message: 'Not authenticated !', error:error });
+	if (!userId) return reply.code(401).send({ message: 'Not authenticated !' });
 
 	const target = await findUserById(userId);
     if (!target) {
         return reply.status(400).send({
-            message: "Error ! Couln't find user !",
-			error:error
+            message: "Error ! Couln't find user !"
         });
     };
 
@@ -116,9 +112,7 @@ export async function alterUserHandler(request, reply) {
 
     if (!isValidPassword) {
         return reply.status(400).send({
-            message: "Password is incorrect",
-			error:error
-        });
+            message: "Password is incorrect"});
     };
 
 	if (target.name != body.name)
@@ -126,8 +120,7 @@ export async function alterUserHandler(request, reply) {
 		const newname = await findUserByName(body.name);
 		if (newname) {	
 			return reply.status(400).send({
-				message: "Username already used. Try again!",
-				error:error
+				message: "Username already used. Try again!"
 			});
 		};
 	}
@@ -135,8 +128,7 @@ export async function alterUserHandler(request, reply) {
 	const updatedUser = await alterUser(userId, body.name, body.avatar);
 	if (!updatedUser) {
         return reply.status(400).send({
-            message: "Error ! Couln't modify user !",
-			error:error
+            message: "Error ! Couln't modify user !"
         });
     };
 	return reply.status(200).send(updatedUser); // not really needed, just to send something
@@ -145,9 +137,9 @@ export async function alterUserHandler(request, reply) {
 export async function logoutHandler(request, reply) {
     reply.clearCookie('access_token');
 
-	setOnlineStatus(request.user.id, false)
+	// setOnlineStatus(request.user.id, false)
 
-    return reply.status(200).send({ message: 'Logout successfully', error:error })
+    return reply.status(200).send({ message: 'Logout successfully'});
 }
 
 export async function editPasswordHandler(request, reply) {
@@ -160,8 +152,7 @@ export async function editPasswordHandler(request, reply) {
 
     if (!isValidPassword) {
         return reply.status(400).send({
-            message: "Password is incorrect",
-			error:error
+            message: "Password is incorrect"
         });
     };
 
@@ -177,21 +168,18 @@ export async function friendRequestHandler(request, reply) {
 
 	if (!newfriend)
         return reply.status(400).send({
-            message: "Username doesn't exist. Try again!",
-			error:error
+            message: "Username doesn't exist. Try again!"
         });
 	//ne pas se demander soit meme en ami
 	
 	if (alreadyrequested(request.user.id, newfriend.id))
         return reply.status(400).send({
-            message: "You already requested this user as a friend, just be patient and wait for his response",
-			error:error
+            message: "You already requested this user as a friend, just be patient and wait for his response"
         });
 
 	if (alreadyfriend(request.user.id, newfriend.id))
         return reply.status(400).send({
-            message: "This user is already your friend!",
-			error:error
+            message: "This user is already your friend!"
         });
 
 	requestfriend(request.user.id, newfriend.id)
@@ -206,20 +194,17 @@ export async function friendAcceptHandler(request, reply) {
 
 	if (!newfriend)
         return reply.status(400).send({
-            message: "Username doesn't exist. Try again!",
-			error:error
+            message: "Username doesn't exist. Try again!"
         });
 	
 	if (!alreadyrequested(newfriend.id, request.user.id))
         return reply.status(400).send({
-            message: "This user didn't send you request, make one yourself if you want to be friend with him",
-			error:error
+            message: "This user didn't send you request, make one yourself if you want to be friend with him"
         });
 
 	if (alreadyfriend(request.user.id, newfriend.id))
         return reply.status(400).send({
-            message: "This user is already your friend!",
-			error:error
+            message: "This user is already your friend!"
         });
 
 	await acceptfriend(request.user.id, newfriend.id)

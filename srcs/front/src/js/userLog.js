@@ -100,7 +100,7 @@ window.logoutUser = async function () {
 			console.log('⏳ Logging out ...');
 			window.sessionStorage.setItem('logStatus', 'loggedOut');
 
-			var isLogged = sessionStorage.getItem("logStatus");
+			// var isLogged = sessionStorage.getItem("logStatus");
 			backToDefaultPage();
 		}
 	} 
@@ -213,6 +213,7 @@ window.handleLoginClick = async function (event) {
 			password.value = "";
 
 			window.sessionStorage.setItem('logStatus','loggedIn');
+			console.log('⏳ Logged in !');
 			backToDefaultPage();
 		}
 
