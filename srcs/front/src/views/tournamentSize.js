@@ -9,39 +9,40 @@ export default class extends ViewTemplate {
 
 	async getHTML() {
 		return `
-		<div id="profilePanel" class="flex absolute right-0 top-0 h-full w-[20%] bg-[url(/img/stars.gif)] z-50 shadow-[0_0_20px_rgba(158,202,237,0.9)] border border-[#98c6f8]">
-					<div class="flex flex-col text-center w-full h-full">
-						<div class="grid h-[30%] place-items-center">
-  							<div id="sidePannelPfp" class="bg-[url(/img/sillyDog.gif)] bg-cover w-[50%] h-[50%] p-4 rounded-[50%] opacity-0 shadow"></div>
-						</div>
-						<h1 id="playerGrabbedUsername" class="text-black text-bold mx-4 mb-15 text-2xl ">[username]</h1>
-						<a href="/profileOverview" class="mx-4 text-2xl mb-5 border p-4 text-[#798490]" name="profileLink" data-link>Update profile</a>
-						<a id="logoutButton" class="mx-4 text-2xl mb-15 border p-4 cursor-pointer hover:text-[#dee9f4] hover:bg-[#882639] text-[#882639]" onclick=logoutUser() name="logoutButtonName">➜] Log out</a>						<div class="self-start">
-							<input class="sr-only peer" id="friendCheck" type="checkbox"/>
-							<label for="friendCheck" class="text-2xl cursor-pointer px-3 py-2 select-none hover:text-[#98c6f8]">► Online friends</label>
-							<ul class="select-none peer-checked:block hidden mt-3 self-start text-left" id="friendlist">
+			<div id="profilePanel" class="flex absolute right-0 top-0 h-full w-[20%] bg-[url(/img/stars.gif)] z-50 shadow-[0_0_20px_rgba(158,202,237,0.9)] border border-[#98c6f8]">
+				<div class="flex flex-col text-center w-full h-full">
+					<div class="grid h-[30%] place-items-center">
+  						<div id="sidePannelPfp" class="bg-[url(/img/sillyDog.gif)] bg-cover p-4 rounded-[50%] opacity-0 shadow object-cover w-[170px] h-[170px]"></div>
+					</div>
+					<h1 id="playerGrabbedUsername" class="text-black text-bold mx-4 mb-15 text-2xl ">[username]</h1>
+					<a href="/profileOverview" class="mx-4 text-2xl mb-5 border p-4 text-[#798490]" name="profileLink" data-link>Update profile</a>
+					<a id="logoutButton" class="mx-4 text-2xl mb-15 border p-4 cursor-pointer hover:text-[#dee9f4] hover:bg-[#882639] text-[#882639]" onclick=logoutUser() name="logoutButtonName">➜] Log out</a>
+					<div class="self-start">
+						<input class="sr-only peer" id="friendCheck" type="checkbox"/>
+						<label for="friendCheck" class="text-2xl cursor-pointer px-3 py-2 select-none hover:text-[#98c6f8]">► Online friends</label>
+						<ul class="select-none peer-checked:block hidden mt-3 self-start text-left" id="friendlist">
 							<li><a class="text-xl pl-2">• Goug ?</a></li>
 							<li><a class="text-xl pl-2">• Gougou ?</a></li>
 							<li><a class="text-xl pl-2">• Gougougaga ?</a></li>
-							</ul>
-						</div>
-					</div>
-			</div>
-		<div class="h-full w-full flex flex-col">
-			<div class="h-[93%] w-full pt-[5%] text-center ml-auto mr-auto">
-				<h1 class="">Select the number of players in the tournament</h1>
-				<div class=" text-[4vw] flex gap-5 px-[40%] justify-around mt-8 mx-auto flex-col sm:flex-row sm:px-[5%] sm:text-[5vw]">
-					<div class="flex-1 flex items-center justify-center aspect-square px-4 py-2 hover:text-[#98c6f8] rounded-[10%] font-bold border-[1vw]">
-						<a class="flex items-center justify-center h-full w-full" href="/tournamentSelect_4Players" data-link>4</a>
-					</div>
-					<div class="flex-1 flex items-center justify-center aspect-square px-4 py-2 hover:text-[#98c6f8] rounded-[10%] font-bold border-[1vw]">
-						<a class="flex items-center justify-center h-full w-full" href="/tournamentSelect_8Players" data-link>8</a>
-					</div>
-					<div class="flex-1 flex items-center justify-center aspect-square px-4 py-2 hover:text-[#98c6f8] rounded-[10%] font-bold border-[1vw]">
-						<a class="flex items-center justify-center h-full w-full" href="/tournamentSelect_16Players" data-link>16</a>
+						</ul>
 					</div>
 				</div>
 			</div>
-		</div>`
+			<div class="h-full w-full flex flex-col">
+				<div class="h-[93%] w-full pt-[5%] text-center ml-auto mr-auto">
+					<h1 class="">Select the number of players in the tournament</h1>
+					<div class=" text-[4vw] flex gap-5 px-[40%] justify-around mt-8 mx-auto flex-col sm:flex-row sm:px-[5%] sm:text-[5vw]">
+						<div class="flex-1 flex items-center justify-center aspect-square px-4 py-2 hover:text-[#98c6f8] rounded-[10%] font-bold border-[1vw]">
+							<a class="flex items-center justify-center h-full w-full" href="/tournamentSelect_4Players" data-link>4</a>
+						</div>
+						<div class="flex-1 flex items-center justify-center aspect-square px-4 py-2 hover:text-[#98c6f8] rounded-[10%] font-bold border-[1vw]">
+							<a class="flex items-center justify-center h-full w-full" href="/tournamentSelect_8Players" data-link>8</a>
+						</div>
+						<div class="flex-1 flex items-center justify-center aspect-square px-4 py-2 hover:text-[#98c6f8] rounded-[10%] font-bold border-[1vw]">
+							<a class="flex items-center justify-center h-full w-full" href="/tournamentSelect_16Players" data-link>16</a>
+						</div>
+					</div>
+				</div>
+			</div>`
 	}
 }
