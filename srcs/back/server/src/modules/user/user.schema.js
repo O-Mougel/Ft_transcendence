@@ -55,11 +55,11 @@ const editPasswordSchema = z.object({
 })
 
 const friendRequestSchema = z.object({
-	friendrequestname: z.string(),
+	friendRequestName: z.string(),
 })
 
 const friendAcceptSchema = z.object({
-	friendacceptname: z.string(),
+	friendAcceptName: z.string(),
 })
 
 // const friendSchema = z.object({
@@ -72,9 +72,14 @@ const friendAcceptSchema = z.object({
 // 	requests: friendSchema.array(),
 // })
 //
-// const friendResponseSchema = z.object({
-// 	friends: friendSchema.array(),
-// })
+
+const friendItemSchema = z.object({
+  name: z.string(),
+  avatar: z.string(),
+  online: z.boolean(),
+});
+
+const friendsArrayResponseSchema = z.array(friendItemSchema);
 
 export const { schemas: userSchemas, $ref } = buildJsonSchemas({
 	createUserSchema,
@@ -87,7 +92,8 @@ export const { schemas: userSchemas, $ref } = buildJsonSchemas({
 	editPasswordSchema,
 	friendRequestSchema,
 	friendAcceptSchema,
-	// friendResponseSchema,
+	friendItemSchema,
+	friendsArrayResponseSchema,
 	// friendRequestResponseSchema,
 },
   { $id: 'userSchemas' },
