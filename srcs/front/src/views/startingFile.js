@@ -22,10 +22,17 @@ export default class extends ViewTemplate {
 						<label for="friendCheck" class="text-2xl cursor-pointer px-3 py-2 select-none hover:text-[#98c6f8]">► Online friends</label>
 						<ul class="select-none peer-checked:block hidden mt-3 self-start text-left" id="friendlist">
 							<li><a class="text-xl pl-2">• Goug ?</a></li>
-							<li><a class="text-xl pl-2">• Gougou ?</a></li>
-							<li><a class="text-xl pl-2">• Gougougaga ?</a></li>
 						</ul>
 					</div>
+					<div class="w-full mt-3 px-4 flex">
+                        <div class="w-[85%] max-w-60">
+                            <div class="flex items-center">
+                                <input id="friendSearchInput" type="text" placeholder="Add friend" class="w-1/4 h-8 px-2 rounded-l-md border border-white bg-transparent text-white focus:outline-none text-sm" />
+                                <button id="friendSearchButton" class="w-1/4 h-8 bg-[#98c6f8] text-black rounded-r-md text-sm" onclick=sendNewFriendRequest()>🔍</button>
+							</div>
+							<p id="friendSearchResults" class="mt-4 text-base text-ellipsis"></p>
+                        </div>
+                    </div>
 				</div>
 			</div>
 			<div class="pt-[5vw] h-full w-full">
