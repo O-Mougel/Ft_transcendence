@@ -62,7 +62,12 @@ const	navbarHiddenCheck = () => {
 	const	bar2 = document.getElementById('navBarModesId');
 	const	bar3 = document.getElementById('navBarCupId');
 	const	bar4 = document.getElementById('navBarAboutId');
+	const	icon1 = document.getElementById('navBarHomeIconId');
+	const	icon2 = document.getElementById('navBarModesIconId');
+	const	icon3 = document.getElementById('navBarCupIconId');
+	const	icon4 = document.getElementById('navBarAboutIconId');
 	const	barProfile = document.getElementById('profileButton2');
+	const	iconProfile = document.getElementById('profileButton');
 	const	status = sessionStorage.getItem("logStatus");
 
 	if (status == "loggedOut")
@@ -71,7 +76,12 @@ const	navbarHiddenCheck = () => {
 		bar2.style.display = 'none';
 		bar3.style.display = 'none';
 		bar4.style.display = 'none';
+		icon1.style.display = 'none';
+		icon2.style.display = 'none';
+		icon3.style.display = 'none';
+		icon4.style.display = 'none';
 		barProfile.disabled=true;
+		iconProfile.disabled=true;
 		if (!logButton) return;
 		logButton.style.display = "inline";
 	}
@@ -81,7 +91,12 @@ const	navbarHiddenCheck = () => {
 		bar2.style.display = 'block';
 		bar3.style.display = 'block';
 		bar4.style.display = 'block';
+		icon1.style.display = 'block';
+		icon2.style.display = 'block';
+		icon3.style.display = 'block';
+		icon4.style.display = 'block';
 		barProfile.disabled=false;
+		iconProfile.disabled=false;
 		if (!logButton) return;
 		logButton.style.display = "none";
 	}
