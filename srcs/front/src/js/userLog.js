@@ -46,6 +46,39 @@ const fieldValidity = (username, pwd, pwdconf, requestR, email) => {
 	return (true);
 }
 
+const displayUserFriends = async () => {
+	
+	const friendList = document.getElementById('friendlist');
+
+	try 
+	{
+		const friendInfoResponse = await fetch('/friend', {
+				credentials: 'include',
+		});
+	
+		if (!friendInfoResponse.ok) {
+				const text = await friendInfoResponse.text().catch(() => friendInfoResponse.statusText);
+				throw new Error(`Request failed: ${friendInfoResponse.status} ${text}`);
+		}
+		const result = await friendInfoResponse.json();	
+		if (result)
+		{	
+			// for(i = 0; i < result.nbFriends; i++) 
+			// {
+			// 	var listItem = document.createElement("li");
+			// 	listItem.innerHTML = result.friendTab[i];
+			// 	friendList.appendChild(listItem);
+			// }
+			console.log("friend array : ",result.friends);
+		}
+	} 
+	catch (err) 
+	{
+		console.error('Friend info grab failed ! : ', err);
+	}
+
+}
+
 window.grabProfileInfo = async function () {
 
 	const profilePanel = document.getElementById('profilePanel');
@@ -77,7 +110,45 @@ window.grabProfileInfo = async function () {
 	{
 		console.error('Profile info grab failed :(', err);
 	}
+	displayUserFriends();
 }
+
+
+window.sendNewFriendRequest = async function () {
+
+	const friendReqResultText = document.getElementById('friendSearchResults'); //shows if friend request worked
+	const friendReqInput = document.getElementById('friendSearchInput');
+
+	const data = {
+		friendRequestName: friendReqInput.value,
+	};
+
+	try 
+	{
+		const sentFriendRequestResponse = await fetch('/friend/request', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data),
+				credentials: 'include',
+		});
+	
+		if (!sentFriendRequestResponse.ok) {
+				const text = await sentFriendRequestResponse.text().catch(() => sentFriendRequestResponse.statusText);
+				throw new Error(`Request failed: ${sentFriendRequestResponse.status} ${text}`);
+		}
+		const result = await sentFriendRequestResponse.json();	
+		if (result && result.message) 
+		{
+			console.log('✅ Sent friend request');
+			friendReqResultText.innerHTML='✅ Sent friend request';
+		}
+	} 
+	catch (err) 
+	{
+		console.error('Friend request sending error : ', err);
+	}
+}
+
 
 window.logoutUser = async function () {
 
