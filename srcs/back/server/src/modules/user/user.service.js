@@ -160,11 +160,55 @@ export async function acceptfriend(id, friendid) {
 	})
 }
 
+export async function rejectfriend(id, friendid) {
+	await db.user.update({
+		where: {id: id},
+		data: {
+			request: {
+				disconnect: {id: friendid},
+			},
+		},
+	}),
+	await db.user.update({
+		where: {id: friendid},
+		data: {
+			request: {
+				disconnect: {id: id},
+			},
+		},
+	})
+}
+
+export async function deletefriend(id, friendid) {
+	await db.user.update({
+		where: {id: id},
+		data: {
+			friends: {
+				disconnect: {id: friendid},
+			},
+		},
+	}),
+	await db.user.update({
+		where: {id: friendid},
+		data: {
+			friends: {
+				disconnect: {id: id},
+			},
+		},
+	})
+}
+
 export async function findrequests(id) {
 	const requests = await db.user.findUnique({
 		where: {id: id},
 		select: {
-			requestOf: true,
+			requestOf: {
+        select: {
+          name: true,
+          avatar: true,
+          online: true,
+        },
+			},
 		},
 	})
 	

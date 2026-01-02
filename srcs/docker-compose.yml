@@ -38,6 +38,7 @@ services:
     container_name: back 
     volumes:
       - db:/home/prisma
+      - ./back/server/src:/home/src #remove when in production
     networks:
       - transcendence
     restart: on-failure
@@ -45,6 +46,7 @@ services:
       - "3000:3000" #ne pas oublier d'enlever au moment de rendre le projet
     # expose: 
     #   - "3000"
+    command: npm run dev #remove when in production
 
 networks:
   transcendence:
