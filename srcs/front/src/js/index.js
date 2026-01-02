@@ -51,7 +51,7 @@ const grabCustomizationPageInfo = async () =>
 	} 
 	catch (err) 
 	{
-		console.error('Profile custom grab failed ! :(', err);
+		console.error('Profile custom grab failed !\n => ', err);
 	}
 
 }
