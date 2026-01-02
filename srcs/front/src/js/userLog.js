@@ -46,6 +46,152 @@ const fieldValidity = (username, pwd, pwdconf, requestR, email) => {
 	return (true);
 }
 
+window.acceptFriend = async (username) => {
+	const requestList = document.getElementById('requestList'); //contains the requests
+
+	const data = {
+		friendAcceptName: username,
+	};
+
+	try 
+	{
+		const acceptFriendRequestResponse = await fetch('/friend/accept', {
+				method: 'POST',
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data),
+		});
+	
+		if (!acceptFriendRequestResponse.ok) {
+				const text = await acceptFriendRequestResponse.text().catch(() => acceptFriendRequestResponse.statusText);
+				throw new Error(`Request failed: ${acceptFriendRequestResponse.status} ${text}`);
+		}
+		const result = await acceptFriendRequestResponse.json();	
+		if (result)
+		{
+			if(requestList.hasChildNodes())
+			{
+				let	clearName = username + "[42]";
+				const currentElement = document.getElementsByName(clearName);
+				if (currentElement && currentElement.length > 0)
+				{
+					const target = currentElement[0];
+    				target.remove();
+				}
+			}
+		}
+	}
+	catch (err) 
+	{
+		console.error('Internal error, could not accept friend request !\n =>', err);
+	}
+}
+
+window.rejectFriend = async (username) => {
+	const requestList = document.getElementById('requestList'); //contains the requests
+	const requestLabel = document.getElementById('requestCheckLabel');
+	const requestBlock = document.getElementById('pendingRequestBlock');
+
+	const data = {
+		friendrejectname: username,
+	};
+
+	try 
+	{
+		const rejectFriendRequestResponse = await fetch('/friend/reject', {
+				method: 'POST',
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data),
+		});
+	
+		if (!rejectFriendRequestResponse.ok) {
+				const text = await rejectFriendRequestResponse.text().catch(() => rejectFriendRequestResponse.statusText);
+				throw new Error(`Request failed: ${rejectFriendRequestResponse.status} ${text}`);
+		}
+		const result = await rejectFriendRequestResponse.json();	
+		if (result)
+		{
+			if(requestList.hasChildNodes())
+			{
+				let	clearName = username + "[42]";
+				const currentElement = document.getElementsByName(clearName);
+				if (currentElement && currentElement.length > 0)
+				{
+					const target = currentElement[0];
+    				target.remove();
+				
+				var count = requestList.childElementCount;
+				console.log("Pending request count :", count);
+				if (count == 0)
+				{
+					requestBlock.style.display = "none"; // to check later, might not work
+				}
+				else
+					requestLabel.innerHTML = "► Requests(" + count + ")"
+				}
+			}
+		}
+	}
+	catch (err) 
+	{
+		console.error('Internal error, could not reject friend request !\n =>', err);
+	}
+}
+
+const checkForFriendRequests = async () => {
+	
+	const requestList = document.getElementById('requestList'); //contains the requests
+	const requestLabel = document.getElementById('requestCheckLabel'); //contains the requests
+	const requestBlock = document.getElementById('pendingRequestBlock'); //contains the requests
+	try 
+	{
+		const lookForRequests = await fetch('/friend/requested', {
+				credentials: 'include',
+		});
+	
+		if (!lookForRequests.ok) {
+				const text = await lookForRequests.text().catch(() => lookForRequests.statusText);
+				throw new Error(`Request failed: ${lookForRequests.status} ${text}`);
+		}
+		const result = await lookForRequests.json();	
+		if (result)
+		{	
+			console.log("pending requests: ",result.requestOf);
+			if (result.requestOf.length > 0)
+			{
+				requestBlock.style.display = "block";
+				requestLabel.innerHTML = "► Requests(" + result.requestOf.length + ")"
+			}
+			else
+			{
+				requestBlock.style.display = "none";
+			}
+
+			for(let i = 0; i < result.requestOf.length; i++) 
+			{
+				console.log(result.requestOf[i].name);
+				var listItem = document.createElement("li");
+				let	clearName = result.requestOf[i].name + "[42]";
+				listItem.className = 'py-2 flex items-center justify-between';
+				listItem.setAttribute('name', clearName);
+				listItem.innerHTML = `
+				<span class="text-sm text-amber-400">✦ ${result.requestOf[i].name}</span>
+				<span class="flex items-center gap-2">
+					<button class="accept-request px-2 py-1 rounded" onclick="acceptFriend('${result.requestOf[i].name}')" title="Accept">✅</button>
+					<button class="reject-request px-2 py-1 rounded" onclick="rejectFriend('${result.requestOf[i].name}')" title="Reject">❌</button>
+				</span>`;
+				requestList.appendChild(listItem);
+			}
+		}
+	} 
+	catch (err) 
+	{
+		console.error('Pending requests info grab failed !\n =>', err);
+	}
+
+}
+
 const displayUserFriends = async () => {
 	
 	const friendList = document.getElementById('friendlist');
@@ -63,18 +209,22 @@ const displayUserFriends = async () => {
 		const result = await friendInfoResponse.json();	
 		if (result)
 		{	
-			// for(i = 0; i < result.nbFriends; i++) 
-			// {
-			// 	var listItem = document.createElement("li");
-			// 	listItem.innerHTML = result.friendTab[i];
-			// 	friendList.appendChild(listItem);
-			// }
-			console.log("friend array : ",result.friends);
+			console.log("friendlistGrab requests: ",result.friends);
+			for(let i = 0; i < result.friends.length; i++) 
+			{
+				console.log(result.friends[i].name);
+				var listItem = document.createElement("li");
+				let	clearName = result.friends[i].name + "[4242]";
+				listItem.className = 'py-2 flex items-center justify-between';
+				listItem.innerHTML = `
+				<span class="text-sm text-amber-400" name="${clearName}">✦ ${result.friends[i].name}</span>`;
+				friendList.appendChild(listItem);
+			}
 		}
 	} 
 	catch (err) 
 	{
-		console.error('Friend info grab failed ! : ', err);
+		console.error('Friend info grab failed !\n => ', err);
 	}
 
 }
@@ -108,9 +258,10 @@ window.grabProfileInfo = async function () {
 	} 
 	catch (err) 
 	{
-		console.error('Profile info grab failed :(', err);
+		console.error('Profile info grab failed !\n => ', err);
 	}
 	displayUserFriends();
+	checkForFriendRequests();
 }
 
 
@@ -137,7 +288,7 @@ window.sendNewFriendRequest = async function () {
 				throw new Error(`Request failed: ${sentFriendRequestResponse.status} ${text}`);
 		}
 		const result = await sentFriendRequestResponse.json();	
-		if (result && result.message) 
+		if (result) 
 		{
 			console.log('✅ Sent friend request');
 			friendReqResultText.innerHTML='✅ Sent friend request';
@@ -145,7 +296,8 @@ window.sendNewFriendRequest = async function () {
 	} 
 	catch (err) 
 	{
-		console.error('Friend request sending error : ', err);
+		console.error('Friend request sending error !\n => ', err);
+		friendReqResultText.innerHTML='⚠️ Error !';
 	}
 }
 
@@ -177,7 +329,7 @@ window.logoutUser = async function () {
 	} 
 	catch (err) 
 	{
-		console.error('Login error', err);
+		console.error('Login error !\n => ', err);
 	}
 }
 
@@ -231,7 +383,7 @@ window.handleNewUserCreate = async function (event) {
 		email.value = "";
 		password.value = "";
 		passwordConfirm.value = "";
-		console.error('Login error', err);
+		console.error('Login error !\n => ', err);
 		requestResult.innerText = '⚠️ Error: Network error';
 	}
 };
@@ -291,7 +443,7 @@ window.handleLoginClick = async function (event) {
 	} 
 	catch (err) 
 	{
-		console.error('Login error', err);
+		console.error('Login error !\n => ', err);
 		logResult.innerText = '⚠️ Error: Network error';
 		username.value = "";
 		password.value = "";

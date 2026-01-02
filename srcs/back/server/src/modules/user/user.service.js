@@ -205,7 +205,7 @@ export async function findrequests(id) {
 			requestOf: {
         select: {
           name: true,
-          avatar: true,
+          avatar: true,    //maybe not needed for now
           online: true,
         },
 			},
