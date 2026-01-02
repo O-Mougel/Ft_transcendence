@@ -70,24 +70,22 @@ const friendDeleteSchema = z.object({
 	frienddeletename: z.string(),
 })
 
-// const friendSchema = z.object({
-// 	name: z.string(),
-// 	avatar: z.string(),
-// 	online: z.boolean(),
-// })
-//
-// const friendRequestResponseSchema = z.object({
-// 	requests: friendSchema.array(),
-// })
-//
-
 const friendItemSchema = z.object({
   name: z.string(),
   avatar: z.string(),
   online: z.boolean(),
 });
 
+const friendRequestItemSchema = z.object({
+  name: z.string(),
+  avatar: z.string(),
+  online: z.boolean(),
+});
+
 const friendsArrayResponseSchema = z.array(friendItemSchema);
+
+const friendRequestResponseSchema = z.array(friendRequestItemSchema);
+
 
 export const { schemas: userSchemas, $ref } = buildJsonSchemas({
 	createUserSchema,
@@ -102,10 +100,10 @@ export const { schemas: userSchemas, $ref } = buildJsonSchemas({
 	friendAcceptSchema,
 	friendItemSchema,
 	friendsArrayResponseSchema,
+	friendRequestResponseSchema,
+	friendRequestItemSchema,
 	friendRejectSchema,
 	friendDeleteSchema,
-	// friendResponseSchema,
-	// friendRequestResponseSchema,
 },
   { $id: 'userSchemas' },
 );

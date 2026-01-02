@@ -97,7 +97,7 @@ window.grabProfileInfo = async function (): Promise<void> {
       profilePicture.style.opacity = "1";
     }
   } catch (err) {
-    console.error("Profile info grab failed :(", err);
+    console.error("Profile info grab failed !\n => ", err);
   }
 };
 
@@ -121,7 +121,7 @@ window.logoutUser = async function (): Promise<void> {
       backToDefaultPage();
     }
   } catch (err) {
-    console.error("Login error", err);
+    console.error("Login error! \n => ", err);
   }
 };
 
@@ -166,7 +166,7 @@ window.handleNewUserCreate = async function (event: Event): Promise<void> {
       backToDefaultPage();
     }
   } catch (err) {
-    console.error("Login error", err);
+    console.error("Login error!\n => ", err);
     if (requestResult) requestResult.innerText = "⚠️ Error: Network error";
   }
 };
@@ -217,7 +217,7 @@ window.handleLoginClick = async function (event: Event): Promise<void> {
       backToDefaultPage();
     }
   } catch (err) {
-    console.error("Login error", err);
+    console.error("Login error!\n => ", err);
     logResult.innerText = "⚠️ Error: Network error";
   }
 };

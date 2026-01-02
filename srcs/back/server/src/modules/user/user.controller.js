@@ -192,7 +192,7 @@ export async function friendRequestHandler(request, reply) {
 
 	await requestfriend(request.user.id, newfriend.id)
 	
-    return { newfriend }
+    return { newfriend } // not sure
 }
 
 export async function friendAcceptHandler(request, reply) {
@@ -217,7 +217,10 @@ export async function friendAcceptHandler(request, reply) {
 
 	await acceptfriend(request.user.id, newfriend.id)
 
-	return { newfriend }
+	// return { newfriend } // NOT SURE
+	return reply.status(201).send({
+            message: "New friend added !"
+        }); 
 }
 
 export async function friendRejectHandler(request, reply) {
@@ -240,7 +243,11 @@ export async function friendRejectHandler(request, reply) {
             message: "This user is already your friend!"
         });
 
-	await rejectfriend(request.user.id, friend.id)
+	await rejectfriend(request.user.id, friend.id) // can fail ??????
+
+	return reply.status(201).send({
+            message: "Request rejected !"
+        }); 
 }
 
 export async function friendDeleteHandler(request, reply) {
@@ -262,9 +269,10 @@ export async function friendDeleteHandler(request, reply) {
 } 
 
 export async function getFriendRequestHandler(request, reply) {
-	const requests = await findrequests(request.user.id)
+	const requestsList = await findrequests(request.user.id)
 	
-	return { requests }
+	// return { requests }
+	return reply.status(201).send(requestsList);
 }
 
 export async function getFriendsHandler(request, reply) {
