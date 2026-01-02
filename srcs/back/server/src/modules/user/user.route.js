@@ -81,10 +81,10 @@ async function userRoutes(fastify) {
 		{
 			preHandler: [fastify.authenticate],
 			schema: {
-				body: $ref("friendRequestSchema"), //reponse et schema de reponse ?
+				body: $ref("friendRequestSchema"),
 			},
 		},
-		friendRequestHandler
+		friendRequestHandler // returns newFriend even with no response clause
 	)
 
 	fastify.post(
@@ -92,18 +92,18 @@ async function userRoutes(fastify) {
 		{
 			preHandler: [fastify.authenticate],
 			schema: {
-				body: $ref("friendAcceptSchema"), //reponse et schema de reponse ?
+				body: $ref("friendAcceptSchema"),
 			},
 		},
 		friendAcceptHandler
 	)
 
-	fastify.delete(
+	fastify.post(
 		'/friend/reject',
 		{
 			preHandler: [fastify.authenticate],
 			schema: {
-				body: $ref("friendRejectSchema"), //reponse et schema de reponse ?
+				body: $ref("friendRejectSchema"),
 			},
 		},
 		friendRejectHandler
@@ -114,7 +114,7 @@ async function userRoutes(fastify) {
 		{
 			preHandler: [fastify.authenticate],
 			schema: {
-				body: $ref("friendDeleteSchema"), //reponse et schema de reponse ?
+				body: $ref("friendDeleteSchema"),
 			},
 		},
 		friendDeleteHandler
@@ -124,11 +124,11 @@ async function userRoutes(fastify) {
 		'/friend/requested',
 		{
 			preHandler: [fastify.authenticate],
-			// schema: {
-			// 	response: {
-			// 		200: $ref("friendRequestResponseSchema")
-			// 	},
-			// },
+			schema: {
+				response: {
+					200: $ref("friendRequestResponseSchema")
+				},
+			},
 		},
 		getFriendRequestHandler
 	)
