@@ -15,6 +15,7 @@ export default class extends ViewTemplate {
   						<div id="sidePannelPfp" class="bg-[url(/img/sillyDog.gif)] bg-cover p-4 rounded-[50%] opacity-0 shadow object-cover w-[170px] h-[170px]"></div>
 					</div>
 					<h1 id="playerGrabbedUsername" class="text-black text-bold mx-4 mb-15 text-2xl ">[username]</h1>
+					<a href="/profileStats" class="mx-4 text-2xl mb-5 border p-4 text-[#798490]" name="profileLink" data-link>View my profile</a>
 					<a href="/profileOverview" class="mx-4 text-2xl mb-5 border p-4 text-[#798490]" name="profileLink" data-link>Update profile</a>
 					<a id="logoutButton" class="mx-4 text-2xl mb-15 border p-4 cursor-pointer hover:text-[#dee9f4] hover:bg-[#882639] text-[#882639]" onclick=logoutUser() name="logoutButtonName">➜] Log out</a>
 					<div class="self-start">
