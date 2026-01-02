@@ -1,5 +1,7 @@
 // user.controller.js
 
+import speakeasy from 'speakeasy';
+import QRCode from 'qrcode';
 import { createUser, findUserByName, findUserById, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend, rejectfriend, deletefriend } from "./user.service.js";
 import { verifyPassword } from "../../utils/hash.js";
 
@@ -38,43 +40,51 @@ export async function dataGrabHandler(request, reply) {
 		// fields should be deleted if we send whole user, or instead just send username or stats
         return reply.status(200).send(user);
         
-    } catch (error) {
-        console.error(error);
-        return reply.status(500).send({
-            message: "User info could not be grabbed !",
+	} catch (error) {
+		console.error(error);
+		return reply.status(500).send({
+			message: "User info could not be grabbed !",
 			error:error
-        });
-    }
+		});
+	}
 }
 
 export async function loginHandler(request, reply) {
-    const body = request.body;
+	const body = request.body;
 
-    const user = await findUserByName(body.name);
+	const user = await findUserByName(body.name);
 
-    if (!user) {
-        return reply.status(400).send({
-            message: "Invalid name. Try again!"
-        });
-    };
+	if (!user) {
+		return reply.status(400).send({
+			message: "Invalid name. Try again!"
+		});
+	};
 
-    const isValidPassword = verifyPassword(
-        body.password,
-        user.salt,
-        user.password);
+	const isValidPassword = verifyPassword(
+		body.password,
+		user.salt,
+		user.password);
 
-    if (!isValidPassword) {
-        return reply.status(400).send({
-            message: "Password is incorrect"
-        });
-    };
+	if (!isValidPassword) {
+		return reply.status(400).send({
+			message: "Password is incorrect"
+		});
+	};
 
+	if (user.auth2fa) {
+		const secret = speakeasy.generateSecret({
+			name: `MyApp (${user.email})`
+		});
+		const qrCode = await QRCode.toDataURL(secret.otpauth_url);
+	}
+
+	//twofasecret in db
 	//use basic authentication schema
 	//check if someone is already logged ??
 	//check 2fa and send 2fa if so 
 
-    const payload = {
-        id: user.id,
+	const payload = {
+		id: user.id,
         email: user.email,
         name: user.name,
     }
@@ -106,6 +116,7 @@ export async function alterUserHandler(request, reply) {
     };
 
     // Verify password
+	// add activation of 2fa authentification
     const isValidPassword = verifyPassword(
         body.password,
         target.salt,
