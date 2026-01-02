@@ -1,6 +1,6 @@
 // user.controller.js
 
-import { createUser, findUserByName, findUserById, checkIfUserExists, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestFriend } from "./user.service.js";
+import { createUser, findUserByName, findUserById, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend, rejectfriend, deletefriend } from "./user.service.js";
 import { verifyPassword } from "../../utils/hash.js";
 
 export async function registerUserHandler(request, reply) {
@@ -70,6 +70,8 @@ export async function loginHandler(request, reply) {
         });
     };
 
+	//use basic authentication schema
+	//check if someone is already logged ??
 	//check 2fa and send 2fa if so 
 
     const payload = {
@@ -170,19 +172,25 @@ export async function friendRequestHandler(request, reply) {
         return reply.status(400).send({
             message: "Username doesn't exist. Try again!"
         });
-	//ne pas se demander soit meme en ami
 	
-	if (alreadyrequested(request.user.id, newfriend.id))
+	if (request.user.id == newfriend.id)
+	{
+        return reply.status(400).send({
+            message: "You can't ask yourself as a friend!"
+        }); 
+	}
+	
+	if (await alreadyrequested(request.user.id, newfriend.id))
         return reply.status(400).send({
             message: "You already requested this user as a friend, just be patient and wait for his response"
         });
 
-	if (alreadyfriend(request.user.id, newfriend.id))
+	if (await alreadyfriend(request.user.id, newfriend.id))
         return reply.status(400).send({
             message: "This user is already your friend!"
         });
 
-	requestFriend(request.user.id, newfriend.id)
+	await requestfriend(request.user.id, newfriend.id)
 	
     return { newfriend }
 }
@@ -197,12 +205,12 @@ export async function friendAcceptHandler(request, reply) {
             message: "Username doesn't exist. Try again!"
         });
 	
-	if (!alreadyrequested(newfriend.id, request.user.id))
+	if (!await alreadyrequested(newfriend.id, request.user.id))
         return reply.status(400).send({
             message: "This user didn't send you request, make one yourself if you want to be friend with him"
         });
 
-	if (alreadyfriend(request.user.id, newfriend.id))
+	if (await alreadyfriend(request.user.id, newfriend.id))
         return reply.status(400).send({
             message: "This user is already your friend!"
         });
@@ -211,6 +219,47 @@ export async function friendAcceptHandler(request, reply) {
 
 	return { newfriend }
 }
+
+export async function friendRejectHandler(request, reply) {
+	const friendname = request.body.friendrejectname;
+
+	const friend = await findUserByName(friendname)
+
+	if (!friend)
+        return reply.status(400).send({
+            message: "Username doesn't exist. Try again!"
+        });
+	
+	if (!await alreadyrequested(friend.id, request.user.id))
+        return reply.status(400).send({
+            message: "This user didn't send you request"
+        });
+
+	if (await alreadyfriend(request.user.id, friend.id))
+        return reply.status(400).send({
+            message: "This user is already your friend!"
+        });
+
+	await rejectfriend(request.user.id, friend.id)
+}
+
+export async function friendDeleteHandler(request, reply) {
+	const friendname = request.body.frienddeletename;
+
+	const friend = await findUserByName(friendname)
+
+	if (!friend)
+        return reply.status(400).send({
+            message: "Username doesn't exist. Try again!"
+        });
+
+	if (!await alreadyfriend(request.user.id, friend.id))
+        return reply.status(400).send({
+            message: "This user is not your friend!"
+        });
+
+	await deletefriend(request.user.id, friend.id)
+} 
 
 export async function getFriendRequestHandler(request, reply) {
 	const requests = await findrequests(request.user.id)
