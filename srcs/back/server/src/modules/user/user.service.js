@@ -114,7 +114,7 @@ export async function alreadyfriend(id, friendid) {
 	return user
 }
 
-export async function requestFriend(id, friendid) {
+export async function requestfriend(id, friendid) {
 	await db.user.update({
 		where: {id: id},
 		data: {

@@ -1,7 +1,7 @@
 // user.route.js
 
 import { $ref } from "./user.schema.js";
-import { logoutHandler, loginHandler, registerUserHandler, dataGrabHandler, alterUserHandler, editPasswordHandler, friendRequestHandler, friendAcceptHandler, getFriendHandler, getFriendRequestHandler, friendDeleteHandler, friendRejectHandler } from "./user.controller.js";
+import { logoutHandler, loginHandler, registerUserHandler, dataGrabHandler, alterUserHandler, editPasswordHandler, friendRequestHandler, friendAcceptHandler, getFriendsHandler, getFriendRequestHandler, friendDeleteHandler, friendRejectHandler } from "./user.controller.js";
 
 async function userRoutes(fastify) {
     fastify.post(
