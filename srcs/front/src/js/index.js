@@ -3,6 +3,7 @@ import playerBattle from "../views/playerBattle.js";
 import startingFile from "../views/startingFile.js";
 import aboutFile from "../views/aboutFile.js";
 import profileOverview from "../views/profileOverview.js";
+import profileStats from "../views/profileStats.js";
 import tournamentSize from "../views/tournamentSize.js";
 import tournamentSelect4Players from "../views/tournamentSelect_4Players.js";
 import tournamentSelect8Players from "../views/tournamentSelect_8Players.js";
@@ -144,6 +145,7 @@ const router = async () => {
 		{ path: "/playerBattle", view: playerBattle },
 		{ path: "/about", view: aboutFile },
 		{ path: "/profileOverview", view: profileOverview },
+		{ path: "/profileStats", view: profileStats },
 		{ path: "/tournament", view: tournamentSize },
 		{ path: "/tournamentSelect_4Players", view: tournamentSelect4Players },
 		{ path: "/tournamentSelect_8Players", view: tournamentSelect8Players },

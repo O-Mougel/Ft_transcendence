@@ -40,6 +40,12 @@ fastify.get("/profileOverview", function handler (request, reply) {
   	reply.sendFile('index.html')
 })
 
+fastify.get("/profileStats", function handler (request, reply) {
+	// const stream = fs.createReadStream('./src/index.html')
+	// reply.type('text/html').send(stream)
+  	reply.sendFile('index.html')
+})
+
 fastify.get("/tournament", function handler (request, reply) {
 	// const stream = fs.createReadStream('./src/index.html')
 	// reply.type('text/html').send(stream)
