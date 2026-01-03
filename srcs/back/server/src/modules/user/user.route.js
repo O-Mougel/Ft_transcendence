@@ -1,7 +1,7 @@
 // user.route.js
 
 import { $ref } from "./user.schema.js";
-import { logoutHandler, loginHandler, registerUserHandler, dataGrabHandler, alterUserHandler, editPasswordHandler, friendRequestHandler, friendAcceptHandler, getFriendHandler, getFriendRequestHandler, friendDeleteHandler, friendRejectHandler } from "./user.controller.js";
+import { logoutHandler, loginHandler, check2faHandler, registerUserHandler, dataGrabHandler, alterUserHandler, activate2faHandler, deactivate2faHandler, editPasswordHandler, friendRequestHandler, friendAcceptHandler, getFriendHandler, getFriendRequestHandler, friendDeleteHandler, friendRejectHandler } from "./user.controller.js";
 
 async function userRoutes(fastify) {
     fastify.post(
@@ -30,6 +30,20 @@ async function userRoutes(fastify) {
         loginHandler //add basic authentication scheme base 64 name:password in header
     );
 
+	fastify.post(
+        '/login/2fa', 
+        {
+			preHandler: [fastify.twofaauthenticate], //forces log to see user profile
+            schema: {
+                body: $ref("twofaSchema"),
+                response: {
+                    201: $ref("twofaResponseSchema"),
+                }
+            }
+        }, 
+        check2faHandler
+    );
+
 	fastify.get(
         '/profile/grab', 
         {
@@ -55,6 +69,48 @@ async function userRoutes(fastify) {
             },
         }, 
         alterUserHandler,
+    );
+
+	fastify.post(
+        '/profile/2fa/activate', 
+        {
+			preHandler: [fastify.authenticate],
+            // schema: {
+            //     body: $ref("profileChangesSchema"),
+            //     response: {
+            //         200: $ref("profileChangesResponseSchema"),
+            //     },
+            // },
+        }, 
+        activate2faHandler,
+    );
+
+	fastify.post(
+        '/profile/2fa/verify', 
+        {
+			preHandler: [fastify.authenticate],
+            schema: {
+                body: $ref("twofaSchema"),
+                response: {
+                    201: $ref("twofaResponseSchema"),
+                }
+            }
+        }, 
+        check2faHandler
+    );
+
+	fastify.delete(
+        '/profile/2fa/deactivate', 
+        {
+			preHandler: [fastify.authenticate],
+            // schema: {
+            //     body: $ref("profileChangesSchema"),
+            //     response: {
+            //         200: $ref("profileChangesResponseSchema"),
+            //     },
+            // },
+        }, 
+        deactivate2faHandler,
     );
 
 	fastify.post(
