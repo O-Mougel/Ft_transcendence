@@ -1,6 +1,8 @@
 // user.controller.js
 
-import { createUser, findUserByName, findUserById, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend, rejectfriend, deletefriend } from "./user.service.js";
+import speakeasy from 'speakeasy';
+import QRCode from 'qrcode';
+import { createUser, findUserByName, findUserById, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend, rejectfriend, deletefriend, savesecret2fa, deletesecret2fa, activate2fa } from "./user.service.js";
 import { verifyPassword } from "../../utils/hash.js";
 
 export async function registerUserHandler(request, reply) {
@@ -15,6 +17,7 @@ export async function registerUserHandler(request, reply) {
         });
     };
 
+	//check for error before sending to database 
     try {
         const user = await createUser(body);
         return reply.status(201).send(user);
@@ -31,7 +34,7 @@ export async function registerUserHandler(request, reply) {
 export async function dataGrabHandler(request, reply) {
 
 	const userId = request.user && request.user.id;
-	if (!userId) return reply.code(401).send({ message: 'Not authenticated !' });
+	if (!userId) return reply.code(401).send({ message: 'Not authenticated !' }); //will never fall here 
 
     try {
         const user = await findUserById(userId);
@@ -39,43 +42,60 @@ export async function dataGrabHandler(request, reply) {
 		// fields should be deleted if we send whole user, or instead just send username or stats
         return reply.status(200).send(user);
         
-    } catch (error) {
-        console.error(error);
-        return reply.status(500).send({
-            message: "User info could not be grabbed !",
+	} catch (error) {
+		console.error(error);
+		return reply.status(500).send({
+			message: "User info could not be grabbed !",
 			error:error
-        });
-    }
+		});
+	}
 }
 
 export async function loginHandler(request, reply) {
-    const body = request.body;
-
-    const user = await findUserByName(body.name);
-
-    if (!user) {
-        return reply.status(400).send({
-            message: "Invalid name. Try again!"
-        });
-    };
-
-    const isValidPassword = verifyPassword(
-        body.password,
-        user.salt,
-        user.password);
-
-    if (!isValidPassword) {
-        return reply.status(400).send({
-            message: "Password is incorrect"
-        });
-    };
+	const body = request.body;
 
 	//use basic authentication schema
 	//check if someone is already logged ??
-	//check 2fa and send 2fa if so 
+	
+	const user = await findUserByName(body.name);
 
-    const payload = {
-        id: user.id,
+	if (!user) {
+		return reply.status(400).send({
+			message: "Invalid name. Try again!"
+		});
+	};
+
+	const isValidPassword = verifyPassword(
+		body.password,
+		user.salt,
+		user.password);
+
+	if (!isValidPassword) {
+		return reply.status(400).send({
+			message: "Password is incorrect"
+		});
+	};
+
+	if (user.auth2fa) {
+
+		const payload = {
+			id: user.id,
+			type: "2fa"
+		}
+		const tempToken = request.jwt.sign(payload, request.jwt.secret, { expiresIn: "5min" } );
+
+		reply.setCookie('temp_token', tempToken, {
+			path: '/',
+			maxAge: 1000,
+			httpOnly: true,
+			secure: true,
+		})
+
+		return { require2fa: true, Token: tempToken };
+	}
+
+	const payload = {
+		id: user.id,
         email: user.email,
         name: user.name,
     }
@@ -90,7 +110,69 @@ export async function loginHandler(request, reply) {
 
 	setOnlineStatus(user.id, true)
 
-    return { accessToken: token }
+    return { require2fa: false, Token: token }
+}
+
+export async function check2faHandler(request, reply) {
+	const code = request.body.code
+
+	// // middleware auth temporaire
+	// const payload = verifyTempToken(req.headers.authorization);
+	// const userId = payload.userId;
+	//
+	// const user = await prisma.user.findUnique({ where: { id: userId } });
+	//
+	//
+	//
+	//
+	//if (request.user.type == "2fa")
+	//refuse if no password previousely
+
+	const user = await findUserById(request.user.id)
+	if (!user || !user.twofasecret) {
+		return reply.status(400).send({
+			message: "2fa non configure!"
+		});
+	};
+
+	const isValid = speakeasy.totp.verify({
+		secret: user.twofasecret,
+		encoding: 'base32',
+		token: code,
+		window: 1
+	});
+
+	if (!isValid) {
+		return reply.status(400).send({
+			message: "Code 2FA invalide"
+		});
+	}
+
+	if (!user.auth2fa) {
+		activate2fa(user.id)
+		return { message: "2fa activated !" }
+	}
+
+	else {
+		const payload = {
+			id: user.id,
+			email: user.email,
+			name: user.name,
+		}
+		const token = request.jwt.sign(payload, request.jwt.secret, { expiresIn: "30min" } );
+		reply.clearCookie('temp_token');
+
+		reply.setCookie('access_token', token, {
+			path: '/',
+			maxAge: 1000,
+			httpOnly: true,
+			secure: true,
+		})
+
+		setOnlineStatus(user.id, true)
+
+		return { accessToken: token }
+	}
 }
 
 export async function alterUserHandler(request, reply) {
@@ -107,6 +189,7 @@ export async function alterUserHandler(request, reply) {
     };
 
     // Verify password
+	// add activation of 2fa authentification
     const isValidPassword = verifyPassword(
         body.password,
         target.salt,
@@ -135,6 +218,34 @@ export async function alterUserHandler(request, reply) {
     };
 	return reply.status(200).send(updatedUser); // not really needed, just to send something
 }
+
+export async function activate2faHandler(request, reply) {
+	const user = request.user 
+
+	if (user.auth2fa)
+        return reply.status(400).send({
+            message: "2fa already activated !"
+        });
+		
+	const secret = speakeasy.generateSecret({
+		name: `Ft_transcendence (${user.name})`
+	});
+
+	const qrCode = await QRCode.toDataURL(secret.otpauth_url);
+	await savesecret2fa(user.id, secret.base32)
+	return { qrCode: qrCode }
+}
+
+export async function deactivate2faHandler(request, reply) {
+	if (user.auth2fa)
+        return reply.status(400).send({
+            message: "2fa not activated !"
+        });
+	await deletesecret2fa(request.user.id)
+	//send reply that it worked 
+}
+
+//add get2fastatus
 
 export async function logoutHandler(request, reply) {
     reply.clearCookie('access_token');

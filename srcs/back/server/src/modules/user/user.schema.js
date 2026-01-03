@@ -39,6 +39,24 @@ const loginSchema = z.object({
 });
 
 const loginResponseSchema = z.object({
+	require2fa: z.boolean(),
+    token: z.string(),
+});
+
+const qrCodeReplySchema = z.object({
+	qrCode: z.string()
+})
+
+const twofaSchema = z.object({
+	code: z.string(), //regex 6 digit long 
+})
+
+const twofaValidationResponseSchema = z.object({
+	success: z.boolean(),
+	message: z.string()
+})
+
+const twofaResponseSchema = z.object({
     accessToken: z.string(),
 });
 
@@ -92,6 +110,9 @@ export const { schemas: userSchemas, $ref } = buildJsonSchemas({
 	createUserResponseSchema,
 	loginSchema,
 	loginResponseSchema,
+	qrCodeReplySchema,
+	twofaSchema,
+	twofaResponseSchema,
 	infoGrabResponseSchema,
 	profileChangesSchema,
 	profileChangesResponseSchema,
