@@ -13,7 +13,6 @@ import newUserRegistration from "../views/newUserRegistration.js";
 import pong from "../views/pong.js";
 import logUser from "../views/login.js";
 
-const fs = require('fs'); 
 var profileRefresh;
 
 const loadURL = url => {
@@ -45,12 +44,7 @@ const grabCustomizationPageInfo = async () =>
 		const result = await dataRequestResponse.json();	
 		if (result)
 		{
-			try {
-    			await fs.promises.access(result.avatar);
-				profilePicture.src = result.avatar;
-			} catch (error) {
-    			profilePicture.src = 'img/userPfp/default.png'; //default pfp if user pfp not found on server
-			}
+			profilePicture.src = result.avatar;
 			newUsername.placeholder = result.name;
 		}
 	} 
