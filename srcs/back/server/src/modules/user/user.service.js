@@ -73,8 +73,6 @@ export async function changePassword(id, newpassword) {
   return user;
 }
 
-//update 2fa
-
 export async function alreadyrequested(id, friendid) {
 	const user = await db.user.findFirst({
 		where: {
@@ -219,4 +217,34 @@ export async function findfriends(id) {
 	})
 	
 	return friends
+}
+
+export async function savesecret2fa(id, secret) {
+	await db.user.update({
+		where: { id: id },
+		data: {
+			twofasecret: secret
+		}
+	});
+}
+
+export async function deletesecret2fa(id) {
+	await db.user.update({
+		where: {
+			id: id,
+		},
+		data: {
+			twofasecret: null,
+			auth2fa: false,
+		},
+	})
+}
+
+export async function activate2fa(id) {
+	await db.user.update({
+		where: { id: id },
+		data: {
+			auth2fa: true
+		}
+	});
 }
