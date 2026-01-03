@@ -122,7 +122,7 @@ window.rejectFriend = async (username) => {
     				target.remove();
 				
 				var count = requestList.childElementCount;
-				console.log("Pending request count :", count);
+				console.log("Pending request count :", count); // to checkkk
 				if (count == 0)
 				{
 					requestBlock.style.display = "none"; // to check later, might not work
@@ -157,7 +157,6 @@ const checkForFriendRequests = async () => {
 		const result = await lookForRequests.json();	
 		if (result)
 		{	
-			console.log("pending requests: ",result.requestOf);
 			if (result.requestOf.length > 0)
 			{
 				requestBlock.style.display = "block";
@@ -209,10 +208,9 @@ const displayUserFriends = async () => {
 		const result = await friendInfoResponse.json();	
 		if (result)
 		{	
-			console.log("friendlistGrab requests: ",result.friends);
+			// console.log("friendlistGrab requests: ",result.friends);
 			for(let i = 0; i < result.friends.length; i++) 
 			{
-				console.log(result.friends[i].name);
 				var listItem = document.createElement("li");
 				let	clearName = result.friends[i].name + "[4242]";
 				listItem.className = 'py-2 flex items-center justify-between';
