@@ -49,8 +49,6 @@ export async function findUserByName(name) { //grabs every field from given name
 	return user;
 }
 
-
-
 export async function setOnlineStatus(id, status) {
 	await db.user.update({
 		where: { id: id },
