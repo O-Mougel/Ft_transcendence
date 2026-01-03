@@ -74,17 +74,22 @@ window.saveProfileInfo = async function () {
 	confirmText.innerText = "";
 
 	if (!username.value && !selectedFile) // if nothing changed, do nothing
-	{
-		// console.log('img src',document.getElementById('userPfp').getAttribute("src"));
-		// console.log('placeholder is : ', username.placeholder);
 		return ;
-	}
 	if (username)
 	{
 		if (username.value.length > 12)
 		{
 			confirmText.style.color = "#e85b51";
 			confirmText.innerText = "❌ New username is too long ! (12 max)";
+			username.value = "";
+			password.value = "";
+			username.focus();
+			return ;
+		}
+		if (username.value == username.placeholder)
+		{
+			confirmText.style.color = "#e85b51";
+			confirmText.innerText = "❌ New username cannot be the same as the old one !";
 			username.value = "";
 			password.value = "";
 			username.focus();
@@ -105,21 +110,15 @@ window.saveProfileInfo = async function () {
 		// uploadFileToServer(selectedFile);
 	}
 	else if (!selectedFile)
-	{
 		var fullFilename = document.getElementById('userPfp').getAttribute("src");
-	}
-		
-
 	if (!username.value)
 		username.value = username.placeholder;
-
 
 	const data = {
 		name: username.value,
 		password: password.value,
 		avatar: fullFilename,
 	};
-
 	try 
 	{
 		const applyChangeResponse = await fetch('/profile/edit', {
@@ -135,9 +134,7 @@ window.saveProfileInfo = async function () {
 		}
 		const result = await applyChangeResponse.json();
 	
-		if (result && result.message) 
-			confirmText.innerText = result.message;
-		else
+		if (result)
 		{
 			confirmText.style.color = "#3ec745";
 			confirmText.innerText = "✅ User updated !";
