@@ -8,6 +8,7 @@ const createMatchSchema = z.object({
 	player1score: z.number(),
     player2Id: z.number(),
 	player2score: z.number(),
+	winnerId: z.number()
 });
 
 const createMatchResponseSchema = z.object({
