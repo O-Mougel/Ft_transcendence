@@ -202,8 +202,6 @@ async function userRoutes(fastify) {
 		getFriendHandler
 	)
 
-	//ajouter reject and delete friend
-
 }
 
 export default userRoutes;
