@@ -15,7 +15,7 @@ export default class extends ViewTemplate {
 				<form class="pt-[3%] px-[3%]" onsubmit="return false">
 					<h2 class="flex items-start w-full text-left">► Choose your new username :</h2>
 					<div class="flex items-start w-[75%] pt-4">
-						<input id="newUsername" tabindex="1" class="uppercase ml-4 px-5 w-full hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] rounded-sm border border-[#c2dbf6]" name="unameNew" value="" type="text" autofocus autocomplete="off" placeholder="[old username] voici un test de si c'est plus long" >
+						<input id="newUsername" tabindex="1" class="uppercase ml-4 px-5 w-full hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] rounded-sm border border-[#c2dbf6]" name="unameNew" value="" type="text" autofocus autocomplete="off" placeholder="[old username]">
 					</div>
 					<h2 class="flex items-start pt-4 w-full text-left">► Choose your new profile picture :</h2>
 					<div class="overflow-hidden flex items-center justify-center gap-4 pt-4">
