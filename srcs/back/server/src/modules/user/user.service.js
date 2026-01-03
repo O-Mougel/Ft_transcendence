@@ -24,7 +24,7 @@ export async function createUser(input) {
 	const { hash, salt } = hashPassword(password);
 
 	const user = await db.user.create({
-			data: {...rest, salt, password: hash}
+		data: {...rest, salt, password: hash}
 	});
 
 	return user;
@@ -46,7 +46,7 @@ export async function findUserByName(name) { //grabs every field from given name
 		},
 	})
 
-		return user;
+	return user;
 }
 
 
@@ -67,24 +67,22 @@ export async function findUserById(id) {
 		},
 	})
 
-    return user;
+	return user;
 }
 
 export async function changePassword(id, newpassword) {
-  const { hash, salt } = hashPassword(newpassword);
+	const { hash, salt } = hashPassword(newpassword);
 
-  const user = await db.user.update({
-    where: {id: id},
-    data:{
-      password: hash,
-      salt: salt,
-    },
-  })
+	const user = await db.user.update({
+		where: {id: id},
+		data:{
+			password: hash,
+			salt: salt,
+		},
+	})
 
-  return user;
+	return user;
 }
-
-//update 2fa
 
 export async function alreadyrequested(id, friendid) {
 	const user = await db.user.findFirst({
@@ -203,15 +201,15 @@ export async function findrequests(id) {
 		where: {id: id},
 		select: {
 			requestOf: {
-        select: {
-          name: true,
-          avatar: true,    //maybe not needed for now
-          online: true,
-        },
+				select: {
+					name: true,
+					avatar: true,
+					online: true,
+				},
 			},
 		},
 	})
-	
+
 	return requests
 }
 
@@ -220,14 +218,44 @@ export async function findfriends(id) {
 		where: {id: id},
 		select: {
 			friends: {
-        select: {
-          name: true,
-          avatar: true,
-          online: true,
-        },
-      },
+				select: {
+					name: true,
+					avatar: true,
+					online: true,
+				},
+			},
 		},
 	})
 	
 	return friendsObj
+}
+
+export async function savesecret2fa(id, secret) {
+	await db.user.update({
+		where: { id: id },
+		data: {
+			twofasecret: secret
+		}
+	});
+}
+
+export async function deletesecret2fa(id) {
+	await db.user.update({
+		where: {
+			id: id,
+		},
+		data: {
+			twofasecret: null,
+			auth2fa: false,
+		},
+	})
+}
+
+export async function activate2fa(id) {
+	await db.user.update({
+		where: { id: id },
+		data: {
+			auth2fa: true
+		}
+	});
 }
