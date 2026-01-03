@@ -24,7 +24,7 @@ export async function createUser(input) {
 	const { hash, salt } = hashPassword(password);
 
 	const user = await db.user.create({
-			data: {...rest, salt, password: hash}
+		data: {...rest, salt, password: hash}
 	});
 
 	return user;
@@ -37,7 +37,7 @@ export async function findUserByName(name) { //grabs every field from given name
 		},
 	})
 
-		return user;
+	return user;
 }
 
 export async function setOnlineStatus(id, status) {
@@ -56,21 +56,21 @@ export async function findUserById(id) {
 		},
 	})
 
-    return user;
+	return user;
 }
 
 export async function changePassword(id, newpassword) {
-  const { hash, salt } = hashPassword(newpassword);
+	const { hash, salt } = hashPassword(newpassword);
 
-  const user = await db.user.update({
-    where: {id: id},
-    data:{
-      password: hash,
-      salt: salt,
-    },
-  })
+	const user = await db.user.update({
+		where: {id: id},
+		data:{
+			password: hash,
+			salt: salt,
+		},
+	})
 
-  return user;
+	return user;
 }
 
 export async function alreadyrequested(id, friendid) {
@@ -190,15 +190,15 @@ export async function findrequests(id) {
 		where: {id: id},
 		select: {
 			requestOf: {
-        select: {
-          name: true,
-          avatar: true,
-          online: true,
-        },
+				select: {
+					name: true,
+					avatar: true,
+					online: true,
+				},
 			},
 		},
 	})
-	
+
 	return requests
 }
 
@@ -207,15 +207,15 @@ export async function findfriends(id) {
 		where: {id: id},
 		select: {
 			friends: {
-        select: {
-          name: true,
-          avatar: true,
-          online: true,
-        },
-      },
+				select: {
+					name: true,
+					avatar: true,
+					online: true,
+				},
+			},
 		},
 	})
-	
+
 	return friends
 }
 

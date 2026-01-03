@@ -16,6 +16,7 @@ export async function registerUserHandler(request, reply) { //respect
         });
     };
 
+	//check for error before sending to database 
     try {
         const user = await createUser(body);
         return reply.status(201).send(user);
@@ -32,7 +33,7 @@ export async function registerUserHandler(request, reply) { //respect
 export async function dataGrabHandler(request, reply) {
 
 	const userId = request.user && request.user.id;
-	if (!userId) return reply.code(401).send({ message: 'Not authenticated !' });
+	if (!userId) return reply.code(401).send({ message: 'Not authenticated !' }); //will never fall here 
 
     try {
         const user = await findUserById(userId);
@@ -219,6 +220,11 @@ export async function alterUserHandler(request, reply) {
 export async function activate2faHandler(request, reply) {
 	const user = request.user 
 
+	if (user.auth2fa)
+        return reply.status(400).send({
+            message: "2fa already activated !"
+        });
+		
 	const secret = speakeasy.generateSecret({
 		name: `Ft_transcendence (${user.name})`
 	});
@@ -229,7 +235,12 @@ export async function activate2faHandler(request, reply) {
 }
 
 export async function deactivate2faHandler(request, reply) {
+	if (user.auth2fa)
+        return reply.status(400).send({
+            message: "2fa not activated !"
+        });
 	await deletesecret2fa(request.user.id)
+	//send reply that it worked 
 }
 
 //add get2fastatus
