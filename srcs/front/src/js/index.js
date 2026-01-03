@@ -44,7 +44,13 @@ const grabCustomizationPageInfo = async () =>
 		const result = await dataRequestResponse.json();	
 		if (result)
 		{
-			profilePicture.src = result.avatar;
+			
+			const defaultAvatar = '/img/userPfp/default.png';
+			profilePicture.onerror = () => {
+  			profilePicture.onerror = null;
+  			profilePicture.src = defaultAvatar;
+			};
+			profilePicture.src = result?.avatar || defaultAvatar;			
 			newUsername.placeholder = result.name;
 		}
 	} 

@@ -47,7 +47,9 @@ const fieldValidity = (username, pwd, pwdconf, requestR, email) => {
 }
 
 window.acceptFriend = async (username) => {
+
 	const requestList = document.getElementById('requestList'); //contains the requests
+	if(!requestList) return;
 
 	const data = {
 		friendAcceptName: username,
@@ -91,6 +93,8 @@ window.rejectFriend = async (username) => {
 	const requestList = document.getElementById('requestList'); //contains the requests
 	const requestLabel = document.getElementById('requestCheckLabel');
 	const requestBlock = document.getElementById('pendingRequestBlock');
+
+	if(!requestList || !requestLabel || !requestBlock) return;
 
 	const data = {
 		friendrejectname: username,
@@ -157,6 +161,7 @@ const checkForFriendRequests = async () => {
 		const result = await lookForRequests.json();	
 		if (result)
 		{	
+
 			if (result.requestOf.length > 0)
 			{
 				requestBlock.style.display = "block";
@@ -167,18 +172,19 @@ const checkForFriendRequests = async () => {
 				requestBlock.style.display = "none";
 			}
 
+			requestList.innerHTML = '';
 			for(let i = 0; i < result.requestOf.length; i++) 
 			{
-				console.log(result.requestOf[i].name);
 				var listItem = document.createElement("li");
 				let	clearName = result.requestOf[i].name + "[42]";
 				listItem.className = 'py-2 flex items-center justify-between';
 				listItem.setAttribute('name', clearName);
+				const safeName = JSON.stringify(result.requestOf[i].name);
 				listItem.innerHTML = `
-				<span class="text-sm text-amber-400">✦ ${result.requestOf[i].name}</span>
+				<span class="text-sm text-amber-400">✦ ${safeName}</span>
 				<span class="flex items-center gap-2">
-					<button class="accept-request px-2 py-1 rounded" onclick="acceptFriend('${result.requestOf[i].name}')" title="Accept">✅</button>
-					<button class="reject-request px-2 py-1 rounded" onclick="rejectFriend('${result.requestOf[i].name}')" title="Reject">❌</button>
+					<button class="accept-request px-2 py-1 rounded" onclick="acceptFriend('${safeName}')" title="Accept">✅</button>
+					<button class="reject-request px-2 py-1 rounded" onclick="rejectFriend('${safeName}')" title="Reject">❌</button>
 				</span>`;
 				requestList.appendChild(listItem);
 			}
@@ -209,6 +215,7 @@ const displayUserFriends = async () => {
 		if (result)
 		{	
 			// console.log("friendlistGrab requests: ",result.friends);
+			friendList.innerHTML = '';
 			for(let i = 0; i < result.friends.length; i++) 
 			{
 				var listItem = document.createElement("li");
@@ -250,8 +257,20 @@ window.grabProfileInfo = async function () {
 		{	
 			profileUsername.innerHTML = result.name;
 			profileUsername.style.color = 'white';
-			profilePicture.style.backgroundImage = `url(${result.avatar})`;
 			profilePicture.style.opacity = "1";
+
+			const defaultAvatar = '/img/userPfp/default.png';
+			const avatarUrl = result?.avatar || defaultAvatar;
+			
+			const probe = new Image();
+			probe.onload = () => {
+			profilePicture.style.backgroundImage = 'url(' + JSON.stringify(avatarUrl) + ')';
+			};
+			probe.onerror = () => {
+			profilePicture.style.backgroundImage = 'url(' + JSON.stringify(defaultAvatar) + ')';
+			};
+			probe.src = avatarUrl;
+			// profilePicture.style.backgroundImage = `url(${result.avatar})`;
 		}
 	} 
 	catch (err) 
