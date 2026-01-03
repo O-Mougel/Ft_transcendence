@@ -36,6 +36,7 @@ export async function dataGrabHandler(request, reply) {
 	const userId = request.user && request.user.id;
 	if (!userId) return reply.code(401).send({ message: 'Not authenticated !' }); //will never fall here 
 
+	await showstats(userId) //nothing to do here remove it when not needed anymore
     try {
         const user = await findUserById(userId);
 		if (!user) return reply.code(404).send({ message: 'User not found using access token'});

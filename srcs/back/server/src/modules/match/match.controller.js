@@ -1,6 +1,6 @@
 // match.controller.js
 
-import { createMatch, getMatchs } from "./match.service.js";
+import { createMatch, showstats } from "./match.service.js";
 
 export async function createMatchHandler(request, reply) {
     const body = request.body;
@@ -19,7 +19,7 @@ export async function createMatchHandler(request, reply) {
 }
 
 export async function getMatchsHandler(request, reply) {
-    const matchs = await getMatchs(request.user.id)
+    const stats = await showstats(request.user.id)
 
-	return matchs;
+	return stats;
 }
