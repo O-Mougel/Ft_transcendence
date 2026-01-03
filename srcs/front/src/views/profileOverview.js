@@ -36,7 +36,7 @@ export default class extends ViewTemplate {
 				<div class="px-[3%] pb-[6%]">
 					<h2 class="flex items-start w-full text-left pt-4">► Enable 2FA :</h2>
 					<div class="flex items-start w-[75%] pt-4">
-						<a tabindex="5" class="uppercase px-5 ml-4 pb-1 sm:pb-2 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg" name="gotoMainMenu" href="/" data-link>2FA setup</a>
+						<a tabindex="5" class="uppercase px-5 ml-4 pb-1 sm:pb-2 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg" name="gotoMainMenu" href="/setup2FA" data-link>2FA setup</a>
 					</div>
 					<div class="pt-6">
 						<a tabindex="5" class="uppercase px-5 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg" name="gotoMainMenu" href="/" data-link>Back to menu</a>
