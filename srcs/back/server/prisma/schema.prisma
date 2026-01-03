@@ -20,6 +20,7 @@ model User {
   request          User[]   @relation("FriendRequest")
   requestOf        User[]   @relation("FriendRequest")
   auth2fa          Boolean  @default(false)
+  twofasecret      String?
   online           Boolean  @default(false)
   ai               Boolean  @default(false)
   invited          Boolean  @default(false) 

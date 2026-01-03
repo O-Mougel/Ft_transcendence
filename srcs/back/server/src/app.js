@@ -27,6 +27,19 @@ fastify.decorate(
     }
 );
 
+fastify.decorate(
+    'twofaauthenticate',
+    async (request, reply) => {
+        const token = request.cookies.temp_token;
+
+        if (!token) {
+            return reply.status(401).send({ message: 'Authentication required' })
+        }
+        const decoded = request.jwt.verify(token)
+        request.user = decoded
+    }
+);
+
 fastify.addHook('preHandler', (req, res, next) => {
     req.jwt = fastify.jwt
     return next()
