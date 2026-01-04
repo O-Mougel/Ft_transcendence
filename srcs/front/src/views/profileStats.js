@@ -46,8 +46,8 @@ export default class extends ViewTemplate {
 			<div class="pt-[3%] flex flex-col gap-y-4 items-center mx-[3%] px-4 rounded-xl outline-none border border-blue-300 bg-[url(/img/stars.gif)] bg-cover bg-center shadow-[0_0_20px_rgba(158,202,237,0.9)]">
 				<h1>Profile Stats Page</h1>
 				<div class="flex items-center">
-					<h2 class="text-center">[username]</h2>
-					<img src="./img/userPfp/default.png" alt="userPfpImg" class="pt-4 w-20 h-20 sm:w-[120px] sm:h-[120px] object-cover shrink-0" />
+					<h2 class="text-center pr-2">[username]</h2>
+					<img src="./img/userPfp/default.png" alt="userPfpImg" class="pl-2 pt-4 w-20 h-20 sm:w-[120px] sm:h-[120px] object-cover shrink-0" />
 				</div>
 				<div>
 					<h2>Select a user to see his stats:</h2>
@@ -117,7 +117,12 @@ export default class extends ViewTemplate {
 						<p>0</p>
 					</div>
 				</div>
-				<div class="pb-2">
+				<div class="sm:pt-10">
+				</div>
+				<div class="">
+					<a tabindex="5" class="uppercase px-5 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg" name="gotoMainMenu" href="/" data-link>Back to menu</a>
+				</div>	
+				<div class="pb-2 sm:pb-12">
 				</div>
 			</div>`
 	}
