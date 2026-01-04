@@ -43,7 +43,7 @@ export default class extends ViewTemplate {
 			</div>
 			<div class="pt-[3%]">
 			</div>
-			<div class="pt-[3%] flex flex-col gap-y-4 items-center mx-[3%]  rounded-xl outline-none border border-blue-300 bg-[url(/img/stars.gif)] bg-cover bg-center shadow-[0_0_20px_rgba(158,202,237,0.9)]">
+			<div class="pt-[3%] flex flex-col gap-y-4 items-center mx-[3%] px-4 rounded-xl outline-none border border-blue-300 bg-[url(/img/stars.gif)] bg-cover bg-center shadow-[0_0_20px_rgba(158,202,237,0.9)]">
 				<h1>Profile Stats Page</h1>
 				<div class="flex items-center">
 					<h2 class="text-center">[username]</h2>
