@@ -60,30 +60,64 @@ export default class extends ViewTemplate {
 							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">Friend 4</li>
 							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">Friend 5</li>
 							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">Friend 6</li>
-							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">My stats</li>
-							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">Friend 1</li>
-							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">Friend 2</li>
-							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">Friend 3</li>
+							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">Friend 7</li>
+							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">Friend 8</li>
+							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">Friend 9</li>
+							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">Friend 10</li>
 						</ul>
 					</div>
 				</div>
 				<div class="flex border border-white rounded-lg w-full p-4 gap-4 flex-wrap justify-between">
-					<div class="flex flex-col flex-wrap">
+					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
 						<p>Match played</p>
 						<p>0</p>
 					</div>
-					<div class="flex flex-col flex-wrap">
+					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
 						<p>Win ratio</p>
 						<p>0%</p>
 					</div>
-					<div class="flex flex-col flex-wrap">
+					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
 						<p>Highest score</p>
 						<p>0</p>
 					</div>
-					<div class="flex flex-col flex-wrap">
+					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
 						<p>Average score</p>
 						<p>0</p>
 					</div>
+					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
+						<p>Match played</p>
+						<p>0</p>
+					</div>
+					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
+						<p>Win ratio</p>
+						<p>0%</p>
+					</div>
+					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
+						<p>Highest score</p>
+						<p>0</p>
+					</div>
+					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
+						<p>Average score</p>
+						<p>0</p>
+					</div>
+					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
+						<p>Match played</p>
+						<p>0</p>
+					</div>
+					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
+						<p>Win ratio</p>
+						<p>0%</p>
+					</div>
+					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%] ">
+						<p>Highest score</p>
+						<p>0</p>
+					</div>
+					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
+						<p>Average score</p>
+						<p>0</p>
+					</div>
+				</div>
+				<div class="pb-2">
 				</div>
 			</div>`
 	}
