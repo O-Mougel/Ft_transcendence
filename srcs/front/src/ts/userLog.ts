@@ -2,6 +2,7 @@ import startingFile from "../views/startingFile.js";
 import loginFile from "../views/login.js";
 import { adjustNavbar } from "../js/index.js";
 
+
 // declare window globals so TypeScript knows about functions attached to window
 declare global {
   interface Window {
