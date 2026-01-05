@@ -1,25 +1,4 @@
-window.get4PlayerName = function (event) {
-	event.preventDefault();
-
-	const player1 = document.getElementById('player1');
-	const player2 = document.getElementById('player2');
-	const player3 = document.getElementById('player3');
-	const player4 = document.getElementById('player4');
-
-	if (player1.value === "")
-		player1.value = "Player 1";
-	if (player2.value === "")
-		player2.value = "Player 2";
-	if (player3.value === "")
-		player3.value = "Player 3";
-	if (player4.value === "")
-		player4.value = "Player 4";
-
-	console.log("Player 1: ", player1.value);
-	console.log("Player 2: ", player2.value);
-	console.log("Player 3: ", player3.value);
-	console.log("Player 4: ", player4.value);
-};
+onclick="get4PlayerName(event)"
 
 window.get8PlayerName = function (event) {
 	event.preventDefault();

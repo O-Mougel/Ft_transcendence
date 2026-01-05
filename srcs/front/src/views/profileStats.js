@@ -84,38 +84,6 @@ export default class extends ViewTemplate {
 						<p>Average score</p>
 						<p>0</p>
 					</div>
-					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
-						<p>Match played</p>
-						<p>0</p>
-					</div>
-					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
-						<p>Win ratio</p>
-						<p>0%</p>
-					</div>
-					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
-						<p>Highest score</p>
-						<p>0</p>
-					</div>
-					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
-						<p>Average score</p>
-						<p>0</p>
-					</div>
-					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
-						<p>Match played</p>
-						<p>0</p>
-					</div>
-					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
-						<p>Win ratio</p>
-						<p>0%</p>
-					</div>
-					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%] ">
-						<p>Highest score</p>
-						<p>0</p>
-					</div>
-					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
-						<p>Average score</p>
-						<p>0</p>
-					</div>
 				</div>
 				<div class="sm:pt-10">
 				</div>
