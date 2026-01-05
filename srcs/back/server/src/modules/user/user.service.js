@@ -257,3 +257,13 @@ export async function activate2fa(id) {
 		}
 	});
 }
+
+export async function get2fastatus(id) {
+	const status = await db.user.findUnique({
+		where: { id: id },
+		select: {
+			auth2fa: true
+		}
+	});
+  return status
+}
