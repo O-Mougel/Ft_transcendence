@@ -88,12 +88,11 @@ async function userRoutes(fastify) {
         '/profile/2fa/activate', 
         {
 			preHandler: [fastify.authenticate],
-            // schema: {
-            //     body: $ref("profileChangesSchema"),
-            //     response: {
-            //         200: $ref("profileChangesResponseSchema"),
-            //     },
-            // },
+            schema: {
+                response: {
+                    200: $ref("qrCodeReplySchema"),
+                },
+            },
         }, 
         activate2faHandler,
     );

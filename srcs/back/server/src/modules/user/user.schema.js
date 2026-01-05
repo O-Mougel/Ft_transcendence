@@ -44,7 +44,7 @@ const loginResponseSchema = z.object({
 });
 
 const qrCodeReplySchema = z.object({
-	qrCode: z.string()
+	qrCode: z.string().url()
 })
 
 const twofaSchema = z.object({
