@@ -2,7 +2,7 @@
 
 import speakeasy from 'speakeasy';
 import QRCode from 'qrcode';
-import { createUser, findUserByName, findUserById, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend, rejectfriend, deletefriend, savesecret2fa, deletesecret2fa, activate2fa } from "./user.service.js";
+import { createUser, findUserByName, findUserById, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend, rejectfriend, deletefriend, savesecret2fa, deletesecret2fa, activate2fa, get2fastatus } from "./user.service.js";
 import { verifyPassword } from "../../utils/hash.js";
 
 export async function registerUserHandler(request, reply) {
@@ -219,6 +219,13 @@ export async function alterUserHandler(request, reply) {
 	return reply.status(200).send(updatedUser); // not really needed, just to send something
 }
 
+export async function get2fastatusHandler(request, reply)
+{
+	const status = await get2fastatus(request.user.id)
+
+	return { twofastatus: status.auth2fa }
+}
+
 export async function activate2faHandler(request, reply) {
 	const user = request.user 
 
@@ -244,8 +251,6 @@ export async function deactivate2faHandler(request, reply) {
 	await deletesecret2fa(request.user.id)
 	//send reply that it worked 
 }
-
-//add get2fastatus
 
 export async function logoutHandler(request, reply) {
     reply.clearCookie('access_token');
