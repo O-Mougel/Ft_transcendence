@@ -244,12 +244,17 @@ export async function activate2faHandler(request, reply) {
 }
 
 export async function deactivate2faHandler(request, reply) {
-	if (user.auth2fa)
+	
+	const user = request.user
+
+	if (!user.auth2fa)
         return reply.status(400).send({
             message: "2fa not activated !"
         });
-	await deletesecret2fa(request.user.id)
-	//send reply that it worked 
+	await deletesecret2fa(user.id)
+	//send reply that it worked
+	
+	return reply.status(200).send({ message: '2fa deactivated successfully'});
 }
 
 export async function logoutHandler(request, reply) {
