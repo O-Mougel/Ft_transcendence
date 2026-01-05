@@ -51,6 +51,10 @@ const twofaSchema = z.object({
 	code: z.string(), //regex 6 digit long 
 })
 
+const twofastatusResponseSchema = z.object({
+  twofastatus: z.boolean()
+})
+
 const twofaValidationResponseSchema = z.object({
 	success: z.boolean(),
 	message: z.string()
@@ -113,6 +117,7 @@ export const { schemas: userSchemas, $ref } = buildJsonSchemas({
 	qrCodeReplySchema,
 	twofaSchema,
 	twofaResponseSchema,
+  twofastatusResponseSchema,
 	infoGrabResponseSchema,
 	profileChangesSchema,
 	profileChangesResponseSchema,
