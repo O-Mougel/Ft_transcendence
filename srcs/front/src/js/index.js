@@ -23,8 +23,7 @@ const loadURL = url => {
 const refreshProfile = () => {
 	console.log("Tick tick tick ...");
 }
-
-const fetchPlayerStats = async (playerUsername) => 
+window.fetchPlayerStats = async (playerUsername) => 
 {
 	try 
 	{
@@ -119,9 +118,9 @@ const createFriendsStatLink = async () =>
 					var listItem = document.createElement("li");
 					let	clearName = result.friends[i].name + "[userFriend]";
 					listItem.className = 'w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg';
-					listItem.innerHTML = `${result.friends[i].name}"`;
+					listItem.innerHTML = `${result.friends[i].name}`;
 					listItem.setAttribute('name', clearName);
-					listItem.setAttribute('onclick',`fetchPlayerStats(${result.friends[i].name})`);
+					listItem.setAttribute('onclick',`fetchPlayerStats("${result.friends[i].name}")`);
 					friendlistProfileParent.appendChild(listItem);
 				}
 			}
