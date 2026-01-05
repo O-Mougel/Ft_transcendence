@@ -8,7 +8,9 @@ const createMatchSchema = z.object({
 	player1score: z.number(),
     player2Id: z.number(),
 	player2score: z.number(),
-	winnerId: z.number()
+	winnerId: z.number(),
+  longestStreak: z.number(),
+  duration: z.number()
 });
 
 const createMatchResponseSchema = z.object({
@@ -16,9 +18,17 @@ const createMatchResponseSchema = z.object({
 	createdAt: z.string(),
 });
 
+const getMatchResponseSchema = z.object({
+  matchsnb: z.number(),
+  winrate: z.number(),
+  biggest_streak: z.number(),
+  longestMatch: z.number()
+});
+
 export const { schemas: matchSchemas, $ref } = buildJsonSchemas({
 	createMatchSchema,
 	createMatchResponseSchema,
+  getMatchResponseSchema
 	},
 	{ $id: 'matchSchemas' }, 
 );
