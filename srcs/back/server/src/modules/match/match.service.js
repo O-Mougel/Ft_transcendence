@@ -13,12 +13,37 @@ export async function createMatch(input)
     return match;
 }
 
-export async function getMatchs(playerId) {
-	return db.user.findUnique({
-		where: { id: playerId },
-		include: {
-			matchesAsPlayer1: true,
-			matchesAsPlayer2: true
+export async function showstats(id) {
+	const matchsnb = await db.match.count({
+		where: {
+			OR: [
+				{ player1Id: id },
+				{ player2Id: id },
+			],
+		},
+	})
+	const win = await db.match.count({
+		where: {
+			winnerId: id
+		},
+	})
+	const winrate = win / matchsnb * 100
+
+	const result = await db.match.aggregate({
+		where: {
+			OR: [
+				{ player1Id: id },
+				{ player2Id: id },
+			],
+		},
+		_max: {
+			longestStreak: true,
+			duration: true
 		}
 	});
+
+	const biggest_streak = result._max.longestStreak ?? 0;
+	const longestMatch = result._max.duration ?? 0;
+
+	return { matchsnb, winrate, biggest_streak, longestMatch } 
 }

@@ -22,6 +22,11 @@ async function matchRoutes(fastify) {
 		'/match',
 		{
 			preHandler: [fastify.authenticate],
+			schema: {
+				response: {
+					201: $ref("getMatchResponseSchema")
+				},
+			},
 		},
 		getMatchsHandler,
 	)
