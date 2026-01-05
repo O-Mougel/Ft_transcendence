@@ -81,6 +81,7 @@ window.acceptFriend = async (username) => {
     				target.remove();
 				}
 			}
+			grabProfileInfo();
 		}
 	}
 	catch (err) 
@@ -125,15 +126,16 @@ window.rejectFriend = async (username) => {
 					const target = currentElement[0];
     				target.remove();
 				
-				var count = requestList.childElementCount;
-				console.log("Pending request count :", count); // to checkkk
-				if (count == 0)
-				{
-					requestBlock.style.display = "none"; // to check later, might not work
+				// var count = requestList.childElementCount;
+				// console.log("Pending request count :", count); // to checkkk
+				// if (count == 0)
+				// {
+				// 	requestBlock.style.display = "none"; // to check later, might not work
+				// }
+				// else
+				// 	requestLabel.innerHTML = "► Requests(" + count + ")"
 				}
-				else
-					requestLabel.innerHTML = "► Requests(" + count + ")"
-				}
+				grabProfileInfo();
 			}
 		}
 	}
@@ -179,7 +181,10 @@ const checkForFriendRequests = async () => {
 				let	clearName = result.requestOf[i].name + "[42]";
 				listItem.className = 'py-2 flex items-center justify-between';
 				listItem.setAttribute('name', clearName);
-				const safeName = JSON.stringify(result.requestOf[i].name);
+				const jsonString = JSON.stringify(result.requestOf[i].name);
+				const safeName = jsonString.replace(/['"]+/g, '');
+				// console.log("Safe name is : ", safeName);
+				// console.log(" name is : ", result.requestOf[i].name);
 				listItem.innerHTML = `
 				<span class="text-sm text-amber-400">✦ ${safeName}</span>
 				<span class="flex items-center gap-2">

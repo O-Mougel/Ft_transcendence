@@ -16,7 +16,7 @@ export default class extends ViewTemplate {
 					</div>
 					<h1 id="playerGrabbedUsername" class="text-black text-bold mx-4 mb-15 text-2xl ">[username]</h1>
 					<a href="/profileStats" class="mx-4 text-2xl mb-5 border p-4 text-[#798490] hover:text-[#98c6f8]" name="profileLink" data-link>View my profile</a>
-					<a href="/profileOverview" class="mx-4 text-2xl mb-5 border p-4 text-[#798490] hover:text-[#98c6f8]" name="profileLink" data-link>Update profile</a>
+					<a href="/customizeProfile" class="mx-4 text-2xl mb-5 border p-4 text-[#798490] hover:text-[#98c6f8]" name="profileLink" data-link>Update profile</a>
 					<a id="logoutButton" class="mx-4 text-2xl mb-15 border p-4 cursor-pointer hover:text-[#dee9f4] hover:bg-[#882639] text-[#882639]" onclick=logoutUser() name="logoutButtonName">➜] Log out</a>
 					<div class="self-start">
 						<input class="sr-only peer" id="friendCheck" type="checkbox"/>
@@ -46,24 +46,14 @@ export default class extends ViewTemplate {
 			<div class="pt-[3%] flex flex-col gap-y-4 items-center mx-[3%] px-4 rounded-xl outline-none border border-blue-300 bg-[url(/img/stars.gif)] bg-cover bg-center shadow-[0_0_20px_rgba(158,202,237,0.9)]">
 				<h1>Profile Stats Page</h1>
 				<div class="flex items-center">
-					<h2 class="text-center pr-2">[username]</h2>
-					<img src="./img/userPfp/default.png" alt="userPfpImg" class="pl-2 pt-4 w-20 h-20 sm:w-[120px] sm:h-[120px] object-cover shrink-0" />
+					<h2 id="playerUsernameProfile" class="text-center pr-2">[username]</h2>
+					<img id="userPfpProfile" src="./img/userPfp/default.png" alt="userPfpImg" class="pl-2 pt-4 w-20 h-20 sm:w-[120px] sm:h-[120px] object-cover shrink-0" />
 				</div>
 				<div>
-					<h2>Select a user to see his stats:</h2>
+					<h2>Select a friend to see his stats :</h2>
 					<div class="flex w-full">
-						<ul class="flex flex-wrap justify-between gap-4 w-full pt-4">
+						<ul id="friendlistProfileParent" class="flex flex-wrap justify-center gap-4 w-full pt-4">
 							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">My stats</li>
-							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">Friend 1</li>
-							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">Friend 2</li>
-							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">Friend 3</li>
-							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">Friend 4</li>
-							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">Friend 5</li>
-							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">Friend 6</li>
-							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">Friend 7</li>
-							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">Friend 8</li>
-							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">Friend 9</li>
-							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">Friend 10</li>
 						</ul>
 					</div>
 				</div>
