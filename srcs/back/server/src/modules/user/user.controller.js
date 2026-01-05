@@ -1,6 +1,7 @@
 // user.controller.js
 
 import speakeasy from 'speakeasy';
+import crypto from 'crypto';
 import QRCode from 'qrcode';
 import { createUser, findUserByName, findUserById, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend, rejectfriend, deletefriend, savesecret2fa, deletesecret2fa, activate2fa, get2fastatus } from "./user.service.js";
 import { verifyPassword } from "../../utils/hash.js";
@@ -99,7 +100,7 @@ export async function loginHandler(request, reply) {
         email: user.email,
         name: user.name,
     }
-    const token = request.jwt.sign(payload, request.jwt.secret, { expiresIn: "30min" } );
+    const token = request.jwt.sign(payload, request.jwt.secret, { expiresIn: "1min" } );
 
     reply.setCookie('access_token', token, {
         path: '/',
@@ -109,6 +110,11 @@ export async function loginHandler(request, reply) {
     })
 
 	setOnlineStatus(user.id, true)
+
+// export function generateRefreshToken() {
+//   return crypto.randomBytes(64).toString("hex");
+// }
+//
 
     return { require2fa: false, Token: token }
 }
@@ -149,7 +155,7 @@ export async function check2faHandler(request, reply) {
 	}
 
 	if (!user.auth2fa) {
-		activate2fa(user.id)
+		await activate2fa(user.id)
 		return { message: "2fa activated !" }
 	}
 
