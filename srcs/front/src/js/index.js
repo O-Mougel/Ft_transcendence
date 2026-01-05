@@ -2,7 +2,7 @@ import versusAI from "../views/versusAI.js";
 import playerBattle from "../views/playerBattle.js";
 import startingFile from "../views/startingFile.js";
 import aboutFile from "../views/aboutFile.js";
-import profileOverview from "../views/profileOverview.js";
+import customizeProfile from "../views/customizeProfile.js";
 import profileStats from "../views/profileStats.js";
 import setup2FA from "../views/setup2FA.js";
 import tournamentSize from "../views/tournamentSize.js";
@@ -24,6 +24,118 @@ const refreshProfile = () => {
 	console.log("Tick tick tick ...");
 }
 
+const fetchPlayerStats = async (playerUsername) => 
+{
+	try 
+	{
+		const userStatsRequestResponse = await fetch('/friend/stats', {
+				credentials: 'include',
+		});
+	
+		if (!userStatsRequestResponse.ok) {
+				const text = await userStatsRequestResponse.text().catch(() => userStatsRequestResponse.statusText);
+				throw new Error(`Request failed: ${userStatsRequestResponse.status} ${text}`);
+		}
+		const result = await userStatsRequestResponse.json();	
+		if (result)
+		{
+			console.log("Grabbed user stats !", result);
+		}
+	} 
+	catch (err) 
+	{
+		console.error('User stats fetch failed in profileStat!\n => ', err);
+	}
+}
+
+const createFriendsStatLink = async () => 
+{
+	
+	const friendlistProfileParent = document.getElementById('friendlistProfileParent');
+	const currentUser = document.getElementById('playerUsernameProfile');
+
+	if (!friendlistProfileParent || !currentUser) return;
+
+	try 
+	{
+		const friendLinkRequestResponse = await fetch('/friend', {
+				credentials: 'include',
+		});
+	
+		if (!friendLinkRequestResponse.ok) {
+				const text = await friendLinkRequestResponse.text().catch(() => friendLinkRequestResponse.statusText);
+				throw new Error(`Request failed: ${friendLinkRequestResponse.status} ${text}`);
+		}
+		const result = await friendLinkRequestResponse.json();	
+		if (result)
+		{
+			friendlistProfileParent.innerHTML = '';
+			if (result.friends.length)
+			{
+				for(let i = 0; i < result.friends.length; i++) 
+				{
+					var listItem = document.createElement("li");
+					let	clearName = result.friends[i].name + "[userFriend]";
+					listItem.className = 'w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg';
+					listItem.innerHTML = `${result.friends[i].name}"`;
+					listItem.setAttribute('name', clearName);
+					listItem.setAttribute('onclick',`fetchPlayerStats(${result.friends[i].name})`);
+					friendlistProfileParent.appendChild(listItem);
+				}
+			}
+			else
+			{
+				var listItem = document.createElement("li");
+				listItem.className = 'w-[45%] sm:w-[30%] flex items-center justify-center';
+				listItem.innerHTML = 'No friends to display ! Try adding some !';
+				friendlistProfileParent.appendChild(listItem);
+			}
+		}
+		// fetchPlayerStats(currentUser.innerHTML);
+	} 
+	catch (err) 
+	{
+		console.error('Friend info fetch failed in profileStat!\n => ', err);
+	}
+}
+
+const grabUserStatsAndInfo = async () => 
+{
+	const playerUsernameProfile = document.getElementById('playerUsernameProfile');
+	const userPfpProfile = document.getElementById('userPfpProfile');
+
+	if (!playerUsernameProfile || !userPfpProfile) return;
+
+	try 
+	{
+		const statsRequestResponse = await fetch('/profile/grab', {
+				credentials: 'include',
+		});
+	
+		if (!statsRequestResponse.ok) {
+				const text = await statsRequestResponse.text().catch(() => statsRequestResponse.statusText);
+				throw new Error(`Request failed: ${statsRequestResponse.status} ${text}`);
+		}
+		const result = await statsRequestResponse.json();	
+		if (result)
+		{
+			
+			const defaultAvatar = '/img/userPfp/default.png';
+			userPfpProfile.onerror = () => {
+  			userPfpProfile.onerror = null;
+  			userPfpProfile.src = defaultAvatar;
+			};
+			userPfpProfile.src = result?.avatar || defaultAvatar;			
+			playerUsernameProfile.innerHTML = result.name;
+		}
+	} 
+	catch (err) 
+	{
+		console.error('Profile custom grab failed !\n => ', err);
+	}
+	createFriendsStatLink();
+}
+	
 const grabCustomizationPageInfo = async () => 
 {
 	const newUsername = document.getElementById('newUsername');
@@ -114,12 +226,18 @@ export const adjustNavbar = path => {
 	const btsmall = document.getElementById('profileButton');
 	const bt = document.getElementById('profileButton2');
 	if (!bt && !btsmall) return ;
-	if (path == "/profileOverview")
+	if (path == "/customizeProfile")
 	{
 		bt.style.display = 'none';
 		btsmall.style.display = 'none';
 		// clearInterval(profileRefresh);
 		grabCustomizationPageInfo();
+	}
+	else if (path == "/profileStats")
+	{
+		bt.style.display = 'none';
+		btsmall.style.display = 'none';
+		grabUserStatsAndInfo();
 	}
 	else
 	{
@@ -149,7 +267,7 @@ const router = async () => {
 		{ path: "/versusAI", view: versusAI },
 		{ path: "/playerBattle", view: playerBattle },
 		{ path: "/about", view: aboutFile },
-		{ path: "/profileOverview", view: profileOverview },
+		{ path: "/customizeProfile", view: customizeProfile },
 		{ path: "/profileStats", view: profileStats },
 		{ path: "/setup2FA", view: setup2FA },
 		{ path: "/tournament", view: tournamentSize },
