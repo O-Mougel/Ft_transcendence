@@ -48,6 +48,48 @@ const fetchPlayerStats = async (playerUsername) =>
 	}
 }
 
+export const show2FAStatus = async () => 
+{
+	console.log("Showing 2FA status...");
+	//button able
+	//change text to empty
+	//reset src to empty + hide image
+	//reset input value to empty
+
+	try 
+	{
+		const get2FAStatus = await fetch('/profile/2fa', {
+				credentials: 'include',
+		});
+
+		if (!get2FAStatus.ok) {
+				const text = await get2FAStatus.text().catch(() => get2FAStatus.statusText);
+				throw new Error(`Request failed: ${get2FAStatus.status} ${text}`);
+		}
+		const result = await get2FAStatus.json();	
+		if (result)
+		{
+			if (result.twofastatus == true)
+			{
+				console.log("2FA is activated !");
+				document.getElementById("2FAActivated").style.display = "flex";
+				document.getElementById("2FADisabled").style.display = "none";
+			}
+			else
+			{
+				console.log("2FA is disabled !");
+				document.getElementById("2FADisabled").style.display = "flex";
+				document.getElementById("2FAActivated").style.display = "none";
+			}
+		}
+	} 
+	catch (err) 
+	{
+		console.error('Failed to disable 2FA!\n => ', err);
+	}
+
+}
+
 const createFriendsStatLink = async () => 
 {
 	
@@ -135,7 +177,7 @@ const grabUserStatsAndInfo = async () =>
 	}
 	createFriendsStatLink();
 }
-	
+
 const grabCustomizationPageInfo = async () => 
 {
 	const newUsername = document.getElementById('newUsername');
@@ -238,6 +280,12 @@ export const adjustNavbar = path => {
 		bt.style.display = 'none';
 		btsmall.style.display = 'none';
 		grabUserStatsAndInfo();
+	}
+	else if (path == "/setup2FA")
+	{
+		bt.style.display = 'none';
+		btsmall.style.display = 'none';
+		show2FAStatus();
 	}
 	else
 	{

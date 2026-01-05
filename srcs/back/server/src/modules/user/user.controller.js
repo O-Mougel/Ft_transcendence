@@ -149,7 +149,7 @@ export async function check2faHandler(request, reply) {
 	}
 
 	if (!user.auth2fa) {
-		activate2fa(user.id)
+		await activate2fa(user.id)
 		return { message: "2fa activated !" }
 	}
 
@@ -169,7 +169,7 @@ export async function check2faHandler(request, reply) {
 			secure: true,
 		})
 
-		setOnlineStatus(user.id, true)
+		await setOnlineStatus(user.id, true)
 
 		return { accessToken: token }
 	}
@@ -227,7 +227,8 @@ export async function get2fastatusHandler(request, reply)
 }
 
 export async function activate2faHandler(request, reply) {
-	const user = request.user 
+	
+	const user = await findUserById(request.user.id)
 
 	if (user.auth2fa)
         return reply.status(400).send({
@@ -245,7 +246,7 @@ export async function activate2faHandler(request, reply) {
 
 export async function deactivate2faHandler(request, reply) {
 	
-	const user = request.user
+	const user = await findUserById(request.user.id)
 
 	if (!user.auth2fa)
         return reply.status(400).send({
