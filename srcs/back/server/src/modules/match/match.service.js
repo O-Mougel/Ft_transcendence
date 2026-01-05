@@ -28,7 +28,22 @@ export async function showstats(id) {
 		},
 	})
 	const winrate = win / matchsnb * 100
-	
-	console.log(matchsnb, win, winrate)
-	return (matchsnb, win, winrate)
+
+	const result = await db.match.aggregate({
+		where: {
+			OR: [
+				{ player1Id: id },
+				{ player2Id: id },
+			],
+		},
+		_max: {
+			longestStreak: true,
+			duration: true
+		}
+	});
+
+	const biggest_streak = result._max.longestStreak ?? 0;
+	const longestMatch = result._max.duration ?? 0;
+
+	return { matchsnb, winrate, biggest_streak, longestMatch } 
 }
