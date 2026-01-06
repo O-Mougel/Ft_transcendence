@@ -14,12 +14,14 @@ window.showQRCode = async function (event) {
 				throw new Error(`Request failed: ${activate2FAResponse.status} ${text}`);
 		}
 		const result = await activate2FAResponse.json();	
+		const showQRCodeButton = document.getElementById("showQRCodeButton");
 		if (result)
 		{
 			console.log("QRCode loaded successfully!", result);
 			const qrCodeImage = document.getElementById("qrCodeImage");
 			qrCodeImage.src = result.qrCode;
 			qrCodeImage.style.display = "block";
+			showQRCodeButton.disabled = true;
 		}
 	} 
 	catch (err) 
@@ -57,7 +59,7 @@ window.validate2FACode = async function (event) {
 	
 	event.preventDefault();
 
-	try 
+	try
 	{
 		const password = document.getElementById('2FACodeInput').value;
 
@@ -91,6 +93,7 @@ window.validate2FACode = async function (event) {
 		{
 			console.log("2FA code validated successfully!", result);
 			codeResult.innerText = "✅ 2FA code validated successfully !";
+			qrCodeImage.src = "";
 			show2FAStatus();
 		}
 	} 

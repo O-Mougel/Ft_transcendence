@@ -50,12 +50,8 @@ window.fetchPlayerStats = async (playerUsername) =>
 export const show2FAStatus = async () => 
 {
 	console.log("Showing 2FA status...");
-	//button able
-	//change text to empty
-	//reset src to empty + hide image
-	//reset input value to empty
 
-	try 
+	try
 	{
 		const get2FAStatus = await fetch('/profile/2fa', {
 				credentials: 'include',
@@ -68,6 +64,12 @@ export const show2FAStatus = async () =>
 		const result = await get2FAStatus.json();	
 		if (result)
 		{
+			codeResult.innerText = "";
+			document.getElementById("showQRCodeButton").disabled = false;
+			document.getElementById("2FACodeInput").value = "";
+			document.getElementById("qrCodeImage").src = "";
+			document.getElementById("qrCodeImage").style.display = "none";
+
 			if (result.twofastatus == true)
 			{
 				console.log("2FA is activated !");
