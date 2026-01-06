@@ -30,10 +30,9 @@ export default class extends ViewTemplate {
 							<input type="button" value="Enable 2FA" onclick="showQRCode(event)">
 							<img id="qrCodeImage" class="pt-4 hidden" src="" alt="QR Code will appear here">
 							<form class="" onsubmit="">
-								<input type="number" id="2FACodeInput" value="" placeholder="Enter 2FA Code">
+								<input class="text-center" type="text" id="2FACodeInput" value="" placeholder="Enter 2FA Code" pattern="[0-9]{6}" maxlength="6" oninput="this.value = this.value.replace(/\\D/g,'').slice(0,6)">
 								<p id="codeResult"></p>
 								<input type="submit" value="Validate 2FA Code" onclick="validate2FACode(event)">
-
 							</form>
 						</div>
 					</div>
