@@ -27,7 +27,7 @@ export default class extends ViewTemplate {
 						<p class="pl-2 text-red-500">[disabled]</p>
 						<div class="pt-4 flex flex-col items-center">
 							<h2 class="flex items-start w-full text-left">Scan this QR code with your authenticator app :</h2>
-							<input type="button" value="Enable 2FA" onclick="showQRCode(event)">
+							<input type="button" id="showQRCodeButton" value="Enable 2FA" onclick="showQRCode(event)">
 							<img id="qrCodeImage" class="pt-4 hidden" src="" alt="QR Code will appear here">
 							<form class="" onsubmit="">
 								<input class="text-center" type="text" id="2FACodeInput" value="" placeholder="Enter 2FA Code" pattern="[0-9]{6}" maxlength="6" oninput="this.value = this.value.replace(/\\D/g,'').slice(0,6)">
