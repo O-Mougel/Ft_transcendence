@@ -25,19 +25,37 @@ const refreshProfile = () => {
 }
 window.fetchPlayerStats = async (playerUsername) => 
 {
+	document.getElementById("nbOfMatchCpt").innerHTML = "0";
+	document.getElementById("winRatioPercent").innerHTML = "0%";
+	document.getElementById("longestMatchCpt").innerHTML = "0";
+	document.getElementById("biggestStreakCpt").innerHTML = "0";
+
+	document.getElementById("selectedPlayerUsernameHeader").innerHTML = playerUsername + " 's stats :";
+
+	const data = {
+		username: playerUsername,
+	};
+	
 	try 
 	{
-		const userStatsRequestResponse = await fetch('/friend/stats', {
+		const userStatsRequestResponse = await fetch('/match/others', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
+				body: JSON.stringify(data),
 		});
 	
 		if (!userStatsRequestResponse.ok) {
 				const text = await userStatsRequestResponse.text().catch(() => userStatsRequestResponse.statusText);
 				throw new Error(`Request failed: ${userStatsRequestResponse.status} ${text}`);
 		}
-		const result = await userStatsRequestResponse.json();	
+		const result = await userStatsRequestResponse.json();
 		if (result)
 		{
+			document.getElementById("nbOfMatchCpt").innerHTML = result.matchsnb;
+			document.getElementById("winRatioPercent").innerHTML = result.winrate + " %";
+			document.getElementById("longestMatchCpt").innerHTML = result.longestMatch + " sec";
+			document.getElementById("biggestStreakCpt").innerHTML = result.biggest_streak;
 			console.log("Grabbed user stats !", result);
 		}
 	} 
@@ -113,6 +131,14 @@ const createFriendsStatLink = async () =>
 			friendlistProfileParent.innerHTML = '';
 			if (result.friends.length)
 			{
+				var listItem = document.createElement("li");
+				let	clearName = currentUser.innerHTML + "[accountOwner]";
+				listItem.className = 'w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg';
+				listItem.innerHTML = `My stats`;
+				listItem.setAttribute('name', clearName);
+				listItem.setAttribute('onclick',`fetchPlayerStats("${currentUser.innerHTML}")`); // can be broken with weird names
+				friendlistProfileParent.appendChild(listItem);
+
 				for(let i = 0; i < result.friends.length; i++) 
 				{
 					var listItem = document.createElement("li");
@@ -132,7 +158,7 @@ const createFriendsStatLink = async () =>
 				friendlistProfileParent.appendChild(listItem);
 			}
 		}
-		// fetchPlayerStats(currentUser.innerHTML);
+		fetchPlayerStats(currentUser.innerHTML);
 	} 
 	catch (err) 
 	{
