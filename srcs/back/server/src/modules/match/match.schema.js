@@ -25,10 +25,15 @@ const getMatchResponseSchema = z.object({
   longestMatch: z.number()
 });
 
+const getFriendMatchSchema = z.object({
+  username: z.string()
+});
+
 export const { schemas: matchSchemas, $ref } = buildJsonSchemas({
 	createMatchSchema,
 	createMatchResponseSchema,
-  getMatchResponseSchema
+	getFriendMatchSchema,
+  	getMatchResponseSchema
 	},
 	{ $id: 'matchSchemas' }, 
 );
