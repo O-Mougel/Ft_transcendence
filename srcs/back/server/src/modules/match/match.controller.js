@@ -1,6 +1,7 @@
 // match.controller.js
 
 import { createMatch, showstats } from "./match.service.js";
+import { findUserByName } from "../user/user.service.js";
 
 export async function createMatchHandler(request, reply) {
     const body = request.body;
@@ -12,7 +13,7 @@ export async function createMatchHandler(request, reply) {
     } catch (error) {
         console.error(error);
         return reply.status(500).send({
-            message: "User don't exists. Try again!",
+            message: "User doesn't exist. Try again!",
 			error:error
         });
     }
@@ -20,6 +21,20 @@ export async function createMatchHandler(request, reply) {
 
 export async function getMatchsHandler(request, reply) {
     const stats = await showstats(request.user.id)
+
+	return stats;
+}
+
+export async function getFriendMatchsHandler(request, reply) {
+
+	const friendName = await findUserByName(request.body.username);
+		if (!friendName) {	
+			return reply.status(400).send({
+				message: "Friend name does not exist in database ! Try again!"
+			});
+		};
+
+    const stats = await showstats(friendName.id);
 
 	return stats;
 }

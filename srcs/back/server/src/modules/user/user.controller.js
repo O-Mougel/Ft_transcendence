@@ -1,12 +1,17 @@
 // user.controller.js
-
+//// For File upload
+import fs from 'fs';
+import path from 'path'; //save path manip
+import crypto from 'crypto'; //random file name
+import { pipeline } from 'stream/promises'; //file writing
+/////
 import speakeasy from 'speakeasy';
 import QRCode from 'qrcode';
 import { createUser, findUserByName, findUserById, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend, rejectfriend, deletefriend, savesecret2fa, deletesecret2fa, activate2fa, get2fastatus } from "./user.service.js";
 import { verifyPassword } from "../../utils/hash.js";
 
 export async function registerUserHandler(request, reply) {
-    const body = request.body;
+	const body = request.body;
 
     const name = await findUserByName(body.name);
 	// const name = await checkIfUserExists(body.name);
@@ -401,4 +406,39 @@ export async function getFriendsHandler(request, reply) {
 	const friendsArray = await findfriends(request.user.id) //check if user.id is read before that ?
 
 	return reply.status(201).send(friendsArray);
+}
+
+export async function uploadProfilePicHandler(request, reply) {
+
+	if (!request.isMultipart || !request.isMultipart()) // we check if it exists first
+		return reply.code(400).send({ message: 'Expected multipart/form-data' });
+
+	const uploadedPic = await request.file(); // first file field
+	if (!uploadedPic)
+		return reply.code(400).send({ message: 'No picture uploaded !' });
+
+	const mimetype = (uploadedPic.mimetype || '').toLowerCase();
+	if (!mimetype || !uploadedPic.filename)
+		return reply.code(400).send({ message: 'Mime type or filename is empty !'});
+  	if (uploadedPic.filename.length <= 0)
+    	return reply.code(400).send({ message: 'Invalid filename ! Must be at least 1 character !'});
+	if (!mimetype.startsWith('image/'))
+    	return reply.code(400).send({ message: 'Only images can be uploaded !'});
+
+	//file upload part 
+	const ext = path.extname(uploadedPic.filename) || '.png'; // if idk, now a png
+	const savedFilename = `${Date.now()}-${crypto.randomBytes(6).toString('hex')}${ext}`;
+	const uploadDir = path.resolve(process.cwd(), 'front', 'src', 'img', 'userPfp');
+	await fs.promises.mkdir(uploadDir, { recursive: true });
+	const dest = path.join(uploadDir, savedFilename);
+	console.log("Final upload : ", dest);
+	try {
+		await pipeline(uploadedPic.file, fs.createWriteStream(dest));
+	}
+	catch (err) 
+	{
+		return reply.code(500).send({ message: 'Failed to save file' });
+	}
+
+	return reply.code(201).send({ path: `./img/userPfp/${savedFilename}` });
 }
