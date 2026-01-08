@@ -393,6 +393,7 @@ export async function friendDeleteHandler(request, reply) {
         });
 
 	await deletefriend(request.user.id, friend.id)
+	return reply.status(200).send({ message: "Friend deleted !" });
 } 
 
 export async function getFriendRequestHandler(request, reply) {
