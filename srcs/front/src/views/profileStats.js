@@ -49,15 +49,6 @@ export default class extends ViewTemplate {
 					<h2 id="playerUsernameProfile" class="text-center pr-2">[username]</h2>
 					<img id="userPfpProfile" src="./img/userPfp/default.png" alt="userPfpImg" class="pl-2 pt-4 w-20 h-20 sm:w-[120px] sm:h-[120px] object-cover shrink-0" />
 				</div>
-				<div>
-					<h2>Select a friend to see his stats :</h2>
-					<div class="flex w-full">
-						<ul id="friendlistProfileParent" class="flex flex-wrap justify-center gap-4 w-full pt-4">
-							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">My stats</li>
-						</ul>
-					</div>
-				</div>
-				<h2 id="selectedPlayerUsernameHeader" class="text-center pr-2 text-blue-900 mt-3">[username]</h2>
 				<div class="flex border border-white rounded-lg w-full p-4 gap-4 flex-wrap justify-between">
 					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
 						<p>Match played</p>
@@ -74,6 +65,33 @@ export default class extends ViewTemplate {
 					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
 						<p>Biggest streak</p>
 						<p id="biggestStreakCpt">0</p>
+					</div>
+				</div>
+				<div>
+					<h2>Select a friend to see his stats :</h2>
+					<div class="flex w-full">
+						<ul id="friendlistProfileParent" class="flex flex-wrap justify-center gap-4 w-full pt-4">
+							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">My stats</li>
+						</ul>
+					</div>
+				</div>
+				<h2 id="selectedPlayerUsernameHeader" class="hidden text-center pr-2 text-blue-900 mt-3">[--]</h2>
+				<div id="friendStatDisplayBox" class="hidden border border-white rounded-lg w-full p-4 gap-4 flex-wrap justify-between">
+					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
+						<p>Match played</p>
+						<p id="nbOfMatchCpt2">--</p>
+					</div>
+					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
+						<p>Win ratio</p>
+						<p id="winRatioPercent2" >--</p>
+					</div>
+					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
+						<p>Longest match</p>
+						<p id="longestMatchCpt2" >--</p>
+					</div>
+					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
+						<p>Biggest streak</p>
+						<p id="biggestStreakCpt2">--</p>
 					</div>
 				</div>
 				<div class="sm:pt-10">
