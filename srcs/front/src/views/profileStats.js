@@ -94,6 +94,11 @@ export default class extends ViewTemplate {
 						<p id="biggestStreakCpt2">--</p>
 					</div>
 				</div>
+				<h3>Remove a friend :</h3>
+				<select id="selectBoxFriendRemover" class="h-full border bg-black">
+					<option value="dummyvalue">--Select a friend--</option>
+				</select>
+				<a class="uppercase px-5 focus:outline-none bg-red-500 text-ellipsis border rounded-lg" onclick="confirmFriendRemoval()" name="confirmFriendRemoval" >Remove</a>
 				<div class="sm:pt-10">
 				</div>
 				<div class="">

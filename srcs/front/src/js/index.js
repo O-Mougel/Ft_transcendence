@@ -24,6 +24,69 @@ const refreshProfile = () => {
 	console.log("Tick tick tick ...");
 }
 
+window.confirmFriendRemoval = async () =>
+{
+	const friendRemover2000 = document.getElementById("selectBoxFriendRemover");
+
+	if (friendRemover2000.value == "dummyvalue") // no friend selected
+		return ;
+	
+	const data = {
+		frienddeletename: friendRemover2000.value,
+	};
+
+	// 	console.log("frienddeletename : ", friendRemover2000.value);
+	// return ;
+	try 
+	{
+		const removeFriendRequestResponse = await fetch('/friend/delete', {
+			method: "DELETE",
+			headers: { 'Content-Type': 'application/json' },
+			credentials: 'include',
+			body: JSON.stringify(data),
+		});
+	
+		if (!removeFriendRequestResponse.ok) {
+				const text = await removeFriendRequestResponse.text().catch(() => removeFriendRequestResponse.statusText);
+				throw new Error(`Request failed: ${removeFriendRequestResponse.status} ${text}`);
+		}
+		const result = await removeFriendRequestResponse.json();
+		if (result)
+		{
+			console.log("✅ Removed friend");
+			grabUserStatsAndInfo();
+		}
+	} 
+	catch (err) 
+	{
+		console.error('Friend remove fetch failed !\n => ', err);
+	}
+}
+
+window.fillFriendRemovalBox = async (friendArray) => 
+{
+	const friendRemover2000 = document.getElementById("selectBoxFriendRemover");
+	
+	friendRemover2000.innerHTML = '';
+
+	var listItem = document.createElement("option");
+	// listItem.className = 'py-2 flex items-center justify-between';
+	listItem.innerHTML = '--Select a friend--';
+	listItem.setAttribute('name', "dummyValueFriendDelete");
+	listItem.setAttribute('value', 'dummyvalue');
+	friendRemover2000.appendChild(listItem);
+	for(let i = 0; i < friendArray.length; i++) 
+	{
+		var listItem = document.createElement("option");
+		let	clearName = friendArray[i].name + "[deleteBox]";
+		// listItem.className = 'py-2 flex items-center justify-between';
+		listItem.innerHTML = `${friendArray[i].name}`; // TODO : special cases to handle
+		listItem.setAttribute('name', clearName);
+		listItem.setAttribute('value', `${friendArray[i].name}`);
+		friendRemover2000.appendChild(listItem);
+	}
+}	
+
 window.grabLoggedUserStats = async () => 
 {
 	document.getElementById("nbOfMatchCpt").innerHTML = "0";
@@ -58,10 +121,10 @@ window.grabLoggedUserStats = async () =>
 
 window.fetchPlayerStats = async (playerUsername) => 
 {
-	document.getElementById("nbOfMatchCpt2").innerHTML = "0";
-	document.getElementById("winRatioPercent2").innerHTML = "0%";
-	document.getElementById("longestMatchCpt2").innerHTML = "0";
-	document.getElementById("biggestStreakCpt2").innerHTML = "0";
+	document.getElementById("nbOfMatchCpt2").innerHTML = "--";
+	document.getElementById("winRatioPercent2").innerHTML = "--";
+	document.getElementById("longestMatchCpt2").innerHTML = "--";
+	document.getElementById("biggestStreakCpt2").innerHTML = "--";
 
 	document.getElementById("selectedPlayerUsernameHeader").innerHTML = playerUsername + " 's stats :";
 
@@ -85,10 +148,20 @@ window.fetchPlayerStats = async (playerUsername) =>
 		const result = await userStatsRequestResponse.json();
 		if (result)
 		{
-			document.getElementById("nbOfMatchCpt2").innerHTML = result.matchsnb;
-			document.getElementById("winRatioPercent2").innerHTML = result.winrate + " %";
-			document.getElementById("longestMatchCpt2").innerHTML = result.longestMatch + " sec";
-			document.getElementById("biggestStreakCpt2").innerHTML = result.biggest_streak;
+			if (result.matchsnb == 0) // nomatches played
+			{
+				document.getElementById("nbOfMatchCpt2").innerHTML = "0";
+				document.getElementById("winRatioPercent2").innerHTML = "--";
+				document.getElementById("longestMatchCpt2").innerHTML = "--";
+				document.getElementById("biggestStreakCpt2").innerHTML = "--";
+			}
+			else
+			{
+				document.getElementById("nbOfMatchCpt2").innerHTML = result.matchsnb;
+				document.getElementById("winRatioPercent2").innerHTML = result.winrate + " %";
+				document.getElementById("longestMatchCpt2").innerHTML = result.longestMatch + " sec";
+				document.getElementById("biggestStreakCpt2").innerHTML = result.biggest_streak;
+			}
 			document.getElementById("friendStatDisplayBox").style.display = "flex";
 			document.getElementById("selectedPlayerUsernameHeader").style.display = "block";
 		}
@@ -181,11 +254,12 @@ const createFriendsStatLink = async () =>
 			else
 			{
 				var listItem = document.createElement("li");
-				listItem.className = 'w-[45%] sm:w-[30%] flex items-center justify-center';
+				listItem.className = 'w-[60%] sm:w-[30%] flex items-center justify-center';
 				listItem.innerHTML = 'No friends to display ! Try adding some !';
 				friendlistProfileParent.appendChild(listItem);
 			}
 			grabLoggedUserStats();
+			fillFriendRemovalBox(result.friends);
 		}
 		
 	} 
@@ -199,8 +273,13 @@ const grabUserStatsAndInfo = async () =>
 {
 	const playerUsernameProfile = document.getElementById('playerUsernameProfile');
 	const userPfpProfile = document.getElementById('userPfpProfile');
+	const selectedPlayerUsernameHeader = document.getElementById('selectedPlayerUsernameHeader');
+	const friendStatDisplayBox = document.getElementById('friendStatDisplayBox');
 
-	if (!playerUsernameProfile || !userPfpProfile) return;
+	if (!playerUsernameProfile || !userPfpProfile || !selectedPlayerUsernameHeader || !friendStatDisplayBox) return;
+
+	selectedPlayerUsernameHeader.style.display = "none";
+	friendStatDisplayBox.style.display = "none";
 
 	try 
 	{
