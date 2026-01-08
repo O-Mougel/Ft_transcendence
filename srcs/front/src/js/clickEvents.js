@@ -1,5 +1,13 @@
+import { logoutUser } from "./userLog.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+
+	if(isPageReload() && sessionStorage.getItem("logStatus") == "loggedIn")
+	{
+		console.info("🗘 Page was reloaded by user ...");
+		logoutUser();
+	}
+
 	document.addEventListener("click", element => {
 		if (element.target.matches('#profileButton') || element.target.matches('#profileButton2'))
 		{
@@ -9,7 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 	})
 });
-
 
 function reportWindowSize() {
 	const panel = document.getElementById('profilePanel');
@@ -22,6 +29,26 @@ function reportWindowSize() {
 
 window.addEventListener("resize", reportWindowSize);
 
+window.addEventListener("pagehide", () => {
+
+	if(isPageReload() && sessionStorage.getItem("logStatus") == "loggedIn")
+	{
+		return ;
+	}
+	try 
+	{
+		fetch('/logout', {
+				method: 'DELETE',
+				credentials: 'include',
+				keepalive: true,
+		});
+		window.sessionStorage.setItem('logStatus', 'loggedOut');
+	} 
+	catch (err) 
+	{
+		//ignore for now
+	}
+ })
 
 window.onFileSelected = function (inputFileSelector) {
 
@@ -34,6 +61,15 @@ window.onFileSelected = function (inputFileSelector) {
 	else
 		document.getElementById('selectedFileName').textContent = '';
 };
+
+function isPageReload() {
+
+	const nav = performance.getEntriesByType && performance.getEntriesByType('navigation');
+	if (nav && nav.length) {
+		return nav[0].type === 'reload';
+	}
+	return false;
+}
 
 async function uploadFileToServer(fileObj) {
 
