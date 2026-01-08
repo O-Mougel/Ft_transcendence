@@ -18,10 +18,10 @@ export default class extends ViewTemplate {
 					<a href="/profileStats" class="mx-4 text-2xl mb-5 border p-4 text-[#798490] hover:text-[#98c6f8]" name="profileLink" data-link>View my profile</a>
 					<a href="/customizeProfile" class="mx-4 text-2xl mb-5 border p-4 text-[#798490] hover:text-[#98c6f8]" name="profileLink" data-link>Update profile</a>
 					<a id="logoutButton" class="mx-4 text-2xl mb-15 border p-4 cursor-pointer hover:text-[#dee9f4] hover:bg-[#882639] text-[#882639]" onclick=logoutUser() name="logoutButtonName">➜] Log out</a>
-					<div class="self-start">
+					<div class="self-start px-4">
 						<input class="sr-only peer" id="friendCheck" type="checkbox"/>
-						<label for="friendCheck" class="text-2xl cursor-pointer px-3 py-2 select-none hover:text-[#98c6f8]">► Friend list</label>
-						<ul class="select-none peer-checked:block hidden mt-3 self-start text-left" id="friendlist"></ul>
+						<label for="friendCheck" class="text-2xl cursor-pointer py-2 select-none hover:text-[#98c6f8]">➤ Friend list</label>
+						<ul class="select-none peer-checked:block hidden mt-3 ml-2 self-start text-left" id="friendlist"></ul>
 					</div>
 					<div id="pendingRequestBlock" class="w-full mt-3 px-4 hidden">
 							<input class="sr-only peer" id="requestCheck" type="checkbox" />
