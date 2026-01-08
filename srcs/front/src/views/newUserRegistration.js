@@ -10,7 +10,7 @@ export default class extends ViewTemplate {
 	async getHTML() {
 		return `
 			<div class="pt-[1vh] h-full w-full">
-				<div class="mx-[3%] rounded-xl outline-none border border-blue-300 bg-[url(/img/stars.gif)] bg-cover bg-center flex flex-col shadow-[0_0_20px_rgba(158,202,237,0.9)]">
+				<div class="mx-[3%] rounded-xl outline-none border border-blue-300 bg-[url(/img/assets/stars.gif)] bg-cover bg-center flex flex-col shadow-[0_0_20px_rgba(158,202,237,0.9)]">
 					<form class="py-[3%] px-[3%]">
 						<h2 class="flex items-start">► Choose your username :</h2>
 						<div class="flex items-start pt-5">

@@ -11,7 +11,7 @@ export default class extends ViewTemplate {
 		return `
 			<div class="pt-[3%]">
 			</div>
-			<div class="mx-[3%] rounded-xl outline-none border border-blue-300 bg-[url(/img/stars.gif)] bg-cover bg-center flex flex-col shadow-[0_0_20px_rgba(158,202,237,0.9)]">
+			<div class="mx-[3%] rounded-xl outline-none border border-blue-300 bg-[url(/img/assets/stars.gif)] bg-cover bg-center flex flex-col shadow-[0_0_20px_rgba(158,202,237,0.9)]">
 				<form class="pt-[3%] px-[3%]" onsubmit="return false">
 					<h2 class="flex items-start w-full text-left">► Choose your new username :</h2>
 					<div class="flex items-start w-[75%] pt-4">
