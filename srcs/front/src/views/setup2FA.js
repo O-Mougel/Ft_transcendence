@@ -17,8 +17,8 @@ export default class extends ViewTemplate {
 						<h1>status :</h1>
 						<p class="pl-2 text-green-500">[enabled]</p>
 						<div class="pt-4">
-							<p>If you want to disable 2FA, please click the button below :</p>
-							<input onclick="disable2FA()" type="button" value="Button to disable 2FA">
+							<p class="pb-5">If you want to disable 2FA, please click the button below :</p>
+							<input onclick="disable2FA()" type="button" value="disable 2FA" class="px-5 pb-1 sm:pb-2 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg cursor-pointer">
 						</div>
 					</div>
 					
@@ -26,14 +26,16 @@ export default class extends ViewTemplate {
 						<h1>status :</h1>
 						<p class="pl-2 text-red-500">[disabled]</p>
 						<div class="pt-4 flex flex-col items-center">
-							<h2 class="flex w-full text-center">Scan this QR code with your authenticator app :</h2>
-							<input type="button" id="showQRCodeButton" value="Generate QR code" onclick="showQRCode(event)">
-							<img id="qrCodeImage" class="pt-4 hidden" src="" alt="QR Code will appear here">
-							<form class="" onsubmit="">
-								<input class="text-center" type="text" id="2FACodeInput" value="" placeholder="Enter 2FA Code" pattern="[0-9]{6}" maxlength="6" oninput="this.value = this.value.replace(/\\D/g,'').slice(0,6)">
+							<h2 class="flex w-full text-center">Scan a generated QR code below with your authenticator app :</h2>
+							<div class="pt-4">
+								<input class="px-5 pb-1 sm:pb-2 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg cursor-pointer disabled:cursor-not-allowed" type="button" id="showQRCodeButton" value="Generate QR code" onclick="showQRCode(event)">
+							</div>
+							<div id="qrCodeSection" class="hidden flex-col align-center items-center pt-4">
+								<img id="qrCodeImage" class="hidden aspect-square w-60" src="" alt="QR Code will appear here">
+								<input class="text-center mt-4" type="text" id="2FACodeInput" value="" placeholder="Enter 2FA Code" pattern="[0-9]{6}" maxlength="6" oninput="this.value = this.value.replace(/\\D/g,'').slice(0,6)">
 								<p id="codeResult"></p>
-								<input type="submit" value="Validate 2FA Code" onclick="validate2FACode(event)">
-							</form>
+								<input class="pt-4" type="submit" value="Submit 2FA Code" onclick="validate2FACode(event)">
+							</div>
 						</div>
 					</div>
 				</div>
