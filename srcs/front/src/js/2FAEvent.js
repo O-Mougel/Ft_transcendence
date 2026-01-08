@@ -15,11 +15,13 @@ window.showQRCode = async function (event) {
 		}
 		const result = await activate2FAResponse.json();	
 		const showQRCodeButton = document.getElementById("showQRCodeButton");
+		const qrCodeSection = document.getElementById("qrCodeSection");
 		if (result)
 		{
 			console.log("QRCode loaded successfully!", result);
 			const qrCodeImage = document.getElementById("qrCodeImage");
 			qrCodeImage.src = result.qrCode;
+			qrCodeSection.style.display = "flex";
 			qrCodeImage.style.display = "block";
 			showQRCodeButton.disabled = true;
 		}
