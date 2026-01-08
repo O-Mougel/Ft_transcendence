@@ -1,11 +1,11 @@
 // match.route.js
 
 import { $ref } from "./match.schema.js";
-import { createMatchHandler, getMatchsHandler } from "./match.controller.js";
+import { createMatchHandler, getMatchsHandler, getFriendMatchsHandler } from "./match.controller.js";
 
 async function matchRoutes(fastify) {
 	fastify.post(
-		'/match',
+		'/match/create',
 		{
 			preHandler: [fastify.authenticate],
 			schema: {
@@ -19,7 +19,7 @@ async function matchRoutes(fastify) {
 	)
 
 	fastify.get(
-		'/match',
+		'/match/self',
 		{
 			preHandler: [fastify.authenticate],
 			schema: {
@@ -29,6 +29,20 @@ async function matchRoutes(fastify) {
 			},
 		},
 		getMatchsHandler,
+	)
+
+	fastify.post(
+		'/match/others',
+		{
+			preHandler: [fastify.authenticate],
+			schema: {
+				body: $ref("getFriendMatchSchema"),
+				response: {
+					201: $ref("getMatchResponseSchema")
+				},
+			},
+		},
+		getFriendMatchsHandler,
 	)
 }
 
