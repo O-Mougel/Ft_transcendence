@@ -35,7 +35,7 @@ window.onFileSelected = function (inputFileSelector) {
 		document.getElementById('selectedFileName').textContent = '';
 };
 
-function uploadFileToServer(fileObj) {
+async function uploadFileToServer(fileObj) {
 
 	//fileObj = fileInput.files[0]
 	const fileInput = document.getElementById('myfileSelector');
@@ -43,23 +43,34 @@ function uploadFileToServer(fileObj) {
 
 	const formData = new FormData();
 	formData.append("myfileSelector", fileObj);
-	fetch("/file_upload", {
-	method: "POST",
-	body: formData
-	})
-	.then(response => {
-	return response.text().then(text => {
-	if (response.ok) {
-	filenameStr.innerText = "✅ File uploaded";
-	} else {
-	filenameStr.innerText = "❌ File upload failed";
+
+	try 
+	{
+		const fileUploadFetchResponse = await fetch('/file_upload', {
+				method: 'POST',
+				credentials: 'include',
+				body: formData,
+		});
+	
+		if (!fileUploadFetchResponse.ok) {
+				const text = await fileUploadFetchResponse.text().catch(() => fileUploadFetchResponse.statusText);
+				throw new Error(`Request failed: ${fileUploadFetchResponse.status} ${text}`);
+		}
+		const result = await fileUploadFetchResponse.json();	
+		if (result)
+		{
+			// filenameStr.innerText = "✅ File uploaded";
+			console.log("Upload fetch success ✅");
+			// console.log("Pic uploaded at :", result.path);
+			return result.path;
+		}
+	} 
+	catch (err) 
+	{
+		console.error('File upload failed !\n => ', err);
+		filenameStr.innerText = "❌ File upload failed";
+		return null;
 	}
-	fileInput.value = "";
-	});
-	})
-	.catch(error => {
-	filenameStr.innerText = "❌ Network Error : " + error;
-	});
 
 }
 
@@ -103,14 +114,24 @@ window.saveProfileInfo = async function () {
 		password.focus();
 		return ;
 	}
+
+	var fullFilename = document.getElementById('userPfp').getAttribute("src");
+
 	if (selectedFile && selectedFile.name)
 	{
-		console.log(selectedFile.name);
-		var fullFilename = "src/img/userPfp/" + selectedFile.name;
-		// uploadFileToServer(selectedFile);
+		const uploadPath = await uploadFileToServer(selectedFile);
+		if (uploadPath)
+			fullFilename = uploadPath;
+		else
+		{
+			username.value = "";
+			password.value = "";
+			fileInput.value = "";
+			document.getElementById('selectedFileName').textContent = '';
+			confirmText.innerText = '⚠️ Error: Upload error';
+			return ;
+		}
 	}
-	else if (!selectedFile)
-		var fullFilename = document.getElementById('userPfp').getAttribute("src");
 	if (!username.value)
 		username.value = username.placeholder;
 
@@ -119,6 +140,7 @@ window.saveProfileInfo = async function () {
 		password: password.value,
 		avatar: fullFilename,
 	};
+
 	try 
 	{
 		const applyChangeResponse = await fetch('/profile/edit', {
