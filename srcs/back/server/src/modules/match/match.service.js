@@ -27,7 +27,8 @@ export async function showstats(id) {
 			winnerId: id
 		},
 	})
-	const winrate = win / matchsnb * 100
+	const calc = win / matchsnb * 100;
+	const winrate = calc.toFixed(2);
 
 	const result = await db.match.aggregate({
 		where: {

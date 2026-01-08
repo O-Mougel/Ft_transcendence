@@ -50,6 +50,10 @@ fastify.register(fCookie, {
     hook: 'preHandler',
 })
 
+await fastify.register(import('@fastify/multipart'), { //import for file upload
+  limits: { fileSize: 5 * 1024 * 1024 } // about 5MB
+});
+
 //if not exist create ia and invited player in database 
 
 async function main() {
