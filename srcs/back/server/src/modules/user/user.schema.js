@@ -104,10 +104,12 @@ const friendRequestItemSchema = z.object({
   online: z.boolean(),
 });
 
-const friendsArrayResponseSchema = z.array(friendItemSchema);
-
+const friendsArrayResponseSchema = z.array(friendItemSchema);  
 const friendRequestResponseSchema = z.array(friendRequestItemSchema);
 
+const fileUploadResponseSchema = z.object({
+  path: z.string(),
+});
 
 export const { schemas: userSchemas, $ref } = buildJsonSchemas({
 	createUserSchema,
@@ -130,6 +132,7 @@ export const { schemas: userSchemas, $ref } = buildJsonSchemas({
 	friendRequestItemSchema,
 	friendRejectSchema,
 	friendDeleteSchema,
+	fileUploadResponseSchema,
 },
   { $id: 'userSchemas' },
 );
