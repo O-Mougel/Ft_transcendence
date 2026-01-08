@@ -284,6 +284,7 @@ window.grabProfileInfo = async function () {
 	catch (err) 
 	{
 		console.error('Profile info grab failed !\n => ', err);
+		logoutUser();
 	}
 	displayUserFriends();
 	checkForFriendRequests();
