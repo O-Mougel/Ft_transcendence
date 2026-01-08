@@ -32,9 +32,9 @@ export default class extends ViewTemplate {
 					</div>
 					<div class="w-full mt-3 px-4 flex">
 						<div class="w-[85%] max-w-60">
-							<div class="flex items-center">
-								<input id="friendSearchInput" type="text" placeholder="Add friend" class="w-1/4 h-8 px-2 rounded-l-md border border-white bg-transparent text-white focus:outline-none text-sm" />
-								<button id="friendSearchButton" class="w-1/4 h-8 bg-[#98c6f8] text-black rounded-r-md text-sm" onclick=sendNewFriendRequest()>🔍</button>
+							<div class="flex items-center py-2 w-full">
+								<input id="friendSearchInput" type="text" placeholder="Add friend" class="h-8 px-2 rounded-l-md border border-white bg-transparent text-white focus:outline-none text-sm" />
+								<button id="friendSearchButton" class=" h-8 bg-[#98c6f8] text-black rounded-r-md text-sm" onclick=sendNewFriendRequest()>🔍</button>
 							</div>
 							<p id="friendSearchResults" class="mt-4 text-base text-ellipsis"></p>
 						</div>
