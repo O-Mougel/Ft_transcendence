@@ -10,7 +10,7 @@ export default class extends ViewTemplate {
 	async getHTML() {
 		return `
 			
-			<div class="absolute inset-[3%] rounded-xl outline-none border border-blue-300 bg-[url(/img/stars.gif)] bg-cover bg-center flex flex-col shadow-[0_0_20px_rgba(158,202,237,0.9)]">
+			<div class="absolute inset-[3%] rounded-xl outline-none border border-blue-300 bg-[url(/img/assets/stars.gif)] bg-cover bg-center flex flex-col shadow-[0_0_20px_rgba(158,202,237,0.9)]">
 				<div class="pt-[3%] flex justify-center flex-col items-center gap-5">
 					<h1>Two authentication factor setup</h1>
 					<div id="2FAActivated" class="hidden flex-col">

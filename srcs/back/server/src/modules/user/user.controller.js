@@ -266,7 +266,7 @@ export async function deactivate2faHandler(request, reply) {
 export async function logoutHandler(request, reply) {
     reply.clearCookie('access_token');
 
-	// setOnlineStatus(request.user.id, false)
+	setOnlineStatus(request.user.id, false)
 
     return reply.status(200).send({ message: 'Logout successfully'});
 }
