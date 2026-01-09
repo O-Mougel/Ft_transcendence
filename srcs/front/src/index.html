@@ -4,26 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="./css/output.css" rel="stylesheet">
-  <link rel="icon" href="/img/love-star.png">
+  <link rel="icon" href="/img//assets/love-star.png">
   <title>Single page app</title>
 </head>
-<body class="h-screen w-screen m-0 bg-[url(/img/starField.gif)] bg-cover bg-center backdrop-blur-[2px] text-center text-[3vw] sm:text-[2vw] 2xl:text-3xl text-white">
+<body class="h-screen w-screen m-0 bg-[url(/img/assets/starField.gif)] bg-cover bg-center backdrop-blur-[2px] text-center text-[3vw] sm:text-[2vw] 2xl:text-3xl text-white">
 
 	<!-- SMALL NAVBAR --------------------------------->
 	<ul class="sm:hidden flex h-[10%] max-h-14 w-full m-0 p-0 pt-2 list-none items-center">
-        <li id="navBarHomeIconId" class="hidden h-full w-auto px-2"><a class="flex items-center justify-center bg-[url(/img/home.png)] hover:bg-[url(/img/home_hover.png)] bg-contain bg-no-repeat bg-center w-10 h-10" href="/" data-link></a></li>
+        <li id="navBarHomeIconId" class="hidden h-full w-auto px-2"><a class="flex items-center justify-center bg-[url(/img/assets/navbar/home.png)] hover:bg-[url(/img/assets/navbar/home_hover.png)] bg-contain bg-no-repeat bg-center w-10 h-10" href="/" data-link></a></li>
         <li id="navBarModesIconId" class="hidden h-full w-auto relative px-2">
 			<input class="sr-only peer" id="modListBoxSmall" type="checkbox"/>
-			<label for="modListBoxSmall" class="cursor-pointer select-none flex items-center justify-center bg-[url(/img/mode.png)] hover:bg-[url(/img/mode_hover.png)] bg-contain bg-no-repeat bg-center w-10 h-10"></label>
+			<label for="modListBoxSmall" class="cursor-pointer select-none flex items-center justify-center bg-[url(/img/assets/navbar/mode.png)] hover:bg-[url(/img/assets/navbar/mode_hover.png)] bg-contain bg-no-repeat bg-center w-10 h-10"></label>
 			<ul class="select-none absolute peer-checked:block hidden self-start text-left h-full w-full z-30" id="modlist">
 				<li class="h-full w-auto text-base bg-amber-400 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pongAI" data-link>🦾</a></li>
 				<li class="h-full w-auto text-base bg-amber-500 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong" data-link>⚔️</a></li>
 				<li class="h-full w-auto text-base bg-amber-500 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong2" data-link>⚔️⚔️</a></li>
 			</ul>
 		</li>
-        <li id="navBarCupIconId" class="hidden h-full w-auto px-2"><a class="flex items-center justify-center bg-[url(/img/tournament.png)] hover:bg-[url(/img/tournament_hover.png)] bg-contain bg-no-repeat bg-center w-10 h-10" href="/tournament" data-link></a></li>
-        <li id="navBarAboutIconId" class="hidden h-full w-auto px-2"><a class="flex items-center justify-center bg-[url(/img/about.png)] hover:bg-[url(/img/about_hover.png)] bg-contain bg-no-repeat bg-center w-10 h-10" href="/about" data-link></a></li>
-		<input id="profileButton" type="button" value="" class="flex items-center bg-[url(/img/profile.png)] hover:bg-[url(/img/profile_hover.png)] bg-contain bg-no-repeat bg-center ml-auto w-10 h-10 px-5 m-0 mr-5 disabled:opacity-10 disabled:cursor-not-allowed disabled:bg-[url(/img/profile.png)] hover:cursor-pointer" />
+        <li id="navBarCupIconId" class="hidden h-full w-auto px-2"><a class="flex items-center justify-center bg-[url(/img/assets/navbar/tournament.png)] hover:bg-[url(/img/assets/navbar/tournament_hover.png)] bg-contain bg-no-repeat bg-center w-10 h-10" href="/tournament" data-link></a></li>
+        <li id="navBarAboutIconId" class="hidden h-full w-auto px-2"><a class="flex items-center justify-center bg-[url(/img/assets/navbar/about.png)] hover:bg-[url(/img/assets/navbar/about_hover.png)] bg-contain bg-no-repeat bg-center w-10 h-10" href="/about" data-link></a></li>
+		<input id="profileButton" type="button" value="" class="flex items-center bg-[url(/img/assets/navbar/profile.png)] hover:bg-[url(/img/assets/navbar/profile_hover.png)] bg-contain bg-no-repeat bg-center ml-auto w-10 h-10 px-5 m-0 mr-5 disabled:opacity-10 disabled:cursor-not-allowed disabled:bg-[url(/img/assets/navbar/profile.png)] hover:cursor-pointer" />
     </ul>
 
 	<!-- DEFAULT NAVBAR -->
