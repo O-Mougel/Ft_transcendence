@@ -423,7 +423,7 @@ const forceUserRelog = async () => {
 
 export const adjustNavbar = async (path) => {
 
-	if (path === "/logUser" || (path === "/") || (path === "/404")) //then logging is required
+	if (path === "/logUser" || (path === "/") || (path === "/404") || (path === "/newUserRegistration")) //then logging is required
 	{
 		//
 	}
