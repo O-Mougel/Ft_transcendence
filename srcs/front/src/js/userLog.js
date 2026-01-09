@@ -2,7 +2,7 @@ import startingFile from "../views/startingFile.js";
 import loginFile from "../views/login.js";
 import { adjustNavbar } from "./index.js";
 
-const backToDefaultPage = async () => {
+export const backToDefaultPage = async () => {
 
 	const view = new startingFile();
 	document.querySelector("#app").innerHTML = await view.getHTML();
@@ -167,7 +167,7 @@ const checkForFriendRequests = async () => {
 			if (result.requestOf.length > 0)
 			{
 				requestBlock.style.display = "block";
-				requestLabel.innerHTML = "► Requests(" + result.requestOf.length + ")"
+				requestLabel.innerHTML = "🔔 Requests(" + result.requestOf.length + ")"
 			}
 			else
 			{
@@ -179,14 +179,14 @@ const checkForFriendRequests = async () => {
 			{
 				var listItem = document.createElement("li");
 				let	clearName = result.requestOf[i].name + "[42]";
-				listItem.className = 'py-2 flex items-center justify-between';
+				listItem.className = 'py-2 flex items-center justify-between ml-5';
 				listItem.setAttribute('name', clearName);
 				const jsonString = JSON.stringify(result.requestOf[i].name);
 				const safeName = jsonString.replace(/['"]+/g, '');
 				// console.log("Safe name is : ", safeName);
 				// console.log(" name is : ", result.requestOf[i].name);
 				listItem.innerHTML = `
-				<span class="text-sm text-amber-400">✦ ${safeName}</span>
+				<span class="text-sm">↪ ${safeName}</span>
 				<span class="flex items-center gap-2">
 					<button class="accept-request px-2 py-1 rounded" onclick="acceptFriend('${safeName}')" title="Accept">✅</button>
 					<button class="reject-request px-2 py-1 rounded" onclick="rejectFriend('${safeName}')" title="Reject">❌</button>
@@ -219,15 +219,18 @@ const displayUserFriends = async () => {
 		const result = await friendInfoResponse.json();	
 		if (result)
 		{	
-			// console.log("friendlistGrab requests: ",result.friends);
+			console.log("friendlistGrab fetch worked !");
 			friendList.innerHTML = '';
 			for(let i = 0; i < result.friends.length; i++) 
 			{
 				var listItem = document.createElement("li");
 				let	clearName = result.friends[i].name + "[4242]";
-				listItem.className = 'py-2 flex items-center justify-between';
-				listItem.innerHTML = `
-				<span class="text-sm text-amber-400" name="${clearName}">✦ ${result.friends[i].name}</span>`;
+				listItem.className = 'py-2 flex items-center justify-between ml-5';
+				if (result.friends[i].online)
+					listItem.innerHTML = `<span class="text-sm border w-full p-2 mb-2" name="${clearName}">🟢 ${result.friends[i].name}</span>`;
+				else
+					listItem.innerHTML = `<span class="text-sm border w-full p-2 mb-2" name="${clearName}">🔴 ${result.friends[i].name}</span>`;
+					
 				friendList.appendChild(listItem);
 			}
 		}
@@ -281,6 +284,7 @@ window.grabProfileInfo = async function () {
 	catch (err) 
 	{
 		console.error('Profile info grab failed !\n => ', err);
+		logoutUser();
 	}
 	displayUserFriends();
 	checkForFriendRequests();
@@ -323,10 +327,9 @@ window.sendNewFriendRequest = async function () {
 	}
 }
 
+window.logoutUser = logoutUser;
 
-window.logoutUser = async function () {
-
-	const btntext = document.getElementById('logoutButton');
+export async function logoutUser() {
 
 	try 
 	{
