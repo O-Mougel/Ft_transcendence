@@ -1,7 +1,7 @@
 // user.route.js
 
 import { $ref } from "./user.schema.js";
-import { logoutHandler, loginHandler, check2faHandler, registerUserHandler, dataGrabHandler, alterUserHandler, get2fastatusHandler, activate2faHandler, deactivate2faHandler, editPasswordHandler, friendRequestHandler, friendAcceptHandler, getFriendsHandler, getFriendRequestHandler, friendDeleteHandler, friendRejectHandler } from "./user.controller.js";
+import { logoutHandler, loginHandler, check2faHandler, registerUserHandler, dataGrabHandler, alterUserHandler, get2fastatusHandler, activate2faHandler, deactivate2faHandler, editPasswordHandler, friendRequestHandler, friendAcceptHandler, getFriendsHandler, getFriendRequestHandler, friendDeleteHandler, friendRejectHandler, refreshTokenHandler } from "./user.controller.js";
 
 async function userRoutes(fastify) {
     fastify.post(
@@ -31,13 +31,25 @@ async function userRoutes(fastify) {
     );
 
 	fastify.post(
+        '/login/refresh', 
+        {
+            schema: {
+                response: {
+                    201: $ref("accessTokenResponseSchema"),
+                }
+            }
+        }, 
+        refreshTokenHandler
+    );
+
+	fastify.post(
         '/login/2fa', 
         {
 			preHandler: [fastify.twofaauthenticate], //forces log to see user profile
             schema: {
                 body: $ref("twofaSchema"),
                 response: {
-                    201: $ref("twofaResponseSchema"),
+                    201: $ref("accessTokenResponseSchema"),
                 }
             }
         }, 
