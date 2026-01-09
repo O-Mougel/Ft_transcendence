@@ -409,6 +409,10 @@ export async function getFriendsHandler(request, reply) {
 	return reply.status(201).send(friendsArray);
 }
 
+export async function checkLogStatus(request, reply) {
+	return reply.status(200).send({ message: "User is connected !" });
+}
+
 export async function uploadProfilePicHandler(request, reply) {
 
 	if (!request.isMultipart || !request.isMultipart()) // we check if it exists first
