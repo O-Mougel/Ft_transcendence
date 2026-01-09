@@ -39,7 +39,7 @@ export async function registerUserHandler(request, reply) {
 export async function dataGrabHandler(request, reply) {
 
 	const userId = request.user && request.user.id;
-	if (!userId) return reply.code(401).send({ message: 'Not authenticated !' }); //will never fall here 
+	if (!userId) return reply.code(401).send({ message: 'Not authenticated !'}); //never called in theory, the fastify decorate does it first
 
     try {
         const user = await findUserById(userId);

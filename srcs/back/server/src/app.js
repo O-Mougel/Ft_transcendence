@@ -20,7 +20,7 @@ fastify.decorate(
         const token = request.cookies.access_token;
 
         if (!token) {
-            return reply.status(401).send({ message: 'Authentication required' })
+            return reply.status(401).send({ message: 'Authentication required', errcode:401 })
         }
         const decoded = request.jwt.verify(token)
         request.user = decoded
@@ -33,7 +33,7 @@ fastify.decorate(
         const token = request.cookies.temp_token;
 
         if (!token) {
-            return reply.status(401).send({ message: 'Authentication required' })
+            return reply.status(401).send({ message: 'Authentication required', errcode:401 })
         }
         const decoded = request.jwt.verify(token)
         request.user = decoded

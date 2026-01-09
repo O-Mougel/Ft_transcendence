@@ -1,4 +1,5 @@
 import { logoutUser } from "./userLog.js";
+import { backToDefaultPage } from "./userLog.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -6,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	{
 		console.info("🗘 Page was reloaded by user ...");
 		logoutUser();
+		backToDefaultPage();
 	}
 
 	document.addEventListener("click", element => {
