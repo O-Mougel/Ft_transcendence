@@ -1,7 +1,7 @@
 // user.route.js
 
 import { $ref } from "./user.schema.js";
-import { logoutHandler, loginHandler, check2faHandler, registerUserHandler, dataGrabHandler, alterUserHandler, get2fastatusHandler, activate2faHandler, deactivate2faHandler, editPasswordHandler, friendRequestHandler, friendAcceptHandler, getFriendsHandler, getFriendRequestHandler, friendDeleteHandler, friendRejectHandler, uploadProfilePicHandler } from "./user.controller.js";
+import { logoutHandler, loginHandler, check2faHandler, registerUserHandler, dataGrabHandler, alterUserHandler, get2fastatusHandler, activate2faHandler, deactivate2faHandler, editPasswordHandler, friendRequestHandler, friendAcceptHandler, getFriendsHandler, getFriendRequestHandler, friendDeleteHandler, friendRejectHandler, uploadProfilePicHandler, checkLogStatus} from "./user.controller.js";
 
 async function userRoutes(fastify) {
     fastify.post(
@@ -28,6 +28,14 @@ async function userRoutes(fastify) {
             }
         }, 
         loginHandler //add basic authentication scheme base 64 name:password in header
+    );
+	
+	fastify.get(
+        '/login/loggedUserCheck', 
+        {
+            preHandler: [fastify.authenticate],
+        }, 
+        checkLogStatus
     );
 
 	fastify.post(

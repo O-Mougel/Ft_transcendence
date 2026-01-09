@@ -1,5 +1,4 @@
 import startingFile from "../views/startingFile.js";
-import loginFile from "../views/login.js";
 import { adjustNavbar } from "./index.js";
 
 export const backToDefaultPage = async () => {
@@ -44,6 +43,32 @@ const fieldValidity = (username, pwd, pwdconf, requestR, email) => {
 		return false;
 	}
 	return (true);
+}
+
+export async function isUserAllowedHere() {
+
+	try 
+	{
+		const logUserCheckResponse = await fetch('/login/loggedUserCheck', {
+				credentials: 'include',
+		});
+	
+		if (!logUserCheckResponse.ok) {
+				const text = await logUserCheckResponse.text().catch(() => logUserCheckResponse.statusText);
+				throw new Error(`Request failed: ${logUserCheckResponse.status} ${text}`);
+		}
+		const result = await logUserCheckResponse.json();	
+		if (result) 
+		{
+			return(1); //user is logged
+		}
+	} 
+	catch (err) 
+	{
+		console.error("\nNo valid credentials ! Back to Login page !\n");
+		return (0); //no valid credentials
+	}
+	return(0);
 }
 
 window.acceptFriend = async (username) => {
@@ -219,7 +244,6 @@ const displayUserFriends = async () => {
 		const result = await friendInfoResponse.json();	
 		if (result)
 		{	
-			console.log("friendlistGrab fetch worked !");
 			friendList.innerHTML = '';
 			for(let i = 0; i < result.friends.length; i++) 
 			{
@@ -468,7 +492,7 @@ window.handleLoginClick = async function (event) {
 
 			window.sessionStorage.setItem('logStatus','loggedIn');
 			console.log('⏳ Logged in !');
-			backToDefaultPage();
+			await backToDefaultPage();
 		}
 
 	} 

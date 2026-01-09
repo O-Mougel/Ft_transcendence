@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	if(isPageReload() && sessionStorage.getItem("logStatus") == "loggedIn")
 	{
 		console.info("🗘 Page was reloaded by user ...");
-		logoutUser();
+		// logoutUser();
 		backToDefaultPage();
 	}
 
@@ -14,8 +14,12 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (element.target.matches('#profileButton') || element.target.matches('#profileButton2'))
 		{
 			const panel = document.getElementById('profilePanel');
-			if (panel)
-				panel.classList.toggle('hidden');
+			if(!panel) return;
+
+			if (panel.style.display == "none")
+				panel.style.display = "flex";
+			else
+				panel.style.display = "none"
 		}
 	})
 });
@@ -26,14 +30,14 @@ function reportWindowSize() {
 	var style = window.getComputedStyle(panel);
     if (style.display === 'none')
 		return;
-	panel.classList.toggle('hidden');
+	panel.style.display = 'none';
 }
 
 window.addEventListener("resize", reportWindowSize);
 
 window.addEventListener("pagehide", () => {
 
-	if(isPageReload() && sessionStorage.getItem("logStatus") == "loggedIn")
+	if(isPageReload())
 	{
 		return ;
 	}
