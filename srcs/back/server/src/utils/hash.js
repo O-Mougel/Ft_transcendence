@@ -13,11 +13,9 @@ export function hashPassword(password) {
 }
 
 export function verifyPassword(candidatePassword, salt, hash) {
-    console.log(candidatePassword)
 	const candidateHash = crypto
         .pbkdf2Sync(candidatePassword, salt, 1000, 64, "sha512")
         .toString('hex');
 
-	console.log(candidateHash)
     return candidateHash === hash;
 }

@@ -55,12 +55,12 @@ const twofastatusResponseSchema = z.object({
   twofastatus: z.boolean()
 })
 
-const twofaValidationResponseSchema = z.object({
+const twofaResponseSchema = z.object({
 	success: z.boolean(),
 	message: z.string()
 })
 
-const twofaResponseSchema = z.object({
+const accessTokenResponseSchema = z.object({
     accessToken: z.string(),
 });
 
@@ -116,8 +116,9 @@ export const { schemas: userSchemas, $ref } = buildJsonSchemas({
 	loginResponseSchema,
 	qrCodeReplySchema,
 	twofaSchema,
-	twofaResponseSchema,
-  twofastatusResponseSchema,
+	accessTokenResponseSchema,
+twofaResponseSchema,
+    twofastatusResponseSchema,
 	infoGrabResponseSchema,
 	profileChangesSchema,
 	profileChangesResponseSchema,

@@ -14,30 +14,46 @@ fastify.register(fjwt, {
     secret: process.env.JWT_SECRET
 });
 
-fastify.decorate(
-    'authenticate',
-    async (request, reply) => {
-        const token = request.cookies.access_token;
+fastify.decorate('authenticate', //check for 2fa false
+	async (request, reply) => {
+		try {
+			const auth = request.headers.authorization;
 
-        if (!token) {
-            return reply.status(401).send({ message: 'Authentication required' })
-        }
-        const decoded = request.jwt.verify(token)
-        request.user = decoded
-    }
+			if (!auth || !auth.startsWith("Bearer ")) {
+				return reply.status(401).send({ message: 'Authentication required'});
+			}
+
+			const token = auth.split(" ")[1];
+
+			const decoded = fastify.jwt.verify(token)//, process.env.JWT_SECRET) //add secret ??? is it safe we can access the secret through the request.jwt.secret path ????
+			if (decoded.type == "2fa")
+				return reply.status(401).send({ message: 'TempToken not alowed you need to pass 2fa' })
+			request.user = decoded
+		} catch(err) {
+			return reply.status(401).send({ message: 'Invalid or expired JWT'})
+		}
+	}
 );
 
-fastify.decorate(
-    'twofaauthenticate',
-    async (request, reply) => {
-        const token = request.cookies.temp_token;
+fastify.decorate('twofaauthenticate', //check for 2fa false
+	async (request, reply) => {
+		try {
+			const auth = request.headers.authorization;
 
-        if (!token) {
-            return reply.status(401).send({ message: 'Authentication required' })
-        }
-        const decoded = request.jwt.verify(token)
-        request.user = decoded
-    }
+			if (!auth || !auth.startsWith("Bearer ")) {
+				return reply.status(401).send({ message: 'Authentication required'});
+			}
+
+			const token = auth.split(" ")[1];
+
+			const decoded = fastify.jwt.verify(token)//, process.env.JWT_SECRET) //add secret ??? is it safe we can access the secret through the request.jwt.secret path ????
+			if (decoded.type != "2fa")
+				return reply.status(401).send({ message: "you're already connected why pass 2fa ?" })
+			request.user = decoded
+		} catch(err) {
+			return reply.status(401).send({ message: 'Invalid or expired JWT'})
+		}
+	}
 );
 
 fastify.addHook('preHandler', (req, res, next) => {
