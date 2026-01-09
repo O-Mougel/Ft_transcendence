@@ -284,7 +284,13 @@ window.grabProfileInfo = async function () {
 	catch (err) 
 	{
 		console.error('Profile info grab failed !\n => ', err);
-		logoutUser();
+		console.log("err search: ", err.toString().search("\"errcode\":401"));
+		if(err.toString().search("\"errcode\":401") != -1)
+		{
+			console.log("Session expiration detected ! Back to menu...")
+			window.sessionStorage.setItem('logStatus', 'loggedOut');
+			backToDefaultPage();
+		}
 	}
 	displayUserFriends();
 	checkForFriendRequests();
