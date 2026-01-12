@@ -35,23 +35,42 @@ fastify.decorate('authenticate', //check for 2fa false
 	}
 );
 
+fastify.decorate('logoutauthenticate',
+	async (request, reply) => {
+		try {
+			const auth = request.headers.authorization;
+
+			if (!auth || !auth.startswith("bearer ")) {
+				return reply.status(401).send({ message: 'authentication required'});
+			}
+
+			const token = auth.split(" ")[1];
+
+			const decoded = fastify.jwt.verify(token)
+			request.user = decoded
+		} catch(err) {
+			return reply.status(401).send({ message: 'invalid or expired jwt'})
+		}
+	}
+);
+
 fastify.decorate('twofaauthenticate', //check for 2fa false
 	async (request, reply) => {
 		try {
 			const auth = request.headers.authorization;
 
-			if (!auth || !auth.startsWith("Bearer ")) {
-				return reply.status(401).send({ message: 'Authentication required'});
+			if (!auth || !auth.startswith("bearer ")) {
+				return reply.status(401).send({ message: 'authentication required'});
 			}
 
 			const token = auth.split(" ")[1];
 
-			const decoded = fastify.jwt.verify(token)//, process.env.JWT_SECRET) //add secret ??? is it safe we can access the secret through the request.jwt.secret path ????
+			const decoded = fastify.jwt.verify(token)//, process.env.jwt_secret) //add secret ??? is it safe we can access the secret through the request.jwt.secret path ????
 			if (decoded.type != "2fa")
 				return reply.status(401).send({ message: "you're already connected why pass 2fa ?" })
 			request.user = decoded
 		} catch(err) {
-			return reply.status(401).send({ message: 'Invalid or expired JWT'})
+			return reply.status(401).send({ message: 'invalid or expired jwt'})
 		}
 	}
 );

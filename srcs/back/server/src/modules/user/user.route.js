@@ -151,7 +151,7 @@ async function userRoutes(fastify) {
     fastify.delete(
         '/logout',
         {
-            preHandler: [fastify.authenticate],
+            preHandler: [fastify.logoutauthenticate],
         },
         logoutHandler
     )
