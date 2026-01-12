@@ -15,6 +15,8 @@ import logUser from "../views/login.js";
 import page404 from "../views/404page.js";
 
 import { isUserAllowedHere } from "./userLog.js";
+import { backToDefaultPage } from "./userLog.js";
+import { fetchErrcodeHandler } from "./userLog.js";
 
 var profileRefresh;
 
@@ -62,7 +64,9 @@ window.confirmFriendRemoval = async () =>
 	} 
 	catch (err) 
 	{
-		console.error('Friend remove fetch failed !\n => ', err);
+		console.error('⚠️ Couldn\'t delete selected friend !\n => ', err);
+		if (await fetchErrcodeHandler(err) == 0)
+			window.confirmFriendRemoval();
 	}
 }
 
@@ -119,7 +123,9 @@ window.grabLoggedUserStats = async () =>
 	} 
 	catch (err) 
 	{
-		console.error('Logged user stats fetch failed in profileStat!\n => ', err);
+		console.error('⚠️ Couldn\'t fetch logged user stats !\n => ', err);
+		if (await fetchErrcodeHandler(err) == 0)
+			window.grabLoggedUserStats();
 	}
 }
 
@@ -172,7 +178,9 @@ window.fetchPlayerStats = async (playerUsername) =>
 	} 
 	catch (err) 
 	{
-		console.error('User stats fetch failed in profileStat!\n => ', err);
+		console.error('⚠️ Couldn\'t fetch user stats in profileStat!\n => ', err);
+		if (await fetchErrcodeHandler(err) == 0)
+			window.fetchPlayerStats(playerUsername);
 	}
 }
 
@@ -216,7 +224,9 @@ export const show2FAStatus = async () =>
 	} 
 	catch (err) 
 	{
-		console.error('Failed to disable 2FA!\n => ', err);
+		console.error('⚠️ Failed to disable 2FA!\n => ', err);
+		if (await fetchErrcodeHandler(err) == 0)
+			show2FAStatus();
 	}
 
 }
@@ -271,7 +281,9 @@ const createFriendsStatLink = async () =>
 	} 
 	catch (err) 
 	{
-		console.error('Friend info fetch failed in profileStat!\n => ', err);
+		console.error('⚠️ Couldn\'t recover user friendlist!\n => ', err);
+		if (await fetchErrcodeHandler(err) == 0)
+			createFriendsStatLink();
 	}
 }
 
@@ -313,7 +325,9 @@ const grabUserStatsAndInfo = async () =>
 	} 
 	catch (err) 
 	{
-		console.error('Profile custom grab failed !\n => ', err);
+		console.error('⚠️ Couldn\'t display user profile !\n => ', err);
+		if (await fetchErrcodeHandler(err) == 0)
+			grabUserStatsAndInfo();
 	}
 	createFriendsStatLink();
 }
@@ -351,7 +365,9 @@ const grabCustomizationPageInfo = async () =>
 	} 
 	catch (err) 
 	{
-		console.error('Profile custom grab failed !\n => ', err);
+		console.error('⚠️ Couldn\'t grab user info!\n => ', err);
+		if (await fetchErrcodeHandler(err) == 0)
+			grabCustomizationPageInfo();
 	}
 
 }

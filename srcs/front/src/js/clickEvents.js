@@ -1,5 +1,6 @@
 import { logoutUser } from "./userLog.js";
 import { backToDefaultPage } from "./userLog.js";
+import { fetchErrcodeHandler } from "./userLog.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -112,9 +113,7 @@ async function uploadFileToServer(fileObj) {
 		const result = await fileUploadFetchResponse.json();	
 		if (result)
 		{
-			// filenameStr.innerText = "✅ File uploaded";
 			console.log("Upload fetch success ✅");
-			// console.log("Pic uploaded at :", result.path);
 			return result.path;
 		}
 	} 
@@ -122,7 +121,11 @@ async function uploadFileToServer(fileObj) {
 	{
 		console.error('File upload failed !\n => ', err);
 		filenameStr.innerText = "❌ File upload failed";
-		return null;
+		let errhandle = await fetchErrcodeHandler(err);
+		if ( errhandle == 0) //token refreshed
+			uploadFileToServer(fileObj);
+		else
+			return null;
 	}
 
 }
@@ -229,6 +232,9 @@ window.saveProfileInfo = async function () {
 		fileInput.value = "";
 		document.getElementById('selectedFileName').textContent = '';
 		console.error('Edit user error ! ', err);
-		confirmText.innerText = '⚠️ Error: Network error';
+		confirmText.innerText = '⚠️ Server side error !';
+		if (await fetchErrcodeHandler(err) == 0)
+			window.saveProfileInfo();
+
 	}	
 };
