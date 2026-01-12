@@ -40,7 +40,7 @@ export async function registerUserHandler(request, reply) {
 export async function dataGrabHandler(request, reply) {
 
 	const userId = request.user && request.user.id;
-	if (!userId) return reply.code(401).send({ message: 'Not authenticated !' }); //will never fall here 
+	if (!userId) return reply.code(401).send({ message: 'Not authenticated !'}); //never called in theory, the fastify decorate does it first
 
 	try {
 		const user = await findUserById(userId);
@@ -416,6 +416,10 @@ export async function getFriendsHandler(request, reply) {
 	const friendsArray = await findfriends(request.user.id) //check if user.id is read before that ?
 
 	return reply.status(201).send(friendsArray);
+}
+
+export async function checkLogStatus(request, reply) {
+	return reply.status(200).send({ message: "User is connected !" });
 }
 
 export async function uploadProfilePicHandler(request, reply) {

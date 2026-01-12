@@ -12,6 +12,9 @@ import tournamentSelect16Players from "../views/tournamentSelect_16Players.js";
 import newUserRegistration from "../views/newUserRegistration.js";
 import pong from "../views/pong.js";
 import logUser from "../views/login.js";
+import page404 from "../views/404page.js";
+
+import { isUserAllowedHere } from "./userLog.js";
 
 var profileRefresh;
 
@@ -395,43 +398,76 @@ const	navbarHiddenCheck = () => {
 	}
 }
 
-export const adjustNavbar = path => {
-
-	navbarHiddenCheck();
+const hideProfileButtons = () => {
 	const btsmall = document.getElementById('profileButton');
 	const bt = document.getElementById('profileButton2');
 	if (!bt && !btsmall) return ;
-	if (path == "/customizeProfile")
-	{
-		bt.style.display = 'none';
-		btsmall.style.display = 'none';
-		// clearInterval(profileRefresh);
-		grabCustomizationPageInfo();
+
+	bt.style.display = 'none';
+	btsmall.style.display = 'none';
+}
+
+
+
+const forceUserRelog = async () => {
+
+	const view = new logUser();
+	document.querySelector("#app").innerHTML = await view.getHTML();
+	adjustNavbar("/logUser");
+	if (typeof view.init === "function") {
+		 await view.init();
 	}
-	else if (path == "/profileStats")
+	history.pushState(null, null, "/logUser");
+}
+
+
+export const adjustNavbar = async (path) => {
+
+	if (path === "/logUser" || (path === "/") || (path === "/404") || (path === "/newUserRegistration")) //then logging is required
 	{
-		bt.style.display = 'none';
-		btsmall.style.display = 'none';
+		//
+	}
+	else
+	{
+		const res = await isUserAllowedHere();
+		if (res == 0) // not allowed
+		{
+			// console.info("Forced relog!");
+			await forceUserRelog();
+		}
+	}
+	
+	navbarHiddenCheck();
+	if (path === "/customizeProfile")
+	{
+		hideProfileButtons();
+		grabCustomizationPageInfo();
+		// clearInterval(profileRefresh);
+	}
+	else if (path === "/profileStats")
+	{
+		hideProfileButtons();
 		grabUserStatsAndInfo();
 	}
-	else if (path == "/setup2FA")
+	else if (path === "/setup2FA")
 	{
-		bt.style.display = 'none';
-		btsmall.style.display = 'none';
+		hideProfileButtons();
 		show2FAStatus();
 	}
 	else
 	{
-		bt.style.display = 'flex';
-		btsmall.style.display = 'flex';
+		if(document.getElementById('profileButton2'))
+			document.getElementById('profileButton2').style.display = 'flex';
+		if(document.getElementById('profileButton'))
+			document.getElementById('profileButton').style.display = 'flex';
 		// clearInterval(profileRefresh);
 		// profileRefresh = setInterval(refreshProfile, 50000);
 	}
 
 	//closes all opened panels when switching tabs
 	const profilePanel = document.getElementById('profilePanel'); 
-	if (profilePanel)
-		profilePanel.classList.toggle('hidden');
+	if (profilePanel && profilePanel.style.display != "none")
+		profilePanel.style.display = "none";
 
 	const cb = document.getElementById('modListBox');
 	if (cb)
@@ -445,6 +481,7 @@ export const adjustNavbar = path => {
 const router = async () => {
 	const routes = [
 		{ path: "/", view: startingFile },
+		{ path: "/404", view: page404 },
 		{ path: "/versusAI", view: versusAI },
 		{ path: "/playerBattle", view: playerBattle },
 		{ path: "/about", view: aboutFile },
@@ -475,7 +512,7 @@ const router = async () => {
 	if (!match) // if no matches
 	{
 		match = {
-			mapElement: routes[0], //defaults to / 
+			mapElement: routes[1], //defaults to 404
 			isMatch: true
 		};
 	}
