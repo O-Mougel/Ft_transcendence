@@ -51,6 +51,7 @@ export async function isUserAllowedHere() {
 	{
 		const logUserCheckResponse = await fetch('/login/loggedUserCheck', {
 				credentials: 'include',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 		});
 	
 		if (!logUserCheckResponse.ok) {
@@ -85,7 +86,7 @@ window.acceptFriend = async (username) => {
 		const acceptFriendRequestResponse = await fetch('/friend/accept', {
 				method: 'POST',
 				credentials: 'include',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json'},
 				body: JSON.stringify(data),
 		});
 	
@@ -131,7 +132,7 @@ window.rejectFriend = async (username) => {
 		const rejectFriendRequestResponse = await fetch('/friend/reject', {
 				method: 'POST',
 				credentials: 'include',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json'},
 				body: JSON.stringify(data),
 		});
 	
@@ -179,6 +180,7 @@ const checkForFriendRequests = async () => {
 	{
 		const lookForRequests = await fetch('/friend/requested', {
 				credentials: 'include',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 		});
 	
 		if (!lookForRequests.ok) {
@@ -234,6 +236,7 @@ const displayUserFriends = async () => {
 	try 
 	{
 		const friendInfoResponse = await fetch('/friend', {
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 				credentials: 'include',
 		});
 	
@@ -277,6 +280,7 @@ window.grabProfileInfo = async function () {
 	try 
 	{
 		const dataRequestResponse = await fetch('/profile/grab', { //GET request by default without the "request" parameter
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 				credentials: 'include',
 		});
 	
@@ -334,8 +338,8 @@ window.sendNewFriendRequest = async function () {
 	{
 		const sentFriendRequestResponse = await fetch('/friend/request', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(data),
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json'},
 				credentials: 'include',
 		});
 	
@@ -365,6 +369,7 @@ export async function logoutUser() {
 	{
 		const logoutResponse = await fetch('/logout', {
 				method: 'DELETE',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 				credentials: 'include',
 		});
 	
@@ -373,7 +378,7 @@ export async function logoutUser() {
 				throw new Error(`Request failed: ${logoutResponse.status} ${text}`);
 		}
 		const result = await logoutResponse.json();	
-		if (result && result.message) 
+		if (result) 
 		{
 			console.log('⏳ Logging out ...');
 			window.sessionStorage.setItem('logStatus', 'loggedOut');
@@ -483,14 +488,13 @@ window.handleLoginClick = async function (event) {
 		}
 	
 		const result = await loginResponse.json();	
-		if (result && result.message) 
-			logResult.innerText = result.message;
-		else
+		if (result) 
 		{
 			username.value = "";
 			password.value = "";
 
 			window.sessionStorage.setItem('logStatus','loggedIn');
+			window.sessionStorage.setItem('access_token',result.token);
 			console.log('⏳ Logged in !');
 			await backToDefaultPage();
 		}

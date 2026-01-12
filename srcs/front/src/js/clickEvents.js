@@ -53,6 +53,7 @@ window.addEventListener("pagehide", () => {
 		fetch('/logout', {
 				method: 'DELETE',
 				credentials: 'include',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 				keepalive: true,
 		});
 		window.sessionStorage.setItem('logStatus', 'loggedOut');
@@ -100,6 +101,7 @@ async function uploadFileToServer(fileObj) {
 		const fileUploadFetchResponse = await fetch('/file_upload', {
 				method: 'POST',
 				credentials: 'include',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 				body: formData,
 		});
 	
@@ -196,7 +198,7 @@ window.saveProfileInfo = async function () {
 	{
 		const applyChangeResponse = await fetch('/profile/edit', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json'},
 				credentials: 'include',
 				body: JSON.stringify(data),
 		});

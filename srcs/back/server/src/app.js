@@ -18,6 +18,7 @@ fastify.decorate('authenticate', //check for 2fa false
 	async (request, reply) => {
 		try {
 			const auth = request.headers.authorization;
+			// console.log()
 
 			if (!auth || !auth.startsWith("Bearer ")) {
 				return reply.status(401).send({ message: 'Authentication required', errcode:401});
