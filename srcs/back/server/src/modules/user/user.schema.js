@@ -61,7 +61,7 @@ const twofaResponseSchema = z.object({
 })
 
 const accessTokenResponseSchema = z.object({
-    accessToken: z.string(),
+    newAccessToken: z.string(),
 });
 
 const infoGrabResponseSchema = z.object({

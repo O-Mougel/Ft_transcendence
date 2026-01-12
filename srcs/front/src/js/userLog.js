@@ -12,6 +12,65 @@ export const backToDefaultPage = async () => {
 	history.pushState(null, null, "/");
 }
 
+export const fetchErrcodeHandler = async (error) => {
+
+	const isNotAuth = error.toString().search("\"errcode\":401") != -1;
+	const isExpired = error.toString().search("\"errcode\":402") != -1;
+	if(isNotAuth)
+	{
+		console.log("User is not auth ! Back to menu...")
+		window.sessionStorage.setItem('logStatus', 'loggedOut');
+		backToDefaultPage();
+		return (-1);
+	}
+	else if (isExpired)
+	{
+				
+		if (!(window.sessionStorage.getItem("nbReloadsLeft")))
+			window.sessionStorage.setItem('nbReloadsLeft', 1);
+		else
+		{
+			let reloadCpt =  parseInt(window.sessionStorage.getItem('nbReloadsLeft'));
+			if (reloadCpt == 0) 
+			{
+				window.sessionStorage.setItem('logStatus', 'loggedOut');
+				backToDefaultPage();
+				return (-1);
+			}
+			window.sessionStorage.setItem('nbReloadsLeft', reloadCpt - 1);
+		}
+		console.info("Token expired or invalid ! Refreshing...");
+		try 
+		{
+			const refreshTokenResponse = await fetch('/login/refresh', {
+					credentials: 'include',
+			});
+		
+			if (!refreshTokenResponse.ok) {
+					const text = await refreshTokenResponse.text().catch(() => refreshTokenResponse.statusText);
+					throw new Error(`Request failed: ${refreshTokenResponse.status} ${text}`);
+			}
+			const result = await refreshTokenResponse.json();	
+			if (result && result.newAccessToken) 
+			{
+				window.sessionStorage.setItem('access_token', result.newAccessToken); //grab new token
+				console.info("Token refreshed.");
+			}
+			else
+				throw new Error(`Token could not be generated !`);
+		} 
+		catch (err) 
+		{
+			console.error("⚠️ Could not refresh tokens ... please log back in !"); //is this enough ?
+			window.sessionStorage.setItem('logStatus', 'loggedOut');
+			backToDefaultPage();
+			return (-1);
+		}
+		return (0);
+	}
+	return(42);
+}
+
 const fieldValidity = (username, pwd, pwdconf, requestR, email) => {
 	requestR.innerText = "";
 	if (!username.value)
@@ -66,7 +125,10 @@ export async function isUserAllowedHere() {
 	} 
 	catch (err) 
 	{
-		console.error("\nNo valid credentials ! Back to Login page !\n");
+		console.error("\n⚠️No valid credentials ! Back to Login page !\n");
+		console.error(err);
+		if (await fetchErrcodeHandler(err) == 0)
+			return (isUserAllowedHere());
 		return (0); //no valid credentials
 	}
 	return(0);
@@ -112,7 +174,9 @@ window.acceptFriend = async (username) => {
 	}
 	catch (err) 
 	{
-		console.error('Internal error, could not accept friend request !\n =>', err);
+		console.error('⚠️ Couldn\'t accept friend request !\n =>', err);
+		if (await fetchErrcodeHandler(err) == 0)
+			window.acceptFriend(username);
 	}
 }
 
@@ -151,15 +215,6 @@ window.rejectFriend = async (username) => {
 				{
 					const target = currentElement[0];
     				target.remove();
-				
-				// var count = requestList.childElementCount;
-				// console.log("Pending request count :", count); // to checkkk
-				// if (count == 0)
-				// {
-				// 	requestBlock.style.display = "none"; // to check later, might not work
-				// }
-				// else
-				// 	requestLabel.innerHTML = "► Requests(" + count + ")"
 				}
 				grabProfileInfo();
 			}
@@ -167,7 +222,9 @@ window.rejectFriend = async (username) => {
 	}
 	catch (err) 
 	{
-		console.error('Internal error, could not reject friend request !\n =>', err);
+		console.error('⚠️ Couldn\'t reject friend request !\n =>', err);
+		if (await fetchErrcodeHandler(err) == 0)
+			window.rejectFriend(username);
 	}
 }
 
@@ -224,7 +281,9 @@ const checkForFriendRequests = async () => {
 	} 
 	catch (err) 
 	{
-		console.error('Pending requests info grab failed !\n =>', err);
+		console.error('⚠️ Couldn\'t display friend requests !\n =>', err);
+		if (await fetchErrcodeHandler(err) == 0)
+			checkForFriendRequests();
 	}
 
 }
@@ -264,7 +323,9 @@ const displayUserFriends = async () => {
 	} 
 	catch (err) 
 	{
-		console.error('Friend info grab failed !\n => ', err);
+		console.error('⚠️ Couldn\'t grab user friend info !\n => ', err);
+		if (await fetchErrcodeHandler(err) == 0)
+			displayUserFriends();
 	}
 
 }
@@ -306,19 +367,13 @@ window.grabProfileInfo = async function () {
 			profilePicture.style.backgroundImage = 'url(' + JSON.stringify(defaultAvatar) + ')';
 			};
 			probe.src = avatarUrl;
-			// profilePicture.style.backgroundImage = `url(${result.avatar})`;
 		}
 	} 
 	catch (err) 
 	{
 		console.error('Profile info grab failed !\n => ', err);
-		console.log("err search: ", err.toString().search("\"errcode\":401"));
-		if(err.toString().search("\"errcode\":401") != -1)
-		{
-			console.log("Session expiration detected ! Back to menu...")
-			window.sessionStorage.setItem('logStatus', 'loggedOut');
-			backToDefaultPage();
-		}
+		if (await fetchErrcodeHandler(err) == 0)
+			return (window.grabProfileInfo());
 	}
 	displayUserFriends();
 	checkForFriendRequests();
@@ -356,8 +411,10 @@ window.sendNewFriendRequest = async function () {
 	} 
 	catch (err) 
 	{
-		console.error('Friend request sending error !\n => ', err);
-		friendReqResultText.innerHTML='⚠️ Error !';
+		console.error('Cannot send friend request !\n => ', err);
+		friendReqResultText.innerHTML='⚠️ Try again !';
+		if (await fetchErrcodeHandler(err) == 0)
+			window.sendNewFriendRequest();
 	}
 }
 
@@ -389,7 +446,9 @@ export async function logoutUser() {
 	} 
 	catch (err) 
 	{
-		console.error('Login error !\n => ', err);
+		console.error('⚠️ Couldn\'t log out user !\n => ', err);
+		if (await fetchErrcodeHandler(err) == 0)
+			window.logoutUser();
 	}
 }
 
@@ -425,9 +484,7 @@ window.handleNewUserCreate = async function (event) {
 		}
 		const result = await newUserResponse.json();
 	
-		if (result && result.message) 
-			requestResult.innerText = result.message;
-		else
+		if (result) 
 		{
 			console.log('✅ User created');
 			username.value = "";
@@ -443,8 +500,10 @@ window.handleNewUserCreate = async function (event) {
 		email.value = "";
 		password.value = "";
 		passwordConfirm.value = "";
-		console.error('Login error !\n => ', err);
-		requestResult.innerText = '⚠️ Error: Network error';
+		console.error('Could not create new user !\n => ', err);
+		requestResult.innerText = '⚠️ Server-side error ! Try again !';
+		if (await fetchErrcodeHandler(err) == 0)
+			window.handleNewUserCreate(event);
 	}
 };
 
@@ -502,10 +561,12 @@ window.handleLoginClick = async function (event) {
 	} 
 	catch (err) 
 	{
+		logResult.innerText = '⚠️ Server side error !';
 		console.error('Login error !\n => ', err);
-		logResult.innerText = '⚠️ Error: Network error';
 		username.value = "";
 		password.value = "";
+		if (await fetchErrcodeHandler(err) == 0)
+			window.handleLoginClick(event);
 	}
 };
 

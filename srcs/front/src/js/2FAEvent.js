@@ -1,8 +1,8 @@
 import { show2FAStatus } from "../js/index.js";
+import { fetchErrcodeHandler } from "../js/userLog.js";
 
 window.showQRCode = async function (event) {
 	event.preventDefault();
-
 	try 
 	{
 		const activate2FAResponse = await fetch('/profile/2fa/activate', {
@@ -30,6 +30,8 @@ window.showQRCode = async function (event) {
 	catch (err) 
 	{
 		console.error('Failed to activate 2FA!\n => ', err);
+		if (await fetchErrcodeHandler(err) == 0)
+			window.showQRCode(event);
 	}
 };
 
@@ -56,6 +58,8 @@ window.disable2FA = async function () {
 	catch (err) 
 	{
 		console.error('Failed to disable 2FA!\n => ', err);
+		if (await fetchErrcodeHandler(err) == 0)
+			window.disable2FA();
 	}
 }
 
@@ -102,5 +106,7 @@ window.validate2FACode = async function (event) {
 	catch (err) 
 	{
 		console.error('Failed to activate 2FA!\n => ', err);
+		if (fetchErrcodeHandler(err) == 0)
+			window.validate2FACode(event);
 	}
 }

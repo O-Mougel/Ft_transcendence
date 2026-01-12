@@ -176,9 +176,10 @@ export async function refreshTokenHandler(request, reply) {
 	const refreshToken = await rotateRefreshToken(stored.user_id, token)
 	const user = await findUserById(stored.user_id);
 	const newAccessToken = generateAccessToken(request.server, user);
-
+	console.log("\n\nToken :", newAccessToken, "\n"); //to remove/////////////////////////////////////////
 	reply.setCookie('refresh_token', refreshToken, {
 		path: '/',
+		// maxAge: 10000,
 		maxAge: 14 * 24 * 60 * 60 * 1000,
 		httpOnly: true,
 		secure: true,
