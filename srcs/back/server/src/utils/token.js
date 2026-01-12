@@ -10,7 +10,7 @@ export function generateAccessToken(fastify, user) {
         name: user.name,
     }
 
-    return fastify.jwt.sign(payload, { expiresIn: "15m" } );
+    return fastify.jwt.sign(payload, { expiresIn: "15min" } );
 }
 
 export function generateRefreshToken() {

@@ -38,7 +38,7 @@ async function userRoutes(fastify) {
         checkLogStatus
     );
 
-	fastify.post(
+	fastify.get(
         '/login/refresh', 
         {
             schema: {
