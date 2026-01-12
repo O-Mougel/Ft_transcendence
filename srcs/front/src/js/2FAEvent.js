@@ -7,6 +7,7 @@ window.showQRCode = async function (event) {
 	{
 		const activate2FAResponse = await fetch('/profile/2fa/activate', {
 				credentials: 'include',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 		});
 
 		if (!activate2FAResponse.ok) {
@@ -37,6 +38,7 @@ window.disable2FA = async function () {
 	{
 		const disable2FARequestResponse = await fetch('/profile/2fa/deactivate', {
 				credentials: 'include',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 				method: 'DELETE',
 		});
 
@@ -80,9 +82,7 @@ window.validate2FACode = async function (event) {
 		const verify2FACode = await fetch('/profile/2fa/verify', {
 				credentials: 'include',
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json'},
 				body:  JSON.stringify(data),
 		});
 

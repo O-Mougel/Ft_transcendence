@@ -90,7 +90,7 @@ export async function loginHandler(request, reply) { //check twice the password 
 		}
 		const tempToken = request.server.jwt.sign(payload, { expiresIn: "5m" } );
 
-		return { require2fa: true, Token: tempToken };
+		return { require2fa: true, token: tempToken };
 	}
 
 	const accessToken = generateAccessToken(request.server, user);
@@ -108,7 +108,7 @@ export async function loginHandler(request, reply) { //check twice the password 
 
 	setOnlineStatus(user.id, true)
 
-	return { require2fa: false, Token: accessToken }
+	return { require2fa: false, token: accessToken }
 }
 
 export async function check2faHandler(request, reply) { //y a t il moyen d'arriver ici quand on est pas sense ?? ajouter un check de 2ffa true dans le token
@@ -277,7 +277,7 @@ export async function logoutHandler(request, reply) {
 	reply.clearCookie("refresh_token");
 
 
-	return reply.status(204).send();
+	return reply.status(201).send({ message: "Logged out..." });
 }
 
 export async function editPasswordHandler(request, reply) { //check twice the password and confirmation

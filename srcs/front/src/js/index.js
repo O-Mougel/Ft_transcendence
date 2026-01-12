@@ -44,7 +44,7 @@ window.confirmFriendRemoval = async () =>
 	{
 		const removeFriendRequestResponse = await fetch('/friend/delete', {
 			method: "DELETE",
-			headers: { 'Content-Type': 'application/json' },
+			headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json'},
 			credentials: 'include',
 			body: JSON.stringify(data),
 		});
@@ -101,6 +101,7 @@ window.grabLoggedUserStats = async () =>
 	{
 		const loggedUserStatsRequestResponse = await fetch('/match/self', {
 				credentials: 'include',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 		});
 	
 		if (!loggedUserStatsRequestResponse.ok) {
@@ -139,8 +140,8 @@ window.fetchPlayerStats = async (playerUsername) =>
 	{
 		const userStatsRequestResponse = await fetch('/match/others', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json'},
 				body: JSON.stringify(data),
 		});
 	
@@ -183,6 +184,7 @@ export const show2FAStatus = async () =>
 	{
 		const get2FAStatus = await fetch('/profile/2fa', {
 				credentials: 'include',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 		});
 
 		if (!get2FAStatus.ok) {
@@ -231,6 +233,7 @@ const createFriendsStatLink = async () =>
 	{
 		const friendLinkRequestResponse = await fetch('/friend', {
 				credentials: 'include',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 		});
 	
 		if (!friendLinkRequestResponse.ok) {
@@ -288,6 +291,7 @@ const grabUserStatsAndInfo = async () =>
 	{
 		const statsRequestResponse = await fetch('/profile/grab', {
 				credentials: 'include',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 		});
 	
 		if (!statsRequestResponse.ok) {
@@ -325,6 +329,7 @@ const grabCustomizationPageInfo = async () =>
 	{
 		const dataRequestResponse = await fetch('/profile/grab', { //GET request by default without the "request" parameter
 				credentials: 'include',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 		});
 	
 		if (!dataRequestResponse.ok) {
