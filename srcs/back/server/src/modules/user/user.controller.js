@@ -152,6 +152,8 @@ export async function refreshTokenHandler(request, reply) {
 
 	const stored = await findToken(token)
 
+	reply.clearCookie("refresh_token");
+
 	if (!stored) {
 		return reply.status(403).send({ message: "Invalid refresh_token !" });
 	}
@@ -165,7 +167,6 @@ export async function refreshTokenHandler(request, reply) {
 	}
 
 	// rotation
-	reply.clearCookie("refresh_token");
 
 	const refreshToken = await rotateRefreshToken(stored.user_id, token)
 	const user = await findUserById(stored.user_id);
