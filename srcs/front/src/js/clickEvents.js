@@ -3,13 +3,6 @@ import { backToDefaultPage } from "./userLog.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
-	if(isPageReload() && sessionStorage.getItem("logStatus") == "loggedIn")
-	{
-		console.info("🗘 Page was reloaded by user ...");
-		// logoutUser();
-		backToDefaultPage();
-	}
-
 	document.addEventListener("click", element => {
 		if (element.target.matches('#profileButton') || element.target.matches('#profileButton2'))
 		{
@@ -28,19 +21,33 @@ function reportWindowSize() {
 	const panel = document.getElementById('profilePanel');
 	if (!panel) return;
 	var style = window.getComputedStyle(panel);
-    if (style.display === 'none')
+	if (style.display === 'none')
 		return;
 	panel.style.display = 'none';
 }
 
 window.addEventListener("resize", reportWindowSize);
 
+window.addEventListener('keydown', (e) => { //check if we pressed f5 or ctrl+r (or ctrl+F5)
+  try {
+    const key = e.key || '';
+    if (key === 'F5' || ((key.toLowerCase() === 'r') && (e.ctrlKey || e.metaKey)) || ((key.toLowerCase() === 'F5') && (e.ctrlKey || e.metaKey))) {
+      sessionStorage.setItem('f5WasPressed', 'true');
+    }
+  } catch (err) {}
+});
+
 window.addEventListener("pagehide", () => {
 
-	if(isPageReload())
+	const	checkKeyReload = sessionStorage.getItem('f5WasPressed') === 'true';
+	const	reloadTypeResult = isPageReload();
+
+	if(checkKeyReload || reloadTypeResult)
 	{
+		backToDefaultPage();
 		return ;
 	}
+	window.sessionStorage.setItem('pagehide', 'logout_fetch_sent');
 	try 
 	{
 		fetch('/logout', {
@@ -70,10 +77,12 @@ window.onFileSelected = function (inputFileSelector) {
 
 function isPageReload() {
 
-	const nav = performance.getEntriesByType && performance.getEntriesByType('navigation');
-	if (nav && nav.length) {
-		return nav[0].type === 'reload';
+	try {
+		const entries = performance.getEntriesByType && performance.getEntriesByType('navigation');
+		if (entries && entries.length && entries[0].type === 'reload')
+			return true;
 	}
+	catch (e) {}
 	return false;
 }
 
