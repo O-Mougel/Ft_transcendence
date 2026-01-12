@@ -4,7 +4,7 @@ export default class extends ViewTemplate {
 	constructor()
 	{
 		super();
-		this.setTitle("Welcome !");
+		this.setTitle("Profile customization");
 	}
 
 	async getHTML() {

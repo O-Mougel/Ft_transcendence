@@ -20,7 +20,7 @@ fastify.decorate('authenticate', //check for 2fa false
 			const auth = request.headers.authorization;
 
 			if (!auth || !auth.startsWith("Bearer ")) {
-				return reply.status(401).send({ message: 'Authentication required'});
+				return reply.status(401).send({ message: 'Authentication required', errcode:401});
 			}
 
 			const token = auth.split(" ")[1];
@@ -41,7 +41,7 @@ fastify.decorate('twofaauthenticate', //check for 2fa false
 			const auth = request.headers.authorization;
 
 			if (!auth || !auth.startsWith("Bearer ")) {
-				return reply.status(401).send({ message: 'Authentication required'});
+				return reply.status(401).send({ message: 'Authentication required' , errcode:401});
 			}
 
 			const token = auth.split(" ")[1];
