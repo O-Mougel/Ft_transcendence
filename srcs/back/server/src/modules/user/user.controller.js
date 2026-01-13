@@ -15,7 +15,6 @@ export async function registerUserHandler(request, reply) { //check twice the pa
 	const body = request.body;
 
 	const name = await findUserByName(body.name);
-	// const name = await checkIfUserExists(body.name);
 
 	if (name) {	
 		return reply.status(400).send({
@@ -23,7 +22,11 @@ export async function registerUserHandler(request, reply) { //check twice the pa
 		});
 	};
 
-	//check for error before sending to database 
+	if (body.password != body.passwordconfirmation)
+		return reply.status(400).send({
+			message: "Password confirmation doesn't match with previous password. Try again!"
+		});
+
 	try {
 		const user = await createUser(body);
 		return reply.status(201).send(user);
@@ -212,14 +215,11 @@ export async function refreshTokenHandler(request, reply) {
 	}
 
 	// rotation
-
 	const refreshToken = await rotateRefreshToken(stored.user_id, token)
 	const user = await findUserById(stored.user_id);
 	const newAccessToken = generateAccessToken(request.server, user);
-	console.log("\n\nToken :", newAccessToken, "\n"); //to remove/////////////////////////////////////////
 	reply.setCookie('refresh_token', refreshToken, {
 		path: '/',
-		// maxAge: 10000,
 		maxAge: 14 * 24 * 60 * 60 * 1000,
 		httpOnly: true,
 		secure: true,
@@ -334,6 +334,12 @@ export async function editPasswordHandler(request, reply) { //check twice the pa
 			message: "Password is incorrect"
 		});
 	};
+
+	if (body.password != body.passwordconfirmation) {
+		return reply.status(400).send({
+			message: "Password confirmation doesn't match with previous password. Try again!"
+		});
+	}
 
 	const newuser = changePassword(user.id, body.newpassword);
 

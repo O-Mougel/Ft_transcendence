@@ -13,9 +13,10 @@ const userCore = {  // define the common user schema
 
 const createUserSchema = z.object({
 	...userCore,
-	password: z.string({
-		required_error: "Password is required"
-	})
+	password: z.string(),//{
+	// 	required_error: "Password is required"
+	// })
+	passwordconfirmation: z.string()
 });//.min(4).max(24); <- regex
 
 const createUserResponseSchema = z.object({
@@ -74,6 +75,7 @@ const infoGrabResponseSchema = z.object({
 const editPasswordSchema = z.object({
 	oldpassword: z.string(),
 	newpassword: z.string(),
+	newpasswordconfirmation: z.string(),
 })
 
 const friendRequestSchema = z.object({
