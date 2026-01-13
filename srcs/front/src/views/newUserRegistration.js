@@ -32,7 +32,7 @@ export default class extends ViewTemplate {
 							<input tabindex="3" class="w-[60vw] uppercase text-sm md:text-base xl:text-2xl focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white pt-2 pb-2 rounded-lg" onclick="handleNewUserCreate(event)" name="updateChanges" type="submit" value="Create account">
 						</div>
 						<div class="flex items-start pt-5">
-							<a tabindex="4" class="w-[60vw] uppercase text-sm md:text-base xl:text-2xl focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white pt-2 pb-2 rounded-lg" name="gotoMainMenu" href="/" data-link>Back to menu</a>
+							<a tabindex="4" class="w-[60vw] uppercase text-sm md:text-base xl:text-2xl focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white pt-2 pb-2 rounded-lg" name="gotoMainMenu" href="/" data-link>🚀 Back to menu</a>
 						</div>
 						<div class="flex items-start pt-5">
 							<p id="saveNewUserInfo" class=" w-[60vw] mt-4 text-base text-ellipsis"></p>
