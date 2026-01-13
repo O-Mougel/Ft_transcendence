@@ -30,7 +30,7 @@ export const fetchErrcodeHandler = async (error) => {
 			window.sessionStorage.setItem('nbReloadsLeft', 1);
 		else
 		{
-			let reloadCpt =  parseInt(window.sessionStorage.getItem('nbReloadsLeft'));
+			let reloadCpt =	parseInt(window.sessionStorage.getItem('nbReloadsLeft'));
 			if (reloadCpt == 0) 
 			{
 				window.sessionStorage.setItem('logStatus', 'loggedOut');
@@ -166,7 +166,7 @@ window.acceptFriend = async (username) => {
 				if (currentElement && currentElement.length > 0)
 				{
 					const target = currentElement[0];
-    				target.remove();
+					target.remove();
 				}
 			}
 			grabProfileInfo();
@@ -214,7 +214,7 @@ window.rejectFriend = async (username) => {
 				if (currentElement && currentElement.length > 0)
 				{
 					const target = currentElement[0];
-    				target.remove();
+					target.remove();
 				}
 				grabProfileInfo();
 			}

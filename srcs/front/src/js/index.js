@@ -115,10 +115,20 @@ window.grabLoggedUserStats = async () =>
 		const result = await loggedUserStatsRequestResponse.json();
 		if (result)
 		{
-			document.getElementById("nbOfMatchCpt").innerHTML = result.matchsnb;
-			document.getElementById("winRatioPercent").innerHTML = result.winrate + " %";
-			document.getElementById("longestMatchCpt").innerHTML = result.longestMatch + " sec";
-			document.getElementById("biggestStreakCpt").innerHTML = result.biggest_streak;
+			if (result.matchsnb == 0) // nomatches played
+			{
+				document.getElementById("nbOfMatchCpt").innerHTML = "0";
+				document.getElementById("winRatioPercent").innerHTML = "--";
+				document.getElementById("longestMatchCpt").innerHTML = "--";
+				document.getElementById("biggestStreakCpt").innerHTML = "--";
+			}
+			else
+			{
+				document.getElementById("nbOfMatchCpt").innerHTML = result.matchsnb;
+				document.getElementById("winRatioPercent").innerHTML = result.winrate + " %";
+				document.getElementById("longestMatchCpt").innerHTML = result.longestMatch + " sec";
+				document.getElementById("biggestStreakCpt").innerHTML = result.biggest_streak;
+			}
 		}
 	} 
 	catch (err) 
@@ -260,7 +270,7 @@ const createFriendsStatLink = async () =>
 				{
 					var listItem = document.createElement("li");
 					let	clearName = result.friends[i].name + "[userFriend]";
-					listItem.className = 'w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg';
+					listItem.className = 'w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg focus:border-[#98c6f8] hover:text-[#98c6f8] hover:border-[#98c6f8]';
 					listItem.innerHTML = `${result.friends[i].name}`;
 					listItem.setAttribute('name', clearName);
 					listItem.setAttribute('onclick',`fetchPlayerStats("${result.friends[i].name}")`); // can be broken with weird names
@@ -316,8 +326,8 @@ const grabUserStatsAndInfo = async () =>
 			
 			const defaultAvatar = '/img/userPfp/default.png';
 			userPfpProfile.onerror = () => {
-  			userPfpProfile.onerror = null;
-  			userPfpProfile.src = defaultAvatar;
+			userPfpProfile.onerror = null;
+			userPfpProfile.src = defaultAvatar;
 			};
 			userPfpProfile.src = result?.avatar || defaultAvatar;			
 			playerUsernameProfile.innerHTML = result.name;
@@ -356,8 +366,8 @@ const grabCustomizationPageInfo = async () =>
 			
 			const defaultAvatar = '/img/userPfp/default.png';
 			profilePicture.onerror = () => {
-  			profilePicture.onerror = null;
-  			profilePicture.src = defaultAvatar;
+			profilePicture.onerror = null;
+			profilePicture.src = defaultAvatar;
 			};
 			profilePicture.src = result?.avatar || defaultAvatar;			
 			newUsername.placeholder = result.name;
