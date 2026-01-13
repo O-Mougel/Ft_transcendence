@@ -12,6 +12,23 @@ export const backToDefaultPage = async () => {
 	history.pushState(null, null, "/");
 }
 
+const hideAlertBoxMsg = async () => {
+
+	const alertBox = document.getElementById('alertBox');
+	if (!alertBox) return;
+	alertBox.style.display = 'none';
+	alertBox.innerHTML = "Hey ! I'm supposed to be hidden ! >:(";
+}
+
+export const alertBoxMsg = async (msg) => {
+		
+	const alertBox = document.getElementById('alertBox');
+	if (!alertBox) return;
+	alertBox.style.display = 'inline';
+	alertBox.innerHTML = msg;
+	setTimeout(hideAlertBoxMsg, 3000);
+}
+
 export const fetchErrcodeHandler = async (error) => {
 
 	const isNotAuth = error.toString().search("\"errcode\":401") != -1;
@@ -127,7 +144,8 @@ export async function isUserAllowedHere() {
 	{
 		if (await fetchErrcodeHandler(err) == 0)
 			return (isUserAllowedHere());
-		console.error("\n⚠️No valid credentials ! Back to Login page !\n");
+		alertBoxMsg(`❌ You are not allowed to be here ! Log-in first !`);
+		console.error("\n❌No valid credentials ! Back to Login page !\n");
 		console.error(err);
 		return (0); //no valid credentials
 	}
@@ -169,6 +187,7 @@ window.acceptFriend = async (username) => {
 					target.remove();
 				}
 			}
+			alertBoxMsg(`✅ You are now friend with \"${username} !\"`);
 			grabProfileInfo();
 		}
 	}
@@ -406,7 +425,9 @@ window.sendNewFriendRequest = async function () {
 		if (result) 
 		{
 			console.log('✅ Sent friend request');
-			friendReqResultText.innerHTML='✅ Sent friend request';
+			// friendReqResultText.innerHTML='✅ Sent friend request';
+			alertBoxMsg(`✅ Friend request sent to \"${data.friendRequestName}\"`);
+			friendReqInput.value = "";
 		}
 	} 
 	catch (err) 
@@ -414,7 +435,8 @@ window.sendNewFriendRequest = async function () {
 		if (await fetchErrcodeHandler(err) == 0)
 			return(window.sendNewFriendRequest());
 		console.error('Cannot send friend request !\n => ', err);
-		friendReqResultText.innerHTML='⚠️ Try again !';
+		// friendReqResultText.innerHTML='⚠️ Try again !';
+		alertBoxMsg(`⚠️ Could not send friend request !`);
 	}
 }
 
@@ -438,7 +460,9 @@ export async function logoutUser() {
 		if (result) 
 		{
 			console.log('⏳ Logging out ...');
+			alertBoxMsg("✅ You are now logged out");
 			window.sessionStorage.setItem('logStatus', 'loggedOut');
+			window.sessionStorage.setItem('access_token', 'NotValid;)');
 
 			// var isLogged = sessionStorage.getItem("logStatus");
 			backToDefaultPage();
@@ -487,6 +511,7 @@ window.handleNewUserCreate = async function (event) {
 		if (result) 
 		{
 			console.log('✅ User created');
+			alertBoxMsg(`✅ User \"${data.name}\" created successfully!`);
 			username.value = "";
 			email.value = "";
 			password.value = "";
@@ -503,7 +528,8 @@ window.handleNewUserCreate = async function (event) {
 		password.value = "";
 		passwordConfirm.value = "";
 		console.error('Could not create new user !\n => ', err);
-		requestResult.innerText = '⚠️ Server-side error ! Try again !';
+		alertBoxMsg(`⚠️ Could not create new user!`);
+		// requestResult.innerText = '⚠️ Server-side error ! Try again !';
 	}
 };
 
@@ -555,6 +581,7 @@ window.handleLoginClick = async function (event) {
 			window.sessionStorage.setItem('logStatus','loggedIn');
 			window.sessionStorage.setItem('access_token',result.token);
 			console.log('⏳ Logged in !');
+			alertBoxMsg(`Welcome back ${data.name} ! 😉`);
 			await backToDefaultPage();
 		}
 
@@ -563,7 +590,8 @@ window.handleLoginClick = async function (event) {
 	{
 		if (await fetchErrcodeHandler(err) == 0)
 			return(window.handleLoginClick(event));
-		logResult.innerText = '⚠️ Server side error !';
+		// logResult.innerText = '⚠️ Server side error !';
+		alertBoxMsg(`⚠️ Server side error ! Try again !`);
 		console.error('Login error !\n => ', err);
 		username.value = "";
 		password.value = "";
