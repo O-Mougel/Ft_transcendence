@@ -33,9 +33,9 @@ export async function createUser(input) {
 
 export async function checkIfUserExists(name) { // if count = 0, doesn't exist
 	const result = await db.user.count({
-  		where: {
-    		name: name,
-  		},
+		where: {
+			name: name,
+		},
 	});
 
 	return result;
@@ -266,7 +266,7 @@ export async function get2fastatus(id) {
 			auth2fa: true
 		}
 	});
-  return status
+	return status
 }
 
 export async function saveRefreshToken(id, token)
@@ -281,15 +281,15 @@ export async function saveRefreshToken(id, token)
 }
 
 export async function findToken(token) {
-	return  await db.refreshTokens.findUnique({
-    where: { token: token }
-  })
+	return await db.refreshTokens.findUnique({
+	where: { token: token }
+	})
 }
 
 export async function deleteAllForUser(id) {
-  await db.refreshTokens.deleteMany ({
-    where: { user_id: id }
-  })
+	await db.refreshTokens.deleteMany ({
+	where: { user_id: id }
+	})
 }
 
 export async function rotateRefreshToken(id, token) {

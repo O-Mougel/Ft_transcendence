@@ -193,7 +193,7 @@ export async function refreshTokenHandler(request, reply) {
 
 export async function alterUserHandler(request, reply) {
 
-	const body = request.body;  //what we want to change
+	const body = request.body;	//what we want to change
 	const userId = request.user && request.user.id; // who made the request (token)
 	if (!userId) return reply.code(401).send({ message: 'Not authenticated !' });
 
@@ -435,10 +435,10 @@ export async function uploadProfilePicHandler(request, reply) {
 	const mimetype = (uploadedPic.mimetype || '').toLowerCase();
 	if (!mimetype || !uploadedPic.filename)
 		return reply.code(400).send({ message: 'Mime type or filename is empty !'});
-  	if (uploadedPic.filename.length <= 0)
-    	return reply.code(400).send({ message: 'Invalid filename ! Must be at least 1 character !'});
+	if (uploadedPic.filename.length <= 0)
+		return reply.code(400).send({ message: 'Invalid filename ! Must be at least 1 character !'});
 	if (!mimetype.startsWith('image/'))
-    	return reply.code(400).send({ message: 'Only images can be uploaded !'});
+		return reply.code(400).send({ message: 'Only images can be uploaded !'});
 
 	//file upload part 
 	const ext = path.extname(uploadedPic.filename) || '.png'; // if idk, now a png

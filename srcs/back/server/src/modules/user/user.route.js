@@ -4,146 +4,146 @@ import { $ref } from "./user.schema.js";
 import { logoutHandler, loginHandler, check2faHandler, registerUserHandler, dataGrabHandler, alterUserHandler, get2fastatusHandler, activate2faHandler, deactivate2faHandler, editPasswordHandler, friendRequestHandler, friendAcceptHandler, getFriendsHandler, getFriendRequestHandler, friendDeleteHandler, friendRejectHandler, refreshTokenHandler, uploadProfilePicHandler, checkLogStatus } from "./user.controller.js";
 
 async function userRoutes(fastify) {
-    fastify.post(
-        '/register', 
-        {
-            schema: {
-                body: $ref("createUserSchema"),
-                response: {
-                    201: $ref("createUserResponseSchema"),
-                },
-            },
-        }, 
-        registerUserHandler,
-    );
+	fastify.post(
+		'/register', 
+		{
+			schema: {
+				body: $ref("createUserSchema"),
+				response: {
+					201: $ref("createUserResponseSchema"),
+				},
+			},
+		}, 
+		registerUserHandler,
+	);
 	
 	fastify.post(
-        '/login', 
-        {
-            schema: {
-                body: $ref("loginSchema"),
-                response: {
-                    201: $ref("loginResponseSchema"),
-                }
-            }
-        }, 
-        loginHandler //add basic authentication scheme base 64 name:password in header
-    );
+		'/login', 
+		{
+			schema: {
+				body: $ref("loginSchema"),
+				response: {
+					201: $ref("loginResponseSchema"),
+				}
+			}
+		}, 
+		loginHandler //add basic authentication scheme base 64 name:password in header
+	);
 	
 	fastify.get(
-        '/login/loggedUserCheck', 
-        {
-            preHandler: [fastify.authenticate],
-        }, 
-        checkLogStatus
-    );
+		'/login/loggedUserCheck', 
+		{
+			preHandler: [fastify.authenticate],
+		}, 
+		checkLogStatus
+	);
 
 	fastify.get(
-        '/login/refresh', 
-        {
-            schema: {
-                response: {
-                    201: $ref("accessTokenResponseSchema"),
-                }
-            }
-        }, 
-        refreshTokenHandler
-    );
+		'/login/refresh', 
+		{
+			schema: {
+				response: {
+					201: $ref("accessTokenResponseSchema"),
+				}
+			}
+		}, 
+		refreshTokenHandler
+	);
 
 	fastify.post(
-        '/login/2fa', 
-        {
+		'/login/2fa', 
+		{
 			preHandler: [fastify.twofaauthenticate], //forces log to see user profile
-            schema: {
-                body: $ref("twofaSchema"),
-                response: {
-                    201: $ref("accessTokenResponseSchema"),
-                }
-            }
-        }, 
-        check2faHandler
-    );
+			schema: {
+				body: $ref("twofaSchema"),
+				response: {
+					201: $ref("accessTokenResponseSchema"),
+				}
+			}
+		}, 
+		check2faHandler
+	);
 
 	fastify.get(
-        '/profile/grab', 
-        {
+		'/profile/grab', 
+		{
 			preHandler: [fastify.authenticate], //forces log to see user profile
-            schema: {
-                response: {
-                    200: $ref("infoGrabResponseSchema"),
-                }
-            }
-        }, 
-        dataGrabHandler
-    );
+			schema: {
+				response: {
+					200: $ref("infoGrabResponseSchema"),
+				}
+			}
+		}, 
+		dataGrabHandler
+	);
 
 	fastify.post(
-        '/profile/edit', 
-        {
+		'/profile/edit', 
+		{
 			preHandler: [fastify.authenticate], //forces log to see user profile
-            schema: {
-                body: $ref("profileChangesSchema"),
-                response: {
-                    200: $ref("profileChangesResponseSchema"),
-                },
-            },
-        }, 
-        alterUserHandler,
-    );
+			schema: {
+				body: $ref("profileChangesSchema"),
+				response: {
+					200: $ref("profileChangesResponseSchema"),
+				},
+			},
+		}, 
+		alterUserHandler,
+	);
 
 	fastify.get(
-        '/profile/2fa', 
-        {
+		'/profile/2fa', 
+		{
 			preHandler: [fastify.authenticate],
-            schema: {
-                response: {
-                    200: $ref("twofastatusResponseSchema"),
-                },
-            },
-        }, 
-        get2fastatusHandler,
-    );
+			schema: {
+				response: {
+					200: $ref("twofastatusResponseSchema"),
+				},
+			},
+		}, 
+		get2fastatusHandler,
+	);
 
 	fastify.get(
-        '/profile/2fa/activate', 
-        {
+		'/profile/2fa/activate', 
+		{
 			preHandler: [fastify.authenticate],
-            schema: {
-                response: {
-                    200: $ref("qrCodeReplySchema"),
-                },
-            },
-        }, 
-        activate2faHandler,
-    );
+			schema: {
+				response: {
+					200: $ref("qrCodeReplySchema"),
+				},
+			},
+		}, 
+		activate2faHandler,
+	);
 
 	fastify.post(
-        '/profile/2fa/verify', 
-        {
+		'/profile/2fa/verify', 
+		{
 			preHandler: [fastify.authenticate],
-            schema: {
-                body: $ref("twofaSchema"),
-                response: {
-                    201: $ref("twofaResponseSchema"),
-                }
-            }
-        }, 
-        check2faHandler
-    );
+			schema: {
+				body: $ref("twofaSchema"),
+				response: {
+					201: $ref("twofaResponseSchema"),
+				}
+			}
+		}, 
+		check2faHandler
+	);
 
 	fastify.delete(
-        '/profile/2fa/deactivate', 
-        {
+		'/profile/2fa/deactivate', 
+		{
 			preHandler: [fastify.authenticate],
-            // schema: {
-            //     body: $ref("profileChangesSchema"),
-            //     response: {
-            //         200: $ref("profileChangesResponseSchema"),
-            //     },
-            // },
-        }, 
-        deactivate2faHandler,
-    );
+			// schema: {
+			//	 body: $ref("profileChangesSchema"),
+			//	 response: {
+			//		 200: $ref("profileChangesResponseSchema"),
+			//	 },
+			// },
+		}, 
+		deactivate2faHandler,
+	);
 
 	fastify.post(
 		'/profile/password',
@@ -156,13 +156,13 @@ async function userRoutes(fastify) {
 		editPasswordHandler
 	)
 
-    fastify.delete(
-        '/logout',
-        {
-            preHandler: [fastify.authenticate],
-        },
-        logoutHandler
-    )
+	fastify.delete(
+		'/logout',
+		{
+			preHandler: [fastify.authenticate],
+		},
+		logoutHandler
+	)
 
 	fastify.post(
 		'/friend/request',
@@ -238,11 +238,11 @@ async function userRoutes(fastify) {
 		'/file_upload',
 		{
 			preHandler: [fastify.authenticate],
-            schema: {
-                response: {
-                    201: $ref("fileUploadResponseSchema"),
-                }
-            }
+			schema: {
+				response: {
+					201: $ref("fileUploadResponseSchema"),
+				}
+			}
 		},
 		uploadProfilePicHandler
 	)

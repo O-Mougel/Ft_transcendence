@@ -4,43 +4,43 @@ import * as z from "zod";
 import { buildJsonSchemas } from 'fastify-zod';
 
 const userCore = {  // define the common user schema
-    email: z.string({
-        required_error: "Email is required",
-        invalid_type_error: "Email is not valid"
-    }).email(),
-    name: z.string()
+	email: z.string({
+		required_error: "Email is required",
+		invalid_type_error: "Email is not valid"
+	}).email(),
+	name: z.string()
 }
 
 const createUserSchema = z.object({
-    ...userCore,
-    password: z.string({
-        required_error: "Password is required"
-    })
+	...userCore,
+	password: z.string({
+		required_error: "Password is required"
+	})
 });//.min(4).max(24); <- regex
 
 const createUserResponseSchema = z.object({
-    id: z.number(),
-    ...userCore,
+	id: z.number(),
+	...userCore,
 });
 
 const profileChangesSchema = z.object({
-    name: z.string(),
-    password: z.string(),
+	name: z.string(),
+	password: z.string(),
 	avatar: z.string(),
 });
 
 const profileChangesResponseSchema = z.object({
-    id: z.number(),
+	id: z.number(),
 });
 
 const loginSchema = z.object({
-    name: z.string(),
-    password: z.string()
+	name: z.string(),
+	password: z.string()
 });
 
 const loginResponseSchema = z.object({
 	require2fa: z.boolean(),
-    token: z.string(),
+	token: z.string(),
 });
 
 const qrCodeReplySchema = z.object({
@@ -61,13 +61,13 @@ const twofaResponseSchema = z.object({
 })
 
 const accessTokenResponseSchema = z.object({
-    newAccessToken: z.string(),
+	newAccessToken: z.string(),
 });
 
 const infoGrabResponseSchema = z.object({
 	id: z.number(),
 	email: z.string(),
-    name: z.string(),
+	name: z.string(),
 	avatar: z.string(),
 });
 
@@ -120,7 +120,7 @@ export const { schemas: userSchemas, $ref } = buildJsonSchemas({
 	twofaSchema,
 	accessTokenResponseSchema,
 twofaResponseSchema,
-    twofastatusResponseSchema,
+	twofastatusResponseSchema,
 	infoGrabResponseSchema,
 	profileChangesSchema,
 	profileChangesResponseSchema,

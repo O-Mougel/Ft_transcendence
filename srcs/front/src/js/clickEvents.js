@@ -30,12 +30,13 @@ function reportWindowSize() {
 window.addEventListener("resize", reportWindowSize);
 
 window.addEventListener('keydown', (e) => { //check if we pressed f5 or ctrl+r (or ctrl+F5)
-  try {
-    const key = e.key || '';
-    if (key === 'F5' || ((key.toLowerCase() === 'r') && (e.ctrlKey || e.metaKey)) || ((key.toLowerCase() === 'F5') && (e.ctrlKey || e.metaKey))) {
-      sessionStorage.setItem('f5WasPressed', 'true');
-    }
-  } catch (err) {}
+	try 
+	{
+		const key = e.key || '';
+		if (key === 'F5' || ((key.toLowerCase() === 'r') && (e.ctrlKey || e.metaKey)) || ((key.toLowerCase() === 'F5') && (e.ctrlKey || e.metaKey))) {
+		sessionStorage.setItem('f5WasPressed', 'true');
+		}
+	} catch (err) {}
 });
 
 window.addEventListener("pagehide", () => {
@@ -123,7 +124,7 @@ async function uploadFileToServer(fileObj) {
 		filenameStr.innerText = "❌ File upload failed";
 		let errhandle = await fetchErrcodeHandler(err);
 		if ( errhandle == 0) //token refreshed
-			uploadFileToServer(fileObj);
+			await uploadFileToServer(fileObj);
 		else
 			return null;
 	}
