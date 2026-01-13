@@ -14,7 +14,7 @@ fastify.register(fjwt, {
     secret: process.env.JWT_SECRET
 });
 
-fastify.decorate('authenticate', //check for 2fa false
+fastify.decorate('authenticate',
 	async (request, reply) => {
 		try {
 			const auth = request.headers.authorization;
@@ -27,8 +27,8 @@ fastify.decorate('authenticate', //check for 2fa false
 			const token = auth.split(" ")[1];
 
 			const decoded = fastify.jwt.verify(token)
-			if (decoded.type == "2fa")
-				return reply.status(401).send({ message: 'TempToken is not enough to bypass 2fa' })
+			if (decoded.type != "access")
+				return reply.status(401).send({ message: 'Invalid token to access this path' })
 			request.user = decoded
 		} catch(err) {
 			return reply.status(401).send({ message: 'Invalid or expired JWT', errcode:402})
@@ -36,7 +36,7 @@ fastify.decorate('authenticate', //check for 2fa false
 	}
 );
 
-fastify.decorate('twofaauthenticate', //check for 2fa false
+fastify.decorate('logoutauthenticate',
 	async (request, reply) => {
 		try {
 			const auth = request.headers.authorization;
@@ -47,12 +47,54 @@ fastify.decorate('twofaauthenticate', //check for 2fa false
 
 			const token = auth.split(" ")[1];
 
-			const decoded = fastify.jwt.verify(token)//, process.env.JWT_SECRET) //add secret ??? is it safe we can access the secret through the request.jwt.secret path ????
+			const decoded = fastify.jwt.verify(token)
+			if (decoded.scope == "match")
+				return reply.status(401).send({ message: 'Invalid token to access this path' })
+			request.user = decoded
+		} catch(err) {
+			return reply.status(401).send({ message: 'Invalid or expired JWT'})
+		}
+	}
+);
+
+fastify.decorate('twofaauthenticate',
+	async (request, reply) => {
+		try {
+			const auth = request.headers.authorization;
+
+			if (!auth || !auth.startsWith("Bearer ")) {
+				return reply.status(401).send({ message: 'Authentication required'});
+			}
+
+			const token = auth.split(" ")[1];
+
+			const decoded = fastify.jwt.verify(token)
 			if (decoded.type != "2fa")
 				return reply.status(401).send({ message: "you're already connected why pass 2fa ?" })
 			request.user = decoded
 		} catch(err) {
 			return reply.status(401).send({ message: 'Invalid or expired JWT', errcode:402})
+		}
+	}
+);
+
+fastify.decorate('matchauthenticate',
+	async (request, reply) => {
+		try {
+			const auth = request.headers.authorization;
+
+			if (!auth || !auth.startsWith("Bearer ")) {
+				return reply.status(401).send({ message: 'Authentication required'});
+			}
+
+			const token = auth.split(" ")[1];
+
+			const decoded = fastify.jwt.verify(token)
+			if (decoded.type == "2fa")
+				return reply.status(401).send({ message: 'Invalid token to access this path' })
+			request.user = decoded
+		} catch(err) {
+			return reply.status(401).send({ message: 'Invalid or expired JWT'})
 		}
 	}
 );
