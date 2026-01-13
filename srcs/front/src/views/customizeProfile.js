@@ -19,7 +19,7 @@ export default class extends ViewTemplate {
 					</div>
 					<h2 class="flex items-start pt-4 w-full text-left">► Choose your new profile picture :</h2>
 					<div class="overflow-hidden flex items-center justify-center gap-4 pt-4">
-   						<img id="userPfp" src="./img/userPfp/default.png" alt="userPfpImg" class="ml-5 mb-0 w-[120px] h-[120px] object-cover shrink-0" />
+ 						<img id="userPfp" src="./img/userPfp/default.png" alt="userPfpImg" class="ml-5 mb-0 w-[120px] h-[120px] object-cover shrink-0" />
  						<input type="file" id="myfileSelector" name="fileSelector" onchange="onFileSelected(this)" accept="image/png, image/jpg, image/jpeg" class="hidden" />
 						<label for="myfileSelector" class="border border-white ml-2 py-2 px-3 cursor-pointer">🗁 Select file</label>
 						<p id="selectedFileName" class="mt-4 text-base text-ellipsis"></p>

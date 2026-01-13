@@ -12,7 +12,7 @@ export default class extends ViewTemplate {
 			<div id="profilePanel" class="hidden absolute right-0 top-0 h-full min-w-80 w-[20%] bg-[url(/img/assets/stars.gif)] z-50 shadow-[0_0_20px_rgba(158,202,237,0.9)] border border-[#98c6f8] overflow-auto">
 				<div class="flex flex-col text-center w-full h-full">
 					<div class="grid h-[30%] place-items-center">
-  						<div id="sidePannelPfp" class="bg-[url(/img/assets/sillyDog.gif)] bg-cover p-4 rounded-[50%] opacity-0 shadow object-cover w-[170px] h-[170px]"></div>
+						<div id="sidePannelPfp" class="bg-[url(/img/assets/sillyDog.gif)] bg-cover p-4 rounded-[50%] opacity-0 shadow object-cover w-[170px] h-[170px]"></div>
 					</div>
 					<h1 id="playerGrabbedUsername" class="text-black text-bold mx-4 mb-15 text-2xl ">[username]</h1>
 					<a href="/profileStats" class="mx-4 text-2xl mb-5 border p-4 text-[#798490] hover:text-[#98c6f8]" name="profileLink" data-link>View my profile</a>
@@ -70,7 +70,7 @@ export default class extends ViewTemplate {
 				<div>
 					<h2>Select a friend to see his stats :</h2>
 					<div class="flex w-full">
-						<ul id="friendlistProfileParent" class="flex flex-wrap justify-center gap-4 w-full pt-4">
+						<ul id="friendlistProfileParent" class="flex flex-wrap justify-center gap-4 w-full pt-4 hover:cursor-pointer ">
 						</ul>
 					</div>
 				</div>
@@ -94,10 +94,12 @@ export default class extends ViewTemplate {
 					</div>
 				</div>
 				<h3>Remove a friend :</h3>
-				<select id="selectBoxFriendRemover" class="h-full border bg-black">
+				<div>
+				<select id="selectBoxFriendRemover" class="h-full border bg-black hover:cursor-pointer">
 					<option value="dummyvalue">--Select a friend--</option>
 				</select>
-				<a class="uppercase px-5 focus:outline-none bg-red-500 text-ellipsis border rounded-lg" onclick="confirmFriendRemoval()" name="confirmFriendRemoval" >Remove</a>
+				<a class="uppercase px-5 focus:outline-none bg-red-500 text-ellipsis border rounded-lg hover:cursor-pointer hover:bg-[#d41626]" onclick="confirmFriendRemoval()" name="confirmFriendRemoval" >Remove</a>
+				</div>
 				<div class="sm:pt-10">
 				</div>
 				<div class="">
