@@ -188,7 +188,7 @@ export async function check2faHandler(request, reply) {
 
 	await setOnlineStatus(user.id, true)
 
-	return { accessToken }
+	return { newAccessToken: accessToken }
 }
 
 export async function refreshTokenHandler(request, reply) {

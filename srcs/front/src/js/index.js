@@ -13,6 +13,7 @@ import newUserRegistration from "../views/newUserRegistration.js";
 import pong from "../views/pong.js";
 import logUser from "../views/login.js";
 import page404 from "../views/404page.js";
+import Login2fa from "../views/2faLogin.js";
 
 import { isUserAllowedHere } from "./userLog.js";
 import { fetchErrcodeHandler } from "./userLog.js";
@@ -455,7 +456,7 @@ const forceUserRelog = async () => {
 
 export const adjustNavbar = async (path) => {
 
-	if (path === "/logUser" || (path === "/") || (path === "/404") || (path === "/newUserRegistration")) //then logging is required
+	if (path === "/logUser" || (path === "/") || (path === "/404") || (path === "/newUserRegistration") || (path === "/2faLogin")) //then logging is required
 	{
 		//
 	}
@@ -529,6 +530,7 @@ const router = async () => {
 		{ path: "/pong", view: pong },
 		{ path: "/pong2", view: pong },
 		{ path: "/logUser", view: logUser },
+		{ path: "/2faLogin", view: Login2fa },
 	];
 
 	const potentialMan = routes.map(mapElement => { //mapElement is the name of each array element for routes

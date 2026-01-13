@@ -1,4 +1,5 @@
 import startingFile from "../views/startingFile.js";
+import { goTo2faLogin } from "./2FAEvent.js";
 import { adjustNavbar } from "./index.js";
 
 export const backToDefaultPage = async () => {
@@ -571,20 +572,31 @@ window.handleLoginClick = async function (event) {
 				const text = await loginResponse.text().catch(() => loginResponse.statusText);
 				throw new Error(`Request failed: ${loginResponse.status} ${text}`);
 		}
-	
+
 		const result = await loginResponse.json();	
-		if (result) 
+		if (result)
 		{
 			username.value = "";
 			password.value = "";
 
-			window.sessionStorage.setItem('logStatus','loggedIn');
-			window.sessionStorage.setItem('access_token',result.token);
-			console.log('⏳ Logged in !');
-			alertBoxMsg(`Welcome back ${data.name} ! 😉`);
-			await backToDefaultPage();
+			console.log("result = ");
+			console.log(result.require2fa);
+			
+			if (result.require2fa == true)
+			{
+				window.sessionStorage.setItem('temp_token',result.token);
+				console.log('⏳ 2FA required, redirecting ...');
+				await goTo2faLogin();
+			}
+			else
+			{
+				window.sessionStorage.setItem('logStatus','loggedIn');
+				window.sessionStorage.setItem('access_token',result.token);
+				console.log('⏳ Logged in !');
+				alertBoxMsg(`Welcome back ${data.name} ! 😉`);
+				await backToDefaultPage();
+			}
 		}
-
 	} 
 	catch (err) 
 	{
