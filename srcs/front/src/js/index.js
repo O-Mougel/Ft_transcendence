@@ -15,8 +15,8 @@ import logUser from "../views/login.js";
 import page404 from "../views/404page.js";
 
 import { isUserAllowedHere } from "./userLog.js";
-import { backToDefaultPage } from "./userLog.js";
 import { fetchErrcodeHandler } from "./userLog.js";
+import { alertBoxMsg } from "./userLog.js";
 
 var profileRefresh;
 
@@ -59,6 +59,7 @@ window.confirmFriendRemoval = async () =>
 		if (result)
 		{
 			console.log("✅ Removed friend");
+			alertBoxMsg(`✅ Removed \"${data.frienddeletename}\" from friends !`);
 			grabUserStatsAndInfo();
 		}
 	} 
