@@ -132,7 +132,7 @@ async function userRoutes(fastify) {
 		get2fastatusHandler,
 	);
 
-	fastify.get(
+	fastify.post(
 		'/profile/2fa/activate', 
 		{
 			preHandler: [fastify.authenticate],
