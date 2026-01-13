@@ -148,7 +148,7 @@ async function userRoutes(fastify) {
 	fastify.post(
 		'/profile/2fa/verify', 
 		{
-			preHandler: [fastify.twofaauthenticate],
+			preHandler: [fastify.authenticate],
 			schema: {
 				body: $ref("twofaSchema"),
 				response: {
