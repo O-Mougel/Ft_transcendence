@@ -125,10 +125,10 @@ export async function isUserAllowedHere() {
 	} 
 	catch (err) 
 	{
-		console.error("\n⚠️No valid credentials ! Back to Login page !\n");
-		console.error(err);
 		if (await fetchErrcodeHandler(err) == 0)
 			return (isUserAllowedHere());
+		console.error("\n⚠️No valid credentials ! Back to Login page !\n");
+		console.error(err);
 		return (0); //no valid credentials
 	}
 	return(0);
@@ -174,9 +174,9 @@ window.acceptFriend = async (username) => {
 	}
 	catch (err) 
 	{
-		console.error('⚠️ Couldn\'t accept friend request !\n =>', err);
 		if (await fetchErrcodeHandler(err) == 0)
-			window.acceptFriend(username);
+			return(window.acceptFriend(username));
+		console.error('⚠️ Couldn\'t accept friend request !\n =>', err);
 	}
 }
 
@@ -222,9 +222,9 @@ window.rejectFriend = async (username) => {
 	}
 	catch (err) 
 	{
-		console.error('⚠️ Couldn\'t reject friend request !\n =>', err);
 		if (await fetchErrcodeHandler(err) == 0)
-			window.rejectFriend(username);
+			return(window.rejectFriend(username));
+		console.error('⚠️ Couldn\'t reject friend request !\n =>', err);
 	}
 }
 
@@ -281,9 +281,9 @@ const checkForFriendRequests = async () => {
 	} 
 	catch (err) 
 	{
-		console.error('⚠️ Couldn\'t display friend requests !\n =>', err);
 		if (await fetchErrcodeHandler(err) == 0)
-			checkForFriendRequests();
+			return(checkForFriendRequests());
+		console.error('⚠️ Couldn\'t display friend requests !\n =>', err);
 	}
 
 }
@@ -323,9 +323,9 @@ const displayUserFriends = async () => {
 	} 
 	catch (err) 
 	{
-		console.error('⚠️ Couldn\'t grab user friend info !\n => ', err);
 		if (await fetchErrcodeHandler(err) == 0)
-			displayUserFriends();
+			return(displayUserFriends());
+		console.error('⚠️ Couldn\'t grab user friend info !\n => ', err);
 	}
 
 }
@@ -371,9 +371,9 @@ window.grabProfileInfo = async function () {
 	} 
 	catch (err) 
 	{
-		console.error('Profile info grab failed !\n => ', err);
 		if (await fetchErrcodeHandler(err) == 0)
 			return (window.grabProfileInfo());
+		console.error('Profile info grab failed !\n => ', err);
 	}
 	displayUserFriends();
 	checkForFriendRequests();
@@ -411,10 +411,10 @@ window.sendNewFriendRequest = async function () {
 	} 
 	catch (err) 
 	{
+		if (await fetchErrcodeHandler(err) == 0)
+			return(window.sendNewFriendRequest());
 		console.error('Cannot send friend request !\n => ', err);
 		friendReqResultText.innerHTML='⚠️ Try again !';
-		if (await fetchErrcodeHandler(err) == 0)
-			window.sendNewFriendRequest();
 	}
 }
 
@@ -446,9 +446,9 @@ export async function logoutUser() {
 	} 
 	catch (err) 
 	{
-		console.error('⚠️ Couldn\'t log out user !\n => ', err);
 		if (await fetchErrcodeHandler(err) == 0)
-			window.logoutUser();
+			return(window.logoutUser());
+		console.error('⚠️ Couldn\'t log out user !\n => ', err);
 	}
 }
 
@@ -496,14 +496,14 @@ window.handleNewUserCreate = async function (event) {
 	} 
 	catch (err) 
 	{
+		if (await fetchErrcodeHandler(err) == 0)
+			return(window.handleNewUserCreate(event));
 		username.value = "";
 		email.value = "";
 		password.value = "";
 		passwordConfirm.value = "";
 		console.error('Could not create new user !\n => ', err);
 		requestResult.innerText = '⚠️ Server-side error ! Try again !';
-		if (await fetchErrcodeHandler(err) == 0)
-			window.handleNewUserCreate(event);
 	}
 };
 
@@ -561,12 +561,13 @@ window.handleLoginClick = async function (event) {
 	} 
 	catch (err) 
 	{
+		if (await fetchErrcodeHandler(err) == 0)
+			return(window.handleLoginClick(event));
 		logResult.innerText = '⚠️ Server side error !';
 		console.error('Login error !\n => ', err);
 		username.value = "";
 		password.value = "";
-		if (await fetchErrcodeHandler(err) == 0)
-			window.handleLoginClick(event);
+		
 	}
 };
 

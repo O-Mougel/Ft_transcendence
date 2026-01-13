@@ -120,13 +120,14 @@ async function uploadFileToServer(fileObj) {
 	} 
 	catch (err) 
 	{
-		console.error('File upload failed !\n => ', err);
-		filenameStr.innerText = "❌ File upload failed";
-		let errhandle = await fetchErrcodeHandler(err);
-		if ( errhandle == 0) //token refreshed
-			await uploadFileToServer(fileObj);
+		if (await fetchErrcodeHandler(err) == 0)
+			return (await uploadFileToServer(fileObj));
 		else
+		{
+			console.error('File upload failed !\n => ', err);
+			filenameStr.innerText = "❌ File upload failed";
 			return null;
+		}
 	}
 
 }
@@ -228,14 +229,14 @@ window.saveProfileInfo = async function () {
 	} 
 	catch (err) 
 	{
+		if (await fetchErrcodeHandler(err) == 0)
+			return(window.saveProfileInfo());
 		username.value = "";
 		password.value = "";
 		fileInput.value = "";
 		document.getElementById('selectedFileName').textContent = '';
 		console.error('Edit user error ! ', err);
 		confirmText.innerText = '⚠️ Server side error !';
-		if (await fetchErrcodeHandler(err) == 0)
-			window.saveProfileInfo();
 
 	}	
 };
