@@ -8,16 +8,15 @@ const userCore = {  // define the common user schema
 		required_error: "Email is required",
 		invalid_type_error: "Email is not valid"
 	}).email(),
-	name: z.string()
+	name: z.string().min(3).max(20).regex(/^[A-Z0-9_]+$/)//, "Only uppercase alphanumeric characters and underscore allowed")
 }
 
 const createUserSchema = z.object({
 	...userCore,
-	password: z.string(),//{
-	// 	required_error: "Password is required"
-	// })
-	passwordconfirmation: z.string()
-});//.min(4).max(24); <- regex
+	password: z.string().min(8).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain uppercase, lowercase, number and special character"),
+	passwordconfirmation: z.string().min(8).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain uppercase, lowercase, number and special character"),
+
+});
 
 const createUserResponseSchema = z.object({
 	id: z.number(),
@@ -25,7 +24,9 @@ const createUserResponseSchema = z.object({
 });
 
 const profileChangesSchema = z.object({
-	name: z.string(),
+	name: z.string().regex(/^[A-Z0-9_]{3,20}$/, {
+		message: "3–20 chars, uppercase, numbers, underscore only"
+	}),
 	password: z.string(),
 	avatar: z.string(),
 });

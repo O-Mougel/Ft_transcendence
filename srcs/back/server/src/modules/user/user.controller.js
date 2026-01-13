@@ -16,6 +16,7 @@ export async function registerUserHandler(request, reply) { //check twice the pa
 
 	const name = await findUserByName(body.name);
 
+	const { passwordconfirmation, ...rest } = body;
 	if (name) {	
 		return reply.status(400).send({
 			message: "Username already used. Try again!"
@@ -28,7 +29,7 @@ export async function registerUserHandler(request, reply) { //check twice the pa
 		});
 
 	try {
-		const user = await createUser(body);
+		const user = await createUser({...rest});
 		return reply.status(201).send(user);
 
 	} catch (error) {
