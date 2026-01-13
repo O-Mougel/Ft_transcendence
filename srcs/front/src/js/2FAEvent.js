@@ -29,9 +29,9 @@ window.showQRCode = async function (event) {
 	} 
 	catch (err) 
 	{
-		console.error('Failed to activate 2FA!\n => ', err);
 		if (await fetchErrcodeHandler(err) == 0)
-			window.showQRCode(event);
+			return(window.showQRCode(event));
+		console.error('Failed to activate 2FA!\n => ', err);
 	}
 };
 
@@ -57,9 +57,9 @@ window.disable2FA = async function () {
 	} 
 	catch (err) 
 	{
-		console.error('Failed to disable 2FA!\n => ', err);
 		if (await fetchErrcodeHandler(err) == 0)
-			window.disable2FA();
+			return(window.disable2FA());
+		console.error('Failed to disable 2FA!\n => ', err);
 	}
 }
 
@@ -105,8 +105,8 @@ window.validate2FACode = async function (event) {
 	} 
 	catch (err) 
 	{
+		if (await fetchErrcodeHandler(err) == 0)
+			return(window.validate2FACode(event));
 		console.error('Failed to activate 2FA!\n => ', err);
-		if (fetchErrcodeHandler(err) == 0)
-			window.validate2FACode(event);
 	}
 }
