@@ -26,8 +26,8 @@ fastify.decorate('authenticate',
 			const token = auth.split(" ")[1];
 
 			const decoded = fastify.jwt.verify(token)
-			if (decoded.type == "2fa")
-				return reply.status(401).send({ message: 'TempToken not alowed you need to pass 2fa' })
+			if (decoded.type != "access")
+				return reply.status(401).send({ message: 'Invalid token to access this path' })
 			request.user = decoded
 		} catch(err) {
 			return reply.status(401).send({ message: 'Invalid or expired JWT'})
@@ -47,6 +47,8 @@ fastify.decorate('logoutauthenticate',
 			const token = auth.split(" ")[1];
 
 			const decoded = fastify.jwt.verify(token)
+			if (decoded.scope == "match")
+				return reply.status(401).send({ message: 'Invalid token to access this path' })
 			request.user = decoded
 		} catch(err) {
 			return reply.status(401).send({ message: 'Invalid or expired JWT'})
@@ -68,6 +70,27 @@ fastify.decorate('twofaauthenticate',
 			const decoded = fastify.jwt.verify(token)
 			if (decoded.type != "2fa")
 				return reply.status(401).send({ message: "you're already connected why pass 2fa ?" })
+			request.user = decoded
+		} catch(err) {
+			return reply.status(401).send({ message: 'Invalid or expired JWT'})
+		}
+	}
+);
+
+fastify.decorate('matchauthenticate',
+	async (request, reply) => {
+		try {
+			const auth = request.headers.authorization;
+
+			if (!auth || !auth.startsWith("Bearer ")) {
+				return reply.status(401).send({ message: 'Authentication required'});
+			}
+
+			const token = auth.split(" ")[1];
+
+			const decoded = fastify.jwt.verify(token)
+			if (decoded.type == "2fa")
+				return reply.status(401).send({ message: 'Invalid token to access this path' })
 			request.user = decoded
 		} catch(err) {
 			return reply.status(401).send({ message: 'Invalid or expired JWT'})
