@@ -7,7 +7,7 @@ async function matchRoutes(fastify) {
 	fastify.post(
 		'/match/create',
 		{
-			preHandler: [fastify.authenticate],
+			preHandler: [fastify.matchauthenticate], //check routes for server side pong too
 			schema: {
 				body: $ref("createMatchSchema"),
 				response: {

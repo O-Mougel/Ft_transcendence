@@ -8,10 +8,10 @@ import { pipeline } from 'stream/promises'; //file writing
 /////
 import { createUser, findUserByName, findUserById, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend, rejectfriend, deletefriend, deletesecret2fa, activate2fa, get2fastatus, saveRefreshToken, findToken, rotateRefreshToken, deleteAllForUser } from "./user.service.js";
 import { verifyPassword } from "../../utils/hash.js";
-import { generateAccessToken, generateRefreshToken } from "../../utils/token.js";
+import { generateAccessToken, generateRefreshToken, generate2faToken, generateMatchToken } from "../../utils/token.js";
 import { generateSecret, verify2fa } from "../../utils/twofa.js"
 
-export async function registerUserHandler(request, reply) {
+export async function registerUserHandler(request, reply) { //check twice the password and confirmation
 	const body = request.body;
 
 	const name = await findUserByName(body.name);
@@ -57,7 +57,7 @@ export async function dataGrabHandler(request, reply) {
 	}
 }
 
-export async function loginHandler(request, reply) { //check twice the password and confirmation
+export async function loginHandler(request, reply) {
 	const body = request.body;
 
 	//use basic authentication schema
@@ -84,11 +84,7 @@ export async function loginHandler(request, reply) { //check twice the password 
 
 	if (user.auth2fa) {
 
-		const payload = {
-			id: user.id,
-			type: "2fa"
-		}
-		const tempToken = request.server.jwt.sign(payload, { expiresIn: "5m" } );
+		const tempToken = generate2faToken(request.server, user)
 
 		return { require2fa: true, token: tempToken };
 	}
@@ -111,7 +107,44 @@ export async function loginHandler(request, reply) { //check twice the password 
 	return { require2fa: false, token: accessToken }
 }
 
-export async function check2faHandler(request, reply) { //y a t il moyen d'arriver ici quand on est pas sense ?? ajouter un check de 2ffa true dans le token
+export async function loginMatchHandler(request, reply) {
+	const body = request.body;
+
+	//use basic authentication schema
+
+	const user = await findUserByName(body.name);
+
+	if (!user) {
+		return reply.status(400).send({
+			message: "Invalid name. Try again!"
+		});
+	};
+
+	const isValidPassword = verifyPassword(
+		body.password,
+		user.salt,
+		user.password);
+
+	if (!isValidPassword) {
+		return reply.status(400).send({
+			message: "Password is incorrect"
+		});
+	};
+
+	if (user.auth2fa) {
+
+		const tempToken = generate2faMatchToken(request.server, user)
+
+		return { require2fa: true, Token: tempToken };
+	}
+
+	const matchToken = generateMatchToken(request.server, user);
+
+	return { require2fa: false, Token: matchToken }
+
+}
+
+export async function check2faHandler(request, reply) {
 	const code = request.body.code
 
 	const user = await findUserById(request.user.id)
@@ -127,6 +160,12 @@ export async function check2faHandler(request, reply) { //y a t il moyen d'arriv
 		return reply.status(400).send({
 			message: "Invalid 2FA code"
 		});
+	}
+
+	if (request.user.scope == "match") {
+		const matchToken = generateMatchToken(request.server, user);
+
+		return { matchToken }
 	}
 
 	if (!user.auth2fa) {
@@ -158,6 +197,8 @@ export async function refreshTokenHandler(request, reply) {
 
 	const stored = await findToken(token)
 
+	reply.clearCookie("refresh_token");
+
 	if (!stored) {
 		return reply.status(403).send({ message: "Invalid refresh_token !" });
 	}
@@ -171,7 +212,6 @@ export async function refreshTokenHandler(request, reply) {
 	}
 
 	// rotation
-	reply.clearCookie("refresh_token");
 
 	const refreshToken = await rotateRefreshToken(stored.user_id, token)
 	const user = await findUserById(stored.user_id);
