@@ -1,6 +1,7 @@
 import { logoutUser } from "./userLog.js";
 import { backToDefaultPage } from "./userLog.js";
 import { fetchErrcodeHandler } from "./userLog.js";
+import { alertBoxMsg } from "./userLog.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -218,7 +219,7 @@ window.saveProfileInfo = async function () {
 		{
 			confirmText.style.color = "#3ec745";
 			confirmText.innerText = "✅ User updated !";
-			
+			alertBoxMsg(`✅ User was updated !`);
 			document.getElementById('selectedFileName').textContent = '';
 			fileInput.value = "";
 			username.placeholder = username.value;
