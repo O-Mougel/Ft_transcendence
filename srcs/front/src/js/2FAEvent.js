@@ -1,5 +1,9 @@
+import Login2fa from "../views/2faLogin.js";
 import { show2FAStatus } from "../js/index.js";
-import { fetchErrcodeHandler } from "../js/userLog.js";
+import { backToDefaultPage, fetchErrcodeHandler } from "../js/userLog.js";
+import { adjustNavbar } from "./index.js";
+import { alertBoxMsg } from "./userLog.js";
+
 
 window.showQRCode = async function (event) {
 	event.preventDefault();
@@ -105,8 +109,75 @@ window.validate2FACode = async function (event) {
 	} 
 	catch (err) 
 	{
+		console.log(err);
 		if (await fetchErrcodeHandler(err) == 0)
 			return(window.validate2FACode(event));
 		console.error('Failed to activate 2FA!\n => ', err);
 	}
+}
+
+
+window.loginWith2FACode = async function (event) {
+	
+	event.preventDefault();
+
+	try
+	{
+		const password = document.getElementById('2FACodeInput').value;
+
+		codeResult.innerText = "";
+		if (!password)
+		{
+			codeResult.innerText = "❌ 2FA code cannot be empty !";
+			password.focus();
+			return ;
+		}
+
+		const data = {
+			code: password,
+		};
+
+		const logWith2FACode = await fetch('/login/2fa', {
+				credentials: 'include',
+				method: 'POST',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("temp_token")}`, 'Content-Type': 'application/json'},
+				body:  JSON.stringify(data),
+		});
+
+		if (!logWith2FACode.ok) {
+				const text = await logWith2FACode.text().catch(() => logWith2FACode.statusText);
+				throw new Error(`Request failed: ${logWith2FACode.status} ${text}`);
+		}
+		const result = await logWith2FACode.json();	
+		if (result)
+		{
+			console.log("2FA code validated successfully!", result);
+			codeResult.innerText = "✅ 2FA code validated successfully !";
+			sessionStorage.setItem('access_token', result.newAccessToken);
+			sessionStorage.removeItem('temp_token');
+			window.sessionStorage.setItem('logStatus','loggedIn');
+			console.log('⏳ Logged in !');
+			alertBoxMsg(`Welcome ! 😉`);
+			await backToDefaultPage();
+		}
+	} 
+	catch (err) 	
+	{
+		console.log(err);
+		if (await fetchErrcodeHandler(err) == 0)
+			return(window.loginWith2FACode(event));
+		console.error('Failed to log with 2FA!\n => ', err);
+	}
+}
+
+
+export const goTo2faLogin = async () => {
+
+	const view = new Login2fa();
+	document.querySelector("#app").innerHTML = await view.getHTML();
+	adjustNavbar("/2faLogin");
+	if (typeof view.init === "function") {
+		 await view.init();
+	}
+	history.pushState(null, null, "/2faLogin");
 }
