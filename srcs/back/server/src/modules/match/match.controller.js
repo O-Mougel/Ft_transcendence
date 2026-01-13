@@ -6,6 +6,7 @@ import { findUserByName } from "../user/user.service.js";
 export async function createMatchHandler(request, reply) {
     const body = request.body;
 
+	//check player1id != player2id
     try {
         const match = await createMatch(body);
         return reply.status(201).send(match);

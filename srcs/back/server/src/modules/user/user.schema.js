@@ -23,19 +23,22 @@ const createUserResponseSchema = z.object({
 	...userCore,
 });
 
+ //jusqu'a quel point je dois parser tous les schema avec du regex ??? ou juste l'autentification et l'edition du profile ??
+
 const profileChangesSchema = z.object({
-	name: z.string().regex(/^[A-Z0-9_]{3,20}$/, {
-		message: "3–20 chars, uppercase, numbers, underscore only"
-	}),
-	password: z.string(),
-	avatar: z.string(),
+	name: z.string().min(3).max(20).regex(/^[A-Z0-9_]+$/),//, "Only uppercase alphanumeric characters and underscore allowed")
+	//name: z.string().regex(/^[A-Z0-9_]{3,20}$/, {
+	// 	message: "3–20 chars, uppercase, numbers, underscore only"
+	// }),
+	password: z.string(), //est-ce que check regex ici aussi ?? peut-etre a suprimer ou a crypter
+	avatar: z.string(), //quel pattern verifier ici en regex ??
 });
 
 const profileChangesResponseSchema = z.object({
 	id: z.number(),
 });
 
-const loginSchema = z.object({
+const loginSchema = z.object({ //a supprimer 
 	name: z.string(),
 	password: z.string()
 });
@@ -75,8 +78,8 @@ const infoGrabResponseSchema = z.object({
 
 const editPasswordSchema = z.object({
 	oldpassword: z.string(),
-	newpassword: z.string(),
-	newpasswordconfirmation: z.string(),
+	newpassword: z.string().min(8).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain uppercase, lowercase, number and special character"),
+	newpasswordconfirmation: z.string().min(8).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain uppercase, lowercase, number and special character"),
 })
 
 const friendRequestSchema = z.object({
