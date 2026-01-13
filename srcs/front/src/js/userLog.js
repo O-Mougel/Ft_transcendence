@@ -372,7 +372,7 @@ window.grabProfileInfo = async function () {
 		const result = await dataRequestResponse.json();	
 		if (result)
 		{	
-			profileUsername.innerHTML = result.name;
+			profileUsername.innerHTML = "<u>" + result.name + "</u>";
 			profileUsername.style.color = 'white';
 			profilePicture.style.opacity = "1";
 

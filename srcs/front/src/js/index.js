@@ -198,7 +198,7 @@ window.fetchPlayerStats = async (playerUsername) =>
 
 export const show2FAStatus = async () => 
 {
-	console.log("Showing 2FA status...");
+	// console.log("Showing 2FA status...");
 
 	try
 	{
@@ -332,7 +332,7 @@ const grabUserStatsAndInfo = async () =>
 			userPfpProfile.src = defaultAvatar;
 			};
 			userPfpProfile.src = result?.avatar || defaultAvatar;			
-			playerUsernameProfile.innerHTML = result.name;
+			playerUsernameProfile.innerHTML = "<u>" + result.name + "</u>";
 		}
 	} 
 	catch (err) 

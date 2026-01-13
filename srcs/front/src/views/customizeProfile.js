@@ -29,17 +29,17 @@ export default class extends ViewTemplate {
 						<input id="confirmPassword" tabindex="2" class="uppercase ml-4 px-5 w-full hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] rounded-sm border border-[#c2dbf6]" name="confirmPassword" value="" type="password" autocomplete="off" placeholder="Enter your password" >
 					</div>
 					<div class="flex items-start w-[75%] pt-4">
-						<input tabindex="3" class="uppercase ml-4 px-5 hover:text-[#98c6f8] text-ellipsis focus:outline-none  focus:border-[#98c6f8] hover:border-[#98c6f8] border-white rounded-lg border pb-1 sm:pb-2" onclick="saveProfileInfo()" name="updateChanges" type="submit" value=" Apply changes">
+						<input tabindex="3" class="uppercase ml-4 px-5 hover:text-[#98c6f8] text-ellipsis focus:outline-none  focus:border-[#98c6f8] hover:border-[#98c6f8] border-white rounded-lg border pb-1 sm:pb-2" onclick="saveProfileInfo()" name="updateChanges" type="submit" value="💾 Apply changes">
 						<p id="confirmChangeResults" class="text-ellipsis text-center pl-3 text-[2vw]"></p>
 					</div>
 				</form>
 				<div class="px-[3%] pb-[6%]">
 					<h2 class="flex items-start w-full text-left pt-4">► Enable 2FA :</h2>
 					<div class="flex items-start w-[75%] pt-4">
-						<a tabindex="5" class="uppercase px-5 ml-4 pb-1 sm:pb-2 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg" name="gotoMainMenu" href="/setup2FA" data-link>2FA setup</a>
+						<a tabindex="5" class="uppercase px-5 ml-4 pb-1 sm:pb-2 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg" name="gotoMainMenu" href="/setup2FA" data-link>🔒 2FA setup</a>
 					</div>
 					<div class="pt-6">
-						<a tabindex="5" class="uppercase px-5 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg" name="gotoMainMenu" href="/" data-link>Back to menu</a>
+						<a tabindex="5" class="uppercase px-5 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg" name="gotoMainMenu" href="/" data-link>🚀 Back to menu</a>
 					</div>
 				</div>
 			</div>`
