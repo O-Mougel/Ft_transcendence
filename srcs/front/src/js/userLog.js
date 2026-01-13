@@ -372,7 +372,7 @@ window.grabProfileInfo = async function () {
 		const result = await dataRequestResponse.json();	
 		if (result)
 		{	
-			profileUsername.innerHTML = result.name;
+			profileUsername.innerHTML = "<u>" + result.name + "</u>";
 			profileUsername.style.color = 'white';
 			profilePicture.style.opacity = "1";
 
@@ -578,9 +578,6 @@ window.handleLoginClick = async function (event) {
 		{
 			username.value = "";
 			password.value = "";
-
-			console.log("result = ");
-			console.log(result.require2fa);
 			
 			if (result.require2fa == true)
 			{

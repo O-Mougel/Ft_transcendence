@@ -67,9 +67,8 @@ fastify.decorate('twofaauthenticate',
 			}
 
 			const token = auth.split(" ")[1];
-			console.log(	" \n\n\ntwofaauthenticate token:", token);
-
 			const decoded = fastify.jwt.verify(token)
+
 			if (decoded.type != "2fa")
 				return reply.status(401).send({ message: "you're already connected why pass 2fa ?" })
 			request.user = decoded
