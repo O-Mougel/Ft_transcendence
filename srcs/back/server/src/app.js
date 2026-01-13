@@ -70,7 +70,7 @@ fastify.decorate('twofaauthenticate',
 			const decoded = fastify.jwt.verify(token)
 
 			if (decoded.type != "2fa")
-				return reply.status(401).send({ message: "you're already connected why pass 2fa ?" })
+				return reply.status(401).send({ message: "token type is not for 2fa!" })
 			request.user = decoded
 		} catch(err) {
 			console.log(" err:", err);
