@@ -578,9 +578,6 @@ window.handleLoginClick = async function (event) {
 		{
 			username.value = "";
 			password.value = "";
-
-			console.log("result = ");
-			console.log(result.require2fa);
 			
 			if (result.require2fa == true)
 			{
