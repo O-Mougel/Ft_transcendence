@@ -64,9 +64,9 @@ window.confirmFriendRemoval = async () =>
 	} 
 	catch (err) 
 	{
-		console.error('⚠️ Couldn\'t delete selected friend !\n => ', err);
 		if (await fetchErrcodeHandler(err) == 0)
-			window.confirmFriendRemoval();
+			return(window.confirmFriendRemoval());
+		console.error('⚠️ Couldn\'t delete selected friend !\n => ', err);
 	}
 }
 
@@ -133,9 +133,9 @@ window.grabLoggedUserStats = async () =>
 	} 
 	catch (err) 
 	{
-		console.error('⚠️ Couldn\'t fetch logged user stats !\n => ', err);
 		if (await fetchErrcodeHandler(err) == 0)
-			window.grabLoggedUserStats();
+			return(window.grabLoggedUserStats());
+		console.error('⚠️ Couldn\'t fetch logged user stats !\n => ', err);
 	}
 }
 
@@ -188,9 +188,9 @@ window.fetchPlayerStats = async (playerUsername) =>
 	} 
 	catch (err) 
 	{
-		console.error('⚠️ Couldn\'t fetch user stats in profileStat!\n => ', err);
 		if (await fetchErrcodeHandler(err) == 0)
-			window.fetchPlayerStats(playerUsername);
+			return(window.fetchPlayerStats(playerUsername));
+		console.error('⚠️ Couldn\'t fetch user stats in profileStat!\n => ', err);
 	}
 }
 
@@ -234,9 +234,9 @@ export const show2FAStatus = async () =>
 	} 
 	catch (err) 
 	{
-		console.error('⚠️ Failed to disable 2FA!\n => ', err);
 		if (await fetchErrcodeHandler(err) == 0)
-			show2FAStatus();
+			return(show2FAStatus());
+		console.error('⚠️ Failed to disable 2FA!\n => ', err);
 	}
 
 }
@@ -291,9 +291,9 @@ const createFriendsStatLink = async () =>
 	} 
 	catch (err) 
 	{
-		console.error('⚠️ Couldn\'t recover user friendlist!\n => ', err);
 		if (await fetchErrcodeHandler(err) == 0)
-			createFriendsStatLink();
+			return(createFriendsStatLink());
+		console.error('⚠️ Couldn\'t recover user friendlist!\n => ', err);
 	}
 }
 
@@ -335,9 +335,9 @@ const grabUserStatsAndInfo = async () =>
 	} 
 	catch (err) 
 	{
-		console.error('⚠️ Couldn\'t display user profile !\n => ', err);
 		if (await fetchErrcodeHandler(err) == 0)
-			grabUserStatsAndInfo();
+			return(grabUserStatsAndInfo());
+		console.error('⚠️ Couldn\'t display user profile !\n => ', err);
 	}
 	createFriendsStatLink();
 }
@@ -375,9 +375,9 @@ const grabCustomizationPageInfo = async () =>
 	} 
 	catch (err) 
 	{
-		console.error('⚠️ Couldn\'t grab user info!\n => ', err);
 		if (await fetchErrcodeHandler(err) == 0)
-			grabCustomizationPageInfo();
+			return(grabCustomizationPageInfo());
+		console.error('⚠️ Couldn\'t grab user info!\n => ', err);
 	}
 
 }
