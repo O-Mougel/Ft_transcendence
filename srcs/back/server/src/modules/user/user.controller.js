@@ -332,6 +332,13 @@ export async function logoutHandler(request, reply) {
 
 export async function editPasswordHandler(request, reply) { //check twice the password and confirmation
 	const body = request.body;
+	const user = await findUserById(request.user.id);
+
+	if (!user) {
+		return reply.status(404).send({
+			message: "User not found"
+		});
+	}
 
 	const isValidPassword = verifyPassword(
 		body.oldpassword,
@@ -515,3 +522,4 @@ export async function uploadProfilePicHandler(request, reply) {
 
 	return reply.code(201).send({ path: `./img/userPfp/${savedFilename}` });
 }
+
