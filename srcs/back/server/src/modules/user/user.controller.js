@@ -11,9 +11,9 @@ import { verifyPassword } from "../../utils/hash.js";
 import { generateAccessToken, generateRefreshToken, generate2faToken, generateMatchToken } from "../../utils/token.js";
 import { generateSecret, verify2fa } from "../../utils/twofa.js"
 
-export async function registerUserHandler(request, reply) { //check twice the password and confirmation
+export async function registerUserHandler(request, reply) {
+	
 	const body = request.body;
-
 	const name = await findUserByName(body.name);
 
 	if (name) {	
@@ -65,7 +65,7 @@ export async function loginHandler(request, reply) {
 	const user = await findUserByName(body.name);
 
 	if (!user) {
-		return reply.status(400).send({
+		return reply.status(404).send({
 			message: "Invalid name. Try again!",
 			errRef:"loginInvalidName"
 		});
