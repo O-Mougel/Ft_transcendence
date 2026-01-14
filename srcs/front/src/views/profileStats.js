@@ -9,7 +9,7 @@ export default class extends ViewTemplate {
 
 	async getHTML() {
 		return `
-			<div id="profilePanel" class="hidden absolute right-0 top-0 h-full min-w-80 w-[20%] bg-[url(/img/assets/stars.gif)] z-50 shadow-[0_0_20px_rgba(158,202,237,0.9)] border border-[#98c6f8] overflow-auto">
+			<div id="profilePanel" class="hidden absolute animate-slide-in-left right-0 top-0 h-full min-w-80 w-[20%] bg-[url(/img/assets/stars.gif)] z-50 shadow-[0_0_20px_rgba(158,202,237,0.9)] border border-[#98c6f8] overflow-auto">
 				<div class="flex flex-col text-center w-full h-full">
 					<div class="grid h-[30%] place-items-center">
 						<div id="sidePannelPfp" class="bg-[url(/img/assets/sillyDog.gif)] bg-cover p-4 rounded-[50%] opacity-0 shadow object-cover w-[170px] h-[170px]"></div>
@@ -49,7 +49,7 @@ export default class extends ViewTemplate {
 					<h2 id="playerUsernameProfile" class="text-center pr-2"><u>[username]</u></h2>
 					<img id="userPfpProfile" src="./img/userPfp/default.png" alt="userPfpImg" class="pl-2 pt-4 w-20 h-20 sm:w-[120px] sm:h-[120px] object-cover shrink-0" />
 				</div>
-				<div class="flex border border-white rounded-lg w-full p-4 gap-4 flex-wrap justify-between">
+				<div class="flex border border-white rounded-lg w-full p-4 gap-4 flex-wrap justify-between animate-fade-in-scale">
 					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
 						<p>Match played</p>
 						<p id="nbOfMatchCpt">0</p>
@@ -75,7 +75,7 @@ export default class extends ViewTemplate {
 					</div>
 				</div>
 				<h2 id="selectedPlayerUsernameHeader" class="hidden text-center pr-2 text-blue-900 mt-3">[--]</h2>
-				<div id="friendStatDisplayBox" class="hidden border border-white rounded-lg w-full p-4 gap-4 flex-wrap justify-between">
+				<div id="friendStatDisplayBox" class="hidden border border-white rounded-lg w-full p-4 gap-4 flex-wrap justify-between animate-fade-in-scale">
 					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
 						<p>Match played</p>
 						<p id="nbOfMatchCpt2">--</p>
