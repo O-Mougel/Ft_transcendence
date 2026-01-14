@@ -6,7 +6,7 @@ import path from 'path'; //save path manip
 import crypto from 'crypto'; //random file name
 import { pipeline } from 'stream/promises'; //file writing
 /////
-import { createUser, findUserByName, findUserById, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend, rejectfriend, deletefriend, deletesecret2fa, activate2fa, get2fastatus, saveRefreshToken, findToken, rotateRefreshToken, deleteAllForUser } from "./user.service.js";
+import { createUser, findUserByName, findUserById, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend, rejectfriend, deletefriend, deletesecret2fa, activate2fa, get2fastatus, saveRefreshToken, findToken, rotateRefreshToken, deleteAllForUser, deleteRefreshToken } from "./user.service.js";
 import { verifyPassword } from "../../utils/hash.js";
 import { generateAccessToken, generateRefreshToken, generate2faToken, generateMatchToken } from "../../utils/token.js";
 import { generateSecret, verify2fa } from "../../utils/twofa.js"
@@ -15,11 +15,11 @@ export async function registerUserHandler(request, reply) { //check twice the pa
 	const body = request.body;
 
 	const name = await findUserByName(body.name);
-	// const name = await checkIfUserExists(body.name);
 
 	if (name) {	
-		return reply.status(400).send({
-			message: "Username already used. Try again!"
+		return reply.status(409).send({
+			message: "Username already used. Try again!",
+			errRef:"registerNameTaken"
 		});
 	};
 
@@ -29,10 +29,9 @@ export async function registerUserHandler(request, reply) { //check twice the pa
 		return reply.status(201).send(user);
 
 	} catch (error) {
-		console.error(error);
-		return reply.status(500).send({
-			message: "Email address already used. Try again!", //doesn't cover enough cases
-			error:error
+		return reply.status(409).send({
+			message: "Email address already used !",
+			errRef:"registerEmailTaken"
 		});
 	}
 }
@@ -67,7 +66,8 @@ export async function loginHandler(request, reply) {
 
 	if (!user) {
 		return reply.status(400).send({
-			message: "Invalid name. Try again!"
+			message: "Invalid name. Try again!",
+			errRef:"loginInvalidName"
 		});
 	};
 
@@ -78,7 +78,8 @@ export async function loginHandler(request, reply) {
 
 	if (!isValidPassword) {
 		return reply.status(400).send({
-			message: "Password is incorrect"
+			message: "Password is incorrect",
+			errRef:"loginInvalidPwd"
 		});
 	};
 
@@ -150,7 +151,8 @@ export async function check2faHandler(request, reply) {
 	const user = await findUserById(request.user.id)
 	if (!user || !user.twofasecret) {
 		return reply.status(400).send({
-			message: "2fa not configured!"
+			message: "2fa not configured!",
+			errRef:"verify2FANotSetUp"
 		});
 	};
 
@@ -158,7 +160,8 @@ export async function check2faHandler(request, reply) {
 
 	if (!isValid) {
 		return reply.status(400).send({
-			message: "Invalid 2FA code"
+			message: "Invalid 2FA code",
+			errRef:"verifyInvalidCode"
 		});
 	}
 
@@ -216,7 +219,6 @@ export async function refreshTokenHandler(request, reply) {
 	const refreshToken = await rotateRefreshToken(stored.user_id, token)
 	const user = await findUserById(stored.user_id);
 	const newAccessToken = generateAccessToken(request.server, user);
-	console.log("\n\nToken :", newAccessToken, "\n"); //to remove/////////////////////////////////////////
 	reply.setCookie('refresh_token', refreshToken, {
 		path: '/',
 		// maxAge: 10000,
@@ -235,12 +237,12 @@ export async function alterUserHandler(request, reply) {
 
 	const body = request.body;	//what we want to change
 	const userId = request.user && request.user.id; // who made the request (token)
-	if (!userId) return reply.code(401).send({ message: 'Not authenticated !' });
+	if (!userId) return reply.code(401).send({ message: 'Not authenticated !', errRef:"NotAuthUser" });
 
 	const target = await findUserById(userId);
 	if (!target) {
 		return reply.status(400).send({
-			message: "Error ! Couln't find user !"
+			message: "Error ! Couln't find user !", errRef:"alterUserNotFound"
 		});
 	};
 
@@ -252,15 +254,15 @@ export async function alterUserHandler(request, reply) {
 
 	if (!isValidPassword) {
 		return reply.status(400).send({
-			message: "Password is incorrect"});
+			message: "Password is incorrect", errRef:"alterPwdIncorrect"});
 	};
 
 	if (target.name != body.name)
 	{
 		const newname = await findUserByName(body.name);
 		if (newname) {	
-			return reply.status(400).send({
-				message: "Username already used. Try again!"
+			return reply.status(409).send({
+				message: "Username already used. Try again!", errRef:"alterUsernameTaken"
 			});
 		};
 	}
@@ -268,10 +270,10 @@ export async function alterUserHandler(request, reply) {
 	const updatedUser = await alterUser(userId, body.name, body.avatar);
 	if (!updatedUser) {
 		return reply.status(400).send({
-			message: "Error ! Couln't modify user !"
+			message: "Error ! Couln't modify user !", errRef:"alterInnerFail"
 		});
 	};
-	return reply.status(200).send(updatedUser); // not really needed, just to send something
+	return reply.status(200).send(updatedUser);
 }
 
 export async function get2fastatusHandler(request, reply)
@@ -309,16 +311,23 @@ export async function deactivate2faHandler(request, reply) {
 }
 
 export async function logoutHandler(request, reply) {
+
 	const token = request.cookies.refreshToken;
 
-	setOnlineStatus(request.user.id, false)
-	if (token)
-		deleteRefreshToken(token)
+	try {
+		await setOnlineStatus(request.user.id, false)
+		if (token)
+			deleteRefreshToken(token)
+		reply.clearCookie("refresh_token");
+		return reply.status(201).send({ message: "Logged out..." });
 
-	reply.clearCookie("refresh_token");
-
-
-	return reply.status(201).send({ message: "Logged out..." });
+	} catch (err) {
+		return reply.status(500).send({
+			message: "Internal server error !",
+			error:500
+		});
+	}
+	
 }
 
 export async function editPasswordHandler(request, reply) { //check twice the password and confirmation
@@ -335,9 +344,12 @@ export async function editPasswordHandler(request, reply) { //check twice the pa
 		});
 	};
 
-	const newuser = changePassword(user.id, body.newpassword);
+	changePassword(user.id, body.newpassword);
 
-	return { newuser }
+	return reply.status(200).send({
+		message: "Password edited successfully!"
+	});
+	// return { newuser } //DO NOT SEND THE ENTIRE USER
 }
 
 export async function friendRequestHandler(request, reply) {
@@ -347,29 +359,35 @@ export async function friendRequestHandler(request, reply) {
 
 	if (!newfriend)
 	return reply.status(400).send({
-		message: "Username doesn't exist. Try again!"
+		message: "Username doesn't exist. Try again!",
+		errRef:"requestUserNotFound"
 	});
 
 	if (request.user.id == newfriend.id)
 	{
-		return reply.status(400).send({
-			message: "You can't ask yourself as a friend!"
+		return reply.status(422).send({
+			message: "You can't ask yourself as a friend!",
+			errRef:"requestSelfFriend"
 		}); 
 	}
 
 	if (await alreadyrequested(request.user.id, newfriend.id))
-	return reply.status(400).send({
-		message: "You already requested this user as a friend, just be patient and wait for his response"
+	return reply.status(422).send({
+		message: "You already requested this user as a friend, wait for his response first !",
+		errRef:"requestStillPending"
 	});
 
 	if (await alreadyfriend(request.user.id, newfriend.id))
-	return reply.status(400).send({
-		message: "This user is already your friend!"
+	return reply.status(409).send({
+		message: "This user is already your friend!",
+		errRef:"requestAlreadyFriend"
 	});
 
-	await requestfriend(request.user.id, newfriend.id)
+	await requestfriend(request.user.id, newfriend.id) //try catch ?
 
-	return { newfriend } // not sure
+	return reply.status(200).send({
+		message: "Request sent!"
+	});
 }
 
 export async function friendAcceptHandler(request, reply) {
@@ -394,7 +412,7 @@ export async function friendAcceptHandler(request, reply) {
 
 	await acceptfriend(request.user.id, newfriend.id)
 
-	// return { newfriend } // NOT SURE
+	// return { newfriend } // NO
 	return reply.status(201).send({
 		message: "New friend added !"
 	}); 
