@@ -29,6 +29,7 @@ window.showQRCode = async function (event) {
 			qrCodeSection.style.display = "flex";
 			qrCodeImage.style.display = "block";
 			showQRCodeButton.disabled = true;
+			document.getElementById('2FACodeInput').focus();
 		}
 	} 
 	catch (err) 
@@ -56,6 +57,7 @@ window.disable2FA = async function () {
 		if (result)
 		{
 			console.log("2FA disabled successfully!", result);
+			alertBoxMsg("✅ 2FA disabled successfully !");
 			show2FAStatus();
 		}
 	} 
@@ -75,11 +77,10 @@ window.validate2FACode = async function (event) {
 	{
 		const password = document.getElementById('2FACodeInput').value;
 
-		codeResult.innerText = "";
 		if (!password)
 		{
-			codeResult.innerText = "❌ 2FA code cannot be empty !";
-			password.focus();
+			alertBoxMsg("❌ 2FA code cannot be empty !");
+			document.getElementById('2FACodeInput').focus();
 			return ;
 		}
 
@@ -96,13 +97,14 @@ window.validate2FACode = async function (event) {
 
 		if (!verify2FACode.ok) {
 				const text = await verify2FACode.text().catch(() => verify2FACode.statusText);
+				alertBoxMsg("❌ Invalid 2FA code !");
 				throw new Error(`Request failed: ${verify2FACode.status} ${text}`);
 		}
 		const result = await verify2FACode.json();	
 		if (result)
 		{
 			console.log("2FA code validated successfully!", result);
-			codeResult.innerText = "✅ 2FA code validated successfully !";
+			alertBoxMsg("✅ 2FA activated successfully !");
 			qrCodeImage.src = "";
 			show2FAStatus();
 		}
@@ -125,11 +127,11 @@ window.loginWith2FACode = async function (event) {
 	{
 		const password = document.getElementById('2FACodeInput').value;
 
-		codeResult.innerText = "";
+		
 		if (!password)
 		{
-			codeResult.innerText = "❌ 2FA code cannot be empty !";
-			password.focus();
+			alertBoxMsg("❌ 2FA code cannot be empty !");
+			document.getElementById('2FACodeInput').focus();
 			return ;
 		}
 
@@ -146,13 +148,14 @@ window.loginWith2FACode = async function (event) {
 
 		if (!logWith2FACode.ok) {
 				const text = await logWith2FACode.text().catch(() => logWith2FACode.statusText);
+				alertBoxMsg("❌ Invalid 2FA code !");
 				throw new Error(`Request failed: ${logWith2FACode.status} ${text}`);
 		}
 		const result = await logWith2FACode.json();	
 		if (result)
 		{
 			console.log("2FA code validated successfully!", result);
-			codeResult.innerText = "✅ 2FA code validated successfully !";
+			
 			sessionStorage.setItem('access_token', result.newAccessToken);
 			sessionStorage.removeItem('temp_token');
 			window.sessionStorage.setItem('logStatus','loggedIn');
@@ -179,5 +182,6 @@ export const goTo2faLogin = async () => {
 	if (typeof view.init === "function") {
 		 await view.init();
 	}
+	document.getElementById('2FACodeInput').focus();
 	history.pushState(null, null, "/2faLogin");
 }
