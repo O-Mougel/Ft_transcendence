@@ -66,7 +66,7 @@ async function userRoutes(fastify) {
         check2faHandler
     );
 
-	fastify.post(
+	fastify.get(
         '/login/refresh', 
         {
             schema: {

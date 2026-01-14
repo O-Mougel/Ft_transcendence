@@ -2,6 +2,7 @@ import { logoutUser } from "./userLog.js";
 import { backToDefaultPage } from "./userLog.js";
 import { fetchErrcodeHandler } from "./userLog.js";
 import { alertBoxMsg } from "./userLog.js";
+import { displayCorrectErrMsg } from "./userLog.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -92,10 +93,9 @@ function isPageReload() {
 
 async function uploadFileToServer(fileObj) {
 
-	//fileObj = fileInput.files[0]
 	const fileInput = document.getElementById('myfileSelector');
 	const filenameStr = document.getElementById('selectedFileName');
-
+	if (!fileInput) return null;
 	const formData = new FormData();
 	formData.append("myfileSelector", fileObj);
 
@@ -187,7 +187,7 @@ window.saveProfileInfo = async function () {
 			password.value = "";
 			fileInput.value = "";
 			document.getElementById('selectedFileName').textContent = '';
-			confirmText.innerText = '⚠️ Error: Upload error';
+			alertBoxMsg(`❌ File could not be uploaded !`);
 			return ;
 		}
 	}
@@ -217,8 +217,6 @@ window.saveProfileInfo = async function () {
 	
 		if (result)
 		{
-			confirmText.style.color = "#3ec745";
-			confirmText.innerText = "✅ User updated !";
 			alertBoxMsg(`✅ User was updated !`);
 			document.getElementById('selectedFileName').textContent = '';
 			fileInput.value = "";
@@ -236,8 +234,7 @@ window.saveProfileInfo = async function () {
 		password.value = "";
 		fileInput.value = "";
 		document.getElementById('selectedFileName').textContent = '';
-		console.error('Edit user error ! ', err);
-		confirmText.innerText = '⚠️ Server side error !';
-
+		console.error('⚠️ Could not edit user info!\n', err);
+		displayCorrectErrMsg(err, data.name);
 	}	
 };
