@@ -214,7 +214,6 @@ export const show2FAStatus = async () =>
 		const result = await get2FAStatus.json();	
 		if (result)
 		{
-			codeResult.innerText = "";
 			document.getElementById("showQRCodeButton").disabled = false;
 			document.getElementById("2FACodeInput").value = "";
 			document.getElementById("qrCodeImage").src = "";
