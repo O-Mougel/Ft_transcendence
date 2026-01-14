@@ -1,13 +1,13 @@
-import { emitStartGame, isSocketConnected, setupSocket, updateGameState } from "./socket.js";
+import { waitStartGame, isSocketConnected, setupSocket, updateGameState } from "./socket.js";
 import { CONTEXT, createGameElements } from "./context.js";
 import { draw, drawScore, resetState } from "./graphics.js";
 import { bindControls } from "./controls.js";
 
-export function initPong( mode = {} ) {
+export function initPong(mode = {}) {
 	CONTEXT.gameMode = mode.mode;
 	console.log("Setting up Pong..., mode:", mode.mode);
+
 	CONTEXT.canvas = document.getElementById("canvas");
-	if (CONTEXT.canvas) CONTEXT.ctx = CONTEXT.canvas.getContext("2d");
 	CONTEXT.startButton = document.getElementById("startButton");
 	CONTEXT.score = document.getElementById("Scores");
 
@@ -16,15 +16,30 @@ export function initPong( mode = {} ) {
 		return;
 	}
 
-	const scale = window.devicePixelRatio;
-	CONTEXT.canvas.width = Math.floor(CONTEXT.GAME_WIDTH * scale);
-	CONTEXT.canvas.height = Math.floor(CONTEXT.GAME_HEIGHT * scale);
-	CONTEXT.ctx.scale(scale, scale);
+	const canvas = CONTEXT.canvas;
+	const ctx = CONTEXT.ctx = canvas.getContext("2d");
 
-	CONTEXT.GAME_HEIGHT = CONTEXT.canvas.height;
-	CONTEXT.GAME_WIDTH = CONTEXT.canvas.width;
+	const scale = window.devicePixelRatio || 1;
+	CONTEXT.scale = scale; // optional but handy
 
-	// Optional: prevent scrolling while Pong is active
+	const logicalWidth  = CONTEXT.GAME_WIDTH;
+	const logicalHeight = CONTEXT.GAME_HEIGHT;
+
+	// CSS display size (logical units)
+	canvas.style.width  = logicalWidth + "px";
+	canvas.style.height = logicalHeight + "px";
+
+	// Physical backing store size (logical * DPR)
+	canvas.width  = Math.floor(logicalWidth  * scale);
+	canvas.height = Math.floor(logicalHeight * scale);
+
+	// Reset + apply scale ONCE
+	ctx.setTransform(1, 0, 0, 1, 0, 0);
+	ctx.scale(scale, scale);
+
+	// Do NOT overwrite GAME_WIDTH/HEIGHT with canvas.width/height
+
+	// Optional: prevent scrolling
 	document.body.style.overflow = "hidden";
 	document.documentElement.style.overflow = "hidden";
 
@@ -35,7 +50,6 @@ export function initPong( mode = {} ) {
 	setupSocket();
 	bindControls();
 
-	// Initial draw
 	draw();
 }
 
@@ -79,7 +93,7 @@ function startGame() {
 
 	console.log("Game Started");
 
-	emitStartGame();
+	waitStartGame();
 	scheduleClientUpdates();
 	resetState();
 
@@ -91,8 +105,8 @@ function startGame() {
 }
 
 function gameInit() {
-	const { ctx, canvas } = CONTEXT;
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	const { ctx, GAME_WIDTH, GAME_HEIGHT } = CONTEXT;
+	ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 	draw();
 }
 
