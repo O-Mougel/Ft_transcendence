@@ -42,7 +42,7 @@ export default class extends ViewTemplate {
 				</div>
 			</div>
 			<div class="pt-[5vw] h-full w-full">
-				<h1 id="bigMainTitle" class="text-[5vw] sm:text-[5vw] 2xl:text-[4vw] my-6 animate-wiggle">FT_Transcendence</h1>
+				<h1 id="bigMainTitle" class="text-center mx-auto text-[5vw] sm:text-[5vw] 2xl:text-[4vw] w-[80%] my-6 animate-wiggle">FT_Transcendence</h1>
 				<div class=" w-full h-[25%] my-15 content-center m-auto">
 					<img id="deathStarImg" src="/img/assets/death-star.png" class="block w-[40%] max-w-3xl m-auto mb-15 aspect-square" onclick=spinMeAround()>
 					<div id="loginButtonContainer" class="animate-float">
