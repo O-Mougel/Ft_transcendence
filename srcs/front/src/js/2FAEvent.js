@@ -1,6 +1,6 @@
 import Login2fa from "../views/2faLogin.js";
 import { show2FAStatus } from "../js/index.js";
-import { backToDefaultPage, fetchErrcodeHandler } from "../js/userLog.js";
+import { backToDefaultPage, displayCorrectErrMsg, fetchErrcodeHandler } from "../js/userLog.js";
 import { adjustNavbar } from "./index.js";
 import { alertBoxMsg } from "./userLog.js";
 
@@ -113,6 +113,7 @@ window.validate2FACode = async function (event) {
 		if (await fetchErrcodeHandler(err) == 0)
 			return(window.validate2FACode(event));
 		console.error('Failed to activate 2FA!\n => ', err);
+		displayCorrectErrMsg(err, "dummydata");
 	}
 }
 
