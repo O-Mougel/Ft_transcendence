@@ -677,3 +677,62 @@ window.handleLoginClick = async function (event) {
 	}
 };
 
+window.updateUserPassword = async function (event) {
+	
+	event.preventDefault();
+
+	try
+	{
+		const oldPassword = document.getElementById('currentPasswordInput');
+		const newPassword = document.getElementById('newPasswordInput');
+		const confirmNewPassword = document.getElementById('confirmNewPasswordInput');
+
+		if (!oldPassword || !newPassword || !confirmNewPassword)
+			return ;
+
+		if (!oldPassword.value || !newPassword.value || !confirmNewPassword.value)
+		{
+			alertBoxMsg("❌ Passwords fields cannot be empty !");
+			return ;
+		}
+
+		if (newPassword.value !== confirmNewPassword.value)
+		{
+			alertBoxMsg("❌ New passwords do not match !");
+			newPassword.value = '';
+			confirmNewPassword.value = '';
+			newPassword.focus();
+			return ;
+		}
+
+		const data = {
+			oldpassword: oldPassword.value,
+			newpassword: newPassword.value,
+		};
+
+		const updateUserPasswordResponse = await fetch('/profile/password', {
+				credentials: 'include',
+				method: 'POST',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json'},
+				body:  JSON.stringify(data),
+		});
+
+		if (!updateUserPasswordResponse.ok) {
+				const text = await updateUserPasswordResponse.text().catch(() => updateUserPasswordResponse.statusText);
+				throw new Error(`Request failed: ${updateUserPasswordResponse.status} ${text}`);
+		}
+		const result = await updateUserPasswordResponse.json();	
+		if (result)
+		{			
+			console.log('✅ Password updated !');
+			alertBoxMsg(`✅ Password updated successfully !`);
+			await backToDefaultPage();
+		}
+	} 
+	catch (err)
+	{
+		if (await fetchErrcodeHandler(err) == 0)
+			return(window.updateUserPassword(event));
+		console.error('Failed to update password!\n => ', err);
+	}
+}
