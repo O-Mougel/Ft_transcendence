@@ -16,9 +16,10 @@ export default class extends ViewTemplate {
 					<div id="2FAActivated" class="hidden flex-col">
 						<h1>status :</h1>
 						<p class="pl-2 text-green-500">[enabled]</p>
-						<div class="pt-4">
+						<div class="pt-4 flex flex-col items-center">
 							<p class="pb-5">If you want to disable 2FA, please click the button below :</p>
 							<input onclick="disable2FA()" type="button" value="disable 2FA" class="px-5 pb-1 sm:pb-2 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg cursor-pointer">
+							<a class="uppercase p-5 my-5 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg" name="gotoMainMenu" href="/" data-link>🚀 Back to menu</a>
 						</div>
 					</div>
 					

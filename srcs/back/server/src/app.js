@@ -21,7 +21,7 @@ fastify.decorate('authenticate',
 			// console.log()
 
 			if (!auth || !auth.startsWith("Bearer ")) {
-				return reply.status(401).send({ message: 'Authentication required', errcode:401});
+				return reply.status(401).send({ message: 'Authentication required', errRef:"authBearerMissing"});
 			}
 
 			const token = auth.split(" ")[1];
@@ -31,7 +31,7 @@ fastify.decorate('authenticate',
 				return reply.status(401).send({ message: 'Invalid token to access this path' })
 			request.user = decoded
 		} catch(err) {
-			return reply.status(401).send({ message: 'Invalid or expired JWT', errcode:402})
+			return reply.status(401).send({ message: 'Invalid or expired JWT', errRef:"expiredJWT"})
 		}
 	}
 );
@@ -42,7 +42,7 @@ fastify.decorate('logoutauthenticate',
 			const auth = request.headers.authorization;
 
 			if (!auth || !auth.startsWith("Bearer ")) {
-				return reply.status(401).send({ message: 'Authentication required' , errcode:401});
+				return reply.status(401).send({ message: 'Authentication required' , errRef:"authBearerMissing"});
 			}
 
 			const token = auth.split(" ")[1];
@@ -52,7 +52,7 @@ fastify.decorate('logoutauthenticate',
 				return reply.status(401).send({ message: 'Invalid token to access this path' })
 			request.user = decoded
 		} catch(err) {
-			return reply.status(401).send({ message: 'Invalid or expired JWT'})
+			return reply.status(401).send({ message: 'Invalid or expired JWT', errRef:"expiredJWT"})
 		}
 	}
 );
@@ -63,7 +63,7 @@ fastify.decorate('twofaauthenticate',
 			const auth = request.headers.authorization;
 
 			if (!auth || !auth.startsWith("Bearer ")) {
-				return reply.status(401).send({ message: 'Authentication required'});
+				return reply.status(401).send({ message: 'Authentication required', errRef:"authBearerMissing"});
 			}
 
 			const token = auth.split(" ")[1];
@@ -74,7 +74,7 @@ fastify.decorate('twofaauthenticate',
 			request.user = decoded
 		} catch(err) {
 			console.log(" err:", err);
-			return reply.status(401).send({ message: 'Invalid or expired JWT', errcode:402})
+			return reply.status(401).send({ message: 'Invalid or expired JWT', errRef:"expiredJWT"})
 		}
 	}
 );
@@ -85,7 +85,7 @@ fastify.decorate('matchauthenticate',
 			const auth = request.headers.authorization;
 
 			if (!auth || !auth.startsWith("Bearer ")) {
-				return reply.status(401).send({ message: 'Authentication required'});
+				return reply.status(401).send({ message: 'Authentication required', errRef:"authBearerMissing"});
 			}
 
 			const token = auth.split(" ")[1];
@@ -95,7 +95,7 @@ fastify.decorate('matchauthenticate',
 				return reply.status(401).send({ message: 'Invalid token to access this path' })
 			request.user = decoded
 		} catch(err) {
-			return reply.status(401).send({ message: 'Invalid or expired JWT'})
+			return reply.status(401).send({ message: 'Invalid or expired JWT', errRef:"authBearerMissing"})
 		}
 	}
 );

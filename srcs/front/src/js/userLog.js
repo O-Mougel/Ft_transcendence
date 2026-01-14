@@ -21,6 +21,79 @@ const hideAlertBoxMsg = async () => {
 	alertBox.innerHTML = "Hey ! I'm supposed to be hidden ! >:(";
 }
 
+export const displayCorrectErrMsg = async (error, data) => {
+
+	const index = error.toString().indexOf("\"errRef\"");
+	if (index < 0)
+	{
+		//Not from a custom response, zod schema err instead
+		alertBoxMsg(`⚠️ Server side error ! Try again !`);
+		return;
+	}
+	let errstr = error.toString().substring(index);	
+	let key = errstr.substring(errstr.indexOf(":") + 2,errstr.indexOf("}") - 1);
+	// console.log("Isolated error is : (",key,")");
+
+	switch (key) {
+		case "authBearerMissing":
+			alertBoxMsg(`❌ Invalid Bearer in request header !`);
+			break;
+		case "expiredJWT":
+			alertBoxMsg(`⚠️ JWT token expired or is invalid !`);
+			break;
+		case "registerNameTaken":
+			alertBoxMsg(`❌ This username is already used by someone !`);
+			break;
+		case "registerEmailTaken":
+			alertBoxMsg(`❌ This email is already used by someone !`);
+			break;
+		case "loginInvalidName":
+			alertBoxMsg(`❌ Username is incorrect !`);
+			break;
+		case "loginInvalidPwd":
+			alertBoxMsg(`❌ Incorrect password !`);
+			break;
+		case "NotAuthUser":
+			alertBoxMsg(`⚠️ Invalid credentials !`);
+			break;
+		case "alterUserNotFound":
+			alertBoxMsg(`⚠️ Server-side issue, failed to grab your current profile !`);
+			break;
+		case "alterPwdIncorrect":
+			alertBoxMsg(`⚠️ Invalid credentials !`);
+			break;
+		case "alterUsernameTaken":
+			alertBoxMsg(`❌ Username \"${data}\" is already used !`);
+			break;
+		case "alterInnerFail":
+			alertBoxMsg(`⚠️ Server side error ! Couldn't edit profile !`);
+			break;
+		case "requestUserNotFound":
+			alertBoxMsg(`❌ User \"${data}\" does not exist !`);
+			break;
+		case "requestSelfFriend":
+			alertBoxMsg(` Cannot ask yourself as a friend !`);
+			break;
+		case "requestStillPending":
+			alertBoxMsg(`⚠️ You already sent a friend request to this user !`);
+			break;
+		case "requestAlreadyFriend":
+			alertBoxMsg(`⚠️ You are already friends with this user !`);
+			break;
+		case "verify2FANotSetUp":
+			alertBoxMsg(`❌ 2FA is not set for this user yet !`);
+			break;
+		case "verifyInvalidCode":
+			alertBoxMsg(`❌ 2FA verification code was invalid !`);
+			break;
+	
+		default:
+			alertBoxMsg(`⚠️ Server side error ! Try again !`);
+			break;
+	}
+
+}
+
 export const alertBoxMsg = async (msg) => {
 		
 	const alertBox = document.getElementById('alertBox');
@@ -32,18 +105,19 @@ export const alertBoxMsg = async (msg) => {
 
 export const fetchErrcodeHandler = async (error) => {
 
-	const isNotAuth = error.toString().search("\"errcode\":401") != -1;
-	const isExpired = error.toString().search("\"errcode\":402") != -1;
+	const isNotAuth = error.toString().search("\"errRef\":\"authBearerMissing\"") != -1;
+	const isExpired = error.toString().search("\"errRef\":\"expiredJWT\"") != -1;
+	// console.log("[DEBUG] fetchErrcode handle ...", isExpired, isNotAuth);
 	if(isNotAuth)
 	{
-		console.log("User is not auth ! Back to menu...")
+		console.log("No valid credentials ! Back to menu...")
 		window.sessionStorage.setItem('logStatus', 'loggedOut');
 		backToDefaultPage();
 		return (-1);
 	}
 	else if (isExpired)
 	{
-				
+		
 		if (!(window.sessionStorage.getItem("nbReloadsLeft")))
 			window.sessionStorage.setItem('nbReloadsLeft', 1);
 		else
@@ -52,6 +126,7 @@ export const fetchErrcodeHandler = async (error) => {
 			if (reloadCpt == 0) 
 			{
 				window.sessionStorage.setItem('logStatus', 'loggedOut');
+				console.log("No tries left ! backToDefaultPage !");
 				backToDefaultPage();
 				return (-1);
 			}
@@ -73,6 +148,7 @@ export const fetchErrcodeHandler = async (error) => {
 			{
 				window.sessionStorage.setItem('access_token', result.newAccessToken); //grab new token
 				console.info("Token refreshed.");
+				window.sessionStorage.setItem('nbReloadsLeft', 1);
 			}
 			else
 				throw new Error(`Token could not be generated !`);
@@ -402,8 +478,8 @@ window.grabProfileInfo = async function () {
 
 window.sendNewFriendRequest = async function () {
 
-	const friendReqResultText = document.getElementById('friendSearchResults'); //shows if friend request worked
 	const friendReqInput = document.getElementById('friendSearchInput');
+	if (!friendReqInput || !friendReqInput.value) return ; //if field empty do nothing
 
 	const data = {
 		friendRequestName: friendReqInput.value,
@@ -425,19 +501,17 @@ window.sendNewFriendRequest = async function () {
 		const result = await sentFriendRequestResponse.json();	
 		if (result) 
 		{
-			console.log('✅ Sent friend request');
-			// friendReqResultText.innerHTML='✅ Sent friend request';
-			alertBoxMsg(`✅ Friend request sent to \"${data.friendRequestName}\"`);
 			friendReqInput.value = "";
+			console.log('✅ Sent friend request');
+			alertBoxMsg(`✅ Friend request sent to \"${data.friendRequestName}\"`);
 		}
 	} 
 	catch (err) 
 	{
 		if (await fetchErrcodeHandler(err) == 0)
 			return(window.sendNewFriendRequest());
-		console.error('Cannot send friend request !\n => ', err);
-		// friendReqResultText.innerHTML='⚠️ Try again !';
-		alertBoxMsg(`⚠️ Could not send friend request !`);
+		console.error('Could not send friend request !\n => ', err);
+		displayCorrectErrMsg(err, data.friendRequestName);
 	}
 }
 
@@ -464,8 +538,6 @@ export async function logoutUser() {
 			alertBoxMsg("✅ You are now logged out");
 			window.sessionStorage.setItem('logStatus', 'loggedOut');
 			window.sessionStorage.setItem('access_token', 'NotValid;)');
-
-			// var isLogged = sessionStorage.getItem("logStatus");
 			backToDefaultPage();
 		}
 	} 
@@ -529,8 +601,7 @@ window.handleNewUserCreate = async function (event) {
 		password.value = "";
 		passwordConfirm.value = "";
 		console.error('Could not create new user !\n => ', err);
-		alertBoxMsg(`⚠️ Could not create new user!`);
-		// requestResult.innerText = '⚠️ Server-side error ! Try again !';
+		displayCorrectErrMsg(err, "dummydata");
 	}
 };
 
@@ -599,12 +670,10 @@ window.handleLoginClick = async function (event) {
 	{
 		if (await fetchErrcodeHandler(err) == 0)
 			return(window.handleLoginClick(event));
-		// logResult.innerText = '⚠️ Server side error !';
-		alertBoxMsg(`⚠️ Server side error ! Try again !`);
-		console.error('Login error !\n => ', err);
 		username.value = "";
 		password.value = "";
-		
+		console.error('Login error !\n => ', err);
+		displayCorrectErrMsg(err, "dummydata");
 	}
 };
 
