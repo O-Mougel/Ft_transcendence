@@ -23,7 +23,6 @@ window.showQRCode = async function (event) {
 		const qrCodeSection = document.getElementById("qrCodeSection");
 		if (result)
 		{
-			console.log("QRCode loaded successfully!", result);
 			const qrCodeImage = document.getElementById("qrCodeImage");
 			qrCodeImage.src = result.qrCode;
 			qrCodeSection.style.display = "flex";
@@ -56,7 +55,6 @@ window.disable2FA = async function () {
 		const result = await disable2FARequestResponse.json();	
 		if (result)
 		{
-			console.log("2FA disabled successfully!", result);
 			alertBoxMsg("✅ 2FA disabled successfully !");
 			show2FAStatus();
 		}
@@ -103,7 +101,6 @@ window.validate2FACode = async function (event) {
 		const result = await verify2FACode.json();	
 		if (result)
 		{
-			console.log("2FA code validated successfully!", result);
 			alertBoxMsg("✅ 2FA activated successfully !");
 			qrCodeImage.src = "";
 			show2FAStatus();
@@ -111,7 +108,6 @@ window.validate2FACode = async function (event) {
 	} 
 	catch (err) 
 	{
-		console.log(err);
 		if (await fetchErrcodeHandler(err) == 0)
 			return(window.validate2FACode(event));
 		console.error('Failed to activate 2FA!\n => ', err);
@@ -154,9 +150,7 @@ window.loginWith2FACode = async function (event) {
 		}
 		const result = await logWith2FACode.json();	
 		if (result)
-		{
-			console.log("2FA code validated successfully!", result);
-			
+		{			
 			sessionStorage.setItem('access_token', result.newAccessToken);
 			sessionStorage.removeItem('temp_token');
 			window.sessionStorage.setItem('logStatus','loggedIn');
@@ -167,7 +161,6 @@ window.loginWith2FACode = async function (event) {
 	} 
 	catch (err) 	
 	{
-		console.log(err);
 		if (await fetchErrcodeHandler(err) == 0)
 			return(window.loginWith2FACode(event));
 		console.error('Failed to log with 2FA!\n => ', err);
