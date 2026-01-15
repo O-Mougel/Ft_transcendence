@@ -81,6 +81,9 @@ export const displayCorrectErrMsg = async (error, data) => {
 		case "requestAlreadyFriend":
 			alertBoxMsg(`⚠️ You are already friends with this user !`);
 			break;
+		case "requestDuplicate":
+			alertBoxMsg(`⚠️ User already sent you a request ! Accept it !`);
+			break;
 		case "verify2FANotSetUp":
 			alertBoxMsg(`❌ 2FA is not set for this user yet !`);
 			break;
