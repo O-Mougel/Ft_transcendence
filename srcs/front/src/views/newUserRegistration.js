@@ -14,7 +14,7 @@ export default class extends ViewTemplate {
 					<form class="py-[3%] px-[3%]">
 						<h2 class="flex items-start">► Choose your username :</h2>
 						<div class="flex items-start pt-5">
-							<input id="newUsernameNewUser" tabindex="1" class=" w-[60vw] ml-4 hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] h-[3vh] rounded-sm border border-[#c2dbf6] py-[2vw] pr-5 pl-5 mb-[35px]" name="unameNew" value="" type="text" autofocus autocomplete="off" placeholder="Username" >
+							<input id="newUsernameNewUser" tabindex="1" class=" w-[60vw] ml-4 hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] h-[3vh] rounded-sm border border-[#c2dbf6] py-[2vw] pr-5 pl-5 mb-[35px]" name="unameNew" value="" type="text" autofocus autocomplete="off" placeholder="Username" maxlength="13" oninput="this.value = this.value.replace(/[^A-Za-z0-9_]/g,'').slice(0,13)" >
 						</div>
 						<h2 class="flex items-start">► Enter your email:</h2>
 						<div class="flex items-start pt-5 ">
