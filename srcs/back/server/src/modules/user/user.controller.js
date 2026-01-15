@@ -14,6 +14,7 @@ import { generateSecret, verify2fa } from "../../utils/twofa.js"
 export async function registerUserHandler(request, reply) {
 
 	const body = request.body;
+	body.name = body.name.toUpperCase()
 	const name = await findUserByName(body.name);
 
 	const { passwordconfirmation, ...rest } = body;
@@ -83,6 +84,7 @@ export async function loginHandler(request, reply) {
 	//use basic authentication schema
 	//check if someone is already logged ??
 
+	body.name = body.name.toUpperCase()
 	const user = await findUserByName(body.name);
 
 	if (!user) {
@@ -255,6 +257,7 @@ export async function refreshTokenHandler(request, reply) {
 export async function alterUserHandler(request, reply) {
 
 	const body = request.body;	//what we want to change
+	body.name = body.name.toUpperCase()
 	const userId = request.user && request.user.id; // who made the request (token)
 	if (!userId) return reply.code(401).send({ message: 'Not authenticated !', errRef:"NotAuthUser" });
 
