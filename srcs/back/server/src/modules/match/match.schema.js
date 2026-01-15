@@ -9,8 +9,8 @@ const createMatchSchema = z.object({
     player2Id: z.number(),
 	player2score: z.number(),
 	winnerId: z.number(),
-  longestStreak: z.number(),
-  duration: z.number()
+    longestStreak: z.number(),
+    duration: z.number()
 });
 
 const createMatchResponseSchema = z.object({

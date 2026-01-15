@@ -4,10 +4,8 @@ import { db } from "../../utils/prisma.js";
 
 export async function createMatch(input)
 {
-    const { player1Id, player2Id , ...rest } = input;
-
 	const match = await db.match.create({
-        data: {...rest, player1Id, player2Id}
+        data: input
     });
 
     return match;
