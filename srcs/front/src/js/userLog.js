@@ -17,6 +17,7 @@ const hideAlertBoxMsg = async () => {
 
 	const alertBox = document.getElementById('alertBox');
 	if (!alertBox) return;
+
 	alertBox.style.display = 'none';
 	alertBox.innerHTML = "Hey ! I'm supposed to be hidden ! >:(";
 }
@@ -98,6 +99,7 @@ export const alertBoxMsg = async (msg) => {
 		
 	const alertBox = document.getElementById('alertBox');
 	if (!alertBox) return;
+
 	alertBox.style.display = 'inline';
 	alertBox.innerHTML = msg;
 	setTimeout(hideAlertBoxMsg, 3000);
@@ -470,6 +472,7 @@ window.grabProfileInfo = async function () {
 		if (await fetchErrcodeHandler(err) == 0)
 			return (window.grabProfileInfo());
 		console.error('Profile info grab failed !\n => ', err);
+		return ;
 	}
 	displayUserFriends();
 	checkForFriendRequests();
