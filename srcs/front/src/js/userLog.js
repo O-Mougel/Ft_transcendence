@@ -609,8 +609,9 @@ window.handleNewUserCreate = async function (event) {
 			email.value = "";
 			password.value = "";
 			passwordConfirm.value = "";
-			sessionStorage.setItem('access_token', result.newAccessToken);
 			window.sessionStorage.setItem('logStatus','loggedIn');
+			window.sessionStorage.setItem('access_token',result.token);
+			alertBoxMsg(`Welcome ${data.name} ! 😉`);
 			backToDefaultPage();
 		}
 	} 
