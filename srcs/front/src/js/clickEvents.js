@@ -61,6 +61,7 @@ window.addEventListener("pagehide", () => {
 				keepalive: true,
 		});
 		window.sessionStorage.setItem('logStatus', 'loggedOut');
+		window.sessionStorage.setItem('access_token', 'NotValid');
 	} 
 	catch (err) 
 	{
@@ -87,7 +88,10 @@ function isPageReload() {
 	try {
 		const entries = performance.getEntriesByType && performance.getEntriesByType('navigation');
 		if (entries && entries.length && entries[0].type === 'reload')
+		{
+			window.sessionStorage.setItem('nbReloadsLeft', 1);
 			return true;
+		}
 	}
 	catch (e) {}
 	return false;
