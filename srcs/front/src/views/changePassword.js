@@ -22,9 +22,10 @@ export default class extends ViewTemplate {
 					
 					<label class="mt-4 mb-2">Confirm New Password :</label>
 					<input autofocus tabindex="3" class="w-full text-center border border-white rounded-lg hover:text-[#98c6f8] hover:border-[#98c6f8]" type="password" id="confirmNewPasswordInput" autocomplete="off" placeholder="Confirm new password">
-					<input id="changePasswordButton" class="mt-4 px-5 pb-1 sm:pb-2 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg cursor-pointer" type="submit" value="Change Password" onclick="updateUserPassword(event)">
+					<input id="changePasswordButton" class="mt-4 p-4 sm:p-5 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg cursor-pointer" type="submit" value="Change Password" onclick="updateUserPassword(event)">
 				</form>
-				<div class="pt-5">
+				<p id="changePasswordResult" class="pt-4"></p>
+				<div class="pt-10">
 					<a id="backToMenuButton" href="/" class="inline uppercase text-sm md:text-base xl:text-2xl focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis w-1/2 md:w-1/4 border hover:border-[#98c6f8] border-white py-2 px-4 rounded-lg shadow-[0_0_20px_rgba(158,202,237,0.9)]" name="backtomenuButton" data-link> 🚀 Back to menu </a>
 				</div>
 				<div class="pb-7">

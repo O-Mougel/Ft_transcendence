@@ -15,7 +15,7 @@ export default class extends ViewTemplate {
 				<form class="pt-[3%] px-[3%]" onsubmit="return false">
 					<h2 class="flex items-start w-full text-left">► Choose your new username :</h2>
 					<div class="flex items-start w-[75%] pt-4">
-						<input id="newUsername" tabindex="1" class="uppercase ml-4 px-5 w-full hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] rounded-sm border border-[#c2dbf6]" name="unameNew" value="" type="text" autofocus autocomplete="off" placeholder="[old username]">
+						<input id="newUsername" tabindex="1" class="uppercase ml-4 px-5 w-full hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] rounded-sm border border-[#c2dbf6]" name="unameNew" value="" type="text" autofocus autocomplete="off" placeholder="[old username] maxlength="13" oninput="this.value = this.value.replace(/[^A-Za-z0-9_]/g,'').slice(0,13)">
 					</div>
 					<h2 class="flex items-start pt-4 w-full text-left">► Choose your new profile picture :</h2>
 					<div class="overflow-hidden flex items-center justify-center gap-4 pt-4">
@@ -30,7 +30,7 @@ export default class extends ViewTemplate {
 					</div>
 					<div class="flex items-start w-[75%] pt-4">
 						<input tabindex="3" class="uppercase ml-4 px-5 hover:text-[#98c6f8] text-ellipsis focus:outline-none  focus:border-[#98c6f8] hover:border-[#98c6f8] border-white rounded-lg border pb-1 sm:pb-2" onclick="saveProfileInfo()" name="updateChanges" type="submit" value="💾 Apply changes">
-						<p id="confirmChangeResults" class="text-ellipsis text-center pl-3 text-[2vw]"></p>
+						<p id="confirmChangeResults" class="text-ellipsis text-center pl-3 text-[2vw] text-[#e85b51]"></p>
 					</div>
 				</form>
 				<div class="px-[3%]">
