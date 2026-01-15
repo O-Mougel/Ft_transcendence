@@ -695,7 +695,7 @@ window.handleLoginClick = async function (event) {
 	}
 
 	const data = {
-		name: username.value,
+		name: username.value.toUpperCase(),
 		password: password.value,
 	};		
 	try 
@@ -753,19 +753,36 @@ window.updateUserPassword = async function (event) {
 		const oldPassword = document.getElementById('currentPasswordInput');
 		const newPassword = document.getElementById('newPasswordInput');
 		const confirmNewPassword = document.getElementById('confirmNewPasswordInput');
-
+		const requestResult = document.getElementById('changePasswordResult');
+		
+		requestResult.innerText = "";
 		if (!oldPassword || !newPassword || !confirmNewPassword)
 			return ;
 
 		if (!oldPassword.value || !newPassword.value || !confirmNewPassword.value)
 		{
-			alertBoxMsg("❌ Passwords fields cannot be empty !");
+			requestResult.innerText = "❌ Passwords fields cannot be empty !";
 			return ;
 		}
-
+		if (!newPassword || !newPassword.value || newPassword.value.length < 8)
+		{
+			requestResult.innerText = "❌ Password must be at least 8 characters long !";
+			newPassword.focus();
+			newPassword.value = '';
+			confirmNewPassword.value = '';
+			return ;
+		}
+		else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(newPassword.value))
+		{
+			requestResult.innerText = "❌ Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character !";
+			newPassword.focus();
+			newPassword.value = '';
+			confirmNewPassword.value = '';
+			return ;
+		}
 		if (newPassword.value !== confirmNewPassword.value)
 		{
-			alertBoxMsg("❌ New passwords do not match !");
+			requestResult.innerText = "❌ New passwords do not match !";
 			newPassword.value = '';
 			confirmNewPassword.value = '';
 			newPassword.focus();
