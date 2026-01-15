@@ -77,7 +77,7 @@ export async function loginHandler(request, reply) {
 		user.password);
 
 	if (!isValidPassword) {
-		return reply.status(400).send({
+		return reply.status(401).send({
 			message: "Password is incorrect",
 			errRef:"loginInvalidPwd"
 		});
@@ -116,8 +116,9 @@ export async function loginMatchHandler(request, reply) {
 	const user = await findUserByName(body.name);
 
 	if (!user) {
-		return reply.status(400).send({
-			message: "Invalid name. Try again!"
+		return reply.status(404).send({
+			message: "Invalid name. Try again!",
+			errRef:"loginMatchUserNotFound"
 		});
 	};
 
@@ -127,8 +128,9 @@ export async function loginMatchHandler(request, reply) {
 		user.password);
 
 	if (!isValidPassword) {
-		return reply.status(400).send({
-			message: "Password is incorrect"
+		return reply.status(401).send({
+			message: "Password is incorrect",
+			errRef:"loginMatchInvalidPwd"
 		});
 	};
 
@@ -150,7 +152,7 @@ export async function check2faHandler(request, reply) {
 
 	const user = await findUserById(request.user.id)
 	if (!user || !user.twofasecret) {
-		return reply.status(400).send({
+		return reply.status(403).send({
 			message: "2fa not configured!",
 			errRef:"verify2FANotSetUp"
 		});
@@ -159,7 +161,7 @@ export async function check2faHandler(request, reply) {
 	const isValid = verify2fa(user.twofasecret, code)
 
 	if (!isValid) {
-		return reply.status(400).send({
+		return reply.status(401).send({
 			message: "Invalid 2FA code",
 			errRef:"verifyInvalidCode"
 		});
@@ -196,7 +198,7 @@ export async function check2faHandler(request, reply) {
 
 export async function refreshTokenHandler(request, reply) {
 	const token = request.cookies.refresh_token;
-	if (!token) return reply.status(401).send({ message: 'Refresh token missing' })
+	if (!token) return reply.status(412).send({ message: 'Refresh token missing' })
 
 	const stored = await findToken(token)
 
@@ -241,7 +243,7 @@ export async function alterUserHandler(request, reply) {
 
 	const target = await findUserById(userId);
 	if (!target) {
-		return reply.status(400).send({
+		return reply.status(404).send({
 			message: "Error ! Couln't find user !", errRef:"alterUserNotFound"
 		});
 	};
@@ -253,7 +255,7 @@ export async function alterUserHandler(request, reply) {
 		target.password);
 
 	if (!isValidPassword) {
-		return reply.status(400).send({
+		return reply.status(401).send({
 			message: "Password is incorrect", errRef:"alterPwdIncorrect"});
 	};
 
@@ -269,7 +271,7 @@ export async function alterUserHandler(request, reply) {
 
 	const updatedUser = await alterUser(userId, body.name, body.avatar);
 	if (!updatedUser) {
-		return reply.status(400).send({
+		return reply.status(500).send({
 			message: "Error ! Couln't modify user !", errRef:"alterInnerFail"
 		});
 	};
@@ -288,8 +290,9 @@ export async function activate2faHandler(request, reply) {
 	const user = await findUserById(request.user.id)
 
 	if (user.auth2fa)
-	return reply.status(400).send({
-		message: "2fa already activated !"
+	return reply.status(403).send({
+		message: "2fa already activated !",
+		errRef:"2FAIsAlreadyUp"
 	});
 
 	const qrCode = await generateSecret(user.name, user.id)
@@ -301,8 +304,9 @@ export async function deactivate2faHandler(request, reply) {
 	const user = await findUserById(request.user.id)
 
 	if (!user.auth2fa)
-	return reply.status(400).send({
-		message: "2fa not activated !"
+	return reply.status(403).send({
+		message: "2fa already deactivated !",
+		errRef:"2FAIsAlreadyDisabled"
 	});
 	await deletesecret2fa(user.id)
 	//send reply that it worked
@@ -323,20 +327,21 @@ export async function logoutHandler(request, reply) {
 
 	} catch (err) {
 		return reply.status(500).send({
-			message: "Internal server error !",
-			error:500
+			message: "Internal server error on logout !"
 		});
 	}
 	
 }
 
 export async function editPasswordHandler(request, reply) { //check twice the password and confirmation
+	
 	const body = request.body;
 	const user = await findUserById(request.user.id);
 
 	if (!user) {
-		return reply.status(404).send({
-			message: "User not found"
+		return reply.status(500).send({
+			message: "User not found in database",
+			errRef:"editPasswordInnerFail"
 		});
 	}
 
@@ -346,8 +351,9 @@ export async function editPasswordHandler(request, reply) { //check twice the pa
 		user.password);
 
 	if (!isValidPassword) {
-		return reply.status(400).send({
-			message: "Password is incorrect"
+		return reply.status(401).send({
+			message: "Password is incorrect",
+			errRef: "editPwdIncorrectCredentials"
 		});
 	};
 
@@ -365,21 +371,21 @@ export async function friendRequestHandler(request, reply) {
 	const newfriend = await findUserByName(newfriendname)
 
 	if (!newfriend)
-	return reply.status(400).send({
+	return reply.status(404).send({
 		message: "Username doesn't exist. Try again!",
 		errRef:"requestUserNotFound"
 	});
 
 	if (request.user.id == newfriend.id)
 	{
-		return reply.status(422).send({
+		return reply.status(403).send({
 			message: "You can't ask yourself as a friend!",
 			errRef:"requestSelfFriend"
 		}); 
 	}
 
 	if (await alreadyrequested(request.user.id, newfriend.id))
-	return reply.status(422).send({
+	return reply.status(403).send({
 		message: "You already requested this user as a friend, wait for his response first !",
 		errRef:"requestStillPending"
 	});
@@ -403,17 +409,17 @@ export async function friendAcceptHandler(request, reply) {
 	const newfriend = await findUserByName(newfriendname)
 
 	if (!newfriend)
-	return reply.status(400).send({
+	return reply.status(404).send({
 		message: "Username doesn't exist. Try again!"
 	});
 
 	if (!await alreadyrequested(newfriend.id, request.user.id))
-	return reply.status(400).send({
-		message: "This user didn't send you request, make one yourself if you want to be friend with him"
+	return reply.status(403).send({
+		message: "This user didn't send you request, send him one if you want to be friend with him"
 	});
 
 	if (await alreadyfriend(request.user.id, newfriend.id))
-	return reply.status(400).send({
+	return reply.status(409).send({
 		message: "This user is already your friend!"
 	});
 
@@ -431,17 +437,17 @@ export async function friendRejectHandler(request, reply) {
 	const friend = await findUserByName(friendname)
 
 	if (!friend)
-	return reply.status(400).send({
+	return reply.status(404).send({
 		message: "Username doesn't exist. Try again!"
 	});
 
 	if (!await alreadyrequested(friend.id, request.user.id))
-	return reply.status(400).send({
+	return reply.status(403).send({
 		message: "This user didn't send you request"
 	});
 
 	if (await alreadyfriend(request.user.id, friend.id))
-	return reply.status(400).send({
+	return reply.status(409).send({
 		message: "This user is already your friend!"
 	});
 
@@ -458,12 +464,12 @@ export async function friendDeleteHandler(request, reply) {
 	const friend = await findUserByName(friendname)
 
 	if (!friend)
-	return reply.status(400).send({
+	return reply.status(404).send({
 		message: "Username doesn't exist. Try again!"
 	});
 
 	if (!await alreadyfriend(request.user.id, friend.id))
-	return reply.status(400).send({
+	return reply.status(403).send({
 		message: "This user is not your friend!"
 	});
 
