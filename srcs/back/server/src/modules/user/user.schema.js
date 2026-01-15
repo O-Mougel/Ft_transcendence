@@ -104,14 +104,19 @@ const friendItemSchema = z.object({
   online: z.boolean(),
 });
 
+const friendsArrayResponseSchema = z.object({
+	friends: z.array(friendItemSchema)
+});
+
 const friendRequestItemSchema = z.object({
   name: z.string().min(1),
   avatar: z.string().min(1),
   online: z.boolean(),
 });
 
-const friendsArrayResponseSchema = z.array(friendItemSchema);  
-const friendRequestResponseSchema = z.array(friendRequestItemSchema);
+const friendRequestResponseSchema = z.object({
+	requestOf: z.array(friendRequestItemSchema)
+});
 
 const fileUploadResponseSchema = z.object({
   path: z.string().min(1),
