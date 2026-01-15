@@ -3,30 +3,21 @@
 import * as z from "zod";
 import { buildJsonSchemas } from 'fastify-zod';
 
-const userCore = {  // define the common user schema
+const createUserSchema = z.object({
 	email: z.string({
 		required_error: "Email is required",
 		invalid_type_error: "Email is not valid"
 	}).email(),
-	name: z.string().min(3).max(20).regex(/^[A-Z0-9_]+$/)//, "Only uppercase alphanumeric characters and underscore allowed")
-}
-
-const createUserSchema = z.object({
-	...userCore,
+	name: z.string().min(3).max(20).regex(/^[a-zA-Z0-9_]+$/),// "Only uppercase alphanumeric characters and underscore allowed"),
 	password: z.string().min(8).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain uppercase, lowercase, number and special character"),
 	passwordconfirmation: z.string().min(8).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain uppercase, lowercase, number and special character"),
 
 });
 
-const createUserResponseSchema = z.object({
-	id: z.number(),
-	...userCore,
-});
-
  //jusqu'a quel point je dois parser tous les schema avec du regex ??? ou juste l'autentification et l'edition du profile ??
 
 const profileChangesSchema = z.object({
-	name: z.string().min(3).max(20).regex(/^[A-Z0-9_]+$/),//, "Only uppercase alphanumeric characters and underscore allowed")
+	name: z.string().min(3).max(20).regex(/^[a-zA-Z0-9_]+$/),//, "Only uppercase alphanumeric characters and underscore allowed")
 	//name: z.string().regex(/^[A-Z0-9_]{3,20}$/, {
 	// 	message: "3–20 chars, uppercase, numbers, underscore only"
 	// }),
@@ -119,7 +110,6 @@ const fileUploadResponseSchema = z.object({
 
 export const { schemas: userSchemas, $ref } = buildJsonSchemas({
 	createUserSchema,
-	createUserResponseSchema,
 	loginSchema,
 	loginResponseSchema,
 	qrCodeReplySchema,

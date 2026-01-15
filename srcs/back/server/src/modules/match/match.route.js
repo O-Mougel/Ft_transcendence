@@ -1,7 +1,7 @@
 // match.route.js
 
 import { $ref } from "./match.schema.js";
-import { createMatchHandler, getMatchsHandler, getFriendMatchsHandler } from "./match.controller.js";
+import { getMatchsHandler, getFriendMatchsHandler } from "./match.controller.js";
 
 async function matchRoutes(fastify) {
 	// fastify.post(
