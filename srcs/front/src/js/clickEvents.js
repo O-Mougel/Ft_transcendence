@@ -162,14 +162,20 @@ window.saveProfileInfo = async function () {
 
 	confirmText.innerText = "";
 
+	alertBoxMsg("CA MARCHE PAS BORDEL"); 
 	if (!username || !password || !confirmText || !fileInput || !userPfp || !selectedFileName) return ;
 	if (!username.value && !selectedFile) // if nothing changed, do nothing
 		return ;
 	if (username)
 	{
+		if (!username.value || username.value.length < 3)
+		{
+			confirmText.innerText = "❌ Username must be at least 3 characters !";
+			username.focus();
+			return ;
+		}
 		if (username.value.length > 13)
 		{
-			confirmText.style.color = "#e85b51";
 			confirmText.innerText = "❌ New username is too long ! (13 max)";
 			username.value = "";
 			password.value = "";
@@ -178,7 +184,6 @@ window.saveProfileInfo = async function () {
 		}
 		if (username.value == username.placeholder)
 		{
-			confirmText.style.color = "#e85b51";
 			confirmText.innerText = "❌ New username cannot be the same as the old one !";
 			username.value = "";
 			password.value = "";
@@ -188,7 +193,6 @@ window.saveProfileInfo = async function () {
 	}
 	if (!password.value)
 	{
-		confirmText.style.color = "#e85b51";
 		confirmText.innerText = "❌ Confirm your password !";
 		password.focus();
 		return ;
@@ -215,7 +219,7 @@ window.saveProfileInfo = async function () {
 		username.value = username.placeholder;
 
 	const data = {
-		name: username.value,
+		name: username.value.toUpperCase(),
 		password: password.value,
 		avatar: fullFilename,
 	};
