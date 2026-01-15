@@ -11,7 +11,7 @@ import { verifyPassword } from "../../utils/hash.js";
 import { generateAccessToken, generateRefreshToken, generate2faToken, generateMatchToken } from "../../utils/token.js";
 import { generateSecret, verify2fa } from "../../utils/twofa.js"
 
-export async function registerUserHandler(request, reply) { //check twice the password and confirmation
+export async function registerUserHandler(request, reply) {
 	const body = request.body;
 
 	const name = await findUserByName(body.name);
@@ -30,7 +30,23 @@ export async function registerUserHandler(request, reply) { //check twice the pa
 
 	try {
 		const user = await createUser({...rest});
-		return reply.status(201).send(user);
+
+		const accessToken = generateAccessToken(request.server, user);
+		const refreshToken = generateRefreshToken();
+
+		await saveRefreshToken(user.id, refreshToken)
+
+		reply.setCookie('refresh_token', refreshToken, {
+			path: '/',
+			maxAge: 14 * 24 * 60 * 60 * 1000,
+			httpOnly: true,
+			secure: true,
+			sameSite: "strict"
+		})
+
+		setOnlineStatus(user.id, true)
+
+		return { require2fa: false, token: accessToken }
 
 	} catch (error) {
 		console.error(error);
