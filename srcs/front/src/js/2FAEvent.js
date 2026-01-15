@@ -19,7 +19,9 @@ window.showQRCode = async function (event) {
 	{
 		const activate2FAResponse = await fetch('/profile/2fa/activate', {
 				credentials: 'include',
+				method: 'PATCH',
 				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
+
 		});
 
 		if (!activate2FAResponse.ok) {
@@ -63,6 +65,9 @@ window.disable2FA = async function () {
 		if (result)
 		{
 			alertBoxMsg("✅ 2FA disabled successfully !");
+			const qrCodeSection = document.getElementById("qrCodeSection");
+			if (qrCodeSection)
+				qrCodeSection.style.display = "none";
 			show2FAStatus();
 		}
 	} 
@@ -112,7 +117,10 @@ window.validate2FACode = async function (event) {
 		if (result)
 		{
 			alertBoxMsg("✅ 2FA activated successfully !");
-			qrCodeImage.src = "";
+			// qrCodeImage.src = "";
+			const qrCodeSection = document.getElementById("qrCodeSection");
+			if (qrCodeSection)
+				qrCodeSection.style.display = "none";
 			show2FAStatus();
 		}
 	} 

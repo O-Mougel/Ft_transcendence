@@ -132,7 +132,7 @@ async function userRoutes(fastify) {
 		get2fastatusHandler,
 	);
 
-	fastify.post(
+	fastify.patch(
 		'/profile/2fa/activate', 
 		{
 			preHandler: [fastify.authenticate],
@@ -163,12 +163,6 @@ async function userRoutes(fastify) {
 		'/profile/2fa/deactivate', 
 		{
 			preHandler: [fastify.authenticate],
-			// schema: {
-			//	 body: $ref("profileChangesSchema"),
-			//	 response: {
-			//		 200: $ref("profileChangesResponseSchema"),
-			//	 },
-			// },
 		}, 
 		deactivate2faHandler,
 	);

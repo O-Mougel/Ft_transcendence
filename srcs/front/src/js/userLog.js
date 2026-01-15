@@ -404,7 +404,6 @@ const checkForFriendRequests = async () => {
 		const result = await lookForRequests.json();	
 		if (result)
 		{	
-
 			if (result.requestOf.length > 0)
 			{
 				requestBlock.style.display = "block";

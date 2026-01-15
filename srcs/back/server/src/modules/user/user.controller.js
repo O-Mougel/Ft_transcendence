@@ -46,8 +46,7 @@ export async function registerUserHandler(request, reply) {
 		})
 
 		setOnlineStatus(user.id, true)
-
-		return { require2fa: false, token: accessToken }
+		return reply.code(201).send({ require2fa: false, token: accessToken });
 
 	} catch (error) {
 		return reply.status(409).send({
@@ -108,7 +107,8 @@ export async function loginHandler(request, reply) {
 
 		const tempToken = generate2faToken(request.server, user)
 
-		return { require2fa: true, token: tempToken };
+		
+		return reply.code(201).send({ require2fa: true, token: tempToken });
 	}
 
 	const accessToken = generateAccessToken(request.server, user);
@@ -125,8 +125,7 @@ export async function loginHandler(request, reply) {
 	})
 
 	setOnlineStatus(user.id, true)
-
-	return { require2fa: false, token: accessToken }
+	return reply.code(201).send({ require2fa: false, token: accessToken});
 }
 
 export async function loginMatchHandler(request, reply) {
@@ -158,13 +157,12 @@ export async function loginMatchHandler(request, reply) {
 	if (user.auth2fa) {
 
 		const tempToken = generate2faMatchToken(request.server, user)
-
-		return { require2fa: true, Token: tempToken };
+		return reply.code(201).send({ require2fa: true, token: tempToken });
 	}
 
 	const matchToken = generateMatchToken(request.server, user);
 
-	return { require2fa: false, Token: matchToken }
+	return reply.code(201).send({ require2fa: false, token: matchToken });
 
 }
 
@@ -191,12 +189,12 @@ export async function check2faHandler(request, reply) {
 	if (request.user.scope == "match") {
 		const matchToken = generateMatchToken(request.server, user);
 
-		return { matchToken }
+		return reply.code(200).send({ matchToken });
 	}
 
 	if (!user.auth2fa) {
 		await activate2fa(user.id)
-		return { message: "2fa activated !" }
+		return reply.code(200).send({ message: "2fa activated !" });
 	}
 
 	const accessToken = generateAccessToken(request.server, user);
@@ -214,7 +212,7 @@ export async function check2faHandler(request, reply) {
 
 	await setOnlineStatus(user.id, true)
 
-	return { newAccessToken: accessToken }
+	return reply.code(201).send({ newAccessToken: accessToken });
 }
 
 export async function refreshTokenHandler(request, reply) {
@@ -251,7 +249,7 @@ export async function refreshTokenHandler(request, reply) {
 
 	await setOnlineStatus(user.id, true)
 
-	return { newAccessToken }
+	return reply.code(201).send({newAccessToken: newAccessToken});
 }
 
 export async function alterUserHandler(request, reply) {
@@ -301,7 +299,8 @@ export async function get2fastatusHandler(request, reply)
 {
 	const status = await get2fastatus(request.user.id)
 
-	return { twofastatus: status.auth2fa }
+
+	return reply.code(200).send({ twofastatus: status.auth2fa });
 }
 
 export async function activate2faHandler(request, reply) {
@@ -314,8 +313,8 @@ export async function activate2faHandler(request, reply) {
 		errRef:"2FAIsAlreadyUp"
 	});
 
-	const qrCode = await generateSecret(user.name, user.id)
-	return { qrCode }
+	const qrCodeSecret = await generateSecret(user.name, user.id)
+	return reply.code(200).send({ qrCode: qrCodeSecret });
 }
 
 export async function deactivate2faHandler(request, reply) {
@@ -512,14 +511,13 @@ export async function friendDeleteHandler(request, reply) {
 export async function getFriendRequestHandler(request, reply) {
 	const requestsList = await findrequests(request.user.id)
 
-	// return { requests }
-	return reply.status(201).send(requestsList);
+	return reply.status(200).send(requestsList);
 }
 
 export async function getFriendsHandler(request, reply) {
 	const friendsArray = await findfriends(request.user.id) //check if user.id is read before that ?
 
-	return reply.status(201).send(friendsArray);
+	return reply.status(200).send(friendsArray);
 }
 
 export async function checkLogStatus(request, reply) {
