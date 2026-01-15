@@ -7,6 +7,14 @@ import { alertBoxMsg } from "./userLog.js";
 
 window.showQRCode = async function (event) {
 	event.preventDefault();
+
+	const showQRCodeButton = document.getElementById("showQRCodeButton");
+	const qrCodeSection = document.getElementById("qrCodeSection");
+	const TwoFACodeInput = document.getElementById('2FACodeInput');
+	const qrCodeImage = document.getElementById("qrCodeImage");
+
+	if (!qrCodeImage || !qrCodeSection || !showQRCodeButton || !TwoFACodeInput) return ;
+
 	try 
 	{
 		const activate2FAResponse = await fetch('/profile/2fa/activate', {
@@ -19,16 +27,14 @@ window.showQRCode = async function (event) {
 				throw new Error(`Request failed: ${activate2FAResponse.status} ${text}`);
 		}
 		const result = await activate2FAResponse.json();	
-		const showQRCodeButton = document.getElementById("showQRCodeButton");
-		const qrCodeSection = document.getElementById("qrCodeSection");
+		
 		if (result)
 		{
-			const qrCodeImage = document.getElementById("qrCodeImage");
 			qrCodeImage.src = result.qrCode;
 			qrCodeSection.style.display = "flex";
 			qrCodeImage.style.display = "block";
 			showQRCodeButton.disabled = true;
-			document.getElementById('2FACodeInput').focus();
+			TwoFACodeInput.focus();
 		}
 	} 
 	catch (err) 
@@ -72,15 +78,17 @@ window.disable2FA = async function () {
 window.validate2FACode = async function (event) {
 	
 	event.preventDefault();
+	const TwoFACodeInput = document.getElementById('2FACodeInput');
+	if(!TwoFACodeInput) return ;
 
 	try
 	{
-		const password = document.getElementById('2FACodeInput').value;
+		const password = TwoFACodeInput.value;
 
 		if (!password)
 		{
 			alertBoxMsg("❌ 2FA code cannot be empty !");
-			document.getElementById('2FACodeInput').focus();
+			TwoFACodeInput.focus();
 			return ;
 		}
 
@@ -121,16 +129,17 @@ window.validate2FACode = async function (event) {
 window.loginWith2FACode = async function (event) {
 	
 	event.preventDefault();
-
+	const TwoFACodeInput = document.getElementById('2FACodeInput');
+	if(!TwoFACodeInput) return ;
 	try
 	{
-		const password = document.getElementById('2FACodeInput').value;
+		const password = TwoFACodeInput.value;
 
 		
 		if (!password)
 		{
 			alertBoxMsg("❌ 2FA code cannot be empty !");
-			document.getElementById('2FACodeInput').focus();
+			TwoFACodeInput.focus();
 			return ;
 		}
 
@@ -178,6 +187,7 @@ export const goTo2faLogin = async () => {
 	if (typeof view.init === "function") {
 		 await view.init();
 	}
-	document.getElementById('2FACodeInput').focus();
+	if (document.getElementById('2FACodeInput'))
+		document.getElementById('2FACodeInput').focus();
 	history.pushState(null, null, "/2faLogin");
 }
