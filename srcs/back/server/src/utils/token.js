@@ -11,7 +11,7 @@ export function generateAccessToken(fastify, user) {
 		scope: "all"
     }
 
-    return fastify.jwt.sign(payload, { expiresIn: "15min" } );
+    return fastify.jwt.sign(payload, { expiresIn: "15m" } );
 }
 
 export function generate2faToken(fastify, user) {
