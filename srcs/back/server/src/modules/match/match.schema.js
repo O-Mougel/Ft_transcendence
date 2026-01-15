@@ -13,10 +13,10 @@ import { buildJsonSchemas } from 'fastify-zod';
 //     duration: z.number()
 // });
 
-const createMatchResponseSchema = z.object({
-    id: z.number(),
-	createdAt: z.string(),
-});
+// const createMatchResponseSchema = z.object({
+//     id: z.number(),
+// 	createdAt: z.string(),
+// });
 
 const getMatchResponseSchema = z.object({
   matchsnb: z.number(),
@@ -30,8 +30,8 @@ const getFriendMatchSchema = z.object({
 });
 
 export const { schemas: matchSchemas, $ref } = buildJsonSchemas({
-	createMatchSchema,
-	createMatchResponseSchema,
+	// createMatchSchema,
+	// createMatchResponseSchema,
 	getFriendMatchSchema,
   	getMatchResponseSchema
 	},
