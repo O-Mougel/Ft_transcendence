@@ -28,7 +28,8 @@ export const displayCorrectErrMsg = async (error, data) => {
 	if (index < 0)
 	{
 		//Not from a custom response, zod schema err instead
-		alertBoxMsg(`⚠️ Server side error ! Try again !`);
+		const errindex = error.toString().indexOf("\"message\"");
+		alertBoxMsg("🆘 " + error.toString().substring(errindex));
 		return;
 	}
 	let errstr = error.toString().substring(index);	
@@ -622,8 +623,8 @@ window.handleNewUserCreate = async function (event) {
 	const passwordConfirm = document.getElementById('confirmPasswordNewUser');
 	const requestResult = document.getElementById('saveNewUserInfo');
 
-	if(fieldValidity(username, password, passwordConfirm, requestResult, email) == false)
-		return ;
+	// if(fieldValidity(username, password, passwordConfirm, requestResult, email) == false)
+	// 	return ;
 
 	const data = {
 		email: email.value,
@@ -698,7 +699,8 @@ window.handleLoginClick = async function (event) {
 	}
 
 	const data = {
-		name: username.value.toUpperCase(),
+		// name: username.value.toUpperCase(),
+		name: username.value,
 		password: password.value,
 	};		
 	try 
