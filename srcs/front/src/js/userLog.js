@@ -87,7 +87,48 @@ export const displayCorrectErrMsg = async (error, data) => {
 		case "verifyInvalidCode":
 			alertBoxMsg(`❌ 2FA verification code was invalid !`);
 			break;
-	
+		case "loginMatchUserNotFound":
+			alertBoxMsg(`❌ User does not exist !`);
+			break;
+		case "loginMatchInvalidPwd":
+			alertBoxMsg(`❌ Invalid password for player 2!`);
+			break;
+		case "2FAIsAlreadyUp":
+			alertBoxMsg(`⚠️ 2FA is already enabled!`);
+			break;
+		case "2FAIsAlreadyDisabled":
+			alertBoxMsg(`⚠️ 2FA is already disabled!`);
+			break;
+		case "editPasswordInnerFail":
+			alertBoxMsg(`⚠️ ID sent doesn't match any user in the database !`);
+			break;
+		case "editPwdIncorrectCredentials":
+			alertBoxMsg(`❌ Password is invalid ! Try again !`);
+			break;
+		case "requestCantAccept":
+			alertBoxMsg(`❌ Invalid friend request ! Cannot accept !`);
+			break;
+		case "deteteNotFriends":
+			alertBoxMsg(`❌ Selected user is not your friend !`);
+			break;
+		case "uploadNotMultipart":
+			alertBoxMsg(`❌ Request was not in multipart format !`);
+			break;
+		case "uploadEmptyFileField":
+			alertBoxMsg(`❌ File field cannot be empty !`);
+			break;
+		case "uploadEmptyMimeName":
+			alertBoxMsg(`❌ Mime and filename fields cannot be empty !`);
+			break;
+		case "uploadNameTooShort":
+			alertBoxMsg(`❌ Filename must be at least 1 character !`);
+			break;
+		case "uploadWrongFiletype":
+			alertBoxMsg(`❌ Only images can be uploaded !`);
+			break;
+		case "uploadFailedWrite":
+			alertBoxMsg(`❌ File couldn't be written on server !`);
+			break;
 		default:
 			alertBoxMsg(`⚠️ Server side error ! Try again !`);
 			break;
@@ -168,28 +209,30 @@ export const fetchErrcodeHandler = async (error) => {
 }
 
 const fieldValidity = (username, pwd, pwdconf, requestR, email) => {
+	
+	if(!requestR) return false;
 	requestR.innerText = "";
-	if (!username.value)
+	if (!username || !username.value)
 	{
 		requestR.innerText = "❌ Login cannot be empty !";
 		username.focus();
 		return false;
 		
 	}
-	else if (!email.value)
+	else if (!email || !email.value)
 	{
 		requestR.innerText = "❌ Email cannot be empty !";
 		email.focus();
 		return false;
 		
 	}
-	else if (!pwd.value)
+	else if (!pwd || !pwd.value)
 	{
 		requestR.innerText = "❌ Enter a password !";
 		pwd.focus();
 		return false;
 	}
-	if (pwd.value != pwdconf.value)
+	if (!pwdconf || (pwd.value != pwdconf.value))
 	{
 		requestR.innerText = "❌ Both passwords must match !";
 		pwd.value = '';
@@ -234,7 +277,7 @@ export async function isUserAllowedHere() {
 window.acceptFriend = async (username) => {
 
 	const requestList = document.getElementById('requestList'); //contains the requests
-	if(!requestList) return;
+	if(!requestList || !username) return;
 
 	const data = {
 		friendAcceptName: username,
@@ -275,6 +318,7 @@ window.acceptFriend = async (username) => {
 		if (await fetchErrcodeHandler(err) == 0)
 			return(window.acceptFriend(username));
 		console.error('⚠️ Couldn\'t accept friend request !\n =>', err);
+		displayCorrectErrMsg(err, data.friendrejectname);
 	}
 }
 
@@ -283,7 +327,7 @@ window.rejectFriend = async (username) => {
 	const requestLabel = document.getElementById('requestCheckLabel');
 	const requestBlock = document.getElementById('pendingRequestBlock');
 
-	if(!requestList || !requestLabel || !requestBlock) return;
+	if(!requestList || !requestLabel || !requestBlock || !username) return;
 
 	const data = {
 		friendrejectname: username,
@@ -323,6 +367,7 @@ window.rejectFriend = async (username) => {
 		if (await fetchErrcodeHandler(err) == 0)
 			return(window.rejectFriend(username));
 		console.error('⚠️ Couldn\'t reject friend request !\n =>', err);
+		displayCorrectErrMsg(err, data.friendrejectname);
 	}
 }
 
@@ -331,6 +376,9 @@ const checkForFriendRequests = async () => {
 	const requestList = document.getElementById('requestList'); //contains the requests
 	const requestLabel = document.getElementById('requestCheckLabel'); //contains the requests
 	const requestBlock = document.getElementById('pendingRequestBlock'); //contains the requests
+
+	if(!requestList || !requestLabel || !requestBlock) return;
+
 	try 
 	{
 		const lookForRequests = await fetch('/friend/requested', {
@@ -389,7 +437,7 @@ const checkForFriendRequests = async () => {
 const displayUserFriends = async () => {
 	
 	const friendList = document.getElementById('friendlist');
-
+	if (!friendList) return;
 	try 
 	{
 		const friendInfoResponse = await fetch('/friend', {
@@ -434,7 +482,7 @@ window.grabProfileInfo = async function () {
 	const profileUsername = document.getElementById('playerGrabbedUsername');
 	const profilePicture = document.getElementById('sidePannelPfp');
 
-	if (!profilePanel) return;
+	if (!profilePanel || !profileUsername || !profilePicture) return;
 
 	try 
 	{
@@ -593,6 +641,9 @@ window.handleNewUserCreate = async function (event) {
 			email.value = "";
 			password.value = "";
 			passwordConfirm.value = "";
+			window.sessionStorage.setItem('logStatus','loggedIn');
+			window.sessionStorage.setItem('access_token',result.token);
+			alertBoxMsg(`Welcome ${data.name} ! 😉`);
 			backToDefaultPage();
 		}
 	} 
@@ -615,6 +666,8 @@ window.handleLoginClick = async function (event) {
 	const username = document.getElementById('clientUsername');
 	const password = document.getElementById('clientPassword');
 	const logResult = document.getElementById('signInResult');
+
+	if (!username || !password || !logResult) return;
 
 	logResult.innerText = "";
 	if (!username.value)
@@ -739,5 +792,6 @@ window.updateUserPassword = async function (event) {
 		if (await fetchErrcodeHandler(err) == 0)
 			return(window.updateUserPassword(event));
 		console.error('Failed to update password!\n => ', err);
+		displayCorrectErrMsg(err, "dummydata");
 	}
 }
