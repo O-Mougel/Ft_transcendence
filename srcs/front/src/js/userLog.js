@@ -87,7 +87,24 @@ export const displayCorrectErrMsg = async (error, data) => {
 		case "verifyInvalidCode":
 			alertBoxMsg(`❌ 2FA verification code was invalid !`);
 			break;
-	
+		case "loginMatchUserNotFound":
+			alertBoxMsg(`❌ User does not exist !`);
+			break;
+		case "loginMatchInvalidPwd":
+			alertBoxMsg(`❌ Invalid password for player 2!`);
+			break;
+		case "2FAIsAlreadyUp":
+			alertBoxMsg(`⚠️ 2FA is already enabled!`);
+			break;
+		case "2FAIsAlreadyDisabled":
+			alertBoxMsg(`⚠️ 2FA is already disabled!`);
+			break;
+		case "editPasswordInnerFail":
+			alertBoxMsg(`⚠️ ID sent doesn't match any user in the database !`);
+			break;
+		case "editPwdIncorrectCredentials":
+			alertBoxMsg(`❌ Password is invalid ! Try again !`);
+			break;
 		default:
 			alertBoxMsg(`⚠️ Server side error ! Try again !`);
 			break;
@@ -592,6 +609,8 @@ window.handleNewUserCreate = async function (event) {
 			email.value = "";
 			password.value = "";
 			passwordConfirm.value = "";
+			sessionStorage.setItem('access_token', result.newAccessToken);
+			window.sessionStorage.setItem('logStatus','loggedIn');
 			backToDefaultPage();
 		}
 	} 
@@ -737,5 +756,6 @@ window.updateUserPassword = async function (event) {
 		if (await fetchErrcodeHandler(err) == 0)
 			return(window.updateUserPassword(event));
 		console.error('Failed to update password!\n => ', err);
+		displayCorrectErrMsg(err, "dummydata");
 	}
 }
