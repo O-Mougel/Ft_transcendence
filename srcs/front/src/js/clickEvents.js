@@ -133,6 +133,19 @@ async function uploadFileToServer(fileObj) {
 
 }
 
+window.spinMeAround =  function () {
+
+	const deathStarImg = document.getElementById('deathStarImg');
+
+	if (!deathStarImg) return;
+
+	if(deathStarImg.classList.contains("animate-spin"))
+		deathStarImg.classList.remove("animate-spin");
+	else
+		deathStarImg.classList.add("animate-spin");
+
+}
+
 window.saveProfileInfo = async function () {
 
 	const username = document.getElementById('newUsername');
