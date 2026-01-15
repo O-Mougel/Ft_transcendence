@@ -623,8 +623,8 @@ window.handleNewUserCreate = async function (event) {
 	const passwordConfirm = document.getElementById('confirmPasswordNewUser');
 	const requestResult = document.getElementById('saveNewUserInfo');
 
-	// if(fieldValidity(username, password, passwordConfirm, requestResult, email) == false)
-	// 	return ;
+	if(fieldValidity(username, password, passwordConfirm, requestResult, email) == false)
+		return ;
 
 	const data = {
 		email: email.value,
