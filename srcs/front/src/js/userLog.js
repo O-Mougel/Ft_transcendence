@@ -200,6 +200,7 @@ export const fetchErrcodeHandler = async (error) => {
 		{
 			console.error("⚠️ Could not refresh tokens ... please log back in !"); //is this enough ?
 			window.sessionStorage.setItem('logStatus', 'loggedOut');
+			window.sessionStorage.setItem('access_token', 'NotValid');
 			backToDefaultPage();
 			return (-1);
 		}
