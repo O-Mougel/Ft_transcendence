@@ -568,6 +568,7 @@ window.handleNewUserCreate = async function (event) {
 		email: email.value,
 		name: username.value,
 		password: password.value,
+		passwordconfirmation: passwordConfirm.value,
 	};
 	
 	try 
@@ -711,6 +712,7 @@ window.updateUserPassword = async function (event) {
 		const data = {
 			oldpassword: oldPassword.value,
 			newpassword: newPassword.value,
+			newpasswordconfirmation: confirmNewPassword.value,
 		};
 
 		const updateUserPasswordResponse = await fetch('/profile/password', {
