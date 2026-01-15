@@ -13,8 +13,8 @@ const userCore = {  // define the common user schema
 
 const createUserSchema = z.object({
 	...userCore,
-	password: z.string().min(8).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain uppercase, lowercase, number and special character"),
-	passwordconfirmation: z.string().min(8).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain uppercase, lowercase, number and special character"),
+	password: z.string().min(8).max(30).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain uppercase, lowercase, number and special character"),
+	passwordconfirmation: z.string().min(8).max(30).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain uppercase, lowercase, number and special character"),
 
 });
 
@@ -78,8 +78,8 @@ const infoGrabResponseSchema = z.object({
 
 const editPasswordSchema = z.object({
 	oldpassword: z.string().min(1),
-	newpassword: z.string().min(8).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain uppercase, lowercase, number and special character"),
-	newpasswordconfirmation: z.string().min(8).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain uppercase, lowercase, number and special character"),
+	newpassword: z.string().min(8).max(30).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain uppercase, lowercase, number and special character"),
+	newpasswordconfirmation: z.string().min(8).max(30).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain uppercase, lowercase, number and special character"),
 })
 
 const friendRequestSchema = z.object({
@@ -87,11 +87,11 @@ const friendRequestSchema = z.object({
 })
 
 const friendAcceptSchema = z.object({
-	friendAcceptName: z.string().min(1),
+	friendAcceptName: z.string().min(1).max(13),
 })
 
 const friendRejectSchema = z.object({
-	friendrejectname: z.string().min(1),
+	friendrejectname: z.string().min(1).max(13),
 })
 
 const friendDeleteSchema = z.object({
