@@ -167,10 +167,10 @@ window.saveProfileInfo = async function () {
 		return ;
 	if (username)
 	{
-		if (username.value.length > 12)
+		if (username.value.length > 13)
 		{
 			confirmText.style.color = "#e85b51";
-			confirmText.innerText = "❌ New username is too long ! (12 max)";
+			confirmText.innerText = "❌ New username is too long ! (13 max)";
 			username.value = "";
 			password.value = "";
 			username.focus();
