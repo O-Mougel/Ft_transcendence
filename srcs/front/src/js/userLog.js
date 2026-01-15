@@ -209,26 +209,36 @@ export const fetchErrcodeHandler = async (error) => {
 }
 
 const fieldValidity = (username, pwd, pwdconf, requestR, email) => {
-	
+
 	if(!requestR) return false;
 	requestR.innerText = "";
-	if (!username || !username.value)
+	if (!username || !username.value || username.value.length < 3)
 	{
-		requestR.innerText = "❌ Login cannot be empty !";
+		requestR.innerText = "❌ Username must be at least 3 characters !";
 		username.focus();
 		return false;
-		
 	}
 	else if (!email || !email.value)
 	{
 		requestR.innerText = "❌ Email cannot be empty !";
 		email.focus();
 		return false;
-		
 	}
-	else if (!pwd || !pwd.value)
+	else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value))
 	{
-		requestR.innerText = "❌ Enter a password !";
+		requestR.innerText = "❌ Email format is invalid !";
+		email.focus();
+		return false;
+	}
+	else if (!pwd || !pwd.value || pwd.value.length < 8)
+	{
+		requestR.innerText = "❌ Password must be at least 8 characters long !";
+		pwd.focus();
+		return false;
+	}
+	else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(pwd.value))
+	{
+		requestR.innerText = "❌ Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character !";
 		pwd.focus();
 		return false;
 	}
@@ -614,7 +624,7 @@ window.handleNewUserCreate = async function (event) {
 
 	const data = {
 		email: email.value,
-		name: username.value,
+		name: username.value.toUpperCase(),
 		password: password.value,
 		passwordconfirmation: passwordConfirm.value,
 	};
