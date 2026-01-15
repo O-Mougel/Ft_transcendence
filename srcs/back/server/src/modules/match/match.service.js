@@ -2,10 +2,16 @@
 
 import { db } from "../../utils/prisma.js";
 
-export async function createMatch(input)
+export async function createMatch(input) //player1Name,player1score,player2Name,player2score,winnerName,longestStreak,duration
 {
+	const { player1Name, player2Name, winnerName, ...rest } = input;
+
+  player1 = await findUserByName(player1Name)
+  player2 = await findUserByName(player2Name)
+  winnerId = winnerName == player1Name ? player1.id : player2.id
+
 	const match = await db.match.create({
-        data: input
+    data: { player1Id: player1.id, player2Id: player2.id, winnerId, ...rest }
     });
 
     return match;
