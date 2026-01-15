@@ -410,17 +410,20 @@ export async function friendAcceptHandler(request, reply) {
 
 	if (!newfriend)
 	return reply.status(404).send({
-		message: "Username doesn't exist. Try again!"
+		message: "Username doesn't exist. Try again!",
+		errRef:"requestUserNotFound"
 	});
 
 	if (!await alreadyrequested(newfriend.id, request.user.id))
 	return reply.status(403).send({
-		message: "This user didn't send you request, send him one if you want to be friend with him"
+		message: "This user didn't send you a request, send him one if you want to be friend with him",
+		errRef:"requestCantAccept"
 	});
 
 	if (await alreadyfriend(request.user.id, newfriend.id))
 	return reply.status(409).send({
-		message: "This user is already your friend!"
+		message: "This user is already your friend!",
+		errRef:"requestAlreadyFriend"
 	});
 
 	await acceptfriend(request.user.id, newfriend.id)
@@ -438,17 +441,20 @@ export async function friendRejectHandler(request, reply) {
 
 	if (!friend)
 	return reply.status(404).send({
-		message: "Username doesn't exist. Try again!"
+		message: "Username doesn't exist. Try again!",
+		errRef:"requestUserNotFound"
 	});
 
 	if (!await alreadyrequested(friend.id, request.user.id))
 	return reply.status(403).send({
-		message: "This user didn't send you request"
+		message: "This user didn't send you request",
+		errRef:"requestCantAccept"
 	});
 
 	if (await alreadyfriend(request.user.id, friend.id))
 	return reply.status(409).send({
-		message: "This user is already your friend!"
+		message: "This user is already your friend!",
+		errRef:"requestAlreadyFriend"
 	});
 
 	await rejectfriend(request.user.id, friend.id) // can fail ??????
@@ -465,12 +471,14 @@ export async function friendDeleteHandler(request, reply) {
 
 	if (!friend)
 	return reply.status(404).send({
-		message: "Username doesn't exist. Try again!"
+		message: "Username doesn't exist. Try again!",
+		errRef:"requestUserNotFound"
 	});
 
 	if (!await alreadyfriend(request.user.id, friend.id))
 	return reply.status(403).send({
-		message: "This user is not your friend!"
+		message: "This user is not your friend!",
+		errRef:"deteteNotFriends"
 	});
 
 	await deletefriend(request.user.id, friend.id)
@@ -497,19 +505,34 @@ export async function checkLogStatus(request, reply) {
 export async function uploadProfilePicHandler(request, reply) {
 
 	if (!request.isMultipart || !request.isMultipart()) // we check if it exists first
-		return reply.code(400).send({ message: 'Expected multipart/form-data' });
+		return reply.code(400).send({ 
+			message: 'Expected multipart/form-data',
+			errRef:"uploadNotMultipart"
+		});
 
 	const uploadedPic = await request.file(); // first file field
 	if (!uploadedPic)
-		return reply.code(400).send({ message: 'No picture uploaded !' });
+		return reply.code(400).send({
+			message: 'No picture uploaded !',
+			errRef:"uploadEmptyFileField"
+		});
 
 	const mimetype = (uploadedPic.mimetype || '').toLowerCase();
 	if (!mimetype || !uploadedPic.filename)
-		return reply.code(400).send({ message: 'Mime type or filename is empty !'});
+		return reply.code(400).send({
+			message: 'Mime type or filename is empty !',
+			errRef:"uploadEmptyMimeName"
+		});
 	if (uploadedPic.filename.length <= 0)
-		return reply.code(400).send({ message: 'Invalid filename ! Must be at least 1 character !'});
+		return reply.code(400).send({
+			message: 'Invalid filename ! Must be at least 1 character !',
+			errRef:"uploadNameTooShort"
+		});
 	if (!mimetype.startsWith('image/'))
-		return reply.code(400).send({ message: 'Only images can be uploaded !'});
+		return reply.code(400).send({
+			message: 'Only images can be uploaded !',
+			errRef:"uploadWrongFiletype"
+		});
 
 	//file upload part 
 	const ext = path.extname(uploadedPic.filename) || '.png'; // if idk, now a png
@@ -523,9 +546,11 @@ export async function uploadProfilePicHandler(request, reply) {
 	}
 	catch (err) 
 	{
-		return reply.code(500).send({ message: 'Failed to save file' });
+		return reply.code(500).send({ 
+			message: 'Failed to write file',
+			errRef:"uploadFailedWrite"
+		});
 	}
-
 	return reply.code(201).send({ path: `./img/userPfp/${savedFilename}` });
 }
 

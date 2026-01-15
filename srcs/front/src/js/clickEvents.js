@@ -70,14 +70,16 @@ window.addEventListener("pagehide", () => {
 
 window.onFileSelected = function (inputFileSelector) {
 
+	const selectedFileName = document.getElementById('selectedFileName');
+	if(!inputFileSelector || !selectedFileName) return;
 	const file = inputFileSelector.files && inputFileSelector.files[0];
 	
 	if (file)
 	{
-		document.getElementById('selectedFileName').textContent = file.name;
+		selectedFileName.textContent = file.name;
 	}
 	else
-		document.getElementById('selectedFileName').textContent = '';
+		selectedFileName.textContent = '';
 };
 
 function isPageReload() {
@@ -95,7 +97,7 @@ async function uploadFileToServer(fileObj) {
 
 	const fileInput = document.getElementById('myfileSelector');
 	const filenameStr = document.getElementById('selectedFileName');
-	if (!fileInput) return null;
+	if (!fileInput || !filenameStr) return null;
 	const formData = new FormData();
 	formData.append("myfileSelector", fileObj);
 
@@ -123,12 +125,10 @@ async function uploadFileToServer(fileObj) {
 	{
 		if (await fetchErrcodeHandler(err) == 0)
 			return (await uploadFileToServer(fileObj));
-		else
-		{
-			console.error('File upload failed !\n => ', err);
-			filenameStr.innerText = "❌ File upload failed";
-			return null;
-		}
+		console.error('File upload failed !\n => ', err);
+		filenameStr.innerText = "❌ File upload failed";
+		displayCorrectErrMsg(err, "dummydata");
+		return null;
 	}
 
 }
@@ -152,10 +152,13 @@ window.saveProfileInfo = async function () {
 	const password = document.getElementById('confirmPassword');
 	const confirmText = document.getElementById('confirmChangeResults');
 	const fileInput = document.getElementById("myfileSelector");
+	const userPfp = document.getElementById('userPfp');
+	const selectedFileName = document.getElementById('selectedFileName');
 	const selectedFile = fileInput.files[0];
 
 	confirmText.innerText = "";
 
+	if (!username || !password || !confirmText || !fileInput || !userPfp || !selectedFileName) return ;
 	if (!username.value && !selectedFile) // if nothing changed, do nothing
 		return ;
 	if (username)
@@ -187,7 +190,7 @@ window.saveProfileInfo = async function () {
 		return ;
 	}
 
-	var fullFilename = document.getElementById('userPfp').getAttribute("src");
+	var fullFilename = userPfp.getAttribute("src");
 
 	if (selectedFile && selectedFile.name)
 	{
@@ -199,7 +202,7 @@ window.saveProfileInfo = async function () {
 			username.value = "";
 			password.value = "";
 			fileInput.value = "";
-			document.getElementById('selectedFileName').textContent = '';
+			selectedFileName.textContent = '';
 			alertBoxMsg(`❌ File could not be uploaded !`);
 			return ;
 		}
@@ -231,10 +234,10 @@ window.saveProfileInfo = async function () {
 		if (result)
 		{
 			alertBoxMsg(`✅ User was updated !`);
-			document.getElementById('selectedFileName').textContent = '';
+			selectedFileName.textContent = '';
 			fileInput.value = "";
 			username.placeholder = username.value;
-			document.getElementById('userPfp').setAttribute('src', fullFilename);
+			userPfp.setAttribute('src', fullFilename);
 			username.value = "";
 			password.value = "";
 		}
@@ -246,7 +249,7 @@ window.saveProfileInfo = async function () {
 		username.value = "";
 		password.value = "";
 		fileInput.value = "";
-		document.getElementById('selectedFileName').textContent = '';
+		selectedFileName.textContent = '';
 		console.error('⚠️ Could not edit user info!\n', err);
 		displayCorrectErrMsg(err, data.name);
 	}	

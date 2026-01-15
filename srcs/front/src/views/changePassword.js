@@ -15,13 +15,13 @@ export default class extends ViewTemplate {
 				<h1 class="pb-4">Change your password</h1>
 				<form class="flex flex-col items-center">
 					<label class="mb-2">Current Password :</label>
-					<input autofocus tabindex="1" class="w-full text-center border border-white rounded-lg hover:text-[#98c6f8] hover:border-[#98c6f8]" type="password" id="currentPasswordInput" value="" placeholder="Current password">
+					<input autofocus tabindex="1" class="w-full text-center border border-white rounded-lg hover:text-[#98c6f8] hover:border-[#98c6f8]" type="password" id="currentPasswordInput" autocomplete="off" placeholder="Current password">
 					
 					<label class="mt-4 mb-2">New Password :</label>
-					<input autofocus tabindex="2" class="w-full text-center border border-white rounded-lg hover:text-[#98c6f8] hover:border-[#98c6f8]" type="password" id="newPasswordInput" value="" placeholder="New password">
+					<input autofocus tabindex="2" class="w-full text-center border border-white rounded-lg hover:text-[#98c6f8] hover:border-[#98c6f8]" type="password" id="newPasswordInput" autocomplete="off" placeholder="New password">
 					
 					<label class="mt-4 mb-2">Confirm New Password :</label>
-					<input autofocus tabindex="3" class="w-full text-center border border-white rounded-lg hover:text-[#98c6f8] hover:border-[#98c6f8]" type="password" id="confirmNewPasswordInput" value="" placeholder="Confirm new password">
+					<input autofocus tabindex="3" class="w-full text-center border border-white rounded-lg hover:text-[#98c6f8] hover:border-[#98c6f8]" type="password" id="confirmNewPasswordInput" autocomplete="off" placeholder="Confirm new password">
 					<input id="changePasswordButton" class="mt-4 px-5 pb-1 sm:pb-2 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg cursor-pointer" type="submit" value="Change Password" onclick="updateUserPassword(event)">
 				</form>
 				<div class="pt-5">

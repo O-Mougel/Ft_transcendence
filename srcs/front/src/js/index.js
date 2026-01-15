@@ -16,7 +16,7 @@ import page404 from "../views/404page.js";
 import Login2fa from "../views/2faLogin.js";
 import changePassword from "../views/changePassword.js";
 
-import { isUserAllowedHere } from "./userLog.js";
+import { displayCorrectErrMsg, isUserAllowedHere } from "./userLog.js";
 import { fetchErrcodeHandler } from "./userLog.js";
 import { alertBoxMsg } from "./userLog.js";
 
@@ -35,7 +35,7 @@ window.confirmFriendRemoval = async () =>
 {
 	const friendRemover2000 = document.getElementById("selectBoxFriendRemover");
 
-	if (friendRemover2000.value == "dummyvalue") // no friend selected
+	if (!friendRemover2000 || friendRemover2000.value == "dummyvalue") // no friend selected
 		return ;
 	
 	const data = {
@@ -70,6 +70,7 @@ window.confirmFriendRemoval = async () =>
 		if (await fetchErrcodeHandler(err) == 0)
 			return(window.confirmFriendRemoval());
 		console.error('⚠️ Couldn\'t delete selected friend !\n => ', err);
+		displayCorrectErrMsg(err, data.frienddeletename);
 	}
 }
 
@@ -77,6 +78,7 @@ window.fillFriendRemovalBox = async (friendArray) =>
 {
 	const friendRemover2000 = document.getElementById("selectBoxFriendRemover");
 	
+	if (!friendRemover2000 || !friendArray) return;
 	friendRemover2000.innerHTML = '';
 
 	var listItem = document.createElement("option");
@@ -99,10 +101,18 @@ window.fillFriendRemovalBox = async (friendArray) =>
 
 window.grabLoggedUserStats = async () => 
 {
-	document.getElementById("nbOfMatchCpt").innerHTML = "0";
-	document.getElementById("winRatioPercent").innerHTML = "0%";
-	document.getElementById("longestMatchCpt").innerHTML = "0";
-	document.getElementById("biggestStreakCpt").innerHTML = "0";
+	const nbOfMatchCpt = document.getElementById("nbOfMatchCpt");
+	const winRatioPercent = document.getElementById("winRatioPercent");
+	const longestMatchCpt = document.getElementById("longestMatchCpt");
+	const biggestStreakCpt = document.getElementById("biggestStreakCpt");
+
+	if (!nbOfMatchCpt || !winRatioPercent || !longestMatchCpt || !biggestStreakCpt) return ;
+
+	nbOfMatchCpt.innerHTML = "--";
+	winRatioPercent.innerHTML = "--";
+	longestMatchCpt.innerHTML = "--";
+	biggestStreakCpt.innerHTML = "--";
+	
 	
 	try 
 	{
@@ -120,17 +130,17 @@ window.grabLoggedUserStats = async () =>
 		{
 			if (result.matchsnb == 0) // nomatches played
 			{
-				document.getElementById("nbOfMatchCpt").innerHTML = "0";
-				document.getElementById("winRatioPercent").innerHTML = "--";
-				document.getElementById("longestMatchCpt").innerHTML = "--";
-				document.getElementById("biggestStreakCpt").innerHTML = "--";
+				nbOfMatchCpt.innerHTML = "0";
+				winRatioPercent.innerHTML = "--";
+				longestMatchCpt.innerHTML = "--";
+				biggestStreakCpt.innerHTML = "--";
 			}
 			else
 			{
-				document.getElementById("nbOfMatchCpt").innerHTML = result.matchsnb;
-				document.getElementById("winRatioPercent").innerHTML = result.winrate + " %";
-				document.getElementById("longestMatchCpt").innerHTML = result.longestMatch + " sec";
-				document.getElementById("biggestStreakCpt").innerHTML = result.biggest_streak;
+				nbOfMatchCpt.innerHTML = result.matchsnb;
+				winRatioPercent.innerHTML = result.winrate + " %";
+				longestMatchCpt.innerHTML = result.longestMatch + " sec";
+				biggestStreakCpt.innerHTML = result.biggest_streak;
 			}
 		}
 	} 
@@ -144,10 +154,20 @@ window.grabLoggedUserStats = async () =>
 
 window.fetchPlayerStats = async (playerUsername) => 
 {
-	document.getElementById("nbOfMatchCpt2").innerHTML = "--";
-	document.getElementById("winRatioPercent2").innerHTML = "--";
-	document.getElementById("longestMatchCpt2").innerHTML = "--";
-	document.getElementById("biggestStreakCpt2").innerHTML = "--";
+
+	const nbOfMatchCpt2 = document.getElementById("nbOfMatchCpt2");
+	const winRatioPercent2 = document.getElementById("winRatioPercent2");
+	const longestMatchCpt2 = document.getElementById("longestMatchCpt2");
+	const biggestStreakCpt2 = document.getElementById("biggestStreakCpt2");
+	const friendStatDisplayBox = document.getElementById("friendStatDisplayBox");
+	const selectedPlayerUsernameHeader = document.getElementById("selectedPlayerUsernameHeader");
+
+	if (!playerUsername || !nbOfMatchCpt2 || !winRatioPercent2 || !longestMatchCpt2 || !biggestStreakCpt2 || !friendStatDisplayBox || !selectedPlayerUsernameHeader) return ;
+
+	nbOfMatchCpt2.innerHTML = "--";
+	winRatioPercent2.innerHTML = "--";
+	longestMatchCpt2.innerHTML = "--";
+	biggestStreakCpt2.innerHTML = "--";
 
 	document.getElementById("selectedPlayerUsernameHeader").innerHTML = playerUsername + " 's stats :";
 
@@ -173,20 +193,20 @@ window.fetchPlayerStats = async (playerUsername) =>
 		{
 			if (result.matchsnb == 0) // nomatches played
 			{
-				document.getElementById("nbOfMatchCpt2").innerHTML = "0";
-				document.getElementById("winRatioPercent2").innerHTML = "--";
-				document.getElementById("longestMatchCpt2").innerHTML = "--";
-				document.getElementById("biggestStreakCpt2").innerHTML = "--";
+				nbOfMatchCpt2.innerHTML = "0";
+				winRatioPercent2.innerHTML = "--";
+				longestMatchCpt2.innerHTML = "--";
+				biggestStreakCpt2.innerHTML = "--";
 			}
 			else
 			{
-				document.getElementById("nbOfMatchCpt2").innerHTML = result.matchsnb;
-				document.getElementById("winRatioPercent2").innerHTML = result.winrate + " %";
-				document.getElementById("longestMatchCpt2").innerHTML = result.longestMatch + " sec";
-				document.getElementById("biggestStreakCpt2").innerHTML = result.biggest_streak;
+				nbOfMatchCpt2.innerHTML = result.matchsnb;
+				winRatioPercent2.innerHTML = result.winrate + " %";
+				longestMatchCpt2.innerHTML = result.longestMatch + " sec";
+				biggestStreakCpt2.innerHTML = result.biggest_streak;
 			}
-			document.getElementById("friendStatDisplayBox").style.display = "flex";
-			document.getElementById("selectedPlayerUsernameHeader").style.display = "block";
+			friendStatDisplayBox.style.display = "flex";
+			selectedPlayerUsernameHeader.style.display = "block";
 		}
 	} 
 	catch (err) 
@@ -199,7 +219,13 @@ window.fetchPlayerStats = async (playerUsername) =>
 
 export const show2FAStatus = async () => 
 {
-	// console.log("Showing 2FA status...");
+	const showQRCodeButton = document.getElementById("showQRCodeButton");
+	const TwoFACodeInput = document.getElementById("2FACodeInput");
+	const qrCodeImage = document.getElementById("qrCodeImage");
+	const TwoFAActivated = document.getElementById("2FAActivated");
+	const TwoFADisabled = document.getElementById("2FADisabled");
+
+	if (!TwoFADisabled || !TwoFAActivated || !qrCodeImage || !TwoFACodeInput || !showQRCodeButton) return ;
 
 	try
 	{
@@ -215,22 +241,22 @@ export const show2FAStatus = async () =>
 		const result = await get2FAStatus.json();	
 		if (result)
 		{
-			document.getElementById("showQRCodeButton").disabled = false;
-			document.getElementById("2FACodeInput").value = "";
-			document.getElementById("qrCodeImage").src = "";
-			document.getElementById("qrCodeImage").style.display = "none";
+			showQRCodeButton.disabled = false;
+			TwoFACodeInput.value = "";
+			qrCodeImage.src = "";
+			qrCodeImage.style.display = "none";
 
 			if (result.twofastatus == true)
 			{
 				console.log("2FA is activated !");
-				document.getElementById("2FAActivated").style.display = "flex";
-				document.getElementById("2FADisabled").style.display = "none";
+				TwoFAActivated.style.display = "flex";
+				TwoFADisabled.style.display = "none";
 			}
 			else
 			{
 				console.log("2FA is disabled !");
-				document.getElementById("2FADisabled").style.display = "flex";
-				document.getElementById("2FAActivated").style.display = "none";
+				TwoFADisabled.style.display = "flex";
+				TwoFAActivated.style.display = "none";
 			}
 		}
 	} 
@@ -401,31 +427,51 @@ const	navbarHiddenCheck = () => {
 
 	if (status == "loggedOut")
 	{
-		bar1.style.display = 'none';
-		bar2.style.display = 'none';
-		bar3.style.display = 'none';
-		bar4.style.display = 'none';
-		icon1.style.display = 'none';
-		icon2.style.display = 'none';
-		icon3.style.display = 'none';
-		icon4.style.display = 'none';
-		barProfile.disabled=true;
-		iconProfile.disabled=true;
+		if (bar1)
+			bar1.style.display = 'none';
+		if (bar2)
+			bar2.style.display = 'none';
+		if (bar3)
+			bar3.style.display = 'none';
+		if (bar4)
+			bar4.style.display = 'none';
+		if (icon1)
+			icon1.style.display = 'none';
+		if (icon2)
+			icon2.style.display = 'none';
+		if (icon3)
+			icon3.style.display = 'none';
+		if (icon4)
+			icon4.style.display = 'none';
+		if (barProfile)
+			barProfile.disabled=true;
+		if (iconProfile)
+			iconProfile.disabled=true;
 		if (!logButton) return;
 		logButton.style.display = "inline";
 	}
 	else if (status == "loggedIn")
 	{
-		bar1.style.display = 'block';
-		bar2.style.display = 'block';
-		bar3.style.display = 'block';
-		bar4.style.display = 'block';
-		icon1.style.display = 'block';
-		icon2.style.display = 'block';
-		icon3.style.display = 'block';
-		icon4.style.display = 'block';
-		barProfile.disabled=false;
-		iconProfile.disabled=false;
+		if (bar1)
+			bar1.style.display = 'block';
+		if (bar2)
+			bar2.style.display = 'block';
+		if (bar3)
+			bar3.style.display = 'block';
+		if (bar4)
+			bar4.style.display = 'block';
+		if (icon1)
+			icon1.style.display = 'block';
+		if (icon2)
+			icon2.style.display = 'block';
+		if (icon3)
+			icon3.style.display = 'block';
+		if (icon4)
+			icon4.style.display = 'block';
+		if (barProfile)
+			barProfile.disabled=false;
+		if (iconProfile)
+			iconProfile.disabled=false;
 		if (!logButton) return;
 		logButton.style.display = "none";
 	}
@@ -456,7 +502,7 @@ const forceUserRelog = async () => {
 
 export const adjustNavbar = async (path) => {
 
-	if (path === "/logUser" || (path === "/") || (path === "/404") || (path === "/newUserRegistration") || (path === "/2faLogin")) //then logging is required
+	if (path === "/logUser" || (path === "/") || (path === "/404") || (path === "/newUserRegistration") || (path === "/2faLogin")) //no logging is required
 	{
 		//
 	}
