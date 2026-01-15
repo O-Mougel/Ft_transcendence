@@ -10,7 +10,7 @@ async function userRoutes(fastify) {
 			schema: {
 				body: $ref("createUserSchema"),
 				response: {
-					201: $ref("createUserResponseSchema"),
+					201: $ref("loginResponseSchema"),
 				},
 			},
 		}, 
@@ -132,7 +132,7 @@ async function userRoutes(fastify) {
 		get2fastatusHandler,
 	);
 
-	fastify.get(
+	fastify.post(
 		'/profile/2fa/activate', 
 		{
 			preHandler: [fastify.authenticate],

@@ -11,11 +11,12 @@ import { verifyPassword } from "../../utils/hash.js";
 import { generateAccessToken, generateRefreshToken, generate2faToken, generateMatchToken } from "../../utils/token.js";
 import { generateSecret, verify2fa } from "../../utils/twofa.js"
 
-export async function registerUserHandler(request, reply) { //check twice the password and confirmation
-	const body = request.body;
+export async function registerUserHandler(request, reply) {
 
+	const body = request.body;
 	const name = await findUserByName(body.name);
 
+	const { passwordconfirmation, ...rest } = body;
 	if (name) {	
 		return reply.status(409).send({
 			message: "Username already used. Try again!",
@@ -23,10 +24,30 @@ export async function registerUserHandler(request, reply) { //check twice the pa
 		});
 	};
 
-	//check for error before sending to database 
+	if (body.password != body.passwordconfirmation)
+		return reply.status(400).send({
+			message: "Password confirmation doesn't match with previous password. Try again!"
+		});
+
 	try {
-		const user = await createUser(body);
-		return reply.status(201).send(user);
+		const user = await createUser({...rest});
+
+		const accessToken = generateAccessToken(request.server, user);
+		const refreshToken = generateRefreshToken();
+
+		await saveRefreshToken(user.id, refreshToken)
+
+		reply.setCookie('refresh_token', refreshToken, {
+			path: '/',
+			maxAge: 14 * 24 * 60 * 60 * 1000,
+			httpOnly: true,
+			secure: true,
+			sameSite: "strict"
+		})
+
+		setOnlineStatus(user.id, true)
+
+		return { require2fa: false, token: accessToken }
 
 	} catch (error) {
 		return reply.status(409).send({
@@ -65,7 +86,7 @@ export async function loginHandler(request, reply) {
 	const user = await findUserByName(body.name);
 
 	if (!user) {
-		return reply.status(400).send({
+		return reply.status(404).send({
 			message: "Invalid name. Try again!",
 			errRef:"loginInvalidName"
 		});
@@ -215,13 +236,11 @@ export async function refreshTokenHandler(request, reply) {
 	}
 
 	// rotation
-
 	const refreshToken = await rotateRefreshToken(stored.user_id, token)
 	const user = await findUserById(stored.user_id);
 	const newAccessToken = generateAccessToken(request.server, user);
 	reply.setCookie('refresh_token', refreshToken, {
 		path: '/',
-		// maxAge: 10000,
 		maxAge: 14 * 24 * 60 * 60 * 1000,
 		httpOnly: true,
 		secure: true,
@@ -351,12 +370,17 @@ export async function editPasswordHandler(request, reply) { //check twice the pa
 		});
 	};
 
+	if (body.password != body.passwordconfirmation) {
+		return reply.status(400).send({
+			message: "Password confirmation doesn't match with previous password. Try again!"
+		});
+	}
+
 	changePassword(user.id, body.newpassword);
 
 	return reply.status(200).send({
 		message: "Password edited successfully!"
 	});
-	// return { newuser } //DO NOT SEND THE ENTIRE USER
 }
 
 export async function friendRequestHandler(request, reply) {
