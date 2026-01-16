@@ -12,6 +12,9 @@ import { verifyPassword } from "../../utils/hash.js";
 import { generateAccessToken, generateRefreshToken, generate2faToken, generateMatchToken } from "../../utils/token.js";
 import { generateSecret, verify2fa } from "../../utils/twofa.js"
 
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 Mo
+const ALLOWED_MIME_TYPES = ["image/png", "image/jpg", "image/jpeg"];
+
 export async function registerUserHandler(request, reply) {
 
 	const body = request.body;
@@ -534,22 +537,22 @@ export async function uploadProfilePicHandler(request, reply) {
 			errRef:"uploadNotMultipart"
 		});
 
-	const file = await request.file();
-	if (!file) {
+	const uploadedPic = await request.file();
+	if (!uploadedPic) {
 		return reply.code(400).send({
 			message: "No file uploaded",
 			errRef: "uploadNoFile",
 		});
 	}
 
-	if (file.file.truncated) {
+	if (uploadedPic.file.truncated) {
 		return reply.code(413).send({
 			message: "File too large",
 			errRef: "uploadTooLarge",
 		});
 	}
 
-	const buffer = await file.toBuffer();
+	const buffer = await uploadedPic.toBuffer();
 	if (buffer.length > MAX_FILE_SIZE) {
 		return reply.code(413).send({
 			message: "File exceeds size limit",
@@ -565,23 +568,20 @@ export async function uploadProfilePicHandler(request, reply) {
 		});
 	}
 
-	const ext = path.extname(uploadedPic.filename) || '.png'; // if idk, now a png
-	const filename = `${Date.now()}-${crypto.randomBytes(6).toString('hex')}${ext}`;
+	const ext = path.extname(uploadedPic.filename);
+	const savedFilename = `${Date.now()}-${crypto.randomBytes(6).toString('hex')}${ext}`;
 
 	const uploadDir = path.resolve(process.cwd(), 'front', 'src', 'img', 'userPfp');
 	await fs.promises.mkdir(uploadDir, { recursive: true });
 
-	const filePath = path.join(uploadDir, filename);
-
+	const filePath = path.join(uploadDir, savedFilename);
 	try {
-		await pipeline(uploadedPic.file, fs.createWriteStream(dest));
+		await fs.promises.writeFile(filePath, buffer);
 	} catch (err) {
 		return reply.code(500).send({
 			message: "Failed to save file",
 			errRef: "uploadWriteFailed",
 		});
 	}
-
 	return reply.code(201).send({ path: `./img/userPfp/${savedFilename}` });
 }
-

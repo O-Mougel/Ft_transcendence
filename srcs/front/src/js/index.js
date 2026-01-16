@@ -150,7 +150,7 @@ window.grabLoggedUserStats = async () =>
 	}
 }
 
-window.fetchPlayerStats = async (playerUsername) => 
+window.fetchPlayerStats = async (playerId) => 
 {
 
 	const nbOfMatchCpt2 = document.getElementById("nbOfMatchCpt2");
@@ -160,26 +160,20 @@ window.fetchPlayerStats = async (playerUsername) =>
 	const friendStatDisplayBox = document.getElementById("friendStatDisplayBox");
 	const selectedPlayerUsernameHeader = document.getElementById("selectedPlayerUsernameHeader");
 
-	if (!playerUsername || !nbOfMatchCpt2 || !winRatioPercent2 || !longestMatchCpt2 || !biggestStreakCpt2 || !friendStatDisplayBox || !selectedPlayerUsernameHeader) return ;
+	if (!playerId || !nbOfMatchCpt2 || !winRatioPercent2 || !longestMatchCpt2 || !biggestStreakCpt2 || !friendStatDisplayBox || !selectedPlayerUsernameHeader) return ;
 
 	nbOfMatchCpt2.innerHTML = "--";
 	winRatioPercent2.innerHTML = "--";
 	longestMatchCpt2.innerHTML = "--";
 	biggestStreakCpt2.innerHTML = "--";
 
-	document.getElementById("selectedPlayerUsernameHeader").innerHTML = playerUsername + " 's stats :";
-
-	const data = {
-		username: playerUsername,
-	};
+	document.getElementById("selectedPlayerUsernameHeader").innerHTML = playerId + " 's stats :";
 	
 	try 
 	{
-		const userStatsRequestResponse = await fetch('/match/others', {
-				method: 'POST',
+		const userStatsRequestResponse = await fetch(`/match/${playerId}`, {
 				credentials: 'include',
-				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json'},
-				body: JSON.stringify(data),
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 		});
 	
 		if (!userStatsRequestResponse.ok) {
@@ -210,7 +204,7 @@ window.fetchPlayerStats = async (playerUsername) =>
 	catch (err) 
 	{
 		if (await fetchErrcodeHandler(err) == 0)
-			return(window.fetchPlayerStats(playerUsername));
+			return(window.fetchPlayerStats(playerId));
 		console.error('⚠️ Couldn\'t fetch user stats in profileStat!\n => ', err);
 	}
 }
@@ -299,7 +293,7 @@ const createFriendsStatLink = async () =>
 					listItem.className = 'w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg focus:border-[#98c6f8] hover:text-[#98c6f8] hover:border-[#98c6f8]';
 					listItem.innerHTML = `${result.friends[i].name}`;
 					listItem.setAttribute('name', clearName);
-					listItem.setAttribute('onclick',`fetchPlayerStats("${result.friends[i].name}")`); // can be broken with weird names
+					listItem.setAttribute('onclick',`fetchPlayerStats("${result.friends[i].id}")`); // can be broken with weird names
 					friendlistProfileParent.appendChild(listItem);
 				}
 			}
