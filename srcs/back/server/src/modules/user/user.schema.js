@@ -106,7 +106,7 @@ const friendRequestResponseSchema = z.object({
 });
 
 const fileUploadResponseSchema = z.object({
-  path: z.string().min(1),
+  path: z.string().min(1).max(255).regex(/^[a-zA-Z0-9._-]+$/)
 });
 
 export const { schemas: userSchemas, $ref } = buildJsonSchemas({
