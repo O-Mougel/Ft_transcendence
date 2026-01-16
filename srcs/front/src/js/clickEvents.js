@@ -56,7 +56,7 @@ window.addEventListener("pagehide", () => {
 	try 
 	{
 		fetch('/logout', {
-				method: 'DELETE',
+				method: 'POST',
 				credentials: 'include',
 				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 				keepalive: true,
@@ -274,7 +274,7 @@ window.saveProfileInfo = async function () {
 	try 
 	{
 		const applyChangeResponse = await fetch('/profile/edit', {
-				method: 'POST',
+				method: 'PATCH',
 				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json'},
 				credentials: 'include',
 				body: JSON.stringify(data),

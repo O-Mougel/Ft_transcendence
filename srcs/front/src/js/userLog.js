@@ -596,7 +596,7 @@ export async function logoutUser() {
 	try 
 	{
 		const logoutResponse = await fetch('/logout', {
-				method: 'DELETE',
+				method: 'POST',
 				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 				credentials: 'include',
 		});
@@ -811,7 +811,7 @@ window.updateUserPassword = async function (event) {
 
 		const updateUserPasswordResponse = await fetch('/profile/password', {
 				credentials: 'include',
-				method: 'POST',
+				method: 'PATCH',
 				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json'},
 				body:  JSON.stringify(data),
 		});
