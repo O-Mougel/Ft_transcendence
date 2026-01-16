@@ -837,3 +837,74 @@ window.updateUserPassword = async function (event) {
 		displayCorrectErrMsg(err, "dummydata");
 	}
 }
+
+window.loginPlayer2 = async function () {
+
+	const username = document.getElementById('player2UserName');
+	const password = document.getElementById('player2Password');
+	const logResult = document.getElementById('Player2Result');
+
+	if (!username || !password || !logResult) return;
+
+	logResult.innerText = "";
+	if (!username.value)
+	{
+		logResult.innerText = "❌ Login cannot be empty !";
+		username.focus();
+		return ;
+	}
+	else if (!password.value)
+	{
+		logResult.innerText = "❌ Enter your password !";
+		password.focus();
+		return ;
+	}
+
+	const data = {
+		name: username.value.toUpperCase(),
+		password: password.value,
+	};		
+	try 
+	{
+		const loginResponse = await fetch('/login/player2', {
+				method: 'POST',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json'},
+				body: JSON.stringify(data),
+		});
+
+		if (!loginResponse.ok) {
+				const text = await loginResponse.text().catch(() => loginResponse.statusText);
+				throw new Error(`Request failed: ${loginResponse.status} ${text}`);
+		}
+
+		const result = await loginResponse.json();	
+		if (result)
+		{
+			username.value = "";
+			password.value = "";
+			
+			if (result.require2fa == true)
+			{
+				window.sessionStorage.setItem('temp_token',result.token);
+				console.log('⏳ 2FA required, redirecting ...');
+
+			}
+			else
+			{
+				window.sessionStorage.setItem('player2_token',result.token);
+				console.log('⏳ Player 2 Logged in !');
+				
+
+			}
+		}
+	} 
+	catch (err) 
+	{
+		if (await fetchErrcodeHandler(err) == 0)
+			return(window.handleLoginClick(event));
+		username.value = "";
+		password.value = "";
+		console.error('Login error !\n => ', err);
+		displayCorrectErrMsg(err, "dummydata");
+	}
+};
