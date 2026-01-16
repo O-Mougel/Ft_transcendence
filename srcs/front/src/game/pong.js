@@ -1,4 +1,4 @@
-import { waitStartGame, isSocketConnected, setupSocket, updateGameState } from "./socket.js";
+import { waitStartGame, isSocketConnected, setupSocket, updateGameState, emitStopGame } from "./socket.js";
 import { CONTEXT, createGameElements } from "./context.js";
 import { draw, drawScore, resetState } from "./graphics.js";
 import { bindControls } from "./controls.js";
@@ -6,6 +6,7 @@ import { bindControls } from "./controls.js";
 export function initPong(mode = {}) {
 	CONTEXT.gameMode = mode.mode;
 	console.log("Setting up Pong..., mode:", mode.mode);
+	console.log("Game ID from initPong:", mode.gameId);
 
 	CONTEXT.canvas = document.getElementById("canvas");
 	CONTEXT.startButton = document.getElementById("startButton");
@@ -16,6 +17,14 @@ export function initPong(mode = {}) {
 		console.error("Pong: canvas or startButton not found in DOM.");
 		return;
 	}
+
+	// // Stop game if user leaves the page
+	// window.addEventListener("beforeunload", () => {
+	// 	if (isSocketConnected()) {
+	// 		console.log("Window unloading, stopping game.");
+	// 		emitStopGame(); // send final state
+	// 	}
+	// });
 
 	const canvas = CONTEXT.canvas;
 	const ctx = CONTEXT.ctx = canvas.getContext("2d");
@@ -38,23 +47,30 @@ export function initPong(mode = {}) {
 	ctx.setTransform(1, 0, 0, 1, 0, 0);
 	ctx.scale(scale, scale);
 
-	// Do NOT overwrite GAME_WIDTH/HEIGHT with canvas.width/height
-
 	// Optional: prevent scrolling
 	document.body.style.overflow = "hidden";
 	document.documentElement.style.overflow = "hidden";
+
+	console.log("Tournament ID:", CONTEXT.tournamentId);
+	console.log("Game ID:", CONTEXT.gameId);
 	
-	CONTEXT.startButton.style.display = "block";
-	CONTEXT.startButton.onclick = startGame;
+	if (CONTEXT.tournamentId && CONTEXT.isGameStarted) {
+		console.log("Rejoining existing game with ID:", CONTEXT.gameId);
+		startGame();
+	} else {
+		console.log("No existing game ID, ready to start new game.");
+		CONTEXT.startButton.style.display = "block";
+		CONTEXT.startButton.onclick = startGame;
+	}
 
 
-	if (CONTEXT.gameId) {
+	if (CONTEXT.tournamentId) {
+	console.log("Tournament ID in CONTEXT:", CONTEXT.tournamentId);
       // Tournament match
-      CONTEXT.startButton.style.display = "hidden";
       CONTEXT.backButton.classList.remove("hidden");
 
       CONTEXT.backButton.addEventListener("click", () => {
-        // window.history.pushState({}, "", `/tournament/${CONTEXT.tournamentId}`);
+
         window.history.pushState({}, "", `/tournament`);
         window.dispatchEvent(new PopStateEvent("popstate"));
       });
@@ -94,7 +110,6 @@ export function updateGameScene(data) {
 		{
 			leftPaddle.score = left;
 			rightPaddle.score = right;
-			console.log(`Score - Left: ${left}, Right: ${right}`);
 			drawScore(left, right);
 		}
 	}
@@ -114,7 +129,6 @@ function startGame() {
 	if (CONTEXT.startButton) CONTEXT.startButton.style.display = "none";
 	if (CONTEXT.score) CONTEXT.score.style.display = "flex";
 	if (CONTEXT) CONTEXT.isGameStarted = true;
-
 	gameInit();
 }
 

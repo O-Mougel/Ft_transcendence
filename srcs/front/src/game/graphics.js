@@ -60,6 +60,7 @@ export function resetState() {
 	}
 	leftPaddle.score = 0;
 	rightPaddle.score = 0;
+	CONTEXT.isGameStarted = false;
 	drawScore();
 
 	if (score)
@@ -69,7 +70,7 @@ export function resetState() {
 	if (gameOverDiv)
 		gameOverDiv.style.display = "none";
 
-	if (startButton)
+	if (startButton && !CONTEXT.isGameStarted && !CONTEXT.tournamentId)
 		startButton.style.display = "block";
 }
 

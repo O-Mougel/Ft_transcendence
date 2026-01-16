@@ -19,6 +19,7 @@ export const CONTEXT = {
 
 	// Game state
 	isGameStarted: false,
+	gameId: null,
 	keysPressed: new Set(),
 	updateIntervalId: null,
 	controlsBound: false,
@@ -38,8 +39,6 @@ export function createGameElements() {
 
 	const width_ratio = GAME_WIDTH / 800;
 	const height_ratio = GAME_HEIGHT / 500;
-
-	console.log("There Width ratio:", width_ratio, "Height ratio:", height_ratio);
 
 	CONTEXT.ball = new Ball(
 		GAME_WIDTH / 2,
