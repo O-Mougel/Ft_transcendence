@@ -592,22 +592,25 @@ const router = async () => {
 		{ path: "/changePassword", view: changePassword },
 	];
 
-	// const potentialMan = routes.map(mapElement => { //mapElement is the name of each array element for routes
-	// 	return {
-	// 		mapElement : mapElement,
-	// 		isMatch: location.pathname === mapElement.path
-	// 	};
-	// });
-
-	const potentialMan = routes.map(mapElement => {
-		const regex = pathToRegex(mapElement.path);
-		const result = location.pathname.match(regex);
+	const potentialMan = routes.map(mapElement => { //mapElement is the name of each array element for routes
 		return {
-			mapElement,
-			result,
-			isMatch: result !== null
+			mapElement : mapElement,
+			isMatch: location.pathname === mapElement.path
 		};
-});
+	});
+
+	///////////////////////////////////////////////
+	// 	const potentialMan = routes.map(mapElement => {
+	// 		const regex = pathToRegex(mapElement.path);
+	// 		const result = location.pathname.match(regex);
+	// 		return {
+	// 			mapElement,
+	// 			result,
+	// 			isMatch: result !== null
+	// 		};
+	// });
+	///////////////////////////////////////////////
+
 
 
 	let match = potentialMan.find(pm => pm.isMatch); //pm is the name of each array element for potentialMan
@@ -621,9 +624,14 @@ const router = async () => {
 		};
 	}
 
-	// const view = new match.mapElement.view();
-	const params = getParams(match);
-	const view = new match.mapElement.view(params);
+	const view = new match.mapElement.view();
+
+
+	/////////////////////////////////////////////// ??????
+	// const params = getParams(match);
+	// const view = new match.mapElement.view(params);
+	///////////////////////////////////////////////
+
 
 	document.querySelector("#app").innerHTML = await view.getHTML();
 	adjustNavbar(match.mapElement.path);
