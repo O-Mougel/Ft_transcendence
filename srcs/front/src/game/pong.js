@@ -54,7 +54,8 @@ export function initPong(mode = {}) {
       CONTEXT.backButton.classList.remove("hidden");
 
       CONTEXT.backButton.addEventListener("click", () => {
-        window.history.pushState({}, "", `/tournament/${CONTEXT.tournamentId}`);
+        // window.history.pushState({}, "", `/tournament/${CONTEXT.tournamentId}`);
+        window.history.pushState({}, "", `/tournament`);
         window.dispatchEvent(new PopStateEvent("popstate"));
       });
     }
