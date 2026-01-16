@@ -81,7 +81,7 @@ function validateNames(names, expectedCount) {
 
 // }
 
-async function startTournament(expectedCount, event) {
+export async function startTournament(expectedCount, event) {
   setupSocket();
   const socket = getSocket();
 
@@ -111,9 +111,3 @@ async function startTournament(expectedCount, event) {
     alert(e?.message || "Failed to create tournament");
   });
 }
-
-
-// Keep your existing HTML onclick names:
-window.get4PlayerName = (event) => startTournament(4, event);
-window.get8PlayerName = (event) => startTournament(8, event);
-window.get16PlayerName = (event) => startTournament(16, event);
