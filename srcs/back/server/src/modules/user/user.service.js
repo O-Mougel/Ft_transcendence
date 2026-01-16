@@ -40,7 +40,8 @@ export async function checkIfUserExists(name) { // if count = 0, doesn't exist
 
 	return result;
 }	
-export async function findUserByName(name) { //grabs every field from given name
+
+export async function findUserByName(name) {
 	const user = await db.user.findUnique({
 		where: {
 			name: name,
@@ -201,6 +202,7 @@ export async function findrequests(id) {
 		select: {
 			requestOf: {
 				select: {
+					id: true,
 					name: true,
 					avatar: true,
 					online: true,
@@ -218,6 +220,7 @@ export async function findfriends(id) {
 		select: {
 			friends: {
 				select: {
+					id: true,
 					name: true,
 					avatar: true,
 					online: true,
