@@ -568,7 +568,6 @@ const getParams = match => {
   return Object.fromEntries(keys.map((key, i) => [key, values[i]]));
 };
 
-
 const router = async () => {
 	const routes = [
 		{ path: "/", view: startingFile },
@@ -588,7 +587,7 @@ const router = async () => {
 		{ path: "/pong", view: pong },
 		{ path: "/pong2", view: pong },
 		{ path: "/logUser", view: logUser },
-		{ path: "/tournament/:id", view: tournament },
+		{ path: "/tournament", view: tournament },
 		{ path: "/2faLogin", view: Login2fa },
 		{ path: "/ranked", view: rankedLogin },
 	];
@@ -611,8 +610,6 @@ const router = async () => {
 	// 		};
 	// });
 	///////////////////////////////////////////////
-
-
 
 	let match = potentialMan.find(pm => pm.isMatch); //pm is the name of each array element for potentialMan
 	// find will stop when the function returns true, so when we find a pm.isMatch == true

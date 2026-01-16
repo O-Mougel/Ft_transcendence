@@ -96,8 +96,8 @@ export default class extends ViewTemplate {
 
     // Listen for tournament state updates
     socket.off("tournament:state");
-    socket.on("tournament:state", ({ tournamentId: tid, tournament }) => {
-      if (tid !== tournamentId) return;
+    socket.on("tournament:state", ({ tournamentId: tournamentId, tournament }) => {
+      if (tournamentId !== tournamentId) return;
       this._renderTournament(tournament);
     });
 
@@ -123,9 +123,9 @@ export default class extends ViewTemplate {
     socket.off("tournament:ended");
     socket.on("tournament:ended", ({ tournamentId: tid, winner }) => {
       if (tid !== tournamentId) return;
-      const w = document.getElementById("winnerLine");
-      w.classList.remove("hidden");
-      w.textContent = `Winner: ${winner}`;
+      const winnerLine = document.getElementById("winnerLine");
+      winnerLine.classList.remove("hidden");
+      winnerLine.textContent = `Winner: ${winner}`;
       CONTEXT.tournamentId = null; // clear current tournament
     });
 
@@ -138,8 +138,11 @@ export default class extends ViewTemplate {
     if (this.tournamentId) return this.tournamentId;
 
     // fallback parsing: /tournament/<id>
-    const parts = location.pathname.split("/").filter(Boolean);
-    if (parts[0] === "tournament" && parts[1]) return parts[1];
+    // const parts = location.pathname.split("/").filter(Boolean);
+    // if (parts[0] === "tournament" && parts[1]) return parts[1];
+
+    const storedId = sessionStorage.getItem("currentTournamentId");
+    if (storedId) return storedId;
     return null;
   }
 
