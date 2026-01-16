@@ -16,7 +16,7 @@ export class AIPlayer {
 	this.lastApproaching = false;
   }
 
-  update() {
+  updatePrediction() {
 	const ball = this.game.ball;
 
 	const approaching = ball.vx > 0;
@@ -45,10 +45,10 @@ export class AIPlayer {
 	
 	predictedY -= PADDLE_HEIGHT / 2 + opposedAdjustment + this.aimError;
 
-	this.predictedY = Math.max(0, Math.min(HEIGHT - PADDLE_HEIGHT, predictedY));
+	this.predictedY = Math.max(0, Math.min(HEIGHT - PADDLE_HEIGHT, predictedY)); // clamp within screen
   }
 
-  updateDirection() { // should I update direction only each frame?
+  updateDirection() {
 	const paddle = this.paddle.y;
 	const target = this.predictedY;
 
