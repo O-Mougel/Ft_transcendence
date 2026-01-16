@@ -8,9 +8,6 @@ let socket = null;
 export function setupSocket() {
   console.log("Attempting to connect to WebSocket server...");
 
-  // socket = io("http://localhost:3002/", {
-	//   transports: ["websocket"],
-  // });
   socket = io({
     path: "/pong/socket.io",
   });
@@ -41,14 +38,10 @@ export function isSocketConnected() {
 
 export async function waitStartGame() {
   if (!isSocketConnected()) {
-	console.log("Cannot start game: Not connected to server");
-	return;
+	  console.log("Cannot start game: Not connected to server");
+	  return;
   }
   try {
-
-
-
-
     const dataRequestResponse = await fetch('/profile/grab', { //GET request by default without the "request" parameter
 				credentials: 'include',
 				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
@@ -60,11 +53,12 @@ export async function waitStartGame() {
 		}
 		const result = await dataRequestResponse.json();	
 		if (!result) throw new Error('No data received from server');
-    console.log("User info retrieved:", result);
+
+    console.log("Game id in context before starting game:", CONTEXT.gameId);
 
     if (CONTEXT.gameId) {
       // console.log("Game ID found in context:", CONTEXT.gameId);
-      // console.log("Joining existing game with ID:", CONTEXT.gameId);
+      console.log("Joining existing game with ID:", CONTEXT.gameId);
       socket.emit("joinGame", { gameId: CONTEXT.gameId });
       return;
     }

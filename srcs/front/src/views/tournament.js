@@ -90,6 +90,14 @@ export default class extends ViewTemplate {
       window.dispatchEvent(new PopStateEvent("popstate"));
     });
 
+    if (CONTEXT.gameId) {
+      document.getElementById("nextMatchBtn").textContent = "Back to Match";
+      document.getElementById("nextMatchBtn").addEventListener("click", () => {
+        window.history.pushState({}, "", "/pong");
+        window.dispatchEvent(new PopStateEvent("popstate"));
+      });
+    }
+
     document.getElementById("nextMatchBtn").addEventListener("click", () => {
       socket.emit("tournament:nextMatch", { tournamentId });
     });
@@ -137,12 +145,8 @@ export default class extends ViewTemplate {
     // if your router passes params, use them
     if (this.tournamentId) return this.tournamentId;
 
-    // fallback parsing: /tournament/<id>
-    // const parts = location.pathname.split("/").filter(Boolean);
-    // if (parts[0] === "tournament" && parts[1]) return parts[1];
-
-    const storedId = sessionStorage.getItem("currentTournamentId");
-    if (storedId) return storedId;
+    const storedTournamentId = sessionStorage.getItem("currentTournamentId");
+    if (storedTournamentId) return storedTournamentId;
     return null;
   }
 
