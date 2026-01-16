@@ -27,7 +27,7 @@ async function userRoutes(fastify) {
 				}
 			}
 		}, 
-		loginHandler //add basic authentication scheme base 64 name:password in header
+		loginHandler
 	);
 	
 	fastify.get(
@@ -49,7 +49,7 @@ async function userRoutes(fastify) {
                 }
             }
         }, 
-        loginMatchHandler //add basic authentication scheme base 64 name:password in header
+        loginMatchHandler
     );
 
 	fastify.post(
@@ -66,7 +66,7 @@ async function userRoutes(fastify) {
         check2faHandler
     );
 
-	fastify.get(
+	fastify.post(
         '/login/refresh', 
         {
             schema: {
@@ -95,10 +95,10 @@ async function userRoutes(fastify) {
 	fastify.get(
 		'/profile/grab', 
 		{
-			preHandler: [fastify.authenticate], //forces log to see user profile
+			preHandler: [fastify.authenticate],
 			schema: {
 				response: {
-					200: $ref("infoGrabResponseSchema"),
+					200: $ref("infoGrabResponseSchema"), //reponse et schema de reponse ?
 				}
 			}
 		}, 
@@ -108,11 +108,11 @@ async function userRoutes(fastify) {
 	fastify.post(
 		'/profile/edit', 
 		{
-			preHandler: [fastify.authenticate], //forces log to see user profile
+			preHandler: [fastify.authenticate],
 			schema: {
 				body: $ref("profileChangesSchema"),
 				response: {
-					200: $ref("profileChangesResponseSchema"),
+					200: $ref("profileChangesResponseSchema"), //reponse et schema de reponse ?
 				},
 			},
 		}, 
@@ -145,14 +145,14 @@ async function userRoutes(fastify) {
 		activate2faHandler,
 	);
 
-	fastify.post(
+	fastify.patch(
 		'/profile/2fa/verify', 
 		{
 			preHandler: [fastify.authenticate],
 			schema: {
 				body: $ref("twofaSchema"),
 				response: {
-					201: $ref("twofaResponseSchema"),
+					201: $ref("twofaResponseSchema"), //reponse et schema de reponse ?
 				}
 			}
 		}, 
@@ -162,7 +162,13 @@ async function userRoutes(fastify) {
 	fastify.delete(
 		'/profile/2fa/deactivate', 
 		{
-			preHandler: [fastify.authenticate],
+			preHandler: [fastify.authenticate], //reponse et schema de reponse ?
+			// schema: {
+			//	 body: $ref("profileChangesSchema"),
+			//	 response: {
+			//		 200: $ref("profileChangesResponseSchema"),
+			//	 },
+			// },
 		}, 
 		deactivate2faHandler,
 	);
@@ -191,7 +197,7 @@ async function userRoutes(fastify) {
 		{
 			preHandler: [fastify.authenticate],
 			schema: {
-				body: $ref("friendRequestSchema"),
+				body: $ref("friendRequestSchema"), //reponse et schema de reponse ?
 			},
 		},
 		friendRequestHandler // returns newFriend even with no response clause
@@ -202,7 +208,7 @@ async function userRoutes(fastify) {
 		{
 			preHandler: [fastify.authenticate],
 			schema: {
-				body: $ref("friendAcceptSchema"),
+				body: $ref("friendAcceptSchema"), //reponse et schema de reponse ?
 			},
 		},
 		friendAcceptHandler
@@ -213,7 +219,7 @@ async function userRoutes(fastify) {
 		{
 			preHandler: [fastify.authenticate],
 			schema: {
-				body: $ref("friendRejectSchema"),
+				body: $ref("friendRejectSchema"), //reponse et schema de reponse ?
 			},
 		},
 		friendRejectHandler
@@ -224,7 +230,7 @@ async function userRoutes(fastify) {
 		{
 			preHandler: [fastify.authenticate],
 			schema: {
-				body: $ref("friendDeleteSchema"),
+				body: $ref("friendDeleteSchema"), //reponse et schema de reponse ?
 			},
 		},
 		friendDeleteHandler
@@ -236,7 +242,7 @@ async function userRoutes(fastify) {
 			preHandler: [fastify.authenticate],
 			schema: {
 				response: {
-					200: $ref("friendRequestResponseSchema")
+					200: $ref("friendRequestResponseSchema") //reponse et schema de reponse ?
 				},
 			},
 		},
@@ -249,7 +255,7 @@ async function userRoutes(fastify) {
 			preHandler: [fastify.authenticate],
 			schema: {
 				response: {
-					200: $ref("friendsArrayResponseSchema")
+					200: $ref("friendsArrayResponseSchema") //reponse et schema de reponse ?
 				},
 			},
 		},
