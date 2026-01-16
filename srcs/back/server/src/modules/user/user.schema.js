@@ -75,6 +75,16 @@ const friendAcceptSchema = z.object({
 	friendAcceptId: z.number()
 })
 
+const friendAcceptResponseSchema = z.object({
+	friendname: z.string(),
+	message: z.string()
+})
+
+const friendDeleteResponseSchema = z.object({
+	removedName: z.string(),
+	message: z.string()
+})
+
 const friendRejectSchema = z.object({
 	friendRejectId: z.number()
 })
@@ -106,7 +116,7 @@ const friendRequestResponseSchema = z.object({
 });
 
 const fileUploadResponseSchema = z.object({
-  path: z.string().min(1),
+  path: z.string().min(1).max(255).regex(/^[a-zA-Z0-9._-]+$/)
 });
 
 export const { schemas: userSchemas, $ref } = buildJsonSchemas({
@@ -124,6 +134,8 @@ export const { schemas: userSchemas, $ref } = buildJsonSchemas({
 	editPasswordSchema,
 	friendRequestSchema,
 	friendAcceptSchema,
+	friendAcceptResponseSchema,
+	friendDeleteResponseSchema,
 	friendItemSchema,
 	friendRequestItemSchema,
 	friendsArrayResponseSchema,
