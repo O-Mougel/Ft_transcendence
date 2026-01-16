@@ -4,37 +4,37 @@ export default class extends ViewTemplate {
 	constructor()
 	{
 		super();
-		this.setTitle("Welcome !");
+		this.setTitle("Profile");
 	}
 
 	async getHTML() {
 		return `
-			<div id="profilePanel" class="flex absolute right-0 top-0 h-full min-w-80 w-[20%] bg-[url(/img/stars.gif)] z-50 shadow-[0_0_20px_rgba(158,202,237,0.9)] border border-[#98c6f8] overflow-auto">
+			<div id="profilePanel" class="hidden absolute animate-slide-in-left right-0 top-0 h-full min-w-80 w-[20%] bg-[url(/img/assets/stars.gif)] z-50 shadow-[0_0_20px_rgba(158,202,237,0.9)] border border-[#98c6f8] overflow-auto">
 				<div class="flex flex-col text-center w-full h-full">
 					<div class="grid h-[30%] place-items-center">
-  						<div id="sidePannelPfp" class="bg-[url(/img/sillyDog.gif)] bg-cover p-4 rounded-[50%] opacity-0 shadow object-cover w-[170px] h-[170px]"></div>
+						<div id="sidePannelPfp" class="bg-[url(/img/userPfp/default.png] bg-cover p-4 rounded-[50%] opacity-0 shadow object-cover w-[170px] h-[170px]"></div>
 					</div>
-					<h1 id="playerGrabbedUsername" class="text-black text-bold mx-4 mb-15 text-2xl ">[username]</h1>
-					<a href="/profileStats" class="mx-4 text-2xl mb-5 border p-4 text-[#798490] hover:text-[#98c6f8]" name="profileLink" data-link>View my profile</a>
+					<h1 id="playerGrabbedUsername" class="text-black text-bold mx-4 mb-10 text-2xl ">[username]</h1>
+					<a href="/profileStats" class="mx-4 text-2xl mb-5 border p-4 text-[#798490] hover:text-[#98c6f8]" name="profileLink" data-link>View profile</a>
 					<a href="/customizeProfile" class="mx-4 text-2xl mb-5 border p-4 text-[#798490] hover:text-[#98c6f8]" name="profileLink" data-link>Update profile</a>
-					<a id="logoutButton" class="mx-4 text-2xl mb-15 border p-4 cursor-pointer hover:text-[#dee9f4] hover:bg-[#882639] text-[#882639]" onclick=logoutUser() name="logoutButtonName">➜] Log out</a>
-					<div class="self-start">
+					<a id="logoutButton" class="mx-4 text-2xl mb-8 border p-4 cursor-pointer hover:text-[#dee9f4] hover:bg-[#882639] text-[#882639]" onclick=logoutUser() name="logoutButtonName">➜] Log out</a>
+					<div class="self-start px-4">
 						<input class="sr-only peer" id="friendCheck" type="checkbox"/>
-						<label for="friendCheck" class="text-2xl cursor-pointer px-3 py-2 select-none hover:text-[#98c6f8]">► Friend list</label>
-						<ul class="select-none peer-checked:block hidden mt-3 self-start text-left" id="friendlist"></ul>
+						<label for="friendCheck" class="text-2xl cursor-pointer py-2 mb-10 select-none hover:text-[#98c6f8]">➤ Friend list</label>
+						<ul class="select-none peer-checked:block hidden mt-3 ml-2 self-start text-left animate-slide-fade-up" id="friendlist"></ul>
 					</div>
-					<div id="pendingRequestBlock" class="w-full mt-3 px-4 hidden">
+					<div id="pendingRequestBlock" class="w-full mt-8 px-4 hidden">
 							<input class="sr-only peer" id="requestCheck" type="checkbox" />
-							<label for="requestCheck" id="requestCheckLabel" class="text-xl cursor-pointer px-3 py-2 select-none hover:text-[#98c6f8] ">
+							<label for="requestCheck" id="requestCheckLabel" class="text-xl cursor-pointer mt-10 px-3 py-2 select-none hover:text-[#98c6f8] ">
 								► Requests
 							</label>
-							<ul id="requestList" class="select-none peer-checked:block hidden mt-3 self-start text-left"></ul>
+							<ul id="requestList" class="select-none peer-checked:block hidden mt-3 self-start text-left animate-slide-fade-up"></ul>
 					</div>
 					<div class="w-full mt-3 px-4 flex">
 						<div class="w-[85%] max-w-60">
-							<div class="flex items-center">
-								<input id="friendSearchInput" type="text" placeholder="Add friend" class="w-1/4 h-8 px-2 rounded-l-md border border-white bg-transparent text-white focus:outline-none text-sm" />
-								<button id="friendSearchButton" class="w-1/4 h-8 bg-[#98c6f8] text-black rounded-r-md text-sm" onclick=sendNewFriendRequest()>🔍</button>
+							<div class="flex items-center py-2 w-full mt-5">
+								<input id="friendSearchInput" type="text" placeholder="Add friend" maxlength="13" class="h-8 px-2 rounded-l-md border border-white bg-transparent text-white focus:outline-none text-sm" />
+								<button id="friendSearchButton" class=" h-8 bg-[#98c6f8] text-black rounded-r-md text-sm" onclick=sendNewFriendRequest()>🔍</button>
 							</div>
 							<p id="friendSearchResults" class="mt-4 text-base text-ellipsis"></p>
 						</div>
@@ -43,13 +43,13 @@ export default class extends ViewTemplate {
 			</div>
 			<div class="pt-[3%]">
 			</div>
-			<div class="pt-[3%] flex flex-col gap-y-4 items-center mx-[3%] px-4 rounded-xl outline-none border border-blue-300 bg-[url(/img/stars.gif)] bg-cover bg-center shadow-[0_0_20px_rgba(158,202,237,0.9)]">
+			<div class="pt-[3%] flex flex-col gap-y-4 items-center mx-[3%] px-4 rounded-xl outline-none border border-blue-300 bg-[url(/img/assets/stars.gif)] bg-cover bg-center shadow-[0_0_20px_rgba(158,202,237,0.9)]">
 				<h1>Statistics :</h1>
 				<div class="flex items-center">
-					<h2 id="playerUsernameProfile" class="text-center pr-2">[username]</h2>
+					<h2 id="playerUsernameProfile" class="text-center pr-2"><u>[username]</u></h2>
 					<img id="userPfpProfile" src="./img/userPfp/default.png" alt="userPfpImg" class="pl-2 pt-4 w-20 h-20 sm:w-[120px] sm:h-[120px] object-cover shrink-0" />
 				</div>
-				<div class="flex border border-white rounded-lg w-full p-4 gap-4 flex-wrap justify-between">
+				<div class="flex border border-white rounded-lg w-full p-4 gap-4 flex-wrap justify-between animate-fade-in-scale">
 					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
 						<p>Match played</p>
 						<p id="nbOfMatchCpt">0</p>
@@ -70,13 +70,12 @@ export default class extends ViewTemplate {
 				<div>
 					<h2>Select a friend to see his stats :</h2>
 					<div class="flex w-full">
-						<ul id="friendlistProfileParent" class="flex flex-wrap justify-center gap-4 w-full pt-4">
-							<li class="w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg">My stats</li>
+						<ul id="friendlistProfileParent" class="flex flex-wrap justify-center gap-4 w-full pt-4 hover:cursor-pointer ">
 						</ul>
 					</div>
 				</div>
 				<h2 id="selectedPlayerUsernameHeader" class="hidden text-center pr-2 text-blue-900 mt-3">[--]</h2>
-				<div id="friendStatDisplayBox" class="hidden border border-white rounded-lg w-full p-4 gap-4 flex-wrap justify-between">
+				<div id="friendStatDisplayBox" class="hidden border border-white rounded-lg w-full p-4 gap-4 flex-wrap justify-between animate-fade-in-scale">
 					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
 						<p>Match played</p>
 						<p id="nbOfMatchCpt2">--</p>
@@ -95,14 +94,16 @@ export default class extends ViewTemplate {
 					</div>
 				</div>
 				<h3>Remove a friend :</h3>
-				<select id="selectBoxFriendRemover" class="h-full border bg-black">
+				<div>
+				<select id="selectBoxFriendRemover" class="h-full border bg-black hover:cursor-pointer">
 					<option value="dummyvalue">--Select a friend--</option>
 				</select>
-				<a class="uppercase px-5 focus:outline-none bg-red-500 text-ellipsis border rounded-lg" onclick="confirmFriendRemoval()" name="confirmFriendRemoval" >Remove</a>
+				<a class="uppercase px-5 focus:outline-none bg-red-500 text-ellipsis border rounded-lg hover:cursor-pointer hover:bg-[#d41626]" onclick="confirmFriendRemoval()" name="confirmFriendRemoval" >Remove</a>
+				</div>
 				<div class="sm:pt-10">
 				</div>
 				<div class="">
-					<a tabindex="5" class="uppercase px-5 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg" name="gotoMainMenu" href="/" data-link>Back to menu</a>
+					<a tabindex="5" class="uppercase px-5 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg" name="gotoMainMenu" href="/" data-link>🚀 Back to menu</a>
 				</div>	
 				<div class="pb-2 sm:pb-12">
 				</div>

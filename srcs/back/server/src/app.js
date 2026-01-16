@@ -14,30 +14,90 @@ fastify.register(fjwt, {
     secret: process.env.JWT_SECRET
 });
 
-fastify.decorate(
-    'authenticate',
-    async (request, reply) => {
-        const token = request.cookies.access_token;
+fastify.decorate('authenticate',
+	async (request, reply) => {
+		try {
+			const auth = request.headers.authorization;
+			// console.log()
 
-        if (!token) {
-            return reply.status(401).send({ message: 'Authentication required' })
-        }
-        const decoded = request.jwt.verify(token)
-        request.user = decoded
-    }
+			if (!auth || !auth.startsWith("Bearer ")) {
+				return reply.status(401).send({ message: 'Authentication required', errRef:"authBearerMissing"});
+			}
+
+			const token = auth.split(" ")[1];
+
+			const decoded = fastify.jwt.verify(token)
+			if (decoded.type != "access")
+				return reply.status(401).send({ message: 'Invalid token to access this path' })
+			request.user = decoded
+		} catch(err) {
+			return reply.status(401).send({ message: 'Invalid or expired JWT', errRef:"expiredJWT"})
+		}
+	}
 );
 
-fastify.decorate(
-    'twofaauthenticate',
-    async (request, reply) => {
-        const token = request.cookies.temp_token;
+fastify.decorate('logoutauthenticate',
+	async (request, reply) => {
+		try {
+			const auth = request.headers.authorization;
 
-        if (!token) {
-            return reply.status(401).send({ message: 'Authentication required' })
-        }
-        const decoded = request.jwt.verify(token)
-        request.user = decoded
-    }
+			if (!auth || !auth.startsWith("Bearer ")) {
+				return reply.status(401).send({ message: 'Authentication required' , errRef:"authBearerMissing"});
+			}
+
+			const token = auth.split(" ")[1];
+
+			const decoded = fastify.jwt.verify(token)
+			if (decoded.scope == "match")
+				return reply.status(401).send({ message: 'Invalid token to access this path' })
+			request.user = decoded
+		} catch(err) {
+			return reply.status(401).send({ message: 'Invalid or expired JWT', errRef:"expiredJWT"})
+		}
+	}
+);
+
+fastify.decorate('twofaauthenticate',
+	async (request, reply) => {
+		try {
+			const auth = request.headers.authorization;
+
+			if (!auth || !auth.startsWith("Bearer ")) {
+				return reply.status(401).send({ message: 'Authentication required', errRef:"authBearerMissing"});
+			}
+
+			const token = auth.split(" ")[1];
+			const decoded = fastify.jwt.verify(token)
+
+			if (decoded.type != "2fa")
+				return reply.status(401).send({ message: "token type is not for 2fa!" })
+			request.user = decoded
+		} catch(err) {
+			console.log(" err:", err);
+			return reply.status(401).send({ message: 'Invalid or expired JWT', errRef:"expiredJWT"})
+		}
+	}
+);
+
+fastify.decorate('matchauthenticate',
+	async (request, reply) => {
+		try {
+			const auth = request.headers.authorization;
+
+			if (!auth || !auth.startsWith("Bearer ")) {
+				return reply.status(401).send({ message: 'Authentication required', errRef:"authBearerMissing"});
+			}
+
+			const token = auth.split(" ")[1];
+
+			const decoded = fastify.jwt.verify(token)
+			if (decoded.type == "2fa")
+				return reply.status(401).send({ message: 'Invalid token to access this path' })
+			request.user = decoded
+		} catch(err) {
+			return reply.status(401).send({ message: 'Invalid or expired JWT', errRef:"authBearerMissing"})
+		}
+	}
 );
 
 fastify.addHook('preHandler', (req, res, next) => {

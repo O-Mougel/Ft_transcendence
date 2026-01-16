@@ -1,52 +1,72 @@
 // user.controller.js
+
 //// For File upload
 import fs from 'fs';
 import path from 'path'; //save path manip
 import crypto from 'crypto'; //random file name
 import { pipeline } from 'stream/promises'; //file writing
 /////
-import speakeasy from 'speakeasy';
-import QRCode from 'qrcode';
-import { createUser, findUserByName, findUserById, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend, rejectfriend, deletefriend, savesecret2fa, deletesecret2fa, activate2fa, get2fastatus } from "./user.service.js";
+import { createUser, findUserByName, findUserById, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend, rejectfriend, deletefriend, deletesecret2fa, activate2fa, get2fastatus, saveRefreshToken, findToken, rotateRefreshToken, deleteAllForUser, deleteRefreshToken } from "./user.service.js";
 import { verifyPassword } from "../../utils/hash.js";
+import { generateAccessToken, generateRefreshToken, generate2faToken, generateMatchToken } from "../../utils/token.js";
+import { generateSecret, verify2fa } from "../../utils/twofa.js"
 
 export async function registerUserHandler(request, reply) {
+
 	const body = request.body;
+	const name = await findUserByName(body.name);
 
-    const name = await findUserByName(body.name);
-	// const name = await checkIfUserExists(body.name);
+	const { passwordconfirmation, ...rest } = body;
+	if (name) {	
+		return reply.status(409).send({
+			message: "Username already used. Try again!",
+			errRef:"registerNameTaken"
+		});
+	};
 
-    if (name) {	
-        return reply.status(400).send({
-            message: "Username already used. Try again!"
-        });
-    };
+	if (body.password != body.passwordconfirmation)
+		return reply.status(400).send({
+			message: "Password confirmation doesn't match with previous password. Try again!"
+		});
 
-	//check for error before sending to database 
-    try {
-        const user = await createUser(body);
-        return reply.status(201).send(user);
-        
-    } catch (error) {
-        console.error(error);
-        return reply.status(500).send({
-            message: "Email address already used. Try again!", //doesn't cover enough cases
-			error:error
-        });
-    }
+	try {
+		const user = await createUser({...rest});
+
+		const accessToken = generateAccessToken(request.server, user);
+		const refreshToken = generateRefreshToken();
+
+		await saveRefreshToken(user.id, refreshToken)
+
+		reply.setCookie('refresh_token', refreshToken, {
+			path: '/',
+			maxAge: 14 * 24 * 60 * 60 * 1000,
+			httpOnly: true,
+			secure: true,
+			sameSite: "strict"
+		})
+
+		setOnlineStatus(user.id, true)
+		return reply.code(201).send({ require2fa: false, token: accessToken });
+
+	} catch (error) {
+		return reply.status(409).send({
+			message: "Email address already used !",
+			errRef:"registerEmailTaken"
+		});
+	}
 }
 
 export async function dataGrabHandler(request, reply) {
 
 	const userId = request.user && request.user.id;
-	if (!userId) return reply.code(401).send({ message: 'Not authenticated !' }); //will never fall here 
+	if (!userId) return reply.code(401).send({ message: 'Not authenticated !'}); //never called in theory, the fastify decorate does it first
 
-    try {
-        const user = await findUserById(userId);
+	try {
+		const user = await findUserById(userId);
 		if (!user) return reply.code(404).send({ message: 'User not found using access token'});
 		// fields should be deleted if we send whole user, or instead just send username or stats
-        return reply.status(200).send(user);
-        
+		return reply.status(200).send(user);
+
 	} catch (error) {
 		console.error(error);
 		return reply.status(500).send({
@@ -61,12 +81,13 @@ export async function loginHandler(request, reply) {
 
 	//use basic authentication schema
 	//check if someone is already logged ??
-	
+
 	const user = await findUserByName(body.name);
 
 	if (!user) {
-		return reply.status(400).send({
-			message: "Invalid name. Try again!"
+		return reply.status(404).send({
+			message: "Invalid name. Try again!",
+			errRef:"loginInvalidName"
 		});
 	};
 
@@ -76,159 +97,210 @@ export async function loginHandler(request, reply) {
 		user.password);
 
 	if (!isValidPassword) {
-		return reply.status(400).send({
-			message: "Password is incorrect"
+		return reply.status(401).send({
+			message: "Password is incorrect",
+			errRef:"loginInvalidPwd"
 		});
 	};
 
 	if (user.auth2fa) {
 
-		const payload = {
-			id: user.id,
-			type: "2fa"
-		}
-		const tempToken = request.jwt.sign(payload, request.jwt.secret, { expiresIn: "5min" } );
+		const tempToken = generate2faToken(request.server, user)
 
-		reply.setCookie('temp_token', tempToken, {
-			path: '/',
-			maxAge: 1000,
-			httpOnly: true,
-			secure: true,
-		})
-
-		return { require2fa: true, Token: tempToken };
+		
+		return reply.code(201).send({ require2fa: true, token: tempToken });
 	}
 
-	const payload = {
-		id: user.id,
-        email: user.email,
-        name: user.name,
-    }
-    const token = request.jwt.sign(payload, request.jwt.secret, { expiresIn: "30min" } );
+	const accessToken = generateAccessToken(request.server, user);
+	const refreshToken = generateRefreshToken();
 
-    reply.setCookie('access_token', token, {
-        path: '/',
-        maxAge: 1000,
-        httpOnly: true,
-        secure: true,
-    })
+	await saveRefreshToken(user.id, refreshToken)
+
+	reply.setCookie('refresh_token', refreshToken, {
+		path: '/',
+		maxAge: 14 * 24 * 60 * 60 * 1000,
+		httpOnly: true,
+		secure: true,
+		sameSite: "strict"
+	})
 
 	setOnlineStatus(user.id, true)
+	return reply.code(201).send({ require2fa: false, token: accessToken});
+}
 
-    return { require2fa: false, Token: token }
+export async function loginMatchHandler(request, reply) {
+	const body = request.body;
+
+	//use basic authentication schema
+
+	const user = await findUserByName(body.name);
+
+	if (!user) {
+		return reply.status(404).send({
+			message: "Invalid name. Try again!",
+			errRef:"loginMatchUserNotFound"
+		});
+	};
+
+	const isValidPassword = verifyPassword(
+		body.password,
+		user.salt,
+		user.password);
+
+	if (!isValidPassword) {
+		return reply.status(401).send({
+			message: "Password is incorrect",
+			errRef:"loginMatchInvalidPwd"
+		});
+	};
+
+	if (user.auth2fa) {
+
+		const tempToken = generate2faMatchToken(request.server, user)
+		return reply.code(201).send({ require2fa: true, token: tempToken });
+	}
+
+	const matchToken = generateMatchToken(request.server, user);
+
+	return reply.code(201).send({ require2fa: false, token: matchToken });
+
 }
 
 export async function check2faHandler(request, reply) {
 	const code = request.body.code
 
-	// // middleware auth temporaire
-	// const payload = verifyTempToken(req.headers.authorization);
-	// const userId = payload.userId;
-	//
-	// const user = await prisma.user.findUnique({ where: { id: userId } });
-	//
-	//
-	//
-	//
-	//if (request.user.type == "2fa")
-	//refuse if no password previousely
-
 	const user = await findUserById(request.user.id)
 	if (!user || !user.twofasecret) {
-		return reply.status(400).send({
-			message: "2fa non configure!"
+		return reply.status(403).send({
+			message: "2fa not configured!",
+			errRef:"verify2FANotSetUp"
 		});
 	};
 
-	const isValid = speakeasy.totp.verify({
-		secret: user.twofasecret,
-		encoding: 'base32',
-		token: code,
-		window: 1
-	});
+	const isValid = verify2fa(user.twofasecret, code)
 
 	if (!isValid) {
-		return reply.status(400).send({
-			message: "Code 2FA invalide"
+		return reply.status(401).send({
+			message: "Invalid 2FA code",
+			errRef:"verifyInvalidCode"
 		});
+	}
+
+	if (request.user.scope == "match") {
+		const matchToken = generateMatchToken(request.server, user);
+
+		return reply.code(200).send({ matchToken });
 	}
 
 	if (!user.auth2fa) {
 		await activate2fa(user.id)
-		return { message: "2fa activated !" }
+		return reply.code(200).send({ message: "2fa activated !" });
 	}
 
-	else {
-		const payload = {
-			id: user.id,
-			email: user.email,
-			name: user.name,
-		}
-		const token = request.jwt.sign(payload, request.jwt.secret, { expiresIn: "30min" } );
-		reply.clearCookie('temp_token');
+	const accessToken = generateAccessToken(request.server, user);
+	const refreshToken = generateRefreshToken();
 
-		reply.setCookie('access_token', token, {
-			path: '/',
-			maxAge: 1000,
-			httpOnly: true,
-			secure: true,
-		})
+	await saveRefreshToken(user.id, refreshToken)
 
-		await setOnlineStatus(user.id, true)
+	reply.setCookie('refresh_token', refreshToken, {
+		path: '/',
+		maxAge: 14 * 24 * 60 * 60 * 1000,
+		httpOnly: true,
+		secure: true,
+		sameSite: "strict"
+	})
 
-		return { accessToken: token }
+	await setOnlineStatus(user.id, true)
+
+	return reply.code(201).send({ newAccessToken: accessToken });
+}
+
+export async function refreshTokenHandler(request, reply) {
+	const token = request.cookies.refresh_token;
+	if (!token) return reply.status(412).send({ message: 'Refresh token missing' })
+
+	const stored = await findToken(token)
+
+	reply.clearCookie("refresh_token");
+
+	if (!stored) {
+		return reply.status(403).send({ message: "Invalid refresh_token !" });
 	}
+	
+	await setOnlineStatus(stored.user_id, false)
+
+	const now = Date.now()
+	if (stored.expires_at < now) {
+		await deleteAllForUser(stored.user_id)
+		return reply.status(403).send({ message: "Expired refresh_token !" });
+	}
+
+	// rotation
+	const refreshToken = await rotateRefreshToken(stored.user_id, token)
+	const user = await findUserById(stored.user_id);
+	const newAccessToken = generateAccessToken(request.server, user);
+	reply.setCookie('refresh_token', refreshToken, {
+		path: '/',
+		maxAge: 14 * 24 * 60 * 60 * 1000,
+		httpOnly: true,
+		secure: true,
+		sameSite: "strict"
+	})
+
+	await setOnlineStatus(user.id, true)
+
+	return reply.code(201).send({newAccessToken: newAccessToken});
 }
 
 export async function alterUserHandler(request, reply) {
 
-    const body = request.body;  //what we want to change
+	const body = request.body;	//what we want to change
 	const userId = request.user && request.user.id; // who made the request (token)
-	if (!userId) return reply.code(401).send({ message: 'Not authenticated !' });
+	if (!userId) return reply.code(401).send({ message: 'Not authenticated !', errRef:"NotAuthUser" });
 
 	const target = await findUserById(userId);
-    if (!target) {
-        return reply.status(400).send({
-            message: "Error ! Couln't find user !"
-        });
-    };
+	if (!target) {
+		return reply.status(404).send({
+			message: "Error ! Couln't find user !", errRef:"alterUserNotFound"
+		});
+	};
 
-    // Verify password
-	// add activation of 2fa authentification
-    const isValidPassword = verifyPassword(
-        body.password,
-        target.salt,
-        target.password);
+	// Verify password
+	const isValidPassword = verifyPassword(
+		body.password,
+		target.salt,
+		target.password);
 
-    if (!isValidPassword) {
-        return reply.status(400).send({
-            message: "Password is incorrect"});
-    };
+	if (!isValidPassword) {
+		return reply.status(401).send({
+			message: "Password is incorrect", errRef:"alterPwdIncorrect"});
+	};
 
 	if (target.name != body.name)
 	{
 		const newname = await findUserByName(body.name);
 		if (newname) {	
-			return reply.status(400).send({
-				message: "Username already used. Try again!"
+			return reply.status(409).send({
+				message: "Username already used. Try again!", errRef:"alterUsernameTaken"
 			});
 		};
 	}
 
 	const updatedUser = await alterUser(userId, body.name, body.avatar);
 	if (!updatedUser) {
-        return reply.status(400).send({
-            message: "Error ! Couln't modify user !"
-        });
-    };
-	return reply.status(200).send(updatedUser); // not really needed, just to send something
+		return reply.status(500).send({
+			message: "Error ! Couln't modify user !", errRef:"alterInnerFail"
+		});
+	};
+	return reply.status(200).send(updatedUser);
 }
 
 export async function get2fastatusHandler(request, reply)
 {
 	const status = await get2fastatus(request.user.id)
 
-	return { twofastatus: status.auth2fa }
+
+	return reply.code(200).send({ twofastatus: status.auth2fa });
 }
 
 export async function activate2faHandler(request, reply) {
@@ -236,17 +308,13 @@ export async function activate2faHandler(request, reply) {
 	const user = await findUserById(request.user.id)
 
 	if (user.auth2fa)
-        return reply.status(400).send({
-            message: "2fa already activated !"
-        });
-		
-	const secret = speakeasy.generateSecret({
-		name: `Ft_transcendence (${user.name})`
+	return reply.status(403).send({
+		message: "2fa already activated !",
+		errRef:"2FAIsAlreadyUp"
 	});
 
-	const qrCode = await QRCode.toDataURL(secret.otpauth_url);
-	await savesecret2fa(user.id, secret.base32)
-	return { qrCode: qrCode }
+	const qrCodeSecret = await generateSecret(user.name, user.id)
+	return reply.code(200).send({ qrCode: qrCodeSecret });
 }
 
 export async function deactivate2faHandler(request, reply) {
@@ -254,40 +322,70 @@ export async function deactivate2faHandler(request, reply) {
 	const user = await findUserById(request.user.id)
 
 	if (!user.auth2fa)
-        return reply.status(400).send({
-            message: "2fa not activated !"
-        });
+	return reply.status(403).send({
+		message: "2fa already deactivated !",
+		errRef:"2FAIsAlreadyDisabled"
+	});
 	await deletesecret2fa(user.id)
 	//send reply that it worked
-	
+
 	return reply.status(200).send({ message: '2fa deactivated successfully'});
 }
 
 export async function logoutHandler(request, reply) {
-    reply.clearCookie('access_token');
 
-	// setOnlineStatus(request.user.id, false)
+	const token = request.cookies.refreshToken;
 
-    return reply.status(200).send({ message: 'Logout successfully'});
+	try {
+		await setOnlineStatus(request.user.id, false)
+		if (token)
+			deleteRefreshToken(token)
+		reply.clearCookie("refresh_token");
+		return reply.status(201).send({ message: "Logged out..." });
+
+	} catch (err) {
+		return reply.status(500).send({
+			message: "Internal server error on logout !"
+		});
+	}
+	
 }
 
-export async function editPasswordHandler(request, reply) {
+export async function editPasswordHandler(request, reply) { //check twice the password and confirmation
+	
 	const body = request.body;
+	const user = await findUserById(request.user.id);
 
-    const isValidPassword = verifyPassword(
-        body.oldpassword,
-        user.salt,
-        user.password);
+	if (!user) {
+		return reply.status(500).send({
+			message: "User not found in database",
+			errRef:"editPasswordInnerFail"
+		});
+	}
 
-    if (!isValidPassword) {
-        return reply.status(400).send({
-            message: "Password is incorrect"
-        });
-    };
+	const isValidPassword = verifyPassword(
+		body.oldpassword,
+		user.salt,
+		user.password);
 
-	const newuser = changePassword(user.id, body.newpassword);
+	if (!isValidPassword) {
+		return reply.status(401).send({
+			message: "Password is incorrect",
+			errRef: "editPwdIncorrectCredentials"
+		});
+	};
 
-    return { newuser }
+	if (body.password != body.passwordconfirmation) {
+		return reply.status(400).send({
+			message: "Password confirmation doesn't match with previous password. Try again!"
+		});
+	}
+
+	changePassword(user.id, body.newpassword);
+
+	return reply.status(200).send({
+		message: "Password edited successfully!"
+	});
 }
 
 export async function friendRequestHandler(request, reply) {
@@ -296,30 +394,36 @@ export async function friendRequestHandler(request, reply) {
 	const newfriend = await findUserByName(newfriendname)
 
 	if (!newfriend)
-        return reply.status(400).send({
-            message: "Username doesn't exist. Try again!"
-        });
-	
+	return reply.status(404).send({
+		message: "Username doesn't exist. Try again!",
+		errRef:"requestUserNotFound"
+	});
+
 	if (request.user.id == newfriend.id)
 	{
-        return reply.status(400).send({
-            message: "You can't ask yourself as a friend!"
-        }); 
+		return reply.status(403).send({
+			message: "You can't ask yourself as a friend!",
+			errRef:"requestSelfFriend"
+		}); 
 	}
-	
+
 	if (await alreadyrequested(request.user.id, newfriend.id))
-        return reply.status(400).send({
-            message: "You already requested this user as a friend, just be patient and wait for his response"
-        });
+	return reply.status(403).send({
+		message: "You already requested this user as a friend, wait for his response first !",
+		errRef:"requestStillPending"
+	});
 
 	if (await alreadyfriend(request.user.id, newfriend.id))
-        return reply.status(400).send({
-            message: "This user is already your friend!"
-        });
+	return reply.status(409).send({
+		message: "This user is already your friend!",
+		errRef:"requestAlreadyFriend"
+	});
 
-	await requestfriend(request.user.id, newfriend.id)
-	
-    return { newfriend } // not sure
+	await requestfriend(request.user.id, newfriend.id) //try catch ?
+
+	return reply.status(200).send({
+		message: "Request sent!"
+	});
 }
 
 export async function friendAcceptHandler(request, reply) {
@@ -328,26 +432,29 @@ export async function friendAcceptHandler(request, reply) {
 	const newfriend = await findUserByName(newfriendname)
 
 	if (!newfriend)
-        return reply.status(400).send({
-            message: "Username doesn't exist. Try again!"
-        });
-	
+	return reply.status(404).send({
+		message: "Username doesn't exist. Try again!",
+		errRef:"requestUserNotFound"
+	});
+
 	if (!await alreadyrequested(newfriend.id, request.user.id))
-        return reply.status(400).send({
-            message: "This user didn't send you request, make one yourself if you want to be friend with him"
-        });
+	return reply.status(403).send({
+		message: "This user didn't send you a request, send him one if you want to be friend with him",
+		errRef:"requestCantAccept"
+	});
 
 	if (await alreadyfriend(request.user.id, newfriend.id))
-        return reply.status(400).send({
-            message: "This user is already your friend!"
-        });
+	return reply.status(409).send({
+		message: "This user is already your friend!",
+		errRef:"requestAlreadyFriend"
+	});
 
 	await acceptfriend(request.user.id, newfriend.id)
 
-	// return { newfriend } // NOT SURE
+	// return { newfriend } // NO
 	return reply.status(201).send({
-            message: "New friend added !"
-        }); 
+		message: "New friend added !"
+	}); 
 }
 
 export async function friendRejectHandler(request, reply) {
@@ -356,25 +463,28 @@ export async function friendRejectHandler(request, reply) {
 	const friend = await findUserByName(friendname)
 
 	if (!friend)
-        return reply.status(400).send({
-            message: "Username doesn't exist. Try again!"
-        });
-	
+	return reply.status(404).send({
+		message: "Username doesn't exist. Try again!",
+		errRef:"requestUserNotFound"
+	});
+
 	if (!await alreadyrequested(friend.id, request.user.id))
-        return reply.status(400).send({
-            message: "This user didn't send you request"
-        });
+	return reply.status(403).send({
+		message: "This user didn't send you request",
+		errRef:"requestCantAccept"
+	});
 
 	if (await alreadyfriend(request.user.id, friend.id))
-        return reply.status(400).send({
-            message: "This user is already your friend!"
-        });
+	return reply.status(409).send({
+		message: "This user is already your friend!",
+		errRef:"requestAlreadyFriend"
+	});
 
 	await rejectfriend(request.user.id, friend.id) // can fail ??????
 
 	return reply.status(201).send({
-            message: "Request rejected !"
-        }); 
+		message: "Request rejected !"
+	}); 
 }
 
 export async function friendDeleteHandler(request, reply) {
@@ -383,14 +493,16 @@ export async function friendDeleteHandler(request, reply) {
 	const friend = await findUserByName(friendname)
 
 	if (!friend)
-        return reply.status(400).send({
-            message: "Username doesn't exist. Try again!"
-        });
+	return reply.status(404).send({
+		message: "Username doesn't exist. Try again!",
+		errRef:"requestUserNotFound"
+	});
 
 	if (!await alreadyfriend(request.user.id, friend.id))
-        return reply.status(400).send({
-            message: "This user is not your friend!"
-        });
+	return reply.status(403).send({
+		message: "This user is not your friend!",
+		errRef:"deteteNotFriends"
+	});
 
 	await deletefriend(request.user.id, friend.id)
 	return reply.status(200).send({ message: "Friend deleted !" });
@@ -398,33 +510,51 @@ export async function friendDeleteHandler(request, reply) {
 
 export async function getFriendRequestHandler(request, reply) {
 	const requestsList = await findrequests(request.user.id)
-	
-	// return { requests }
-	return reply.status(201).send(requestsList);
+
+	return reply.status(200).send(requestsList);
 }
 
 export async function getFriendsHandler(request, reply) {
 	const friendsArray = await findfriends(request.user.id) //check if user.id is read before that ?
 
-	return reply.status(201).send(friendsArray);
+	return reply.status(200).send(friendsArray);
+}
+
+export async function checkLogStatus(request, reply) {
+	return reply.status(200).send({ message: "User is connected !" });
 }
 
 export async function uploadProfilePicHandler(request, reply) {
 
 	if (!request.isMultipart || !request.isMultipart()) // we check if it exists first
-		return reply.code(400).send({ message: 'Expected multipart/form-data' });
+		return reply.code(400).send({ 
+			message: 'Expected multipart/form-data',
+			errRef:"uploadNotMultipart"
+		});
 
 	const uploadedPic = await request.file(); // first file field
 	if (!uploadedPic)
-		return reply.code(400).send({ message: 'No picture uploaded !' });
+		return reply.code(400).send({
+			message: 'No picture uploaded !',
+			errRef:"uploadEmptyFileField"
+		});
 
 	const mimetype = (uploadedPic.mimetype || '').toLowerCase();
 	if (!mimetype || !uploadedPic.filename)
-		return reply.code(400).send({ message: 'Mime type or filename is empty !'});
-  	if (uploadedPic.filename.length <= 0)
-    	return reply.code(400).send({ message: 'Invalid filename ! Must be at least 1 character !'});
+		return reply.code(400).send({
+			message: 'Mime type or filename is empty !',
+			errRef:"uploadEmptyMimeName"
+		});
+	if (uploadedPic.filename.length <= 0)
+		return reply.code(400).send({
+			message: 'Invalid filename ! Must be at least 1 character !',
+			errRef:"uploadNameTooShort"
+		});
 	if (!mimetype.startsWith('image/'))
-    	return reply.code(400).send({ message: 'Only images can be uploaded !'});
+		return reply.code(400).send({
+			message: 'Only images can be uploaded !',
+			errRef:"uploadWrongFiletype"
+		});
 
 	//file upload part 
 	const ext = path.extname(uploadedPic.filename) || '.png'; // if idk, now a png
@@ -438,8 +568,11 @@ export async function uploadProfilePicHandler(request, reply) {
 	}
 	catch (err) 
 	{
-		return reply.code(500).send({ message: 'Failed to save file' });
+		return reply.code(500).send({ 
+			message: 'Failed to write file',
+			errRef:"uploadFailedWrite"
+		});
 	}
-
 	return reply.code(201).send({ path: `./img/userPfp/${savedFilename}` });
 }
+

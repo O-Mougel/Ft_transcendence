@@ -16,15 +16,8 @@ import { findUserByName } from "../user/user.service.js"
 
 export async function createMatch(input) //player1name,player1score,player2name,player2score,winnerName,longestStreak,duration
 {
-	const { player1name, player2name, winnerName, ...rest } = input;
-
-
-	const player1 = await findUserByName(player1name)
-	const player2 = await findUserByName(player2name)
-	const winnerId = winnerName == player1name ? player1.id : player2.id
-
-    const match = await db.match.create({
-    data: { player1Id: player1.id, player2Id: player2.id, winnerId, ...rest }
+	const match = await db.match.create({
+        data: input
     });
 
     return match;
