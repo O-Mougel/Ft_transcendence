@@ -3,7 +3,7 @@ import { backToDefaultPage } from "./userLog.js";
 import { fetchErrcodeHandler } from "./userLog.js";
 import { alertBoxMsg } from "./userLog.js";
 import { displayCorrectErrMsg } from "./userLog.js";
-// import { startTournament } from "./clickTournamentSelectPlayers.js";
+import { startTournament } from "./clickTournamentSelectPlayers.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -210,13 +210,12 @@ window.saveProfileInfo = async function () {
 
 	confirmText.innerText = "";
 
-	alertBoxMsg("CA MARCHE PAS BORDEL"); 
 	if (!username || !password || !confirmText || !fileInput || !userPfp || !selectedFileName) return ;
 	if (!username.value && !selectedFile) // if nothing changed, do nothing
 		return ;
 	if (username)
 	{
-		if (!username.value || username.value.length < 3)
+		if (username.value && username.value.length < 3)
 		{
 			confirmText.innerText = "❌ Username must be at least 3 characters !";
 			username.focus();
