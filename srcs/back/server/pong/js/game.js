@@ -360,23 +360,23 @@ export class Game {
     if (this.mode === 0) {
       this.ball.vx = -1;
       if (data) {
-        this.leftPaddle.name = data.player1;// || "Left Player";
-        this.rightPaddle.name = data.player2;// || "AI Opponent";
+        this.leftPaddle.name = data.player1;
+        this.rightPaddle.name = data.player2;
       }
       this.AIPlayer = new AIPlayer(this.rightPaddle, this.leftPaddle, this);
       console.log('Player name:', this.leftPaddle.name, this.rightPaddle.name);
     } else if (this.mode === 1) {
       if (data) {
-        this.leftPaddle.name = data.player1;// || "Left Player";
-        this.rightPaddle.name = data.player2;// || "Right Player";
+        this.leftPaddle.name = data.player1;
+        this.rightPaddle.name = data.player2;
       }
       console.log('Player names:', this.leftPaddle.name, this.rightPaddle.name);
     } else {
       if (data) {
-        this.leftPaddle.name = data.player1;// || "Left Player 1";
-        this.rightPaddle.name = data.player2;// || "Right Player 1";
-        this.leftPaddle2.name = data.player3;// || "Left Player 2";
-        this.rightPaddle2.name = data.player4;// || "Right Player 2";
+        this.leftPaddle.name = data.player1;
+        this.rightPaddle.name = data.player2;
+        this.leftPaddle2.name = data.player3;
+        this.rightPaddle2.name = data.player4;
       }
       console.log('Player names:', this.leftPaddle.name, this.rightPaddle.name, this.leftPaddle2.name, this.rightPaddle2.name);
     }
