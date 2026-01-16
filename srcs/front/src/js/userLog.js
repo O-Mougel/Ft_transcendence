@@ -431,6 +431,7 @@ const checkForFriendRequests = async () => {
 			{
 				var listItem = document.createElement("li");
 				let	clearName = result.requestOf[i].name + "[42]";
+				let	friendId = result.requestOf[i].id;
 				listItem.className = 'py-2 flex items-center justify-between ml-5';
 				listItem.setAttribute('name', clearName);
 				const jsonString = JSON.stringify(result.requestOf[i].name);
@@ -440,8 +441,8 @@ const checkForFriendRequests = async () => {
 				listItem.innerHTML = `
 				<span class="text-sm">↪ ${safeName}</span>
 				<span class="flex items-center gap-2">
-					<button class="accept-request px-2 py-1 rounded" onclick="acceptFriend('${safeName}')" title="Accept">✅</button>
-					<button class="reject-request px-2 py-1 rounded" onclick="rejectFriend('${safeName}')" title="Reject">❌</button>
+					<button class="accept-request px-2 py-1 rounded" onclick="acceptFriend('${friendId}')" title="Accept">✅</button>
+					<button class="reject-request px-2 py-1 rounded" onclick="rejectFriend('${friendId}')" title="Reject">❌</button>
 				</span>`;
 				requestList.appendChild(listItem);
 			}
