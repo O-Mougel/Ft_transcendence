@@ -6,9 +6,6 @@ import customizeProfile from "../views/customizeProfile.js";
 import profileStats from "../views/profileStats.js";
 import setup2FA from "../views/setup2FA.js";
 import tournamentSize from "../views/tournamentSize.js";
-import tournamentSelect4Players from "../views/tournamentSelect_4Players.js";
-import tournamentSelect8Players from "../views/tournamentSelect_8Players.js";
-import tournamentSelect16Players from "../views/tournamentSelect_16Players.js";
 import newUserRegistration from "../views/newUserRegistration.js";
 import pong from "../views/pong.js";
 import logUser from "../views/login.js";
@@ -41,7 +38,7 @@ window.confirmFriendRemoval = async () =>
 		return ;
 	
 	const data = {
-		frienddeletename: friendRemover2000.value,
+		friendDeleteId: friendRemover2000.value,
 	};
 
 	// 	console.log("frienddeletename : ", friendRemover2000.value);
@@ -63,7 +60,7 @@ window.confirmFriendRemoval = async () =>
 		if (result)
 		{
 			console.log("✅ Removed friend");
-			alertBoxMsg(`✅ Removed \"${data.frienddeletename}\" from friends !`);
+			alertBoxMsg(`✅ Removed \"${result.removedName}\" from friends !`);
 			grabUserStatsAndInfo();
 		}
 	} 
@@ -96,7 +93,7 @@ window.fillFriendRemovalBox = async (friendArray) =>
 		// listItem.className = 'py-2 flex items-center justify-between';
 		listItem.innerHTML = `${friendArray[i].name}`; // TODO : special cases to handle
 		listItem.setAttribute('name', clearName);
-		listItem.setAttribute('value', `${friendArray[i].name}`);
+		listItem.setAttribute('value', `${friendArray[i].id}`);
 		friendRemover2000.appendChild(listItem);
 	}
 }	
@@ -579,9 +576,6 @@ const router = async () => {
 		{ path: "/profileStats", view: profileStats },
 		{ path: "/setup2FA", view: setup2FA },
 		{ path: "/tournamentSize", view: tournamentSize },
-		{ path: "/tournamentSelect_4Players", view: tournamentSelect4Players },
-		{ path: "/tournamentSelect_8Players", view: tournamentSelect8Players },
-		{ path: "/tournamentSelect_16Players", view: tournamentSelect16Players },
 		{ path: "/newUserRegistration", view: newUserRegistration },
 		{ path: "/pongAI", view: pong },
 		{ path: "/pong", view: pong },
