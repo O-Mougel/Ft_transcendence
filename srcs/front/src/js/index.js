@@ -567,7 +567,6 @@ const getParams = match => {
   return Object.fromEntries(keys.map((key, i) => [key, values[i]]));
 };
 
-
 const router = async () => {
 	const routes = [
 		{ path: "/", view: startingFile },
