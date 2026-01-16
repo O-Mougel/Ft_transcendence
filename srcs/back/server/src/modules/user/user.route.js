@@ -105,7 +105,7 @@ async function userRoutes(fastify) {
 		dataGrabHandler
 	);
 
-	fastify.post(
+	fastify.patch(
 		'/profile/edit', 
 		{
 			preHandler: [fastify.authenticate],
@@ -159,7 +159,7 @@ async function userRoutes(fastify) {
 		check2faHandler
 	);
 
-	fastify.delete(
+	fastify.patch(
 		'/profile/2fa/deactivate', 
 		{
 			preHandler: [fastify.authenticate], //reponse et schema de reponse ?
@@ -173,7 +173,7 @@ async function userRoutes(fastify) {
 		deactivate2faHandler,
 	);
 
-	fastify.post(
+	fastify.patch(
 		'/profile/password',
 		{
 			preHandler: [fastify.authenticate],
@@ -184,7 +184,7 @@ async function userRoutes(fastify) {
 		editPasswordHandler
 	)
 
-    fastify.delete(
+    fastify.post(
         '/logout',
         {
             preHandler: [fastify.logoutauthenticate],
@@ -192,7 +192,7 @@ async function userRoutes(fastify) {
         logoutHandler
     )
 
-	fastify.post(
+	fastify.patch(
 		'/friend/request',
 		{
 			preHandler: [fastify.authenticate],
@@ -203,7 +203,7 @@ async function userRoutes(fastify) {
 		friendRequestHandler // returns newFriend even with no response clause
 	)
 
-	fastify.post(
+	fastify.patch(
 		'/friend/accept',
 		{
 			preHandler: [fastify.authenticate],
@@ -217,7 +217,7 @@ async function userRoutes(fastify) {
 		friendAcceptHandler
 	)
 
-	fastify.post(
+	fastify.delete(
 		'/friend/reject',
 		{
 			preHandler: [fastify.authenticate],
