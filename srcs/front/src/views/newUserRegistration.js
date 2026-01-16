@@ -22,11 +22,11 @@ export default class extends ViewTemplate {
 						</div>
 						<h2 class="flex items-start">► Add a password :</h2>
 						<div class="flex items-start pt-5">
-							<input id="firstPasswordNewUser" tabindex="2" class=" w-[60vw] ml-4 hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] h-[3vh] rounded-sm border border-[#c2dbf6] py-[2vw] pr-5 pl-5 mb-[35px]" name="confirmPassword" value="" type="password" autocomplete="off" placeholder="Password" >
+							<input id="firstPasswordNewUser" tabindex="2" class=" w-[60vw] ml-4 hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] h-[3vh] rounded-sm border border-[#c2dbf6] py-[2vw] pr-5 pl-5 mb-[35px]" name="confirmPassword" value="" type="password" autocomplete="off" placeholder="Password" maxlength="32" oninput="this.value = this.value.slice(0,32)" >
 						</div>
 						<h2 class="flex items-start">► Confirm your password :</h2>
 						<div class="flex items-start pt-5">
-							<input id="confirmPasswordNewUser" tabindex="2" class="w-[60vw] ml-4 hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] h-[3vh] rounded-sm border border-[#c2dbf6] py-[2vw] pr-5 pl-5 mb-[35px]" name="confirmPassword" value="" type="password" autocomplete="off" placeholder="Confirm password" >
+							<input id="confirmPasswordNewUser" tabindex="2" class="w-[60vw] ml-4 hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] h-[3vh] rounded-sm border border-[#c2dbf6] py-[2vw] pr-5 pl-5 mb-[35px]" name="confirmPassword" value="" type="password" autocomplete="off" placeholder="Confirm password" maxlength="32" oninput="this.value = this.value.slice(0,32)" >
 						</div>
 						<div class="flex items-start pt-5">
 							<input tabindex="3" class="w-[60vw] uppercase text-sm md:text-base xl:text-2xl focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white pt-2 pb-2 rounded-lg" onclick="handleNewUserCreate(event)" name="updateChanges" type="submit" value="Create account">
