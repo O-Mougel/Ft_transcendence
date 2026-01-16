@@ -13,6 +13,7 @@ import tournament from "../views/tournament.js";
 import page404 from "../views/404page.js";
 import Login2fa from "../views/2faLogin.js";
 import changePassword from "../views/changePassword.js";
+import rankedLogin from "../views/rankedLogin.js";
 
 import { displayCorrectErrMsg, isUserAllowedHere } from "./userLog.js";
 import { fetchErrcodeHandler } from "./userLog.js";
@@ -576,7 +577,7 @@ const router = async () => {
 		{ path: "/logUser", view: logUser },
 		{ path: "/tournament", view: tournament },
 		{ path: "/2faLogin", view: Login2fa },
-		{ path: "/changePassword", view: changePassword },
+		{ path: "/ranked", view: rankedLogin },
 	];
 
 	const potentialMan = routes.map(mapElement => { //mapElement is the name of each array element for routes
