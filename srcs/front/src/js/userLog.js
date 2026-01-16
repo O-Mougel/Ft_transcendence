@@ -155,9 +155,8 @@ export const fetchErrcodeHandler = async (error) => {
 	const isNotAuth = error.toString().search("\"errRef\":\"authBearerMissing\"") != -1;
 	const isExpired = error.toString().search("\"errRef\":\"expiredJWT\"") != -1;
 	// console.log("[DEBUG] fetchErrcode handle ...", isExpired, isNotAuth);
-	if(isNotAuth)
+	if(isNotAuth || (window.sessionStorage.getItem("logStatus")) == 'loggedOut')
 	{
-		console.log("No valid credentials ! Back to menu...")
 		window.sessionStorage.setItem('logStatus', 'loggedOut');
 		backToDefaultPage();
 		return (-1);
@@ -304,7 +303,7 @@ window.acceptFriend = async (username) => {
 	if(!requestList || !username) return;
 
 	const data = {
-		friendAcceptName: username,
+		friendAcceptId: username,
 	};
 
 	try 
@@ -325,7 +324,7 @@ window.acceptFriend = async (username) => {
 		{
 			if(requestList.hasChildNodes())
 			{
-				let	clearName = username + "[42]";
+				let	clearName = result.friendname + "[42]";
 				const currentElement = document.getElementsByName(clearName);
 				if (currentElement && currentElement.length > 0)
 				{
@@ -333,7 +332,7 @@ window.acceptFriend = async (username) => {
 					target.remove();
 				}
 			}
-			alertBoxMsg(`✅ You are now friend with \"${username} !\"`);
+			alertBoxMsg(`✅ You are now friend with \"${result.friendname} !\"`);
 			grabProfileInfo();
 		}
 	}
@@ -354,7 +353,7 @@ window.rejectFriend = async (username) => {
 	if(!requestList || !requestLabel || !requestBlock || !username) return;
 
 	const data = {
-		friendrejectname: username,
+		friendRejectId: username,
 	};
 
 	try 

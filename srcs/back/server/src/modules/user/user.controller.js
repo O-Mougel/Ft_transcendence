@@ -506,7 +506,7 @@ export async function friendDeleteHandler(request, reply) {
 
 	await deletefriend(request.user.id, friend.id) // can fail ?????? try catch
 
-	return reply.status(200).send({ message: "Friend deleted !" });
+	return reply.status(200).send({ message: "Friend deleted !", removedName: friend.name });
 } 
 
 export async function getFriendRequestHandler(request, reply) {
