@@ -25,8 +25,8 @@ export class Game {
     this.longestStreak = 0;
     this.AIPlayer = null;
 
-    this.player1Name = null;
-    this.player2Name = null;
+    this.player1Id = null;
+    this.player2Id = null;
 
     this.startTime = null;
 
@@ -360,23 +360,23 @@ export class Game {
     if (this.mode === 0) {
       this.ball.vx = -1;
       if (data) {
-        this.leftPaddle.name = data.player1 || "Left Player";
-        this.rightPaddle.name = data.player2 || "AI Opponent";
+        this.leftPaddle.name = data.player1;// || "Left Player";
+        this.rightPaddle.name = data.player2;// || "AI Opponent";
       }
       this.AIPlayer = new AIPlayer(this.rightPaddle, this.leftPaddle, this);
       console.log('Player name:', this.leftPaddle.name, this.rightPaddle.name);
     } else if (this.mode === 1) {
       if (data) {
-        this.leftPaddle.name = data.player1 || "Left Player";
-        this.rightPaddle.name = data.player2 || "Right Player";
+        this.leftPaddle.name = data.player1;// || "Left Player";
+        this.rightPaddle.name = data.player2;// || "Right Player";
       }
       console.log('Player names:', this.leftPaddle.name, this.rightPaddle.name);
     } else {
       if (data) {
-        this.leftPaddle.name = data.player1 || "Left Player 1";
-        this.rightPaddle.name = data.player2 || "Right Player 1";
-        this.leftPaddle2.name = data.player3 || "Left Player 2";
-        this.rightPaddle2.name = data.player4 || "Right Player 2";
+        this.leftPaddle.name = data.player1;// || "Left Player 1";
+        this.rightPaddle.name = data.player2;// || "Right Player 1";
+        this.leftPaddle2.name = data.player3;// || "Left Player 2";
+        this.rightPaddle2.name = data.player4;// || "Right Player 2";
       }
       console.log('Player names:', this.leftPaddle.name, this.rightPaddle.name, this.leftPaddle2.name, this.rightPaddle2.name);
     }
@@ -413,14 +413,12 @@ export class Game {
       if (direction === 'up') this.leftPaddle.direction = "up";
       if (direction === 'down') this.leftPaddle.direction = "down";
       if (direction === 'none') this.leftPaddle.direction = "none";
-      if (direction === 'up') console.log('Left paddle up');
     }
     if (side === 'right') {
       if (direction === 'up') this.rightPaddle.direction = "up";
       if (direction === 'down') this.rightPaddle.direction = "down";
       if (direction === 'none') this.rightPaddle.direction = "none";
     }
-
 
     if (this.mode !== 2) return;
 

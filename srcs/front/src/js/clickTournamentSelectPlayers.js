@@ -100,7 +100,9 @@ export async function startTournament(expectedCount, event) {
 
   socket.once("tournament:state", ({ tournamentId }) => {
     console.log("Tournament created with ID:", tournamentId);
-    window.history.pushState({}, "", `/tournament/${tournamentId}`);
+    sessionStorage.setItem("currentTournamentId", tournamentId);
+    // window.history.pushState({}, "", `/tournament/${tournamentId}`);
+    window.history.pushState({}, "", `/tournament`);
     window.dispatchEvent(new PopStateEvent("popstate"));
 
     // sequential model: start first match when ready

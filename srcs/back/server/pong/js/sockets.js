@@ -6,7 +6,7 @@ function generateGameId() {
 
 export function registerSocketHandlers(io, manager, tournamentManager) {
   io.on("connection", (socket) => {
-    console.log("User connected, socket id: ", socket.id);
+    // console.log("User connected, socket id: ", socket.id);
 
     // SIMPLE MATCH
     socket.on("startGame", (data = {}) => {
@@ -64,10 +64,6 @@ export function registerSocketHandlers(io, manager, tournamentManager) {
     socket.emit("joinedGame", { gameId });
     socket.emit("state", entry.game.getCurrentGameState());
   });
-
-
-
-
 
     socket.on("stopGame", () => {
       const gameId = socket.data.gameId;
