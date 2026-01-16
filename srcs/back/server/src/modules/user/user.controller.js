@@ -81,9 +81,6 @@ export async function dataGrabHandler(request, reply) {
 export async function loginHandler(request, reply) {
 	const body = request.body;
 
-	//use basic authentication schema
-	//check if someone is already logged ??
-
 	body.name = body.name.toUpperCase()
 	const user = await findUserByName(body.name);
 
@@ -133,8 +130,6 @@ export async function loginHandler(request, reply) {
 
 export async function loginMatchHandler(request, reply) {
 	const body = request.body;
-
-	//use basic authentication schema
 
 	const user = await findUserByName(body.name);
 
@@ -256,9 +251,9 @@ export async function refreshTokenHandler(request, reply) {
 
 export async function alterUserHandler(request, reply) {
 
-	const body = request.body;	//what we want to change
+	const body = request.body;
 	body.name = body.name.toUpperCase()
-	const userId = request.user && request.user.id; // who made the request (token)
+	const userId = request.user && request.user.id;
 	if (!userId) return reply.code(401).send({ message: 'Not authenticated !', errRef:"NotAuthUser" });
 
 	const target = await findUserById(userId);
@@ -352,7 +347,7 @@ export async function logoutHandler(request, reply) {
 	
 }
 
-export async function editPasswordHandler(request, reply) { //check twice the password and confirmation
+export async function editPasswordHandler(request, reply) {
 	const body = request.body;
 	const user = await findUserById(request.user.id);
 
@@ -387,7 +382,7 @@ export async function editPasswordHandler(request, reply) { //check twice the pa
 }
 
 export async function friendRequestHandler(request, reply) {
-	const newfriendname = request.body.friendRequestName;
+	const newfriendname = request.body.friendRequestName.toUpperCase();
 
 	const newfriend = await findUserByName(newfriendname)
 
@@ -411,13 +406,19 @@ export async function friendRequestHandler(request, reply) {
 		errRef:"requestStillPending"
 	});
 
+	if (await alreadyrequested(newfriend.id, request.user.id))
+	return reply.status(422).send({
+		message: "This user already sent you a  !",
+		errRef:"requestDuplicate"
+	});
+
 	if (await alreadyfriend(request.user.id, newfriend.id))
 	return reply.status(409).send({
 		message: "This user is already your friend!",
 		errRef:"requestAlreadyFriend"
 	});
 
-	await requestfriend(request.user.id, newfriend.id) //try catch ?
+	await requestfriend(request.user.id, newfriend.id) // can fail ?????? try catch
 
 	return reply.status(200).send({
 		message: "Request sent!"
@@ -425,13 +426,13 @@ export async function friendRequestHandler(request, reply) {
 }
 
 export async function friendAcceptHandler(request, reply) {
-	const newfriendname = request.body.friendAcceptName;
+	const body = request.body;
 
-	const newfriend = await findUserByName(newfriendname)
+	const newfriend = await findUserById(body.friendAcceptId)
 
 	if (!newfriend)
 	return reply.status(400).send({
-		message: "Username doesn't exist. Try again!"
+		message: "User doesn't exist. Try again!"
 	});
 
 	if (!await alreadyrequested(newfriend.id, request.user.id))
@@ -444,22 +445,21 @@ export async function friendAcceptHandler(request, reply) {
 		message: "This user is already your friend!"
 	});
 
-	await acceptfriend(request.user.id, newfriend.id)
+	await acceptfriend(request.user.id, newfriend.id) // can fail ?????? try catch
 
-	// return { newfriend } // NO
 	return reply.status(201).send({
 		message: "New friend added !"
 	}); 
 }
 
 export async function friendRejectHandler(request, reply) {
-	const friendname = request.body.friendrejectname;
+	const friendId = request.body.friendRejectId;
 
-	const friend = await findUserByName(friendname)
+	const friend = await findUserById(friendId)
 
 	if (!friend)
 	return reply.status(400).send({
-		message: "Username doesn't exist. Try again!"
+		message: "User doesn't exist. Try again!"
 	});
 
 	if (!await alreadyrequested(friend.id, request.user.id))
@@ -472,7 +472,7 @@ export async function friendRejectHandler(request, reply) {
 		message: "This user is already your friend!"
 	});
 
-	await rejectfriend(request.user.id, friend.id) // can fail ??????
+	await rejectfriend(request.user.id, friend.id) // can fail ?????? try catch
 
 	return reply.status(201).send({
 		message: "Request rejected !"
@@ -480,13 +480,13 @@ export async function friendRejectHandler(request, reply) {
 }
 
 export async function friendDeleteHandler(request, reply) {
-	const friendname = request.body.frienddeletename;
+	const friendId = request.body.friendDeleteId;
 
-	const friend = await findUserByName(friendname)
+	const friend = await findUserById(friendId)
 
 	if (!friend)
 	return reply.status(400).send({
-		message: "Username doesn't exist. Try again!"
+		message: "User doesn't exist. Try again!"
 	});
 
 	if (!await alreadyfriend(request.user.id, friend.id))
@@ -494,19 +494,19 @@ export async function friendDeleteHandler(request, reply) {
 		message: "This user is not your friend!"
 	});
 
-	await deletefriend(request.user.id, friend.id)
+	await deletefriend(request.user.id, friend.id) // can fail ?????? try catch
+
 	return reply.status(200).send({ message: "Friend deleted !" });
 } 
 
 export async function getFriendRequestHandler(request, reply) {
 	const requestsList = await findrequests(request.user.id)
 
-	// return { requests }
 	return reply.status(201).send(requestsList);
 }
 
 export async function getFriendsHandler(request, reply) {
-	const friendsArray = await findfriends(request.user.id) //check if user.id is read before that ?
+	const friendsArray = await findfriends(request.user.id)
 
 	return reply.status(201).send(friendsArray);
 }

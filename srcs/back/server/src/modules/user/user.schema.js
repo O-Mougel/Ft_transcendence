@@ -8,20 +8,14 @@ const createUserSchema = z.object({
 		required_error: "Email is required",
 		invalid_type_error: "Email is not valid"
 	}).email(),
-	name: z.string().min(3).max(20).regex(/^[a-zA-Z0-9_]+$/),// "Only uppercase alphanumeric characters and underscore allowed"),
-	password: z.string().min(8).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain uppercase, lowercase, number and special character"),
-	passwordconfirmation: z.string().min(8).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain uppercase, lowercase, number and special character"),
-
+	name: z.string().min(3).max(13).regex(/^[a-zA-Z0-9_]+$/),
+	password: z.string().min(8).max(32).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/),
+	passwordconfirmation: z.string().min(8).max(32).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/)
 });
 
- //jusqu'a quel point je dois parser tous les schema avec du regex ??? ou juste l'autentification et l'edition du profile ??
-
 const profileChangesSchema = z.object({
-	name: z.string().min(3).max(20).regex(/^[a-zA-Z0-9_]+$/),//, "Only uppercase alphanumeric characters and underscore allowed")
-	//name: z.string().regex(/^[A-Z0-9_]{3,20}$/, {
-	// 	message: "3–20 chars, uppercase, numbers, underscore only"
-	// }),
-	password: z.string(), //est-ce que check regex ici aussi ?? peut-etre a suprimer ou a crypter
+	name: z.string().min(3).max(13).regex(/^[a-zA-Z0-9_]+$/),
+	password: z.string(),
 	avatar: z.string(), //quel pattern verifier ici en regex ??
 });
 
@@ -29,9 +23,9 @@ const profileChangesResponseSchema = z.object({
 	id: z.number(),
 });
 
-const loginSchema = z.object({ //a supprimer 
-	name: z.string(),
-	password: z.string()
+const loginSchema = z.object({
+	name: z.string().min(3).max(13).regex(/^[a-zA-Z0-9_]+$/),
+	password: z.string().min(8).max(32)
 });
 
 const loginResponseSchema = z.object({
@@ -44,7 +38,7 @@ const qrCodeReplySchema = z.object({
 })
 
 const twofaSchema = z.object({
-	code: z.string(), //regex 6 digit long 
+	code: z.string().min(6).max(6).regex(/^[0-9]{6,6}$/),
 })
 
 const twofastatusResponseSchema = z.object({
@@ -69,43 +63,45 @@ const infoGrabResponseSchema = z.object({
 
 const editPasswordSchema = z.object({
 	oldpassword: z.string(),
-	newpassword: z.string().min(8).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain uppercase, lowercase, number and special character"),
-	newpasswordconfirmation: z.string().min(8).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain uppercase, lowercase, number and special character"),
+	newpassword: z.string().min(8).max(32).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain uppercase, lowercase, number and special character"),
+	newpasswordconfirmation: z.string().min(8).max(32).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain uppercase, lowercase, number and special character"),
 })
 
 const friendRequestSchema = z.object({
-	friendRequestName: z.string(),
+	friendRequestName: z.string().min(3).max(13).regex(/^[a-zA-Z0-9_]+$/),
 })
 
 const friendAcceptSchema = z.object({
-	friendAcceptName: z.string(),
+	friendAcceptId: z.number()
 })
 
 const friendRejectSchema = z.object({
-	friendrejectname: z.string(),
+	friendRejectId: z.number()
 })
 
 const friendDeleteSchema = z.object({
-	frienddeletename: z.string(),
+	friendDeleteId: z.number()
 })
 
 const friendItemSchema = z.object({
-  name: z.string(),
-  avatar: z.string(),
-  online: z.boolean(),
+	id: z.number(),
+	name: z.string(),
+	avatar: z.string(),
+	online: z.boolean(),
 });
 
 const friendRequestItemSchema = z.object({
-  name: z.string(),
-  avatar: z.string(),
-  online: z.boolean(),
+	id: z.number(),
+	name: z.string(),
+	avatar: z.string(),
+	online: z.boolean(),
 });
 
 const friendsArrayResponseSchema = z.array(friendItemSchema);  
 const friendRequestResponseSchema = z.array(friendRequestItemSchema);
 
 const fileUploadResponseSchema = z.object({
-  path: z.string(),
+	path: z.string(),
 });
 
 export const { schemas: userSchemas, $ref } = buildJsonSchemas({
@@ -115,7 +111,7 @@ export const { schemas: userSchemas, $ref } = buildJsonSchemas({
 	qrCodeReplySchema,
 	twofaSchema,
 	accessTokenResponseSchema,
-twofaResponseSchema,
+	twofaResponseSchema,
 	twofastatusResponseSchema,
 	infoGrabResponseSchema,
 	profileChangesSchema,
@@ -124,12 +120,12 @@ twofaResponseSchema,
 	friendRequestSchema,
 	friendAcceptSchema,
 	friendItemSchema,
+	friendRequestItemSchema,
 	friendsArrayResponseSchema,
 	friendRequestResponseSchema,
-	friendRequestItemSchema,
 	friendRejectSchema,
 	friendDeleteSchema,
 	fileUploadResponseSchema,
 },
-  { $id: 'userSchemas' },
+	{ $id: 'userSchemas' },
 );
