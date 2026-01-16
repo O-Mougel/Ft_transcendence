@@ -241,6 +241,14 @@ const fieldValidity = (username, pwd, pwdconf, requestR, email) => {
 		pwd.focus();
 		return false;
 	}
+	else if (pwd.value.length > 32)
+	{
+		requestR.innerText = "❌ Password must be less than 32 characters long !";
+		pwd.focus();
+		pwd.value = '';
+		pwdconf.value = '';
+		return false;
+	}
 	else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(pwd.value))
 	{
 		requestR.innerText = "❌ Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character !";
