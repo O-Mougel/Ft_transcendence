@@ -550,15 +550,6 @@ export const adjustNavbar = async (path) => {
 		cb2.checked = false;
 }
 
-const pathToRegex = path =>
-  new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "([^\\/]+)") + "$");
-
-const getParams = match => {
-  const values = match.result.slice(1);
-  const keys = Array.from(match.mapElement.path.matchAll(/:(\w+)/g)).map(r => r[1]);
-  return Object.fromEntries(keys.map((key, i) => [key, values[i]]));
-};
-
 const router = async () => {
 	const routes = [
 		{ path: "/", view: startingFile },
@@ -587,18 +578,6 @@ const router = async () => {
 		};
 	});
 
-	///////////////////////////////////////////////
-	// 	const potentialMan = routes.map(mapElement => {
-	// 		const regex = pathToRegex(mapElement.path);
-	// 		const result = location.pathname.match(regex);
-	// 		return {
-	// 			mapElement,
-	// 			result,
-	// 			isMatch: result !== null
-	// 		};
-	// });
-	///////////////////////////////////////////////
-
 	let match = potentialMan.find(pm => pm.isMatch); //pm is the name of each array element for potentialMan
 	// find will stop when the function returns true, so when we find a pm.isMatch == true
 
@@ -611,13 +590,6 @@ const router = async () => {
 	}
 
 	const view = new match.mapElement.view();
-
-
-	/////////////////////////////////////////////// ??????
-	// const params = getParams(match);
-	// const view = new match.mapElement.view(params);
-	///////////////////////////////////////////////
-
 
 	document.querySelector("#app").innerHTML = await view.getHTML();
 	adjustNavbar(match.mapElement.path);
