@@ -42,3 +42,11 @@ model Match {
   duration		Int
   createdAt     DateTime @default(now())
 }
+
+model refreshTokens {
+	id         Int		@id @default(autoincrement())
+	user_id    Int
+	token      String   @unique	
+	expires_at DateTime
+	created_at DateTime @default(now())
+}

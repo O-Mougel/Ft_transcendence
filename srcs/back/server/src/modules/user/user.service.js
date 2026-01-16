@@ -2,6 +2,7 @@
 
 import { db } from "../../utils/prisma.js";
 import { hashPassword } from "../../utils/hash.js";
+import { generateRefreshToken } from "../../utils/token.js";
 
 export async function alterUser(id, newName, newPath) { // add a check to see if new username exists already
 
@@ -32,9 +33,9 @@ export async function createUser(input) {
 
 export async function checkIfUserExists(name) { // if count = 0, doesn't exist
 	const result = await db.user.count({
-  		where: {
-    		name: name,
-  		},
+		where: {
+			name: name,
+		},
 	});
 
 	return result;
@@ -265,5 +266,43 @@ export async function get2fastatus(id) {
 			auth2fa: true
 		}
 	});
-  return status
+	return status
+}
+
+export async function saveRefreshToken(id, token)
+{
+	await db.refreshTokens.create({
+		data:{
+			user_id: id,
+			token: token,
+			expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) // 14 jours
+		}
+	})
+}
+
+export async function findToken(token) {
+	return await db.refreshTokens.findUnique({
+	where: { token: token }
+	})
+}
+
+export async function deleteAllForUser(id) {
+	await db.refreshTokens.deleteMany ({
+	where: { user_id: id }
+	})
+}
+
+export async function rotateRefreshToken(id, token) {
+	deleteRefreshToken(token)
+	const newRefreshToken = generateRefreshToken();
+	saveRefreshToken(id, newRefreshToken)
+	return newRefreshToken
+}
+
+export async function deleteRefreshToken(token) {
+	await db.refreshTokens.delete({
+		where: {
+			token: token
+		}
+	})
 }

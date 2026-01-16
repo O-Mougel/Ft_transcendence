@@ -13,6 +13,13 @@ import newUserRegistration from "../views/newUserRegistration.js";
 import pong from "../views/pong.js";
 import logUser from "../views/login.js";
 import tournament from "../views/tournament.js";
+import page404 from "../views/404page.js";
+import Login2fa from "../views/2faLogin.js";
+import changePassword from "../views/changePassword.js";
+
+import { displayCorrectErrMsg, isUserAllowedHere } from "./userLog.js";
+import { fetchErrcodeHandler } from "./userLog.js";
+import { alertBoxMsg } from "./userLog.js";
 
 var profileRefresh;
 
@@ -29,7 +36,7 @@ window.confirmFriendRemoval = async () =>
 {
 	const friendRemover2000 = document.getElementById("selectBoxFriendRemover");
 
-	if (friendRemover2000.value == "dummyvalue") // no friend selected
+	if (!friendRemover2000 || friendRemover2000.value == "dummyvalue") // no friend selected
 		return ;
 	
 	const data = {
@@ -42,7 +49,7 @@ window.confirmFriendRemoval = async () =>
 	{
 		const removeFriendRequestResponse = await fetch('/friend/delete', {
 			method: "DELETE",
-			headers: { 'Content-Type': 'application/json' },
+			headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json'},
 			credentials: 'include',
 			body: JSON.stringify(data),
 		});
@@ -55,12 +62,16 @@ window.confirmFriendRemoval = async () =>
 		if (result)
 		{
 			console.log("✅ Removed friend");
+			alertBoxMsg(`✅ Removed \"${data.frienddeletename}\" from friends !`);
 			grabUserStatsAndInfo();
 		}
 	} 
 	catch (err) 
 	{
-		console.error('Friend remove fetch failed !\n => ', err);
+		if (await fetchErrcodeHandler(err) == 0)
+			return(window.confirmFriendRemoval());
+		console.error('⚠️ Couldn\'t delete selected friend !\n => ', err);
+		displayCorrectErrMsg(err, data.frienddeletename);
 	}
 }
 
@@ -68,6 +79,7 @@ window.fillFriendRemovalBox = async (friendArray) =>
 {
 	const friendRemover2000 = document.getElementById("selectBoxFriendRemover");
 	
+	if (!friendRemover2000 || !friendArray) return;
 	friendRemover2000.innerHTML = '';
 
 	var listItem = document.createElement("option");
@@ -90,15 +102,24 @@ window.fillFriendRemovalBox = async (friendArray) =>
 
 window.grabLoggedUserStats = async () => 
 {
-	document.getElementById("nbOfMatchCpt").innerHTML = "0";
-	document.getElementById("winRatioPercent").innerHTML = "0%";
-	document.getElementById("longestMatchCpt").innerHTML = "0";
-	document.getElementById("biggestStreakCpt").innerHTML = "0";
+	const nbOfMatchCpt = document.getElementById("nbOfMatchCpt");
+	const winRatioPercent = document.getElementById("winRatioPercent");
+	const longestMatchCpt = document.getElementById("longestMatchCpt");
+	const biggestStreakCpt = document.getElementById("biggestStreakCpt");
+
+	if (!nbOfMatchCpt || !winRatioPercent || !longestMatchCpt || !biggestStreakCpt) return ;
+
+	nbOfMatchCpt.innerHTML = "--";
+	winRatioPercent.innerHTML = "--";
+	longestMatchCpt.innerHTML = "--";
+	biggestStreakCpt.innerHTML = "--";
+	
 	
 	try 
 	{
 		const loggedUserStatsRequestResponse = await fetch('/match/self', {
 				credentials: 'include',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 		});
 	
 		if (!loggedUserStatsRequestResponse.ok) {
@@ -108,24 +129,46 @@ window.grabLoggedUserStats = async () =>
 		const result = await loggedUserStatsRequestResponse.json();
 		if (result)
 		{
-			document.getElementById("nbOfMatchCpt").innerHTML = result.matchsnb;
-			document.getElementById("winRatioPercent").innerHTML = result.winrate + " %";
-			document.getElementById("longestMatchCpt").innerHTML = result.longestMatch + " sec";
-			document.getElementById("biggestStreakCpt").innerHTML = result.biggest_streak;
+			if (result.matchsnb == 0) // nomatches played
+			{
+				nbOfMatchCpt.innerHTML = "0";
+				winRatioPercent.innerHTML = "--";
+				longestMatchCpt.innerHTML = "--";
+				biggestStreakCpt.innerHTML = "--";
+			}
+			else
+			{
+				nbOfMatchCpt.innerHTML = result.matchsnb;
+				winRatioPercent.innerHTML = result.winrate + " %";
+				longestMatchCpt.innerHTML = result.longestMatch + " sec";
+				biggestStreakCpt.innerHTML = result.biggest_streak;
+			}
 		}
 	} 
 	catch (err) 
 	{
-		console.error('Logged user stats fetch failed in profileStat!\n => ', err);
+		if (await fetchErrcodeHandler(err) == 0)
+			return(window.grabLoggedUserStats());
+		console.error('⚠️ Couldn\'t fetch logged user stats !\n => ', err);
 	}
 }
 
 window.fetchPlayerStats = async (playerUsername) => 
 {
-	document.getElementById("nbOfMatchCpt2").innerHTML = "--";
-	document.getElementById("winRatioPercent2").innerHTML = "--";
-	document.getElementById("longestMatchCpt2").innerHTML = "--";
-	document.getElementById("biggestStreakCpt2").innerHTML = "--";
+
+	const nbOfMatchCpt2 = document.getElementById("nbOfMatchCpt2");
+	const winRatioPercent2 = document.getElementById("winRatioPercent2");
+	const longestMatchCpt2 = document.getElementById("longestMatchCpt2");
+	const biggestStreakCpt2 = document.getElementById("biggestStreakCpt2");
+	const friendStatDisplayBox = document.getElementById("friendStatDisplayBox");
+	const selectedPlayerUsernameHeader = document.getElementById("selectedPlayerUsernameHeader");
+
+	if (!playerUsername || !nbOfMatchCpt2 || !winRatioPercent2 || !longestMatchCpt2 || !biggestStreakCpt2 || !friendStatDisplayBox || !selectedPlayerUsernameHeader) return ;
+
+	nbOfMatchCpt2.innerHTML = "--";
+	winRatioPercent2.innerHTML = "--";
+	longestMatchCpt2.innerHTML = "--";
+	biggestStreakCpt2.innerHTML = "--";
 
 	document.getElementById("selectedPlayerUsernameHeader").innerHTML = playerUsername + " 's stats :";
 
@@ -137,8 +180,8 @@ window.fetchPlayerStats = async (playerUsername) =>
 	{
 		const userStatsRequestResponse = await fetch('/match/others', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json'},
 				body: JSON.stringify(data),
 		});
 	
@@ -151,36 +194,45 @@ window.fetchPlayerStats = async (playerUsername) =>
 		{
 			if (result.matchsnb == 0) // nomatches played
 			{
-				document.getElementById("nbOfMatchCpt2").innerHTML = "0";
-				document.getElementById("winRatioPercent2").innerHTML = "--";
-				document.getElementById("longestMatchCpt2").innerHTML = "--";
-				document.getElementById("biggestStreakCpt2").innerHTML = "--";
+				nbOfMatchCpt2.innerHTML = "0";
+				winRatioPercent2.innerHTML = "--";
+				longestMatchCpt2.innerHTML = "--";
+				biggestStreakCpt2.innerHTML = "--";
 			}
 			else
 			{
-				document.getElementById("nbOfMatchCpt2").innerHTML = result.matchsnb;
-				document.getElementById("winRatioPercent2").innerHTML = result.winrate + " %";
-				document.getElementById("longestMatchCpt2").innerHTML = result.longestMatch + " sec";
-				document.getElementById("biggestStreakCpt2").innerHTML = result.biggest_streak;
+				nbOfMatchCpt2.innerHTML = result.matchsnb;
+				winRatioPercent2.innerHTML = result.winrate + " %";
+				longestMatchCpt2.innerHTML = result.longestMatch + " sec";
+				biggestStreakCpt2.innerHTML = result.biggest_streak;
 			}
-			document.getElementById("friendStatDisplayBox").style.display = "flex";
-			document.getElementById("selectedPlayerUsernameHeader").style.display = "block";
+			friendStatDisplayBox.style.display = "flex";
+			selectedPlayerUsernameHeader.style.display = "block";
 		}
 	} 
 	catch (err) 
 	{
-		console.error('User stats fetch failed in profileStat!\n => ', err);
+		if (await fetchErrcodeHandler(err) == 0)
+			return(window.fetchPlayerStats(playerUsername));
+		console.error('⚠️ Couldn\'t fetch user stats in profileStat!\n => ', err);
 	}
 }
 
 export const show2FAStatus = async () => 
 {
-	console.log("Showing 2FA status...");
+	const showQRCodeButton = document.getElementById("showQRCodeButton");
+	const TwoFACodeInput = document.getElementById("2FACodeInput");
+	const qrCodeImage = document.getElementById("qrCodeImage");
+	const TwoFAActivated = document.getElementById("2FAActivated");
+	const TwoFADisabled = document.getElementById("2FADisabled");
+
+	if (!TwoFADisabled || !TwoFAActivated || !qrCodeImage || !TwoFACodeInput || !showQRCodeButton) return ;
 
 	try
 	{
 		const get2FAStatus = await fetch('/profile/2fa', {
 				credentials: 'include',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 		});
 
 		if (!get2FAStatus.ok) {
@@ -190,29 +242,30 @@ export const show2FAStatus = async () =>
 		const result = await get2FAStatus.json();	
 		if (result)
 		{
-			codeResult.innerText = "";
-			document.getElementById("showQRCodeButton").disabled = false;
-			document.getElementById("2FACodeInput").value = "";
-			document.getElementById("qrCodeImage").src = "";
-			document.getElementById("qrCodeImage").style.display = "none";
+			showQRCodeButton.disabled = false;
+			TwoFACodeInput.value = "";
+			qrCodeImage.src = "";
+			qrCodeImage.style.display = "none";
 
 			if (result.twofastatus == true)
 			{
 				console.log("2FA is activated !");
-				document.getElementById("2FAActivated").style.display = "flex";
-				document.getElementById("2FADisabled").style.display = "none";
+				TwoFAActivated.style.display = "flex";
+				TwoFADisabled.style.display = "none";
 			}
 			else
 			{
 				console.log("2FA is disabled !");
-				document.getElementById("2FADisabled").style.display = "flex";
-				document.getElementById("2FAActivated").style.display = "none";
+				TwoFADisabled.style.display = "flex";
+				TwoFAActivated.style.display = "none";
 			}
 		}
 	} 
 	catch (err) 
 	{
-		console.error('Failed to disable 2FA!\n => ', err);
+		if (await fetchErrcodeHandler(err) == 0)
+			return(show2FAStatus());
+		console.error('⚠️ Failed to disable 2FA!\n => ', err);
 	}
 
 }
@@ -229,6 +282,7 @@ const createFriendsStatLink = async () =>
 	{
 		const friendLinkRequestResponse = await fetch('/friend', {
 				credentials: 'include',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 		});
 	
 		if (!friendLinkRequestResponse.ok) {
@@ -245,7 +299,7 @@ const createFriendsStatLink = async () =>
 				{
 					var listItem = document.createElement("li");
 					let	clearName = result.friends[i].name + "[userFriend]";
-					listItem.className = 'w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg';
+					listItem.className = 'w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg focus:border-[#98c6f8] hover:text-[#98c6f8] hover:border-[#98c6f8]';
 					listItem.innerHTML = `${result.friends[i].name}`;
 					listItem.setAttribute('name', clearName);
 					listItem.setAttribute('onclick',`fetchPlayerStats("${result.friends[i].name}")`); // can be broken with weird names
@@ -266,7 +320,9 @@ const createFriendsStatLink = async () =>
 	} 
 	catch (err) 
 	{
-		console.error('Friend info fetch failed in profileStat!\n => ', err);
+		if (await fetchErrcodeHandler(err) == 0)
+			return(createFriendsStatLink());
+		console.error('⚠️ Couldn\'t recover user friendlist!\n => ', err);
 	}
 }
 
@@ -286,6 +342,7 @@ const grabUserStatsAndInfo = async () =>
 	{
 		const statsRequestResponse = await fetch('/profile/grab', {
 				credentials: 'include',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 		});
 	
 		if (!statsRequestResponse.ok) {
@@ -298,16 +355,18 @@ const grabUserStatsAndInfo = async () =>
 			
 			const defaultAvatar = '/img/userPfp/default.png';
 			userPfpProfile.onerror = () => {
-  			userPfpProfile.onerror = null;
-  			userPfpProfile.src = defaultAvatar;
+			userPfpProfile.onerror = null;
+			userPfpProfile.src = defaultAvatar;
 			};
 			userPfpProfile.src = result?.avatar || defaultAvatar;			
-			playerUsernameProfile.innerHTML = result.name;
+			playerUsernameProfile.innerHTML = "<u>" + result.name + "</u>";
 		}
 	} 
 	catch (err) 
 	{
-		console.error('Profile custom grab failed !\n => ', err);
+		if (await fetchErrcodeHandler(err) == 0)
+			return(grabUserStatsAndInfo());
+		console.error('⚠️ Couldn\'t display user profile !\n => ', err);
 	}
 	createFriendsStatLink();
 }
@@ -323,6 +382,7 @@ const grabCustomizationPageInfo = async () =>
 	{
 		const dataRequestResponse = await fetch('/profile/grab', { //GET request by default without the "request" parameter
 				credentials: 'include',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 		});
 	
 		if (!dataRequestResponse.ok) {
@@ -335,8 +395,8 @@ const grabCustomizationPageInfo = async () =>
 			
 			const defaultAvatar = '/img/userPfp/default.png';
 			profilePicture.onerror = () => {
-  			profilePicture.onerror = null;
-  			profilePicture.src = defaultAvatar;
+			profilePicture.onerror = null;
+			profilePicture.src = defaultAvatar;
 			};
 			profilePicture.src = result?.avatar || defaultAvatar;			
 			newUsername.placeholder = result.name;
@@ -344,7 +404,9 @@ const grabCustomizationPageInfo = async () =>
 	} 
 	catch (err) 
 	{
-		console.error('Profile custom grab failed !\n => ', err);
+		if (await fetchErrcodeHandler(err) == 0)
+			return(grabCustomizationPageInfo());
+		console.error('⚠️ Couldn\'t grab user info!\n => ', err);
 	}
 
 }
@@ -366,73 +428,126 @@ const	navbarHiddenCheck = () => {
 
 	if (status == "loggedOut")
 	{
-		bar1.style.display = 'none';
-		bar2.style.display = 'none';
-		bar3.style.display = 'none';
-		bar4.style.display = 'none';
-		icon1.style.display = 'none';
-		icon2.style.display = 'none';
-		icon3.style.display = 'none';
-		icon4.style.display = 'none';
-		barProfile.disabled=true;
-		iconProfile.disabled=true;
+		if (bar1)
+			bar1.style.display = 'none';
+		if (bar2)
+			bar2.style.display = 'none';
+		if (bar3)
+			bar3.style.display = 'none';
+		if (bar4)
+			bar4.style.display = 'none';
+		if (icon1)
+			icon1.style.display = 'none';
+		if (icon2)
+			icon2.style.display = 'none';
+		if (icon3)
+			icon3.style.display = 'none';
+		if (icon4)
+			icon4.style.display = 'none';
+		if (barProfile)
+			barProfile.disabled=true;
+		if (iconProfile)
+			iconProfile.disabled=true;
 		if (!logButton) return;
 		logButton.style.display = "inline";
 	}
 	else if (status == "loggedIn")
 	{
-		bar1.style.display = 'block';
-		bar2.style.display = 'block';
-		bar3.style.display = 'block';
-		bar4.style.display = 'block';
-		icon1.style.display = 'block';
-		icon2.style.display = 'block';
-		icon3.style.display = 'block';
-		icon4.style.display = 'block';
-		barProfile.disabled=false;
-		iconProfile.disabled=false;
+		if (bar1)
+			bar1.style.display = 'block';
+		if (bar2)
+			bar2.style.display = 'block';
+		if (bar3)
+			bar3.style.display = 'block';
+		if (bar4)
+			bar4.style.display = 'block';
+		if (icon1)
+			icon1.style.display = 'block';
+		if (icon2)
+			icon2.style.display = 'block';
+		if (icon3)
+			icon3.style.display = 'block';
+		if (icon4)
+			icon4.style.display = 'block';
+		if (barProfile)
+			barProfile.disabled=false;
+		if (iconProfile)
+			iconProfile.disabled=false;
 		if (!logButton) return;
 		logButton.style.display = "none";
 	}
 }
 
-export const adjustNavbar = path => {
-
-	navbarHiddenCheck();
+const hideProfileButtons = () => {
 	const btsmall = document.getElementById('profileButton');
 	const bt = document.getElementById('profileButton2');
 	if (!bt && !btsmall) return ;
-	if (path == "/customizeProfile")
-	{
-		bt.style.display = 'none';
-		btsmall.style.display = 'none';
-		// clearInterval(profileRefresh);
-		grabCustomizationPageInfo();
+
+	bt.style.display = 'none';
+	btsmall.style.display = 'none';
+}
+
+
+
+const forceUserRelog = async () => {
+
+	const view = new logUser();
+	document.querySelector("#app").innerHTML = await view.getHTML();
+	adjustNavbar("/logUser");
+	if (typeof view.init === "function") {
+		 await view.init();
 	}
-	else if (path == "/profileStats")
+	history.pushState(null, null, "/logUser");
+}
+
+
+export const adjustNavbar = async (path) => {
+
+	if (path === "/logUser" || (path === "/") || (path === "/404") || (path === "/newUserRegistration") || (path === "/2faLogin")) //no logging is required
 	{
-		bt.style.display = 'none';
-		btsmall.style.display = 'none';
+		//
+	}
+	else
+	{
+		const res = await isUserAllowedHere();
+		if (res == 0) // not allowed
+		{
+			// console.info("Forced relog!");
+			await forceUserRelog();
+		}
+	}
+	
+	navbarHiddenCheck();
+	if (path === "/customizeProfile")
+	{
+		hideProfileButtons();
+		grabCustomizationPageInfo();
+		// clearInterval(profileRefresh);
+	}
+	else if (path === "/profileStats")
+	{
+		hideProfileButtons();
 		grabUserStatsAndInfo();
 	}
-	else if (path == "/setup2FA")
+	else if (path === "/setup2FA")
 	{
-		bt.style.display = 'none';
-		btsmall.style.display = 'none';
+		hideProfileButtons();
 		show2FAStatus();
 	}
 	else
 	{
-		bt.style.display = 'flex';
-		btsmall.style.display = 'flex';
+		if(document.getElementById('profileButton2'))
+			document.getElementById('profileButton2').style.display = 'flex';
+		if(document.getElementById('profileButton'))
+			document.getElementById('profileButton').style.display = 'flex';
 		// clearInterval(profileRefresh);
 		// profileRefresh = setInterval(refreshProfile, 50000);
 	}
 
 	//closes all opened panels when switching tabs
 	const profilePanel = document.getElementById('profilePanel'); 
-	if (profilePanel)
-		profilePanel.classList.toggle('hidden');
+	if (profilePanel && profilePanel.style.display != "none")
+		profilePanel.style.display = "none";
 
 	const cb = document.getElementById('modListBox');
 	if (cb)
@@ -456,6 +571,7 @@ const getParams = match => {
 const router = async () => {
 	const routes = [
 		{ path: "/", view: startingFile },
+		{ path: "/404", view: page404 },
 		{ path: "/versusAI", view: versusAI },
 		{ path: "/playerBattle", view: playerBattle },
 		{ path: "/about", view: aboutFile },
@@ -472,6 +588,8 @@ const router = async () => {
 		{ path: "/pong2", view: pong },
 		{ path: "/logUser", view: logUser },
 		{ path: "/tournament/:id", view: tournament },
+		{ path: "/2faLogin", view: Login2fa },
+		{ path: "/changePassword", view: changePassword },
 	];
 
 	// const potentialMan = routes.map(mapElement => { //mapElement is the name of each array element for routes
@@ -498,7 +616,7 @@ const router = async () => {
 	if (!match) // if no matches
 	{
 		match = {
-			mapElement: routes[0], //defaults to / 
+			mapElement: routes[1], //defaults to 404
 			isMatch: true
 		};
 	}
