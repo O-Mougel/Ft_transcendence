@@ -12,6 +12,7 @@ import tournamentSelect16Players from "../views/tournamentSelect_16Players.js";
 import newUserRegistration from "../views/newUserRegistration.js";
 import pong from "../views/pong.js";
 import logUser from "../views/login.js";
+import tournament from "../views/tournament.js";
 
 var profileRefresh;
 
@@ -442,6 +443,16 @@ export const adjustNavbar = path => {
 		cb2.checked = false;
 }
 
+const pathToRegex = path =>
+  new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "([^\\/]+)") + "$");
+
+const getParams = match => {
+  const values = match.result.slice(1);
+  const keys = Array.from(match.mapElement.path.matchAll(/:(\w+)/g)).map(r => r[1]);
+  return Object.fromEntries(keys.map((key, i) => [key, values[i]]));
+};
+
+
 const router = async () => {
 	const routes = [
 		{ path: "/", view: startingFile },
@@ -451,7 +462,7 @@ const router = async () => {
 		{ path: "/customizeProfile", view: customizeProfile },
 		{ path: "/profileStats", view: profileStats },
 		{ path: "/setup2FA", view: setup2FA },
-		{ path: "/tournament", view: tournamentSize },
+		{ path: "/tournamentSize", view: tournamentSize },
 		{ path: "/tournamentSelect_4Players", view: tournamentSelect4Players },
 		{ path: "/tournamentSelect_8Players", view: tournamentSelect8Players },
 		{ path: "/tournamentSelect_16Players", view: tournamentSelect16Players },
@@ -460,14 +471,26 @@ const router = async () => {
 		{ path: "/pong", view: pong },
 		{ path: "/pong2", view: pong },
 		{ path: "/logUser", view: logUser },
+		{ path: "/tournament/:id", view: tournament },
 	];
 
-	const potentialMan = routes.map(mapElement => { //mapElement is the name of each array element for routes
+	// const potentialMan = routes.map(mapElement => { //mapElement is the name of each array element for routes
+	// 	return {
+	// 		mapElement : mapElement,
+	// 		isMatch: location.pathname === mapElement.path
+	// 	};
+	// });
+
+	const potentialMan = routes.map(mapElement => {
+		const regex = pathToRegex(mapElement.path);
+		const result = location.pathname.match(regex);
 		return {
-			mapElement : mapElement,
-			isMatch: location.pathname === mapElement.path
+			mapElement,
+			result,
+			isMatch: result !== null
 		};
-	});
+});
+
 
 	let match = potentialMan.find(pm => pm.isMatch); //pm is the name of each array element for potentialMan
 	// find will stop when the function returns true, so when we find a pm.isMatch == true
@@ -480,7 +503,10 @@ const router = async () => {
 		};
 	}
 
-	const view = new match.mapElement.view();
+	// const view = new match.mapElement.view();
+	const params = getParams(match);
+	const view = new match.mapElement.view(params);
+
 	document.querySelector("#app").innerHTML = await view.getHTML();
 	adjustNavbar(match.mapElement.path);
 	if (typeof view.init === "function") {

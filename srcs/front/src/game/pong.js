@@ -9,9 +9,10 @@ export function initPong(mode = {}) {
 
 	CONTEXT.canvas = document.getElementById("canvas");
 	CONTEXT.startButton = document.getElementById("startButton");
+	CONTEXT.backButton = document.getElementById("backToTournament");
 	CONTEXT.score = document.getElementById("Scores");
 
-	if (!CONTEXT.canvas || !CONTEXT.startButton) {
+	if (!CONTEXT.canvas || !CONTEXT.startButton || !CONTEXT.score || !CONTEXT.backButton) {
 		console.error("Pong: canvas or startButton not found in DOM.");
 		return;
 	}
@@ -42,9 +43,21 @@ export function initPong(mode = {}) {
 	// Optional: prevent scrolling
 	document.body.style.overflow = "hidden";
 	document.documentElement.style.overflow = "hidden";
-
+	
 	CONTEXT.startButton.style.display = "block";
 	CONTEXT.startButton.onclick = startGame;
+
+
+	if (CONTEXT.gameId) {
+      // Tournament match
+      CONTEXT.startButton.style.display = "hidden";
+      CONTEXT.backButton.classList.remove("hidden");
+
+      CONTEXT.backButton.addEventListener("click", () => {
+        window.history.pushState({}, "", `/tournament/${CONTEXT.tournamentId}`);
+        window.dispatchEvent(new PopStateEvent("popstate"));
+      });
+    }
 
 	createGameElements();
 	setupSocket();

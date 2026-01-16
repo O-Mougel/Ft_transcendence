@@ -95,7 +95,7 @@ fastify.get("/newUserRegistration", function handler (request, reply) {
 })
 
 // Run the server!
-fastify.listen({ port: 3001, host: '0.0.0.0' }, (err) => {
+fastify.listen({ port: 3001, host: "0.0.0.0" }, (err) => {
   if (err) {
     fastify.log.error(err)
     process.exit(1)
