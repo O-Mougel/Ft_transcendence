@@ -208,7 +208,10 @@ async function userRoutes(fastify) {
 		{
 			preHandler: [fastify.authenticate],
 			schema: {
-				body: $ref("friendAcceptSchema"), //reponse et schema de reponse ?
+				body: $ref("friendAcceptSchema"),
+				response: {
+				    200: $ref("friendAcceptResponseSchema"),
+				},
 			},
 		},
 		friendAcceptHandler
