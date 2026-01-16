@@ -3,6 +3,7 @@ import { backToDefaultPage } from "./userLog.js";
 import { fetchErrcodeHandler } from "./userLog.js";
 import { alertBoxMsg } from "./userLog.js";
 import { displayCorrectErrMsg } from "./userLog.js";
+// import { startTournament } from "./clickTournamentSelectPlayers.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -135,6 +136,53 @@ async function uploadFileToServer(fileObj) {
 		return null;
 	}
 
+}
+
+window.validatePlayerNameFields =  function (nbPlayers, event) {
+
+	let i;
+	for(i = 1; i <= nbPlayers; i++) 
+	{
+		let currentInput = document.getElementById(`player${i}`);
+		if (currentInput)
+		{
+			if (!currentInput.value)
+				currentInput.value = currentInput.placeholder;
+		}
+		else
+			console.log(`Input player${i} not found !`);
+	}
+	startTournament(nbPlayers, event);
+
+}
+window.createCustomTournamentPage =  function (nbPlayers) {
+
+	if (nbPlayers != 4 && nbPlayers != 8 && nbPlayers != 16)
+		return ;
+	const tournamentNbPlayerSelect = document.getElementById('tournamentNbPlayerSelect');
+	const tournamentBuiltBlock = document.getElementById('tournamentBuiltBlock');
+	if (!tournamentBuiltBlock || !tournamentNbPlayerSelect) return ;
+	
+	tournamentNbPlayerSelect.style.display = "none";
+	tournamentBuiltBlock.style.display = "block";
+	tournamentBuiltBlock.innerHTML = ""; //clear all previous input fields
+
+ 	let i;
+ 	for(i = 1; i <= nbPlayers; i++) 
+	{
+		var listItem = document.createElement("input");
+		listItem.setAttribute('placeholder', "Player" + `${i}`);
+		listItem.setAttribute('id', "player" + `${i}`);
+		listItem.setAttribute('placeholder', "Player " + `${i}`);
+		listItem.setAttribute('tabindex', `${i}`);
+		listItem.className = 'pb-2 w-[40%] mt-[1vw] ml-4 pl-5 mx-auto hover:text-[#98c6f8] focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]" type="text" autofocus autocomplete="off"';
+		tournamentBuiltBlock.appendChild(listItem);
+	}
+	
+	var usernameInputDiv = document.createElement("div");
+	usernameInputDiv.className ="mt-5";
+	usernameInputDiv.innerHTML = `<input tabindex=\"${i}\" class=\"shadow-[0_0_20px_rgba(158,202,237,0.9)] w-[20vw] mt-[1vw] h-[4vw] focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] border hover:border-[#98c6f8] border-white rounded-lg \" name=\"start4Players\" type=\"submit\" value=\"Start\" onclick=\"validatePlayerNameFields(${nbPlayers} ,event)\">`
+	tournamentBuiltBlock.appendChild(usernameInputDiv);
 }
 
 window.spinMeAround =  function () {
