@@ -1,6 +1,7 @@
 import { createGame } from "./game.js";
 import { AI_REACTION_TIME, TICK_RATE } from "./config.js";
 import { createMatch } from "../../src/modules/match/match.service.js"
+import { findUserByName } from "../../src/modules/user/user.service.js"
 
 export class GameManager {
   constructor(io) {
@@ -68,7 +69,7 @@ export class GameManager {
     }
   }
 
-  startGame(gameId, data) {
+  async startGame(gameId, data) {
     // const entry = this.ensureGameExist(gameId);
     // const { game } = entry;
 
@@ -85,6 +86,11 @@ export class GameManager {
     this.ensureGameExist(gameId);
     const entry = this.games.get(gameId);
     entry.game.reset();
+
+    const user1 = await findUserByName("TEST");
+    entry.game.player1Id = user1.id;
+    const user2 = await findUserByName("TEST");
+    entry.game.player2Id = user2.id;
 
     // optional meta from caller
     entry.meta = data._tournament ? { ...data._tournament } : null;
@@ -201,14 +207,13 @@ async function persistMatch(game) {
   const state = game.getCurrentGameState();
   // on game over:
   const matchInfos = {
-    player1name: "1",
-    player2name: "2",
+    player1Id: game.player1Id,
+    player2Id: game.player1Id,
     player1score: state.score.left,
     player2score: state.score.right,
-    winnerName: state.score.left > state.score.right ? "1" : "2",
+    winnerId: state.score.left > state.score.right ? game.player1Id : game.player2Id,
     longestStreak: game.longestStreak,
     duration: game.getDuration(),
   };
-  console.log("Match infos: ", matchInfos);
   createMatch(matchInfos).catch(console.error);
 }
