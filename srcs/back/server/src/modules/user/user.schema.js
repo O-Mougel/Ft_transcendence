@@ -75,6 +75,11 @@ const friendAcceptSchema = z.object({
 	friendAcceptId: z.number()
 })
 
+const friendAcceptResponseSchema = z.object({
+	friendname: z.string(),
+	message: z.string()
+})
+
 const friendRejectSchema = z.object({
 	friendRejectId: z.number()
 })
