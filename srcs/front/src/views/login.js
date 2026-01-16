@@ -12,7 +12,7 @@ export default class extends ViewTemplate {
 			<div id="profilePanel" class="hidden absolute animate-slide-in-left right-0 top-0 h-full min-w-80 w-[20%] bg-[url(/img/assets/stars.gif)] z-50 shadow-[0_0_20px_rgba(158,202,237,0.9)] border border-[#98c6f8] overflow-auto">
 				<div class="flex flex-col text-center w-full h-full">
 					<div class="grid h-[30%] place-items-center">
-						<div id="sidePannelPfp" class="bg-[url(/img/assets/sillyDog.gif)] bg-cover p-4 rounded-[50%] opacity-0 shadow object-cover w-[170px] h-[170px]"></div>
+						<div id="sidePannelPfp" class="bg-[url(/img/userPfp/default.png] bg-cover p-4 rounded-[50%] opacity-0 shadow object-cover w-[170px] h-[170px]"></div>
 					</div>
 					<h1 id="playerGrabbedUsername" class="text-black text-bold mx-4 mb-10 text-2xl ">[username]</h1>
 					<a href="/profileStats" class="mx-4 text-2xl mb-5 border p-4 text-[#798490] hover:text-[#98c6f8]" name="profileLink" data-link>View profile</a>
@@ -42,7 +42,7 @@ export default class extends ViewTemplate {
 				</div>
 			</div>
 			<div class="text-center ml-auto mr-auto pt-[5%]">
-				<img class ="mx-auto mb-[75px]" id="logo" src="./img/assets/sillyDog.gif">
+				<img class ="mx-auto " id="logo" src="./img/assets/spaceMove.gif">
 				<form id="loginFormUser">
 					<div class="content-center">
 						<input id="clientUsername" tabindex="1" class="mx-auto text-white hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] w-1/2 md:w-1/4 h-[35px] text-sm md:text-base rounded-sm border border-[#c2dbf6] pt-2 pb-[5px] pr-5 pl-5 mb-[25px]" name="playerUsername" value="" type="text" autofocus autocomplete="off" placeholder="Enter your login">
