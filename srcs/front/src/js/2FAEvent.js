@@ -54,7 +54,7 @@ window.disable2FA = async function () {
 		const disable2FARequestResponse = await fetch('/profile/2fa/deactivate', {
 				credentials: 'include',
 				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
-				method: 'DELETE',
+				method: 'PATCH',
 		});
 
 		if (!disable2FARequestResponse.ok) {
@@ -103,7 +103,7 @@ window.validate2FACode = async function (event) {
 
 		const verify2FACode = await fetch('/profile/2fa/verify', {
 				credentials: 'include',
-				method: 'POST',
+				method: 'PATCH',
 				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json'},
 				body:  JSON.stringify(data),
 		});
