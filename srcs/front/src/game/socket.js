@@ -39,45 +39,68 @@ export function isSocketConnected() {
   return !!(socket && socket.connected);
 }
 
-export function waitStartGame() {
+export async function waitStartGame() {
   if (!isSocketConnected()) {
 	console.log("Cannot start game: Not connected to server");
 	return;
   }
-  if (CONTEXT.gameId) {
-    console.log("Game ID found in context:", CONTEXT.gameId);
-    console.log("Joining existing game with ID:", CONTEXT.gameId);
-    socket.emit("joinGame", { gameId: CONTEXT.gameId });
-    return;
-  }
-  if (CONTEXT.gameMode === 0) {
-    console.log("Starting single-player game against AI opponent");
-    socket.emit("startGame", { 
-      mode: 0,
-  	  player1: "Player1",
-  	  player2: "AIOpponent",
-    });
-  }
-  else if (CONTEXT.gameMode === 1) {
-    socket.emit("startGame", { 
-      mode: 1,
-  	  player1: "Player1",
-  	  player2: "Player2",
-    });
-  }
-  else {
-    socket.emit("startGame", { 
-      mode: 2,
-  	  player1: "Player1",
-  	  player2: "Player2",
-      player3: "Player3",
-      player4: "Player4",
-    });
-  }
+  try {
 
-  socket.once("gameStarted", (data) => {
-    console.log("Game started with data:", data);
-  });
+
+
+
+    const dataRequestResponse = await fetch('/profile/grab', { //GET request by default without the "request" parameter
+				credentials: 'include',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
+		});
+	
+		if (!dataRequestResponse.ok) {
+				const text = await dataRequestResponse.text().catch(() => dataRequestResponse.statusText);
+				throw new Error(`Request failed: ${dataRequestResponse.status} ${text}`);
+		}
+		const result = await dataRequestResponse.json();	
+		if (!result) throw new Error('No data received from server');
+    console.log("User info retrieved:", result);
+
+    if (CONTEXT.gameId) {
+      // console.log("Game ID found in context:", CONTEXT.gameId);
+      // console.log("Joining existing game with ID:", CONTEXT.gameId);
+      socket.emit("joinGame", { gameId: CONTEXT.gameId });
+      return;
+    }
+    if (CONTEXT.gameMode === 0) {
+      console.log("Starting single-player game against AI opponent");
+      socket.emit("startGame", { 
+        mode: 0,
+    	  player1: result.name,
+    	  player2: "AIOpponent",
+      });
+    }
+    else if (CONTEXT.gameMode === 1) {
+      socket.emit("startGame", { 
+        mode: 1,
+    	  player1: result.name,
+    	  player2: "Player2",
+      });
+    }
+    else {
+      socket.emit("startGame", { 
+        mode: 2,
+    	  player1: "Player 1",
+    	  player2: "Player 2",
+        player3: "Player 3",
+        player4: "Player 4",
+      });
+    }
+
+    socket.once("gameStarted", (data) => {
+      console.log("Game started with data:", data);
+    });
+  } catch (error) {
+    if (await fetchErrcodeHandler(err) == 0)
+      return(grabCustomizationPageInfo());
+    console.error('⚠️ Couldn\'t grab user info!\n => ', err);
+  }
 }
 
 export function emitStopGame() {
