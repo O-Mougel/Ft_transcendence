@@ -24,8 +24,8 @@ const profileChangesResponseSchema = z.object({
 });
 
 const loginSchema = z.object({
-	name: z.string().min(3).max(13).regex(/^[a-zA-Z0-9_]+$/),
-	password: z.string().min(8).max(32)
+	name: z.string().min(1).max(13).regex(/^[a-zA-Z0-9_]+$/), //only one here to allow older accounts but still block empty fields
+	password: z.string().min(1).max(32)
 });
 
 const loginResponseSchema = z.object({
