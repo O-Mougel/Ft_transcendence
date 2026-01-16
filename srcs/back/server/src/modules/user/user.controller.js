@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path'; //save path manip
 import crypto from 'crypto'; //random file name
 import { pipeline } from 'stream/promises'; //file writing
+import { fileTypeFromBuffer } from "file-type";
 /////
 import { createUser, findUserByName, findUserById, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend, rejectfriend, deletefriend, deletesecret2fa, activate2fa, get2fastatus, saveRefreshToken, findToken, rotateRefreshToken, deleteAllForUser, deleteRefreshToken } from "./user.service.js";
 import { verifyPassword } from "../../utils/hash.js";
@@ -535,47 +536,54 @@ export async function uploadProfilePicHandler(request, reply) {
 			errRef:"uploadNotMultipart"
 		});
 
-	const uploadedPic = await request.file(); // first file field
-	if (!uploadedPic)
+	const file = await request.file();
+	if (!file) {
 		return reply.code(400).send({
-			message: 'No picture uploaded !',
-			errRef:"uploadEmptyFileField"
+			message: "No file uploaded",
+			errRef: "uploadNoFile",
 		});
+	}
 
-	const mimetype = (uploadedPic.mimetype || '').toLowerCase();
-	if (!mimetype || !uploadedPic.filename)
-		return reply.code(400).send({
-			message: 'Mime type or filename is empty !',
-			errRef:"uploadEmptyMimeName"
+	if (file.file.truncated) {
+		return reply.code(413).send({
+			message: "File too large",
+			errRef: "uploadTooLarge",
 		});
-	if (uploadedPic.filename.length <= 0)
-		return reply.code(400).send({
-			message: 'Invalid filename ! Must be at least 1 character !',
-			errRef:"uploadNameTooShort"
-		});
-	if (!mimetype.startsWith('image/'))
-		return reply.code(400).send({
-			message: 'Only images can be uploaded !',
-			errRef:"uploadWrongFiletype"
-		});
+	}
 
-	//file upload part 
+	const buffer = await file.toBuffer();
+	if (buffer.length > MAX_FILE_SIZE) {
+		return reply.code(413).send({
+			message: "File exceeds size limit",
+			errRef: "uploadTooLarge",
+		});
+	}
+
+	const type = await fileTypeFromBuffer(buffer);
+	if (!type || !ALLOWED_MIME_TYPES.includes(type.mime)) {
+		return reply.code(400).send({
+			message: "Invalid image format",
+			errRef: "uploadInvalidSignature",
+		});
+	}
+
 	const ext = path.extname(uploadedPic.filename) || '.png'; // if idk, now a png
-	const savedFilename = `${Date.now()}-${crypto.randomBytes(6).toString('hex')}${ext}`;
+	const filename = `${Date.now()}-${crypto.randomBytes(6).toString('hex')}${ext}`;
+
 	const uploadDir = path.resolve(process.cwd(), 'front', 'src', 'img', 'userPfp');
 	await fs.promises.mkdir(uploadDir, { recursive: true });
-	const dest = path.join(uploadDir, savedFilename);
-	console.log("Final upload : ", dest);
+
+	const filePath = path.join(uploadDir, filename);
+
 	try {
 		await pipeline(uploadedPic.file, fs.createWriteStream(dest));
-	}
-	catch (err) 
-	{
-		return reply.code(500).send({ 
-			message: 'Failed to write file',
-			errRef:"uploadFailedWrite"
+	} catch (err) {
+		return reply.code(500).send({
+			message: "Failed to save file",
+			errRef: "uploadWriteFailed",
 		});
 	}
+
 	return reply.code(201).send({ path: `./img/userPfp/${savedFilename}` });
 }
 
