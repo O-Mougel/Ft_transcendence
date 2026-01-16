@@ -1,33 +1,7 @@
 // match.controller.js
 
-import { createMatch, showstats } from "./match.service.js";
-import { findUserByName } from "../user/user.service.js";
-
-export async function createMatchHandler(request, reply) {
-    const body = request.body;
-
-	//should be caught by zod, but just in case
-	if (!body.player1Id || !body.player1score || !body.player2Id || !body.player2score || !body.winnerId || !body.longestStreak || !body.duration)
-		return reply.status(400).send({
-            message: "Missing parameters, cannot create match!",
-        });
-
-	if (body.player1Id == body.player2Id)
-		return reply.status(403).send({
-            message: "You cannot play against yourself !",
-        });
-    try {
-        const match = await createMatch(body);
-        return reply.status(201).send(match);
-        
-    } catch (error) {
-        console.error(error);
-        return reply.status(500).send({
-            message: "User doesn't exist. Try again!",
-			error:error
-        });
-    }
-}
+import { showstats } from "./match.service.js";
+import { findUserById, alreadyfriend } from "../user/user.service.js";
 
 export async function getMatchsHandler(request, reply) {
     const stats = await showstats(request.user.id)
@@ -36,20 +10,24 @@ export async function getMatchsHandler(request, reply) {
 }
 
 export async function getFriendMatchsHandler(request, reply) {
+	const { friendId } = request.params
 
-	if (!request.body.username)
+	const userId = Number(friendId)
+
+	const friend = await findUserById(userId);
+	if (!friend) {	
 		return reply.status(400).send({
-            message: "Username parameter cannot be empty !",
-        });
+			message: "Friend does not exist in database ! Try again!"
+		});
+	};
 
-	const friendName = await findUserByName(request.body.username);
-		if (!friendName) {	
-			return reply.status(400).send({
-				message: "Friend name does not exist in database ! Try again!"
-			});
-		};
+	if (!await alreadyfriend(request.user.id, userId)) {
+		return reply.status(400).send({
+			message: "This user is not your friend you can't see his stats!"
+		});
+	}
 
-    const stats = await showstats(friendName.id);
+	const stats = await showstats(userId);
 
 	return stats;
 }

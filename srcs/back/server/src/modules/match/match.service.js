@@ -3,21 +3,12 @@
 import { db } from "../../utils/prisma.js";
 import { findUserByName } from "../user/user.service.js"
 
-// export async function createMatch(input)
-// {
-//     const { player1Id, player2Id , ...rest } = input;
-
-// 	const match = await db.match.create({
-//         data: {...rest, player1Id, player2Id}
-//     });
-
-//     return match;
-// }
-
-export async function createMatch(input) //player1name,player1score,player2name,player2score,winnerName,longestStreak,duration
+export async function createMatch(input)
 {
+    const { player1Id, player2Id , ...rest } = input;
+
 	const match = await db.match.create({
-        data: input
+        data: {...rest, player1Id, player2Id}
     });
 
     return match;
