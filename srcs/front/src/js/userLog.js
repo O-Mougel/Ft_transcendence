@@ -184,6 +184,7 @@ export const fetchErrcodeHandler = async (error) => {
 		{
 			const refreshTokenResponse = await fetch('/login/refresh', {
 					credentials: 'include',
+					method:'POST'
 			});
 		
 			if (!refreshTokenResponse.ok) {
