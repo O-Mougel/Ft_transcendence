@@ -454,9 +454,7 @@ export async function friendAcceptHandler(request, reply) {
 
 	await acceptfriend(request.user.id, newfriend.id) // can fail ?????? try catch
 
-	return reply.status(201).send({
-		message: "New friend added !"
-	}); 
+	return { friendname: newfriend.name, message: "New friend added !" }; 
 }
 
 export async function friendRejectHandler(request, reply) {
