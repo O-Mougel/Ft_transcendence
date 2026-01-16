@@ -234,6 +234,9 @@ async function userRoutes(fastify) {
 			preHandler: [fastify.authenticate],
 			schema: {
 				body: $ref("friendDeleteSchema"), //reponse et schema de reponse ?
+				response: {
+				    200: $ref("friendDeleteResponseSchema"),
+				},
 			},
 		},
 		friendDeleteHandler

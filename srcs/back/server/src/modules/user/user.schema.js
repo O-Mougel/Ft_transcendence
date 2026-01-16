@@ -80,6 +80,11 @@ const friendAcceptResponseSchema = z.object({
 	message: z.string()
 })
 
+const friendDeleteResponseSchema = z.object({
+	removedName: z.string(),
+	message: z.string()
+})
+
 const friendRejectSchema = z.object({
 	friendRejectId: z.number()
 })
@@ -129,6 +134,8 @@ export const { schemas: userSchemas, $ref } = buildJsonSchemas({
 	editPasswordSchema,
 	friendRequestSchema,
 	friendAcceptSchema,
+	friendAcceptResponseSchema,
+	friendDeleteResponseSchema,
 	friendItemSchema,
 	friendRequestItemSchema,
 	friendsArrayResponseSchema,
