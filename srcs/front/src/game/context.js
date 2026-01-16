@@ -1,3 +1,4 @@
+import tournament from "../views/tournament.js";
 import Ball from "./ball.js";
 import Paddle from "./paddle.js";
 
@@ -6,6 +7,7 @@ export const CONTEXT = {
 	canvas: null,
 	ctx: null,
 	startButton: null,
+	backButton: null,
 	score: null,
 
 	// Game objects
@@ -21,6 +23,7 @@ export const CONTEXT = {
 	updateIntervalId: null,
 	controlsBound: false,
 	gameMode: 0, // or 2
+	tournamentId: null,
 
 	// Dimensions
 	PADDLE_WIDTH: 10,

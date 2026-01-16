@@ -21,8 +21,17 @@ export class Game {
 
     this.leftScore = 0;
     this.rightScore = 0;
+    this.nbExchanges = 0;
+    this.longestStreak = 0;
     this.AIPlayer = null;
 
+    this.player1Name = null;
+    this.player2Name = null;
+
+    this.startTime = null;
+
+    this.id = null; // game unique id, set by GameManager
+    
     // --- PADDLES ---
     this.leftPaddle = {
       height: PADDLE_HEIGHT,
@@ -116,12 +125,21 @@ export class Game {
 
     this.normalizeBallVelocity();
     this.ball.lastSidePossession = null;
+    if (this.longestStreak < this.nbExchanges)
+      this.longestStreak = this.nbExchanges;
+    this.nbExchanges = 0;
+  }
+
+  incrementNbExchanges() {
+    this.nbExchanges += 1;
+    if (this.nbExchanges > this.longestStreak) this.longestStreak = this.nbExchanges;
   }
 
   incrementBallSpeed(side) {
     console.log('Ball speed: ', this.ball.speed);
     if (side !== this.ball.lastSidePossession) {
       if (this.ball.speed < MAX_BALL_SPEED) {
+        this.incrementNbExchanges();
         this.ball.speed += STEP;
         this.normalizeBallVelocity();
       }
@@ -172,7 +190,6 @@ export class Game {
     this.boundaryCollision();
 
     // Paddle collisions
-
     // Ball moving to the right -> check right paddles sides of rightPaddle, rightPaddle2, leftPaddle2 (bounce-back) 
     if (vx > 0) {
       if (this.handleBallPaddleCollision(this.rightPaddle, 'right', x0, y0, vx, vy)) return; // RIGHT PADDLE (main)
@@ -195,60 +212,20 @@ export class Game {
   }
 
   boundaryCollision() {
-    const eps = 1e-12; // small threshold to avoid infinite loops
-    let remainingTime = 1; // remaining normalized time in this tick
-
-    let x = this.ball.x;
-    let y = this.ball.y;
-    let vx = this.ball.vx;
-    let vy = this.ball.vy;
-
     const top = 5 + this.ball.radius;
     const bottom = HEIGHT - 5 - this.ball.radius;
 
-    while (remainingTime > eps) { // loop until all time is consumed
-      // no vertical movement -> just move and exit
-      if (Math.abs(vy) < eps) {
-        x += vx * remainingTime;
-        y += vy * remainingTime;
-        break;
-      }
-
-      const wallY = (vy > 0) ? bottom : top; // next wall to hit
-      const timeToImpact = (wallY - y) / vy; // time to hit that wall
-
-      if (timeToImpact >= 0 && timeToImpact <= remainingTime) {
-        // move to wall
-        x += vx * timeToImpact;
-        y = wallY;
-
-        // bounce
-        vy = -vy;
-
-        // update ball velocity for normalization
-        this.ball.vx = vx;
-        this.ball.vy = vy;
-        this.normalizeBallVelocity();
-
-        vx = this.ball.vx;
-        vy = this.ball.vy;
-
-        remainingTime -= timeToImpact;
-      } else {
-        x += vx * remainingTime;
-        y += vy * remainingTime;
-        break;
-      }
+    if (this.ball.y < top) { // top collision
+      const penetrationDelta = top - this.ball.y;
+      this.ball.y = top + penetrationDelta;   // mirror back inside
+      this.ball.vy = -this.ball.vy;
+      this.normalizeBallVelocity();
+    } else if (this.ball.y > bottom) { // bottom collision
+      const penetrationDelta = this.ball.y - bottom;
+      this.ball.y = bottom - penetrationDelta; // mirror back inside
+      this.ball.vy = -this.ball.vy;
+      this.normalizeBallVelocity();
     }
-
-    // clamp safety
-    if (y > bottom) y = bottom;
-    if (y < top) y = top;
-
-    this.ball.x = x;
-    this.ball.y = y;
-    this.ball.vx = vx;
-    this.ball.vy = vy;
   }
 
   sweepSphereAABB(x0, y0, vx, vy, minX, minY, maxX, maxY) {
@@ -403,12 +380,15 @@ export class Game {
       }
       console.log('Player names:', this.leftPaddle.name, this.rightPaddle.name, this.leftPaddle2.name, this.rightPaddle2.name);
     }
+    this.startTime = Date.now() / 1000;
     this.normalizeBallVelocity();
   }
 
   stop() {
     this.isGameStarted = false;
     this.reset();
+    this.startTime = null;
+    // delete this.AIPlayer;
   }
 
   reset() {
@@ -428,11 +408,12 @@ export class Game {
     this.rightScore = 0;
   }
 
-  updatePaddle(side, direction) {
+  updatePaddleDirection(side, direction) {
     if (side === 'left') {
       if (direction === 'up') this.leftPaddle.direction = "up";
       if (direction === 'down') this.leftPaddle.direction = "down";
       if (direction === 'none') this.leftPaddle.direction = "none";
+      if (direction === 'up') console.log('Left paddle up');
     }
     if (side === 'right') {
       if (direction === 'up') this.rightPaddle.direction = "up";
@@ -457,7 +438,7 @@ export class Game {
 
   // Main tick
 
-  update() {
+  updateGameState() {
     if (!this.isGameStarted) {
       return { gameOver: false };
     }
@@ -471,7 +452,7 @@ export class Game {
     return { gameOver };
   }
 
-  getState() {
+  getCurrentGameState() {
     if (this.mode === 2) {
       return {
         paddles: {
@@ -508,6 +489,10 @@ export class Game {
         score: { left: this.leftScore, right: this.rightScore },
       };
     }
+  }
+
+  getDuration() {
+    return Date.now() / 1000 - this.startTime;
   }
 }
 

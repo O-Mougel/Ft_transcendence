@@ -8,8 +8,11 @@ let socket = null;
 export function setupSocket() {
   console.log("Attempting to connect to WebSocket server...");
 
-  socket = io("http://localhost:3002", {
-	transports: ["websocket"],
+  // socket = io("http://localhost:3002/", {
+	//   transports: ["websocket"],
+  // });
+  socket = io({
+    path: "/pong/socket.io",
   });
 
   socket.on("connect", () => {
@@ -36,23 +39,30 @@ export function isSocketConnected() {
   return !!(socket && socket.connected);
 }
 
-export function emitStartGame() {
+export function waitStartGame() {
   if (!isSocketConnected()) {
 	console.log("Cannot start game: Not connected to server");
 	return;
   }
+  if (CONTEXT.gameId) {
+    console.log("Game ID found in context:", CONTEXT.gameId);
+    console.log("Joining existing game with ID:", CONTEXT.gameId);
+    socket.emit("joinGame", { gameId: CONTEXT.gameId });
+    return;
+  }
   if (CONTEXT.gameMode === 0) {
+    console.log("Starting single-player game against AI opponent");
     socket.emit("startGame", { 
-    mode: 0,
-  	player1: "Player1",
-  	player2: "AIOpponent",
+      mode: 0,
+  	  player1: "Player1",
+  	  player2: "AIOpponent",
     });
   }
   else if (CONTEXT.gameMode === 1) {
     socket.emit("startGame", { 
-    mode: 1,
-  	player1: "Player1",
-  	player2: "Player2",
+      mode: 1,
+  	  player1: "Player1",
+  	  player2: "Player2",
     });
   }
   else {
@@ -64,6 +74,10 @@ export function emitStartGame() {
       player4: "Player4",
     });
   }
+
+  socket.once("gameStarted", (data) => {
+    console.log("Game started with data:", data);
+  });
 }
 
 export function emitStopGame() {
@@ -106,4 +120,8 @@ export function handleEscapeKey() {
 	  return;
   }
   socket.emit("stopGame");
+}
+
+export function getSocket() {
+  return socket;
 }
