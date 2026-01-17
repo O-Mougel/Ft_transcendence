@@ -105,6 +105,19 @@ async function userRoutes(fastify) {
 		dataGrabHandler
 	);
 
+	fastify.get(
+		'/profile/match/grab', 
+		{
+			preHandler: [fastify.matchauthenticate],
+			schema: {
+				response: {
+					200: $ref("infoGrabResponseSchema"), //reponse et schema de reponse ?
+				}
+			}
+		}, 
+		dataGrabHandler
+	);
+
 	fastify.patch(
 		'/profile/edit', 
 		{
