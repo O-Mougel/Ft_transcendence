@@ -133,7 +133,6 @@ window.validate2FACode = async function (event) {
 	}
 }
 
-
 window.loginWith2FACode = async function (event) {
 	
 	event.preventDefault();
@@ -186,7 +185,6 @@ window.loginWith2FACode = async function (event) {
 	}
 }
 
-
 export const goTo2faLogin = async () => {
 
 	const view = new Login2fa();
@@ -200,3 +198,55 @@ export const goTo2faLogin = async () => {
 	history.pushState(null, null, "/2faLogin");
 }
 
+window.player2TwoFAValidation = async function () {
+	
+	const TwoFACodeInput = document.getElementById('player2TwoFAInput');
+	if(!TwoFACodeInput) return ;
+	try
+	{
+		const password = TwoFACodeInput.value;
+		const divLogin = document.getElementById('profile2Login');
+		const divLogin2FA = document.getElementById('profile2Login2FA');
+		const profile2Overview = document.getElementById('profile2Overview');
+		
+		if (!password)
+		{
+			alertBoxMsg("❌ 2FA code cannot be empty !");
+			TwoFACodeInput.focus();
+			return ;
+		}
+
+		const data = {
+			code: password,
+		};
+
+		const logWith2FACode = await fetch('/login/player2/2fa', {
+				credentials: 'include',
+				method: 'POST',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("temp_token")}`, 'Content-Type': 'application/json'},
+				body:  JSON.stringify(data),
+		});
+
+		if (!logWith2FACode.ok) {
+				const text = await logWith2FACode.text().catch(() => logWith2FACode.statusText);
+				alertBoxMsg("❌ Invalid 2FA code !");
+				throw new Error(`Request failed: ${logWith2FACode.status} ${text}`);
+		}
+		const result = await logWith2FACode.json();	
+		if (result)
+		{
+			window.sessionStorage.setItem('player2_token',result.matchToken);
+			sessionStorage.removeItem('temp_token');
+			alertBoxMsg('⏳ Player 2 Logged in !');
+			divLogin.style.display = "none";
+			divLogin2FA.style.display = "none";
+			profile2Overview.style.display = "flex";
+		}
+	}
+	catch (err)
+	{
+		if (await fetchErrcodeHandler(err) == 0)
+			return(window.loginWith2FACode());
+		console.error('Failed to log with 2FA!\n => ', err);
+	}
+}
