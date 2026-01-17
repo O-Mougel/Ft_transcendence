@@ -842,6 +842,9 @@ window.loginPlayer2 = async function () {
 	const username = document.getElementById('player2UserName');
 	const password = document.getElementById('player2Password');
 	const logResult = document.getElementById('Player2Result');
+	const divLogin = document.getElementById('profile2Login');
+	const divLogin2FA = document.getElementById('profile2Login2FA');
+	const profile2Overview = document.getElementById('profile2Overview');
 
 	if (!username || !password || !logResult) return;
 
@@ -885,14 +888,18 @@ window.loginPlayer2 = async function () {
 			if (result.require2fa == true)
 			{
 				window.sessionStorage.setItem('temp_token',result.token);
-				console.log('⏳ 2FA required, redirecting ...');
-
+				divLogin.style.display = "none";
+				divLogin2FA.style.display = "flex";
+				
 			}
 			else
 			{
 				window.sessionStorage.setItem('player2_token',result.token);
 				console.log('⏳ Player 2 Logged in !');
-				
+				divLogin.style.display = "none";
+				divLogin2FA.style.display = "none";
+				profile2Overview.style.display = "flex";
+				alertBoxMsg(`Player 2: Welcome back ${data.name} ! 😉`);
 
 			}
 		}

@@ -11,6 +11,7 @@ import { createUser, findUserByName, findUserById, alterUser, changePassword, se
 import { verifyPassword } from "../../utils/hash.js";
 import { generateAccessToken, generateRefreshToken, generate2faToken, generateMatchToken } from "../../utils/token.js";
 import { generateSecret, verify2fa } from "../../utils/twofa.js"
+import { generate2faMatchToken } from "../../utils/token.js";
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 Mo
 const ALLOWED_MIME_TYPES = ["image/png", "image/jpg", "image/jpeg"];
