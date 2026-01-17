@@ -75,7 +75,7 @@ export class TournamentManager {
     this.gameToMatch = new Map();
   }
 
-  createTournament(size, names) {
+  _createTournament(size, names) {
     if (![4, 8, 16].includes(size)) {
       throw new Error("Tournament size must be 4, 8, or 16");
     }
@@ -106,11 +106,11 @@ export class TournamentManager {
     return tournamentId;
   }
 
-  getTournament(tournamentId) {
+  _getTournament(tournamentId) {
     return this.tournaments.get(tournamentId) || null;
   }
 
-  nextMatch(tournamentId) {
+  _nextMatch(tournamentId) {
     const tournament = this.tournaments.get(tournamentId);
     if (!tournament) throw new Error("Tournament not found");
     if (tournament.status !== "running") throw new Error("Tournament is finished");
@@ -130,8 +130,8 @@ export class TournamentManager {
     tournament.current = { r, m, gameId };
     this.gameToMatch.set(gameId, { tournamentId, r, m });
 
-    this.gameManager.ensureGameExist(gameId);
-    this.gameManager.startGame(gameId, {
+    this.gameManager._ensureGameExist(gameId);
+    this.gameManager._startGame(gameId, {
       mode: 1,
       player1: match.player1,
       player2: match.player2,
@@ -149,7 +149,7 @@ export class TournamentManager {
     };
   }
 
-  onGameOver({ gameId, state }) {
+  _onGameOver({ gameId, state }) {
     const mapping = this.gameToMatch.get(gameId);
     if (!mapping) return null;
 
