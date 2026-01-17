@@ -16,11 +16,11 @@ const manager = new GameManager(io);
 const tournamentManager = new TournamentManager(manager);
 
 // tournament hook
-manager.setOnGameOver(({ gameId, state }) => {
-  const res = tournamentManager.onGameOver({ gameId, state });
+manager._setOnGameOver(({ gameId, state }) => {
+  const res = tournamentManager._onGameOver({ gameId, state });
   if (!res) return;
 
-  const t = tournamentManager.getTournament(res.tournamentId);
+  const t = tournamentManager._getTournament(res.tournamentId);
   io.emit("tournament:state", { tournamentId: res.tournamentId, tournament: t });
 
   if (res.type === "tournamentEnded") io.emit("tournament:ended", res);
@@ -38,15 +38,15 @@ fastify.post("/api/pong/games", async (req, reply) => {
   console.log("SERVER.JS: Creating new game with id:", gameId);
 
   // Create + start server-side game without socket
-  manager.ensureGameExist(gameId);
-  manager.startGame(gameId, { ...data, mode });
+  manager._ensureGameExist(gameId);
+  manager._startGame(gameId, { ...data, mode });
 
   return { gameId };
 });
 
 fastify.post("/api/pong/games/:gameId/join", async (req, reply) => {
   const { gameId } = req.params;
-  manager.ensureGameExist(gameId);
+  manager._ensureGameExist(gameId);
   return { ok: true };
 });
 
@@ -56,13 +56,13 @@ fastify.post("/api/pong/games/:gameId/input", async (req, reply) => {
 
   if (!side || !direction) return reply.code(400).send({ error: "Missing side or direction" });
 
-  manager.updatePaddle(gameId, side, direction);
+  manager._updatePaddle(gameId, side, direction);
   return { ok: true };
 });
 
 fastify.get("/api/pong/games/:gameId/state", async (req, reply) => {
   const { gameId } = req.params;
-  const state = manager.getState(gameId);
+  const state = manager._getState(gameId);
   if (!state) return reply.code(404).send({ error: "Game not found" });
   return state;
 });

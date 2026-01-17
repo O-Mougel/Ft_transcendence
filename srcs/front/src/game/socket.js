@@ -17,13 +17,13 @@ export function setupSocket() {
   });
 
   if (updateGameScene) {
-	  socket.off("state");
-	  socket.on("state", (data) => updateGameScene(data));
+	  socket.off("game:state");
+	  socket.on("game:state", (data) => updateGameScene(data));
   }
 
   if (handleGameStopped) {
-	  socket.off("gameStopped");
-	  socket.on("gameStopped", handleGameStopped);
+	  socket.off("game:stopped");
+	  socket.on("game:stopped", handleGameStopped);
   }
 
   if (handleGameOver) {
@@ -59,26 +59,26 @@ export async function waitStartGame() {
     if (CONTEXT.gameId) {
       // console.log("Game ID found in context:", CONTEXT.gameId);
       console.log("Joining existing game with ID:", CONTEXT.gameId);
-      socket.emit("joinGame", { gameId: CONTEXT.gameId });
+      socket.emit("game:join", { gameId: CONTEXT.gameId });
       return;
     }
     if (CONTEXT.gameMode === 0) {
       console.log("Starting single-player game against AI opponent");
-      socket.emit("startGame", { 
+      socket.emit("game:start", { 
         mode: 0,
     	  player1: result.name,
     	  player2: "AIOpponent",
       });
     }
     else if (CONTEXT.gameMode === 1) {
-      socket.emit("startGame", { 
+      socket.emit("game:start", { 
         mode: 1,
     	  player1: result.name,
     	  player2: "Player2",
       });
     }
     else {
-      socket.emit("startGame", { 
+      socket.emit("game:start", { 
         mode: 2,
     	  player1: "Player 1",
     	  player2: "Player 2",
@@ -87,7 +87,7 @@ export async function waitStartGame() {
       });
     }
 
-    socket.once("gameStarted", (data) => {
+    socket.once("game:started", (data) => {
       console.log("Game started with data:", data);
     });
   } catch (error) {
@@ -99,31 +99,31 @@ export async function waitStartGame() {
 
 export function emitStopGame() {
   if (!isSocketConnected()) return;
-  socket.emit("stopGame");
+  socket.emit("game:stop");
 }
 
 export function updateGameState() {
   const { isGameStarted, leftPaddle, rightPaddle, leftPaddle2, rightPaddle2 } = CONTEXT;
   if (!isGameStarted || !socket) return;
 
-  socket.emit("move", {
+  socket.emit("game:move", {
   	Paddle: "left",
   	Direction: leftPaddle.direction,
   });
 
-  socket.emit("move", {
+  socket.emit("game:move", {
   	Paddle: "right",
   	Direction: rightPaddle.direction,
   });
 
   if (CONTEXT.gameMode !== 2) return;
 
-  socket.emit("move", {
+  socket.emit("game:move", {
 	  Paddle: "left2",
 	  Direction: leftPaddle2.direction,
   });
 
-  socket.emit("move", {
+  socket.emit("game:move", {
 	  Paddle: "right2",
 	  Direction: rightPaddle2.direction,
   });
@@ -136,7 +136,7 @@ export function handleEscapeKey() {
 	  console.log("Cannot stop game: Not connected to server");
 	  return;
   }
-  socket.emit("stopGame");
+  socket.emit("game:stop");
 }
 
 export function getSocket() {
