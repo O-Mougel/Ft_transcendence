@@ -846,6 +846,8 @@ window.loginPlayer2 = async function () {
 	const divLogin2FA = document.getElementById('profile2Login2FA');
 	const profile2Overview = document.getElementById('profile2Overview');
 	const player2Name = document.getElementById('Player2Name');
+	const player2TwoFAInput = document.getElementById('player2TwoFAInput');
+	const goToGameButtonDiv = document.getElementById('goToGameButtonDiv');
 
 	if (!username || !password || !logResult) return;
 
@@ -892,6 +894,7 @@ window.loginPlayer2 = async function () {
 				window.sessionStorage.setItem('temp_token',result.token);
 				divLogin.style.display = "none";
 				divLogin2FA.style.display = "flex";
+				player2TwoFAInput.focus();
 			}
 			else
 			{
@@ -901,6 +904,7 @@ window.loginPlayer2 = async function () {
 				divLogin.style.display = "none";
 				divLogin2FA.style.display = "none";
 				profile2Overview.style.display = "flex";
+				goToGameButtonDiv.style.display = "flex";
 			}
 		}
 	} 
