@@ -208,6 +208,7 @@ window.player2TwoFAValidation = async function () {
 		const divLogin = document.getElementById('profile2Login');
 		const divLogin2FA = document.getElementById('profile2Login2FA');
 		const profile2Overview = document.getElementById('profile2Overview');
+		const goToGameButtonDiv = document.getElementById('goToGameButtonDiv');
 		
 		if (!password)
 		{
@@ -241,6 +242,7 @@ window.player2TwoFAValidation = async function () {
 			divLogin.style.display = "none";
 			divLogin2FA.style.display = "none";
 			profile2Overview.style.display = "flex";
+			goToGameButtonDiv.style.display = "flex";
 		}
 	}
 	catch (err)
