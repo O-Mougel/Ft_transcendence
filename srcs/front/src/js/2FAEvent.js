@@ -199,3 +199,4 @@ export const goTo2faLogin = async () => {
 		document.getElementById('2FACodeInput').focus();
 	history.pushState(null, null, "/2faLogin");
 }
+
