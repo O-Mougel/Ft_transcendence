@@ -845,6 +845,7 @@ window.loginPlayer2 = async function () {
 	const divLogin = document.getElementById('profile2Login');
 	const divLogin2FA = document.getElementById('profile2Login2FA');
 	const profile2Overview = document.getElementById('profile2Overview');
+	const player2Name = document.getElementById('Player2Name');
 
 	if (!username || !password || !logResult) return;
 
@@ -879,6 +880,7 @@ window.loginPlayer2 = async function () {
 				throw new Error(`Request failed: ${loginResponse.status} ${text}`);
 		}
 
+		player2Name.innerHTML = data.name;
 		const result = await loginResponse.json();	
 		if (result)
 		{
@@ -890,17 +892,15 @@ window.loginPlayer2 = async function () {
 				window.sessionStorage.setItem('temp_token',result.token);
 				divLogin.style.display = "none";
 				divLogin2FA.style.display = "flex";
-				
 			}
 			else
 			{
 				window.sessionStorage.setItem('player2_token',result.token);
 				console.log('⏳ Player 2 Logged in !');
+				alertBoxMsg('⏳ Player 2 Logged in !');
 				divLogin.style.display = "none";
 				divLogin2FA.style.display = "none";
 				profile2Overview.style.display = "flex";
-				alertBoxMsg(`Player 2: Welcome back ${data.name} ! 😉`);
-
 			}
 		}
 	} 
@@ -914,3 +914,37 @@ window.loginPlayer2 = async function () {
 		displayCorrectErrMsg(err, "dummydata");
 	}
 };
+
+window.loadProfileData = async function () {
+
+	const Player1Name = document.getElementById('Player1Name');
+	const player1Pfp = document.getElementById('player1Pfp');
+
+	if (!Player1Name || !player1Pfp) return;
+
+	try 
+	{
+		const dataRequestResponse = await fetch('/profile/grab', { //GET request by default without the "request" parameter
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
+				credentials: 'include',
+		});
+	
+		if (!dataRequestResponse.ok) {
+				const text = await dataRequestResponse.text().catch(() => dataRequestResponse.statusText);
+				throw new Error(`Request failed: ${dataRequestResponse.status} ${text}`);
+		}
+		const result = await dataRequestResponse.json();	
+		if (result)
+		{	
+			Player1Name.innerHTML = result.name;
+			player1Pfp.src = result.avatar;
+		}
+	} 
+	catch (err) 
+	{
+		if (await fetchErrcodeHandler(err) == 0)
+			return (window.grabProfileInfo());
+		console.error('Profile info grab failed !\n => ', err);
+		return ;
+	}
+}
