@@ -70,27 +70,12 @@ export default class extends ViewTemplate {
 						</div>
 					</div>
 				</div>
-
 			</div>`;
 	}
 
 	async init() {
 		const mode = (location.pathname === '/pongAI') ? 0 : (location.pathname === '/pong') ? 1 : 2;
 	 	const module = await import("/game/pong.js");
-
-		// const startBtn = document.getElementById("startButton");
-    	// const backButton = document.getElementById("backToTournament");
-
-		// if (CONTEXT.gameId) {
-    	//   // Tournament match
-    	//   startBtn.style.display = "hidden";
-    	// //   backButton.classList.remove("hidden");
-
-    	//   backButton.addEventListener("click", () => {
-    	//     window.history.pushState({}, "", `/tournament/${CONTEXT.tournamentId}`);
-    	//     window.dispatchEvent(new PopStateEvent("popstate"));
-    	//   });
-    	// }
 
    		if (typeof module.initPong === "function") {
       		module.initPong({ mode, gameId: CONTEXT.gameId });

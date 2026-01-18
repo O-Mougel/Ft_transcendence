@@ -142,25 +142,50 @@ socket.on("tournament:getState", (data = {}) => {
   socket.emit("tournament:state", { tournamentId, tournament });
 });
 
+// socket.on("tournament:nextMatch", (data = {}) => {
+//   try {
+//     const tournamentId = data.tournamentId || socket.data.tournamentId;
+//     const info = tournamentManager._nextMatch(tournamentId);
+
+//     // important: switch socket to this game room
+//     socket.data.gameId = info.gameId;
+//     manager._joinGame(info.gameId, socket);
+
+//     // tell UI what match is now playing
+//     socket.emit("match:started", info);
+
+//     // also send updated bracket/status
+//     const tournament = tournamentManager._getTournament(tournamentId);
+//     socket.emit("tournament:state", { tournamentId, tournament });
+//   } catch (e) {
+//     socket.emit("tournament:error", { message: e.message || "nextMatch failed" });
+//   }
+// });
+
 socket.on("tournament:nextMatch", (data = {}) => {
   try {
     const tournamentId = data.tournamentId || socket.data.tournamentId;
+
+    // Leave previous game room if any (prevents multiple active rooms)
+    if (socket.data.gameId) manager._leaveGame(socket.data.gameId, socket);
+
     const info = tournamentManager._nextMatch(tournamentId);
 
-    // important: switch socket to this game room
     socket.data.gameId = info.gameId;
+
     manager._joinGame(info.gameId, socket);
 
-    // tell UI what match is now playing
+    manager._startGame(info.gameId, info.startData);
+
     socket.emit("match:started", info);
 
-    // also send updated bracket/status
     const tournament = tournamentManager._getTournament(tournamentId);
     socket.emit("tournament:state", { tournamentId, tournament });
   } catch (e) {
     socket.emit("tournament:error", { message: e.message || "nextMatch failed" });
   }
 });
+
 
 
     socket.on("disconnect", () => {
