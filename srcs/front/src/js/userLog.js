@@ -848,6 +848,7 @@ window.loginPlayer2 = async function () {
 	const player2Name = document.getElementById('Player2Name');
 	const player2TwoFAInput = document.getElementById('player2TwoFAInput');
 	const goToGameButtonDiv = document.getElementById('goToGameButtonDiv');
+	const Player1Name = document.getElementById('Player1Name');
 
 	if (!username || !password || !logResult) return;
 
@@ -862,6 +863,14 @@ window.loginPlayer2 = async function () {
 	{
 		logResult.innerText = "❌ Enter your password !";
 		password.focus();
+		return ;
+	}
+	else if (username.value.toUpperCase() == Player1Name.innerHTML.toUpperCase())
+	{
+		logResult.innerText = "❌ Player 2 username cannot be the same as Player 1 !";
+		username.value = "";
+		password.value = "";
+		username.focus();
 		return ;
 	}
 
