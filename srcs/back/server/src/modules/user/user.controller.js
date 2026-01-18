@@ -140,6 +140,12 @@ export async function loginMatchHandler(request, reply) {
 		});
 	};
 
+	if (user.id == request.user.id)
+		return reply.status(401).send({ //not sure about the error code
+			message: "Player 1 already logged. Login with another player!",
+			errRef:"loginMatchUserNotP1"
+		});
+
 	const isValidPassword = verifyPassword(
 		body.password,
 		user.salt,
