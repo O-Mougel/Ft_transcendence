@@ -79,7 +79,7 @@ export class Game {
       y: HEIGHT / 2,
       radius: BALL_RADIUS,
 
-      // vx/vy store direction * speed (always normalized to `speed`)
+      // vx/vy store direction * speed (always normalized to 'speed')
       vx: Math.random() > 0.5 ? 1 : -1,
       vy: (Math.random() - 0.5) * 0.1, // small initial vertical component
 
@@ -93,7 +93,6 @@ export class Game {
   // Single-speed utilities
 
   _normalizeBallVelocity() {
-    // console.log('Normalizing ball velocity:', this.ball.vx, this.ball.vy);
     const mag = Math.hypot(this.ball.vx, this.ball.vy);
     if (mag < 1e-8) {
       // fallback if ever degenerate
@@ -104,13 +103,8 @@ export class Game {
     const s = this.ball.speed / mag;
     this.ball.vx *= s;
     this.ball.vy *= s;
-    // console.log('Normalized ball velocity:', this.ball.vx, this.ball.vy);
   }
 
-  // setBallSpeed(newSpeed) {
-  //   this.ball.speed = newSpeed;
-  //   this._normalizeBallVelocity();
-  // }
 
   // Game lifecycle
 

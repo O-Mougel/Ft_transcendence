@@ -56,7 +56,7 @@ export default class extends ViewTemplate {
 					<span id="LeftPlayer" class="text-2xl">Left Player: [username]</span>
 					<span id="RightPlayer" class="text-2xl">Right Player: [username]</span>
 					<button id="startButton" class="px-6 py-3 bg-[#98c6f8] text-white font-bold rounded-lg hover:bg-[#7aaedc]">Start Game</button>
-					<a id="backToTournament" class="hidden px-6 py-3 bg-transparent border border-[#98c6f8] text-white font-bold rounded-lg hover:bg-white/10 cursor-pointer">← Back to tournament</a>
+					<a id="backToTournament" class="hidden px-6 py-3 bg-transparent border border-[#98c6f8] text-white font-bold rounded-lg hover:bg-white/10 cursor-pointer">Back to tournament</a>
 					<!-- Score row under the canvas -->
 					<div id="Scores" class="flex justify-center items-center text-white font-bold hidden">
 						<div class="flex items-center">

@@ -17,11 +17,11 @@ function handleKeyDown(e) {
 }
 
 function handleKeyUp(e) {
-  if (!CONTEXT.isGameStarted || CONTEXT.tournamentId) return;
+  if (!CONTEXT.isGameStarted) return;
   const key = e.key;
 
   // ESC stops the game
-  if (key === "Escape") handleEscapeKey();
+  if (key === "Escape" && !CONTEXT.tournamentId) handleEscapeKey();
   CONTEXT.keysPressed.delete(key);
   updateDirections();
 }
