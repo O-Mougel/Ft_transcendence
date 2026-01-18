@@ -75,7 +75,7 @@ export class TournamentManager {
     this.gameToMatch = new Map();
   }
 
-  createTournament(size, names) {
+  _createTournament(size, names) {
     if (![4, 8, 16].includes(size)) {
       throw new Error("Tournament size must be 4, 8, or 16");
     }
@@ -106,50 +106,87 @@ export class TournamentManager {
     return tournamentId;
   }
 
-  getTournament(tournamentId) {
+  _getTournament(tournamentId) {
     return this.tournaments.get(tournamentId) || null;
   }
 
-  nextMatch(tournamentId) {
-    const tournament = this.tournaments.get(tournamentId);
-    if (!tournament) throw new Error("Tournament not found");
-    if (tournament.status !== "running") throw new Error("Tournament is finished");
-    if (tournament.current) throw new Error("A match is already running");
+  // _nextMatch(tournamentId) {
+  //   const tournament = this.tournaments.get(tournamentId);
+  //   if (!tournament) throw new Error("Tournament not found");
+  //   if (tournament.status !== "running") throw new Error("Tournament is finished");
+  //   if (tournament.current) throw new Error("A match is already running");
 
-    const next = findNextReadyMatch(tournament);
-    if (!next) throw new Error("No ready matches available");
+  //   const next = findNextReadyMatch(tournament);
+  //   if (!next) throw new Error("No ready matches available");
 
-    const { r, m, match } = next;
+  //   const { r, m, match } = next;
 
-    // Create/start a new Pong game for this match
-    const gameId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+  //   // Create/start a new Pong game for this match
+  //   const gameId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 
-    match.status = "playing";
-    match.gameId = gameId;
+  //   match.status = "playing";
+  //   match.gameId = gameId;
 
-    tournament.current = { r, m, gameId };
-    this.gameToMatch.set(gameId, { tournamentId, r, m });
+  //   tournament.current = { r, m, gameId };
+  //   this.gameToMatch.set(gameId, { tournamentId, r, m });
 
-    this.gameManager.ensureGameExist(gameId);
-    this.gameManager.startGame(gameId, {
+  //   this.gameManager._ensureGameExist(gameId);
+  //   this.gameManager._startGame(gameId, {
+  //     mode: 1,
+  //     player1: match.player1,
+  //     player2: match.player2,
+  //     // mark as tournament game so GameManager cleanup can be generic
+  //     _tournament: { tournamentId, r, m },
+  //   });
+
+  //   return {
+  //     tournamentId,
+  //     round: r,
+  //     matchIndex: m,
+  //     gameId,
+  //     player1: match.player1,
+  //     player2: match.player2,
+  //   };
+  // }
+
+  _nextMatch(tournamentId) {
+  const tournament = this.tournaments.get(tournamentId);
+  if (!tournament) throw new Error("Tournament not found");
+  if (tournament.status !== "running") throw new Error("Tournament is finished");
+  if (tournament.current) throw new Error("A match is already running");
+
+  const next = findNextReadyMatch(tournament);
+  if (!next) throw new Error("No ready matches available");
+
+  const { r, m, match } = next;
+
+  const gameId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+
+  match.status = "playing";
+  match.gameId = gameId;
+
+  tournament.current = { r, m, gameId };
+  this.gameToMatch.set(gameId, { tournamentId, r, m });
+
+  // IMPORTANT: do NOT start game here anymore
+  return {
+    tournamentId,
+    round: r,
+    matchIndex: m,
+    gameId,
+    player1: match.player1,
+    player2: match.player2,
+    startData: {
       mode: 1,
       player1: match.player1,
       player2: match.player2,
-      // mark as tournament game so GameManager cleanup can be generic
       _tournament: { tournamentId, r, m },
-    });
+    },
+  };
+}
 
-    return {
-      tournamentId,
-      round: r,
-      matchIndex: m,
-      gameId,
-      player1: match.player1,
-      player2: match.player2,
-    };
-  }
 
-  onGameOver({ gameId, state }) {
+  _onGameOver({ gameId, state }) {
     const mapping = this.gameToMatch.get(gameId);
     if (!mapping) return null;
 

@@ -1,4 +1,4 @@
-import { waitStartGame, isSocketConnected, setupSocket, updateGameState, emitStopGame } from "./socket.js";
+import { waitStartGame, isSocketConnected, setupSocket, updateGameState, emitStopGame, joinExistingGame } from "./socket.js";
 import { CONTEXT, createGameElements } from "./context.js";
 import { draw, drawScore, resetState } from "./graphics.js";
 import { bindControls } from "./controls.js";
@@ -7,6 +7,10 @@ export function initPong(mode = {}) {
 	CONTEXT.gameMode = mode.mode;
 	console.log("Setting up Pong..., mode:", mode.mode);
 	console.log("Game ID from initPong:", mode.gameId);
+
+	if (mode.gameId) {
+		CONTEXT.gameId = mode.gameId;
+	}
 
 	CONTEXT.canvas = document.getElementById("canvas");
 	CONTEXT.startButton = document.getElementById("startButton");
@@ -53,32 +57,33 @@ export function initPong(mode = {}) {
 
 	console.log("Tournament ID:", CONTEXT.tournamentId);
 	console.log("Game ID:", CONTEXT.gameId);
+		
+	createGameElements();
+	setupSocket();
+	bindControls();
 	
-	if (CONTEXT.tournamentId && CONTEXT.isGameStarted) {
-		console.log("Rejoining existing game with ID:", CONTEXT.gameId);
-		startGame();
+	if (CONTEXT.tournamentId && CONTEXT.gameId) {
+		CONTEXT.startButton.style.display = "none";
+		joinExistingGame(CONTEXT.gameId);
+		scheduleClientUpdates();
+		resetState();
+
+		if (CONTEXT.startButton) CONTEXT.startButton.style.display = "none";
+		if (CONTEXT.score) CONTEXT.score.style.display = "flex";
+		if (CONTEXT) CONTEXT.isGameStarted = true;
+		gameInit();
 	} else {
-		console.log("No existing game ID, ready to start new game.");
 		CONTEXT.startButton.style.display = "block";
 		CONTEXT.startButton.onclick = startGame;
 	}
 
-
 	if (CONTEXT.tournamentId) {
-	console.log("Tournament ID in CONTEXT:", CONTEXT.tournamentId);
-      // Tournament match
-      CONTEXT.backButton.classList.remove("hidden");
-
-      CONTEXT.backButton.addEventListener("click", () => {
-
-        window.history.pushState({}, "", `/tournament`);
-        window.dispatchEvent(new PopStateEvent("popstate"));
-      });
-    }
-
-	createGameElements();
-	setupSocket();
-	bindControls();
+		CONTEXT.backButton.classList.remove("hidden");
+		CONTEXT.backButton.onclick = () => {
+			window.history.pushState({}, "", `/tournament`);
+			window.dispatchEvent(new PopStateEvent("popstate"));
+		};
+	}
 
 	draw();
 }
@@ -131,6 +136,22 @@ function startGame() {
 	if (CONTEXT) CONTEXT.isGameStarted = true;
 	gameInit();
 }
+
+// function joinExistingGame(gameId) {
+// 	if (!isSocketConnected())
+// 		return;
+
+// 	console.log("Joining existing game with ID:", gameId);
+
+// 	// waitStartGame();
+// 	scheduleClientUpdates();
+// 	resetState();
+
+// 	if (CONTEXT.startButton) CONTEXT.startButton.style.display = "none";
+// 	if (CONTEXT.score) CONTEXT.score.style.display = "flex";
+// 	if (CONTEXT) CONTEXT.isGameStarted = true;
+// 	gameInit();
+// }
 
 function gameInit() {
 	const { ctx, GAME_WIDTH, GAME_HEIGHT } = CONTEXT;

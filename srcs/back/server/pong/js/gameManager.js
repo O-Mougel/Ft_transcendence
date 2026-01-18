@@ -8,20 +8,15 @@ export class GameManager {
     this.io = io;
 
     this.games = new Map(); // gameId -> { game, tickId, aiId, players: Set<socketId> }
-    this.onGameOverCb = null;
-    this.onGameOver
+    this.onGameOver = null;
   }
 
-  setOnGameOver(cb) {
-    this.onGameOverCb = cb;
-  }
-
-  setOnGameOver(cb) { 
+  _setOnGameOver(cb) {
     this.onGameOver = cb;
   }
 
   // Ensure a game entry exists for the given gameId
-  ensureGameExist(gameId) {
+  _ensureGameExist(gameId) {
     // if (!this.games.has(gameId)) {
     //   this.games.set(gameId, {
     //     game: createGame(),
@@ -44,18 +39,18 @@ export class GameManager {
     });
   }
 
-  joinGame(gameId, socket) {
-    // const entry = this.ensureGameExist(gameId);
+  _joinGame(gameId, socket) {
+    // const entry = this._ensureGameExist(gameId);
     // entry.players.add(socket.id);
     // socket.join(gameId);
     // return entry;
-    this.ensureGameExist(gameId);
+    this._ensureGameExist(gameId);
     const entry = this.games.get(gameId);
     entry.players.add(socket.id);
     socket.join(gameId);
   }
 
-  leaveGame(gameId, socket) {
+  _leaveGame(gameId, socket) {
     const entry = this.games.get(gameId);
     if (!entry) return;
 
@@ -64,28 +59,28 @@ export class GameManager {
 
     // If room is empty, stop loops + delete game
     if (entry.players.size === 0) {
-      this.stopLoops(gameId);
+      this._stopLoops(gameId);
       this.games.delete(gameId);
     }
   }
 
-  async startGame(gameId, data) {
-    // const entry = this.ensureGameExist(gameId);
+  async _startGame(gameId, data) {
+    // const entry = this._ensureGameExist(gameId);
     // const { game } = entry;
 
     // const mode = data?.mode ?? 0;
     // game.mode = mode;
     // game.player1Id = "1",//data?.player1Id ?? null;
     // game.player2Id = "2", //data?.player2Id ?? null;
-    // game.start(data);
+    // game._start(data);
 
-    // this.startTickLoop(gameId);
-    // this.startAiLoop(gameId);
+    // this._startTickLoop(gameId);
+    // this._startAiLoop(gameId);
 
     // return { mode };
-    this.ensureGameExist(gameId);
+    this._ensureGameExist(gameId);
     const entry = this.games.get(gameId);
-    entry.game.reset();
+    entry.game._reset();
 
     const user1 = await findUserByName("TEST");
     entry.game.player1Id = user1.id;
@@ -96,53 +91,53 @@ export class GameManager {
     entry.meta = data._tournament ? { ...data._tournament } : null;
 
     // let game decide how to use data (mode, player names, etc.)
-    entry.game.start?.(data); // if your game has start()
+    entry.game._start?.(data); // if your game has start()
     if (typeof entry.game.mode === "number" && typeof data.mode === "number") {
       entry.game.mode = data.mode;
     }
 
-    this.startTickLoop(gameId);
-    this.startAiLoop(gameId);
+    this._startTickLoop(gameId);
+    this._startAiLoop(gameId);
 
     return { ok: true };
   }
 
-  getState(gameId) {
+  _getState(gameId) {
     const entry = this.games.get(gameId);
     if (!entry) return null;
-    return entry.game.getCurrentGameState();
+    return entry.game._getCurrentGameState();
   }
 
-  stopGame(gameId) {
+  _stopGame(gameId) {
     const entry = this.games.get(gameId);
     if (!entry) return;
 
-    entry.game.stop();
-    this.stopLoops(gameId);
+    entry.game._stop();
+    this._stopLoops(gameId);
   }
 
-  updatePaddle(gameId, side, direction) {
+  _updatePaddle(gameId, side, direction) {
     const entry = this.games.get(gameId);
     if (!entry) return;
-    entry.game.updatePaddleDirection(side, direction);
+    entry.game._updatePaddleDirection(side, direction);
   }
 
-  startTickLoop(gameId) {
+  _startTickLoop(gameId) {
     const entry = this.games.get(gameId);
     if (!entry || entry.tickId) return;
 
     entry.tickId = setInterval(() => {
       const { game } = entry;
-      const { gameOver } = game.updateGameState();
-      const state = game.getCurrentGameState();
+      const { gameOver } = game._updateGameState();
+      const state = game._getCurrentGameState();
       if (!state) return;
 
       // IMPORTANT: emit to the room only
-      this.io.to(gameId).emit("state", state);
+      this.io.to(gameId).emit("game:state", state);
 
       // Detect game over
       if (gameOver) {
-        this.io.to(gameId).emit("gameOver", state.score);
+        this.io.to(gameId).emit("game:over", state.score);
 
         if (this.onGameOver) this.onGameOver({ gameId, state });
 
@@ -155,22 +150,22 @@ export class GameManager {
         }
 
         // notify tournament layer if any
-        if (this.onGameOverCb) {
+        if (this.onGameOver) {
           try {
-            this.onGameOverCb({ gameId, state, meta: entry.meta });
+            this.onGameOver({ gameId, state, meta: entry.meta });
           } catch (e) {
-            console.error("onGameOverCb error:", e);
+            console.error("onGameOver error:", e);
           }
         }
 
         // Cleanly stop this match (sequential tournament needs cleanup)
-        this.stopLoops(gameId);
-        game.reset();
+        this._stopLoops(gameId);
+        game._reset();
       }
     }, TICK_RATE);
   }
 
-  startAiLoop(gameId) {
+  _startAiLoop(gameId) {
     const entry = this.games.get(gameId);
     if (!entry || entry.aiId) return;
 
@@ -182,11 +177,11 @@ export class GameManager {
       if (game.mode !== 0) return;
 
       const aiPlayer = game.AIPlayer;
-      if (aiPlayer) aiPlayer.updatePrediction();
+      if (aiPlayer) aiPlayer._updatePrediction();
     }, AI_REACTION_TIME);
   }
 
-  stopLoops(gameId) {
+  _stopLoops(gameId) {
     const entry = this.games.get(gameId);
     if (!entry) return;
 
@@ -204,7 +199,7 @@ export class GameManager {
 async function persistMatch(game) {
   if (!game) return;
 
-  const state = game.getCurrentGameState();
+  const state = game._getCurrentGameState();
   // on game over:
   const matchInfos = {
     player1Id: game.player1Id,
@@ -213,7 +208,7 @@ async function persistMatch(game) {
     player2score: state.score.right,
     winnerId: state.score.left > state.score.right ? game.player1Id : game.player2Id,
     longestStreak: game.longestStreak,
-    duration: game.getDuration(),
+    duration: game._getDuration(),
   };
   createMatch(matchInfos).catch(console.error);
 }
