@@ -6,19 +6,15 @@ import { updateGameScene } from "./pong.js";
 let socket = null;
 
 export function setupSocket() {
-  console.log("Attempting to connect to WebSocket server...");
+  if (socket) return socket;
 
-  socket = io({
-    path: "/pong/socket.io",
-  });
+  socket = io({ path: "/pong/socket.io" });
 
-  socket.on("connect", () => {
-	console.log("Connected to WebSocket server");
-  });
+  socket.on("connect", () => { console.log("Connected to WebSocket server"); });
 
   if (updateGameScene) {
 	  socket.off("game:state");
-	  socket.on("game:state", (data) => updateGameScene(data));
+	  socket.on("game:state", (data) => updateGameScene?.(data));
   }
 
   if (handleGameStopped) {
@@ -27,9 +23,11 @@ export function setupSocket() {
   }
 
   if (handleGameOver) {
-	  socket.off("gameOver");
-	  socket.on("gameOver", handleGameOver);
+	  socket.off("game:over");
+	  socket.on("game:over", handleGameOver);
   }
+
+  return socket;
 }
 
 export function isSocketConnected() {
@@ -97,6 +95,16 @@ export async function waitStartGame() {
   }
 }
 
+export function startNewGame(payload) {
+  if (!isSocketConnected()) return;
+  socket.emit("game:start", payload);
+}
+
+export function joinExistingGame(gameId) {
+  if (!isSocketConnected()) return;
+  socket.emit("game:join", { gameId });
+}
+
 export function emitStopGame() {
   if (!isSocketConnected()) return;
   socket.emit("game:stop");
@@ -106,29 +114,13 @@ export function updateGameState() {
   const { isGameStarted, leftPaddle, rightPaddle, leftPaddle2, rightPaddle2 } = CONTEXT;
   if (!isGameStarted || !socket) return;
 
-  socket.emit("game:move", {
-  	Paddle: "left",
-  	Direction: leftPaddle.direction,
-  });
-
-  socket.emit("game:move", {
-  	Paddle: "right",
-  	Direction: rightPaddle.direction,
-  });
+  socket.emit("game:move", { Paddle: "left", Direction: leftPaddle.direction });
+  socket.emit("game:move", { Paddle: "right",	Direction: rightPaddle.direction });
 
   if (CONTEXT.gameMode !== 2) return;
 
-  socket.emit("game:move", {
-	  Paddle: "left2",
-	  Direction: leftPaddle2.direction,
-  });
-
-  socket.emit("game:move", {
-	  Paddle: "right2",
-	  Direction: rightPaddle2.direction,
-  });
-
-
+  socket.emit("game:move", { Paddle: "left2", Direction: leftPaddle2.direction });
+  socket.emit("game:move", { Paddle: "right2", Direction: rightPaddle2.direction });
 }
 
 export function handleEscapeKey() {
@@ -136,6 +128,7 @@ export function handleEscapeKey() {
 	  console.log("Cannot stop game: Not connected to server");
 	  return;
   }
+  if (!CONTEXT.isGameStarted || CONTEXT.tournamentId) return;
   socket.emit("game:stop");
 }
 

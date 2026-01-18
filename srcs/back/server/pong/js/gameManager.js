@@ -8,15 +8,10 @@ export class GameManager {
     this.io = io;
 
     this.games = new Map(); // gameId -> { game, tickId, aiId, players: Set<socketId> }
-    this.onGameOverCb = null;
-    this.onGameOver
+    this.onGameOver = null;
   }
 
   _setOnGameOver(cb) {
-    this.onGameOverCb = cb;
-  }
-
-  _setOnGameOver(cb) { 
     this.onGameOver = cb;
   }
 
@@ -142,7 +137,7 @@ export class GameManager {
 
       // Detect game over
       if (gameOver) {
-        this.io.to(gameId).emit("gameOver", state.score);
+        this.io.to(gameId).emit("game:over", state.score);
 
         if (this.onGameOver) this.onGameOver({ gameId, state });
 
@@ -155,11 +150,11 @@ export class GameManager {
         }
 
         // notify tournament layer if any
-        if (this.onGameOverCb) {
+        if (this.onGameOver) {
           try {
-            this.onGameOverCb({ gameId, state, meta: entry.meta });
+            this.onGameOver({ gameId, state, meta: entry.meta });
           } catch (e) {
-            console.error("onGameOverCb error:", e);
+            console.error("onGameOver error:", e);
           }
         }
 
