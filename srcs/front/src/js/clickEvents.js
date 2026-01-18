@@ -138,6 +138,11 @@ async function uploadFileToServer(fileObj) {
 
 }
 
+window.backToTournamentPage =  function () {
+	window.history.pushState({}, "", "/tournament");
+	window.dispatchEvent(new PopStateEvent("popstate"));
+};
+
 window.validatePlayerNameFields =  function (nbPlayers, event) {
 
 	let i;
