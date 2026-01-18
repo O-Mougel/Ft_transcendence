@@ -17,17 +17,6 @@ export class GameManager {
 
   // Ensure a game entry exists for the given gameId
   _ensureGameExist(gameId) {
-    // if (!this.games.has(gameId)) {
-    //   this.games.set(gameId, {
-    //     game: createGame(),
-    //     tickId: null,
-    //     aiId: null,
-    //     players: new Set(),
-    //   });
-    // }
-    // let game = this.games.get(gameId);
-    // game.game.id = gameId; // set the game unique id
-    // return game;
     if (this.games.has(gameId)) return;
 
     this.games.set(gameId, {
@@ -40,10 +29,6 @@ export class GameManager {
   }
 
   _joinGame(gameId, socket) {
-    // const entry = this._ensureGameExist(gameId);
-    // entry.players.add(socket.id);
-    // socket.join(gameId);
-    // return entry;
     this._ensureGameExist(gameId);
     const entry = this.games.get(gameId);
     entry.players.add(socket.id);
@@ -65,19 +50,6 @@ export class GameManager {
   }
 
   async _startGame(gameId, data) {
-    // const entry = this._ensureGameExist(gameId);
-    // const { game } = entry;
-
-    // const mode = data?.mode ?? 0;
-    // game.mode = mode;
-    // game.player1Id = "1",//data?.player1Id ?? null;
-    // game.player2Id = "2", //data?.player2Id ?? null;
-    // game._start(data);
-
-    // this._startTickLoop(gameId);
-    // this._startAiLoop(gameId);
-
-    // return { mode };
     this._ensureGameExist(gameId);
     const entry = this.games.get(gameId);
     entry.game._reset();

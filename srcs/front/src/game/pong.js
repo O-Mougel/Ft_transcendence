@@ -137,22 +137,6 @@ function startGame() {
 	gameInit();
 }
 
-// function joinExistingGame(gameId) {
-// 	if (!isSocketConnected())
-// 		return;
-
-// 	console.log("Joining existing game with ID:", gameId);
-
-// 	// waitStartGame();
-// 	scheduleClientUpdates();
-// 	resetState();
-
-// 	if (CONTEXT.startButton) CONTEXT.startButton.style.display = "none";
-// 	if (CONTEXT.score) CONTEXT.score.style.display = "flex";
-// 	if (CONTEXT) CONTEXT.isGameStarted = true;
-// 	gameInit();
-// }
-
 function gameInit() {
 	const { ctx, GAME_WIDTH, GAME_HEIGHT } = CONTEXT;
 	ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);

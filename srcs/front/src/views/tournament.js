@@ -49,7 +49,6 @@ export default class extends ViewTemplate {
       </div>
     `;
   }
-
   async init() {
     // ensure socket exists
     setupSocket();
@@ -61,15 +60,16 @@ export default class extends ViewTemplate {
       return;
     }
 
+    
     const nextMatchBtn = document.getElementById("nextMatchBtn");
     const backBtn = document.getElementById("backButton");
-
+    
     // Buttons
     backBtn.onclick = () => {
       window.history.pushState({}, "", "/tournamentSize");
       window.dispatchEvent(new PopStateEvent("popstate"));
     };
-
+    
     if (CONTEXT.gameId) {
       nextMatchBtn.textContent = "Back to Match";
       nextMatchBtn.onclick = () => {
@@ -88,13 +88,13 @@ export default class extends ViewTemplate {
       if (tid !== tournamentId) return;
       this._renderTournament(tournament);
     });
-
+    
     // Listen for match start: go to Pong view
     socket.off("match:started");
     socket.on("match:started", (info) => {
       // info: { gameId, player1, player2, tournamentId }
       if (info.tournamentId && info.tournamentId !== tournamentId) return;
-
+      
       // store into CONTEXT so pong view can display names / use gameId
       CONTEXT.gameId = info.gameId;
       CONTEXT.leftName = info.player1;
