@@ -9,11 +9,6 @@ export default class extends ViewTemplate {
     this.tournamentId = params?.id || null;
 	}
 
-	// constructor(params) {
-	// super(params);
-	// this.tournamentId = params.id; // <-- comes from /tournament/:id
-	// }
-
   async getHTML() {
     return `
       <div class="h-full w-full flex justify-center text-white">
@@ -60,52 +55,37 @@ export default class extends ViewTemplate {
     setupSocket();
     const socket = getSocket();
 
-    // const mode = CONTEXT.gameMode;
-    // const module = await import("/game/pong.js");
-    // module.initPong({ mode, gameId: CONTEXT.gameId });
-
-    // const startBtn = document.getElementById("startButton");
-    // const backButton = document.getElementById("backToTournament");
-
-    // if (CONTEXT.gameId) {
-    //   // Tournament match
-    //   startBtn.style.display = "none";
-    //   backButton.classList.remove("hidden");
-
-    //   backButton.addEventListener("click", () => {
-    //     window.history.pushState({}, "", `/tournament/${CONTEXT.tournamentId}`);
-    //     window.dispatchEvent(new PopStateEvent("popstate"));
-    //   });
-    // }
-
     const tournamentId = this._extractTournamentId();
     if (!tournamentId) {
       document.getElementById("tournamentStatus").textContent = "Missing tournament id in URL.";
       return;
     }
 
+    const nextMatchBtn = document.getElementById("nextMatchBtn");
+    const backBtn = document.getElementById("backButton");
+
     // Buttons
-    document.getElementById("backButton").addEventListener("click", () => {
+    backBtn.onclick = () => {
       window.history.pushState({}, "", "/tournamentSize");
       window.dispatchEvent(new PopStateEvent("popstate"));
-    });
+    };
 
     if (CONTEXT.gameId) {
-      document.getElementById("nextMatchBtn").textContent = "Back to Match";
-      document.getElementById("nextMatchBtn").addEventListener("click", () => {
+      nextMatchBtn.textContent = "Back to Match";
+      nextMatchBtn.onclick = () => {
         window.history.pushState({}, "", "/pong");
         window.dispatchEvent(new PopStateEvent("popstate"));
-      });
+      };
+    } else {
+      nextMatchBtn.onclick = () => {
+        socket.emit("tournament:nextMatch", { tournamentId });
+      };
     }
-
-    document.getElementById("nextMatchBtn").addEventListener("click", () => {
-      socket.emit("tournament:nextMatch", { tournamentId });
-    });
 
     // Listen for tournament state updates
     socket.off("tournament:state");
-    socket.on("tournament:state", ({ tournamentId: tournamentId, tournament }) => {
-      if (tournamentId !== tournamentId) return;
+    socket.on("tournament:state", ({ tournamentId: tid, tournament }) => {
+      if (tid !== tournamentId) return;
       this._renderTournament(tournament);
     });
 
