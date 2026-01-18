@@ -10,12 +10,12 @@ export default class Paddle {
         this.direction = 'none';
     }
 
-    draw(ctx) {
+    _draw(ctx) {
         ctx.fillStyle = this.color;
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
 
-    reset() {
+    _reset() {
         this.y = this.spawnY;
         this.score = 0;
     }

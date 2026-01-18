@@ -17,6 +17,7 @@ function handleKeyDown(e) {
 }
 
 function handleKeyUp(e) {
+  if (!CONTEXT.isGameStarted || CONTEXT.tournamentId) return;
   const key = e.key;
 
   // ESC stops the game

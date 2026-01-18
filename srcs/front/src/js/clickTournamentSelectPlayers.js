@@ -26,61 +26,6 @@ function validateNames(names, expectedCount) {
   return null;
 }
 
-// async function startTournament(expectedCount, event) {
-//   event.preventDefault();
-
-//   const names = collectPlayerNames(expectedCount);
-//   const err = validateNames(names, expectedCount);
-//   if (err) {
-//     // replace with your UI error display
-//     alert(err);
-//     return;
-//   }
-
-//   console.log("Creating tournament with players:", names);
-
-//   // Option A: send via Socket.IO (recommended for tournament)
-//   // socket.emit("tournament:create", { size: expectedCount, names });
-
-// //   Option B: send via HTTP (if you already have an API endpoint)
-//   // const res = await fetch("/api/tournament", {
-//   //   method: "POST",
-//   //   headers: { "Content-Type": "application/json" },
-//   //   body: JSON.stringify({ size: expectedCount, names }),
-//   // });
-
-//   // if (!res.ok) {
-//   //   const msg = await res.text();
-//   //   alert(msg || "Failed to create tournament");
-//   //   return;
-//   // }
-
-//   // const data = await res.json(); // { tournamentId, ... }
-
-//   // // redirect to tournament bracket page
-//   // window.history.pushState({}, "", `/tournament/${data.tournamentId}`);
-//   // window.dispatchEvent(new PopStateEvent("popstate"));
-//   // Requires your socket instance to be accessible here (import it or expose it)
-// socket.emit("tournament:create", { size: expectedCount, names });
-
-// // wait once for server confirmation
-// socket.once("tournament:created", ({ tournamentId, tournament }) => {
-//   // store tournamentId if you need
-//   window.history.pushState({}, "", `/tournament/${tournamentId}`);
-//   window.dispatchEvent(new PopStateEvent("popstate"));
-
-//   // optionally: show bracket immediately from "tournament"
-//   // then start first match (sequential single-client)
-//   socket.emit("tournament:nextMatch", { tournamentId });
-// });
-
-// // optional: handle errors
-// socket.once("error", (err) => {
-//   alert(err?.message || "Failed to create tournament");
-// });
-
-// }
-
 export async function startTournament(expectedCount, event) {
   setupSocket();
   const socket = getSocket();
@@ -101,7 +46,6 @@ export async function startTournament(expectedCount, event) {
   socket.once("tournament:state", ({ tournamentId }) => {
     console.log("Tournament created with ID:", tournamentId);
     sessionStorage.setItem("currentTournamentId", tournamentId);
-    // window.history.pushState({}, "", `/tournament/${tournamentId}`);
     window.history.pushState({}, "", `/tournament`);
     window.dispatchEvent(new PopStateEvent("popstate"));
 

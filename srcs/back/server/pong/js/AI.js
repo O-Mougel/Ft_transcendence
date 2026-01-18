@@ -16,7 +16,7 @@ export class AIPlayer {
 	this.lastApproaching = false;
   }
 
-  updatePrediction() {
+  _updatePrediction() {
 	const ball = this.game.ball;
 
 	const approaching = ball.vx > 0;
@@ -40,7 +40,7 @@ export class AIPlayer {
 	}
 
 	const targetX = this.paddle.x - BALL_RADIUS;
-	let predictedY = this.ballTrajectoryPrevision(ball, targetX);
+	let predictedY = this._ballTrajectoryPrevision(ball, targetX);
 	let opposedAdjustment = (this.opponent.y + PADDLE_HEIGHT / 2 > HEIGHT / 2) ? -25 : (this.opponent.y + PADDLE_HEIGHT / 2 < HEIGHT / 2) ? 25 : 0;
 	
 	predictedY -= PADDLE_HEIGHT / 2 + opposedAdjustment + this.aimError;
@@ -48,7 +48,7 @@ export class AIPlayer {
 	this.predictedY = Math.max(0, Math.min(HEIGHT - PADDLE_HEIGHT, predictedY)); // clamp within screen
   }
 
-  updateDirection() {
+  _updateDirection() {
 	const paddle = this.paddle.y;
 	const target = this.predictedY;
 
@@ -58,7 +58,7 @@ export class AIPlayer {
 	else this.paddle.direction = "none";
   }
 
-  ballTrajectoryPrevision(ball, targetX) {
+  _ballTrajectoryPrevision(ball, targetX) {
     if (Math.abs(ball.vx) < 1e-12) return ball.y;
     const timeToTarget = (targetX - ball.x) / ball.vx;
     if (timeToTarget <= 0) return ball.y;
