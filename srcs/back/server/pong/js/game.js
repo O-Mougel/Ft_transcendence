@@ -87,12 +87,12 @@ export class Game {
       lastSidePossession: null,
     };
 
-    this.normalizeBallVelocity();
+    this._normalizeBallVelocity();
   }
 
   // Single-speed utilities
 
-  normalizeBallVelocity() {
+  _normalizeBallVelocity() {
     // console.log('Normalizing ball velocity:', this.ball.vx, this.ball.vy);
     const mag = Math.hypot(this.ball.vx, this.ball.vy);
     if (mag < 1e-8) {
@@ -107,14 +107,14 @@ export class Game {
     // console.log('Normalized ball velocity:', this.ball.vx, this.ball.vy);
   }
 
-  setBallSpeed(newSpeed) {
-    this.ball.speed = newSpeed;
-    this.normalizeBallVelocity();
-  }
+  // setBallSpeed(newSpeed) {
+  //   this.ball.speed = newSpeed;
+  //   this._normalizeBallVelocity();
+  // }
 
   // Game lifecycle
 
-  resetBall() {
+  _resetBall() {
     this.ball.x = WIDTH / 2;
     this.ball.y = HEIGHT / 2;
 
@@ -123,43 +123,43 @@ export class Game {
     this.ball.vx = this.ball.vx !== 0 ? (this.ball.vx < 0 ? -1 : 1) : (Math.random() > 0.5 ? 1 : -1);
     this.ball.vy = (Math.random() - 0.5) * 0.1;
 
-    this.normalizeBallVelocity();
+    this._normalizeBallVelocity();
     this.ball.lastSidePossession = null;
     if (this.longestStreak < this.nbExchanges)
       this.longestStreak = this.nbExchanges;
     this.nbExchanges = 0;
   }
 
-  incrementNbExchanges() {
+  _incrementNbExchanges() {
     this.nbExchanges += 1;
     if (this.nbExchanges > this.longestStreak) this.longestStreak = this.nbExchanges;
   }
 
-  incrementBallSpeed(side) {
+  _incrementBallSpeed(side) {
     console.log('Ball speed: ', this.ball.speed);
     if (side !== this.ball.lastSidePossession) {
       if (this.ball.speed < MAX_BALL_SPEED) {
-        this.incrementNbExchanges();
+        this._incrementNbExchanges();
         this.ball.speed += STEP;
-        this.normalizeBallVelocity();
+        this._normalizeBallVelocity();
       }
       this.ball.lastSidePossession = side;
     }
   }
 
-  checkScore() {
+  _checkScore() {
     let gameOver = false;
 
     // Right wall -> left scores
     if (this.ball.x > WIDTH) {
       this.leftScore += 1;
-      this.resetBall();
+      this._resetBall();
     }
 
     // Left wall -> right scores
     if (this.ball.x < 0) {
       this.rightScore += 1;
-      this.resetBall();
+      this._resetBall();
     }
 
     if (this.leftScore >= WIN_SCORE || this.rightScore >= WIN_SCORE) {
@@ -171,7 +171,7 @@ export class Game {
 
   // Core physics tick
 
-  moveBall() {
+  _moveBall() {
     const x0 = this.ball.x;
     const y0 = this.ball.y;
 
@@ -187,31 +187,31 @@ export class Game {
     this.ball.y = y1;
 
     // Boundary collisions (top/bottom)
-    this.boundaryCollision();
+    this._boundaryCollision();
 
     // Paddle collisions
     // Ball moving to the right -> check right paddles sides of rightPaddle, rightPaddle2, leftPaddle2 (bounce-back) 
     if (vx > 0) {
-      if (this.handleBallPaddleCollision(this.rightPaddle, 'right', x0, y0, vx, vy)) return; // RIGHT PADDLE (main)
+      if (this._handleBallPaddleCollision(this.rightPaddle, 'right', x0, y0, vx, vy)) return; // RIGHT PADDLE (main)
 
       if (this.mode === 2) { // 4-paddle mode
-          if (this.handleBallPaddleCollision(this.rightPaddle2, 'right', x0, y0, vx, vy)) return;  // RIGHT PADDLE 2
-          if (this.handleBallPaddleCollision(this.leftPaddle2, 'left', x0, y0, vx, vy)) return;  // LEFT PADDLE 2
+          if (this._handleBallPaddleCollision(this.rightPaddle2, 'right', x0, y0, vx, vy)) return;  // RIGHT PADDLE 2
+          if (this._handleBallPaddleCollision(this.leftPaddle2, 'left', x0, y0, vx, vy)) return;  // LEFT PADDLE 2
       }
     }
 
     // Ball moving to the left -> check left paddles sides of leftPaddle, leftPaddle2, rightPaddle2 (bounce-back)
     if (vx < 0) {
-      if (this.handleBallPaddleCollision(this.leftPaddle, 'left', x0, y0, vx, vy)) return; // LEFT PADDLE (main)
+      if (this._handleBallPaddleCollision(this.leftPaddle, 'left', x0, y0, vx, vy)) return; // LEFT PADDLE (main)
 
       if (this.mode === 2) { // 4-paddle mode
-        if (this.handleBallPaddleCollision(this.leftPaddle2, 'left', x0, y0, vx, vy)) return;  // LEFT PADDLE 2
-        if (this.handleBallPaddleCollision(this.rightPaddle2, 'right', x0, y0, vx, vy)) return;  // RIGHT PADDLE 2
+        if (this._handleBallPaddleCollision(this.leftPaddle2, 'left', x0, y0, vx, vy)) return;  // LEFT PADDLE 2
+        if (this._handleBallPaddleCollision(this.rightPaddle2, 'right', x0, y0, vx, vy)) return;  // RIGHT PADDLE 2
       }
     }    
   }
 
-  boundaryCollision() {
+  _boundaryCollision() {
     const top = 5 + this.ball.radius;
     const bottom = HEIGHT - 5 - this.ball.radius;
 
@@ -219,16 +219,16 @@ export class Game {
       const penetrationDelta = top - this.ball.y;
       this.ball.y = top + penetrationDelta;   // mirror back inside
       this.ball.vy = -this.ball.vy;
-      this.normalizeBallVelocity();
+      this._normalizeBallVelocity();
     } else if (this.ball.y > bottom) { // bottom collision
       const penetrationDelta = this.ball.y - bottom;
       this.ball.y = bottom - penetrationDelta; // mirror back inside
       this.ball.vy = -this.ball.vy;
-      this.normalizeBallVelocity();
+      this._normalizeBallVelocity();
     }
   }
 
-  sweepSphereAABB(x0, y0, vx, vy, minX, minY, maxX, maxY) {
+  _sweepSphereAABB(x0, y0, vx, vy, minX, minY, maxX, maxY) {
     const epsilon = 1e-12; // small value to avoid division by zero
 
     let timeEntryX = -Infinity, timeExitX = Infinity;
@@ -265,7 +265,7 @@ export class Game {
     return { t, nx, ny };
   }
 
-  handleBallPaddleCollision(paddle, side, x0, y0, vx, vy) {
+  _handleBallPaddleCollision(paddle, side, x0, y0, vx, vy) {
     const r = this.ball.radius;
   
     const minX = paddle.x - r;
@@ -273,7 +273,7 @@ export class Game {
     const maxX = paddle.x + paddle.width + r;
     const maxY = paddle.y + paddle.height + r;
   
-    const hit = this.sweepSphereAABB(x0, y0, vx, vy, minX, minY, maxX, maxY);
+    const hit = this._sweepSphereAABB(x0, y0, vx, vy, minX, minY, maxX, maxY);
     if (!hit) return false;
   
     // Move to impact point
@@ -308,7 +308,7 @@ export class Game {
       this.ball.vx = curve * 3;
     }
   
-    this.normalizeBallVelocity();
+    this._normalizeBallVelocity();
   
     // Continue remaining time
     const remaining = 1 - hit.t;
@@ -322,11 +322,11 @@ export class Game {
     if (this.ball.y > HEIGHT) this.ball.y = HEIGHT - BALL_RADIUS;
   
     if (Math.abs(hit.nx) > 0.5) // only increment speed on left/right face hits
-      this.incrementBallSpeed(side);
+      this._incrementBallSpeed(side);
     return true;
   }
 
-  movePaddles() {
+  _movePaddles() {
     // Left paddle
     if (this.leftPaddle.direction === "up")
       this.leftPaddle.moveUp();
@@ -354,7 +354,7 @@ export class Game {
       this.rightPaddle2.moveDown();
   }
 
-  start(data) {
+  _start(data) {
     this.isGameStarted = true;
     console.log('Game started', this.mode !== 2 ? '2 Paddles' : '4 Paddles');
     if (this.mode === 0) {
@@ -381,20 +381,20 @@ export class Game {
       console.log('Player names:', this.leftPaddle.name, this.rightPaddle.name, this.leftPaddle2.name, this.rightPaddle2.name);
     }
     this.startTime = Date.now() / 1000;
-    this.normalizeBallVelocity();
+    this._normalizeBallVelocity();
   }
 
-  stop() {
+  _stop() {
     this.isGameStarted = false;
-    this.reset();
+    this._reset();
     this.startTime = null;
     // delete this.AIPlayer;
   }
 
-  reset() {
+  _reset() {
     this.isGameStarted = false;
 
-    this.resetBall();
+    this._resetBall();
 
     this.leftPaddle.y = HEIGHT / 2 - PADDLE_HEIGHT / 2;
     this.rightPaddle.y = HEIGHT / 2 - PADDLE_HEIGHT / 2;
@@ -408,7 +408,7 @@ export class Game {
     this.rightScore = 0;
   }
 
-  updatePaddleDirection(side, direction) {
+  _updatePaddleDirection(side, direction) {
     if (side === 'left') {
       if (direction === 'up') this.leftPaddle.direction = "up";
       if (direction === 'down') this.leftPaddle.direction = "down";
@@ -436,21 +436,21 @@ export class Game {
 
   // Main tick
 
-  updateGameState() {
+  _updateGameState() {
     if (!this.isGameStarted) {
       return { gameOver: false };
     }
 
-    this.moveBall();
+    this._moveBall();
     if (this.mode === 0)
-      this.AIPlayer.updateDirection(); // AI updates its paddle direction; should only be called once per frame?
-    this.movePaddles();
-    const gameOver = this.checkScore();
+      this.AIPlayer._updateDirection(); // AI updates its paddle direction; should only be called once per frame?
+    this._movePaddles();
+    const gameOver = this._checkScore();
 
     return { gameOver };
   }
 
-  getCurrentGameState() {
+  _getCurrentGameState() {
     if (this.mode === 2) {
       return {
         paddles: {
@@ -489,7 +489,7 @@ export class Game {
     }
   }
 
-  getDuration() {
+  _getDuration() {
     return Date.now() / 1000 - this.startTime;
   }
 }
