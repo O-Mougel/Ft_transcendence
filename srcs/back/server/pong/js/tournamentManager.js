@@ -18,7 +18,6 @@ function buildBracket(players, size) {
     }));
   });
 
-  // Fill round 0
   for (let matchIndex = 0; matchIndex < size / 2; matchIndex++) {
     bracket[0][matchIndex].player1 = players[matchIndex * 2];
     bracket[0][matchIndex].player2 = players[matchIndex * 2 + 1];
@@ -55,13 +54,9 @@ function findNextReadyMatch(tournament) {
   return null;
 }
 
-function chooseWinnerFromScore(match, score) {
-  // score format in your game state: { left: n, right: n }
-  // match.player1 is treated as "left", match.player2 as "right"
-  if (!score || typeof score.left !== "number" || typeof score.right !== "number") {
-    // fallback: pick player1 if unknown
-    return match.player1;
-  }
+function chooseWinner(match, score) {
+  if (!score || typeof score.left !== "number" || typeof score.right !== "number") return match.player1; // fallback on invalid score
+ 
   if (score.left === score.right) return match.player1; // fallback on draw
   return (score.left > score.right) ? match.player1 : match.player2;
 }
@@ -69,37 +64,31 @@ function chooseWinnerFromScore(match, score) {
 export class TournamentManager {
   constructor(gameManager) {
     this.gameManager = gameManager;
-
     this.tournaments = new Map();
-
     this.gameToMatch = new Map();
   }
 
   _createTournament(size, names) {
-    if (![4, 8, 16].includes(size)) {
-      throw new Error("Tournament size must be 4, 8, or 16");
-    }
-    if (!Array.isArray(names) || names.length !== size) {
-      throw new Error(`Expected ${size} player names`);
-    }
+    if (![4, 8, 16].includes(size)) throw new Error("Tournament size must be 4, 8, or 16");
+    if (!Array.isArray(names) || names.length !== size) throw new Error(`Expected ${size} player names`);
 
-    const cleaned = names.map(n => String(n ?? "").trim());
-    if (cleaned.some(n => n.length === 0)) throw new Error("All names must be non-empty");
+    const cleanedArray = names.map(n => String(n ?? "").trim()); // ensure strings and trim whitespace
+    if (cleanedArray.some(n => n.length === 0)) throw new Error("All names must be non-empty"); // If some (at leat one) name is empty
 
-    const lowered = cleaned.map(n => n.toLowerCase());
-    if (new Set(lowered).size !== lowered.length) throw new Error("Names must be unique");
+    const loweredNames = cleanedArray.map(n => n.toLowerCase()); // case-insensitive check for uniqueness
+    if (new Set(loweredNames).size !== loweredNames.length) throw new Error("Names must be unique"); // If there are duplicates after cleaning (different array size)
 
     const tournamentId = generateTournamentId();
-    const players = cleaned;
+    const players = cleanedArray;
 
     const tournament = {
       id: tournamentId,
       size,
-      status: "running",      // running|finished
+      status: "running",
       winner: null,
       players,
       bracket: buildBracket(players, size),
-      current: null,          // { r, m, gameId } while playing
+      current: null,
     };
 
     this.tournaments.set(tournamentId, tournament);
@@ -119,21 +108,20 @@ export class TournamentManager {
     const next = findNextReadyMatch(tournament);
     if (!next) throw new Error("No ready matches available");
 
-    const { r, m, match } = next;
+    const { r: roundIndex, m: matchIndex, match } = next;
 
     const gameId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 
     match.status = "playing";
     match.gameId = gameId;
 
-    tournament.current = { r, m, gameId };
-    this.gameToMatch.set(gameId, { tournamentId, r, m });
+    tournament.current = { r: roundIndex, m: matchIndex, gameId };
+    this.gameToMatch.set(gameId, { tournamentId, r: roundIndex, m: matchIndex });
 
-    // IMPORTANT: do NOT start game here anymore
     return {
       tournamentId,
-      round: r,
-      matchIndex: m,
+      round: roundIndex,
+      matchIndex: matchIndex,
       gameId,
       player1: match.player1,
       player2: match.player2,
@@ -141,7 +129,7 @@ export class TournamentManager {
         mode: 1,
         player1: match.player1,
         player2: match.player2,
-        _tournament: { tournamentId, r, m },
+        _tournament: { tournamentId, r: roundIndex, m: matchIndex },
       },
     };
   }
@@ -157,7 +145,7 @@ export class TournamentManager {
     const match = tournament.bracket[r][m];
     if (!match) return null;
 
-    const winnerName = chooseWinnerFromScore(match, state?.score);
+    const winnerName = chooseWinner(match, state.score);
 
     match.winner = winnerName;
     match.status = "done";
@@ -168,7 +156,6 @@ export class TournamentManager {
     tournament.current = null;
     this.gameToMatch.delete(gameId);
 
-    // finished?
     if (tournament.status === "finished") {
       return { type: "tournamentEnded", tournamentId, winner: tournament.winner };
     }
