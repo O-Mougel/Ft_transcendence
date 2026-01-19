@@ -90,7 +90,7 @@ fastify.decorate('matchauthenticate',
 			const token = auth.split(" ")[1];
 
 			const decoded = fastify.jwt.verify(token)
-			if (decoded.type == "2fa")
+			if (decoded.type != "match")
 				return reply.status(401).send({ message: 'Invalid token to access this path' })
 			request.user = decoded
 		} catch(err) {
