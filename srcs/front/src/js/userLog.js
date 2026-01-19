@@ -837,15 +837,15 @@ window.updateUserPassword = async function (event) {
 	}
 }
 
-window.loginPlayer2 = async function () {
+window.loginPlayer2 = async function (event) {
 
+	event.preventDefault();
 	const username = document.getElementById('player2UserName');
 	const password = document.getElementById('player2Password');
 	const logResult = document.getElementById('Player2Result');
 	const divLogin = document.getElementById('profile2Login');
 	const divLogin2FA = document.getElementById('profile2Login2FA');
 	const profile2Overview = document.getElementById('profile2Overview');
-	const player2Name = document.getElementById('Player2Name');
 	const player2TwoFAInput = document.getElementById('player2TwoFAInput');
 	const goToGameButtonDiv = document.getElementById('goToGameButtonDiv');
 	const Player1Name = document.getElementById('Player1Name');
@@ -891,7 +891,6 @@ window.loginPlayer2 = async function () {
 				throw new Error(`Request failed: ${loginResponse.status} ${text}`);
 		}
 
-		player2Name.innerHTML = data.name;
 		const result = await loginResponse.json();	
 		if (result)
 		{
@@ -908,6 +907,7 @@ window.loginPlayer2 = async function () {
 			else
 			{
 				window.sessionStorage.setItem('player2_token',result.token);
+				await window.loadPlayer2Data();
 				console.log('⏳ Player 2 Logged in !');
 				alertBoxMsg('⏳ Player 2 Logged in !');
 				divLogin.style.display = "none";
@@ -951,6 +951,40 @@ window.loadProfileData = async function () {
 		{	
 			Player1Name.innerHTML = result.name;
 			player1Pfp.src = result.avatar;
+		}
+	} 
+	catch (err) 
+	{
+		if (await fetchErrcodeHandler(err) == 0)
+			return (window.grabProfileInfo());
+		console.error('Profile info grab failed !\n => ', err);
+		return ;
+	}
+}
+
+window.loadPlayer2Data = async function () {
+
+	const Player2Name = document.getElementById('Player2Name');
+	const player2Pfp = document.getElementById('player2Pfp');
+
+	if (!Player2Name || !player2Pfp) return;
+
+	try 
+	{
+		const dataRequestResponse = await fetch('/profile/grab2', { //GET request by default without the "request" parameter
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("player2_token")}`},
+				credentials: 'include',
+		});
+	
+		if (!dataRequestResponse.ok) {
+				const text = await dataRequestResponse.text().catch(() => dataRequestResponse.statusText);
+				throw new Error(`Request failed: ${dataRequestResponse.status} ${text}`);
+		}
+		const result = await dataRequestResponse.json();	
+		if (result)
+		{	
+			Player2Name.innerHTML = result.name;
+			player2Pfp.src = result.avatar;
 		}
 	} 
 	catch (err) 
