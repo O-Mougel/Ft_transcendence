@@ -43,6 +43,12 @@ export const displayCorrectErrMsg = async (error, data) => {
 		case "expiredJWT":
 			alertBoxMsg(`⚠️ JWT token expired or is invalid !`);
 			break;
+		case "malformedJWT":
+			alertBoxMsg(`⚠️ Unable to refresh token ! Log in again !`);
+			break;
+		case "authenticateOtherError":
+			alertBoxMsg(`⚠️ We were unable to verify your token, please log in again !`);
+			break;
 		case "registerNameTaken":
 			alertBoxMsg(`❌ This username is already used by someone !`);
 			break;
@@ -152,18 +158,25 @@ export const alertBoxMsg = async (msg) => {
 
 export const fetchErrcodeHandler = async (error) => {
 
+
 	const isNotAuth = error.toString().search("\"errRef\":\"authBearerMissing\"") != -1;
 	const isExpired = error.toString().search("\"errRef\":\"expiredJWT\"") != -1;
+	const isMalformed = error.toString().search("\"errRef\":\"malformedJWT\"") != -1;
 	// console.log("[DEBUG] fetchErrcode handle ...", isExpired, isNotAuth);
-	if(isNotAuth || (window.sessionStorage.getItem("logStatus")) == 'loggedOut')
+
+	console.log("IsNotAuth:", isNotAuth);
+	console.log("isMalformed:", isMalformed);
+	console.log("logstatus", window.sessionStorage.getItem("logStatus"));
+
+	if(isNotAuth || (window.sessionStorage.getItem("logStatus")) == 'loggedOut' || isMalformed)
 	{
 		window.sessionStorage.setItem('logStatus', 'loggedOut');
+		alertBoxMsg("⚠️ You were logged-out ! Relog and try again !");
 		backToDefaultPage();
 		return (-1);
 	}
 	else if (isExpired)
 	{
-		
 		if (!(window.sessionStorage.getItem("nbReloadsLeft")))
 			window.sessionStorage.setItem('nbReloadsLeft', 1);
 		else
@@ -506,7 +519,6 @@ window.grabProfileInfo = async function () {
 	const profilePicture = document.getElementById('sidePannelPfp');
 
 	if (!profilePanel || !profileUsername || !profilePicture) return;
-
 	try 
 	{
 		const dataRequestResponse = await fetch('/profile/grab', { //GET request by default without the "request" parameter
@@ -957,7 +969,7 @@ window.loadProfileData = async function () {
 	catch (err) 
 	{
 		if (await fetchErrcodeHandler(err) == 0)
-			return (window.grabProfileInfo());
+			return (window.loadProfileData());
 		console.error('Profile info grab failed !\n => ', err);
 		return ;
 	}
@@ -991,7 +1003,7 @@ window.loadPlayer2Data = async function () {
 	catch (err) 
 	{
 		if (await fetchErrcodeHandler(err) == 0)
-			return (window.grabProfileInfo());
+			return (window.loadPlayer2Data());
 		console.error('Profile info grab failed !\n => ', err);
 		return ;
 	}

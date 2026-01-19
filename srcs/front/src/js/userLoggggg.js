@@ -51,6 +51,7 @@ const fieldValidity = (username, pwd, pwdconf, requestR, email) => {
     }
     return true;
 };
+
 window.grabProfileInfo = async function () {
     const profilePanel = document.getElementById("profilePanel");
     const profileUsername = document.getElementById("playerGrabbedUsername");
@@ -77,6 +78,7 @@ window.grabProfileInfo = async function () {
         console.error("Profile info grab failed !\n => ", err);
     }
 };
+
 window.logoutUser = async function () {
     const btntext = document.getElementById("logoutButton");
     try {
