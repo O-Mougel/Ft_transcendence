@@ -45,7 +45,7 @@ export default class extends ViewTemplate {
 				<img class ="mx-auto " id="logo" src="./img/assets/spaceMove.gif">
 				<form id="loginFormUser">
 					<div class="content-center">
-						<input id="clientUsername" tabindex="1" class="mx-auto text-white hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] w-1/2 md:w-1/4 h-[35px] text-sm md:text-base rounded-sm border border-[#c2dbf6] pt-2 pb-[5px] pr-5 pl-5 mb-[25px]" name="playerUsername" value="" type="text" autofocus autocomplete="off" placeholder="Enter your login">
+						<input id="clientUsername" tabindex="1" class="mx-auto text-white hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] w-1/2 md:w-1/4 h-[35px] text-sm md:text-base rounded-sm border border-[#c2dbf6] pt-2 pb-[5px] pr-5 pl-5 mb-[25px]" name="playerUsername" value="" type="text" autocomplete="off" placeholder="Enter your login" maxlength="13" oninput="this.value = this.value.replace(/[^a-zA-Z0-9_]/g, '').slice(0, 13);">
 					</div>
 					<div class="content-center">
 						<input id="clientPassword" tabindex="2" class="mx-auto text-white hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] w-1/2 md:w-1/4 h-[35px] text-sm md:text-base rounded-sm border border-[#c2dbf6] pt-2 pb-[5px] pr-5 pl-5 mb-[35px]" name="playerPassword" value="" type="password" autocomplete="off" placeholder="Enter your password" maxlength="32" oninput="this.value = this.value.slice(0,32)">
@@ -57,5 +57,11 @@ export default class extends ViewTemplate {
 					<p id="signInResult" class="mt-4 text-base"></p>
 				</form>
 			</div>`
+	}
+
+	async init()
+	{
+		if (document.getElementById('clientUsername'))
+			document.getElementById('clientUsername').focus();
 	}
 }
