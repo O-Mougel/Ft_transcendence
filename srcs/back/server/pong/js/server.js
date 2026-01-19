@@ -30,7 +30,7 @@ manager._setOnGameOver(({ gameId, state }) => {
 registerSocketHandlers(io, manager, tournamentManager);
 
 
-// /* ========= REST API (CLI) ========= */
+// REST API (CLI)
 
 fastify.post("/api/pong/games", async (req, reply) => {
   const { mode = 0, data = {} } = req.body ?? {};
@@ -67,7 +67,7 @@ fastify.get("/api/pong/games/:gameId/state", async (req, reply) => {
   return state;
 });
 
-//  /* ======== Start Server ======== */
+// Start Server
 
 fastify.listen({ port: 3002, host: "0.0.0.0" }, (err) => {
   if (err) {
