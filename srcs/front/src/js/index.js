@@ -565,6 +565,7 @@ const router = async () => {
 		{ path: "/pongAI", view: pong },
 		{ path: "/pong", view: pong },
 		{ path: "/pong2", view: pong },
+		{ path: "/pongRanked", view: pong },
 		{ path: "/logUser", view: logUser },
 		{ path: "/tournament", view: tournament },
 		{ path: "/2faLogin", view: Login2fa },
