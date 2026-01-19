@@ -77,8 +77,7 @@ export default class extends ViewTemplate {
 		const mode = (location.pathname === '/pongAI') ? 0 : (location.pathname === '/pong') ? 1 : 2;
 	 	const module = await import("/game/pong.js");
 
-   		if (typeof module.initPong === "function") {
-      		module.initPong({ mode, gameId: CONTEXT.gameId });
-   		}
-    }
+	 	if (typeof module.initPong === "function") 
+			module.initPong({ mode, gameId: CONTEXT.gameId });
+	}
 }
