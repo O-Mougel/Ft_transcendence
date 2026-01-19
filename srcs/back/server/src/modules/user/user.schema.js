@@ -15,7 +15,6 @@ const createUserSchema = z.object({
 
 const profileChangesSchema = z.object({
 	name: z.string().min(3).max(13).regex(/^[a-zA-Z0-9_]+$/),
-	password: z.string().min(1),
 	avatar: z.string().min(1), //quel pattern verifier ici en regex ??
 });
 
