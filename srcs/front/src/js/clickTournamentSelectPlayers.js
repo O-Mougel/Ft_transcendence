@@ -1,4 +1,5 @@
 import { setupSocket, getSocket } from "/game/socket.js";
+import { alertBoxMsg } from "./userLog.js";
 
 function collectPlayerNames(expectedCount) {
   const names = [];
@@ -35,7 +36,7 @@ export async function startTournament(expectedCount, event) {
   const names = collectPlayerNames(expectedCount);
   const err = validateNames(names, expectedCount);
   if (err) {
-    alert(err);
+    alertBoxMsg("❌ " + err);
     return;
   }
 
@@ -54,6 +55,6 @@ export async function startTournament(expectedCount, event) {
   });
 
   socket.once("tournament:error", (e) => {
-    alert(e?.message || "Failed to create tournament");
+    alertBoxMsg("❌ " + (e?.message || "Failed to create tournament"));
   });
 }
