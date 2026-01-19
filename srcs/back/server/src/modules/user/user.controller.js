@@ -417,7 +417,7 @@ export async function friendRequestHandler(request, reply) {
 
 	if (await alreadyrequested(newfriend.id, request.user.id))
 	return reply.status(422).send({
-		message: "This user already sent you a  !",
+		message: "This user already sent you a friend request !",
 		errRef:"requestDuplicate"
 	});
 
