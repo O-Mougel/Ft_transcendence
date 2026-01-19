@@ -170,6 +170,7 @@ window.loginWith2FACode = async function (event) {
 		if (result)
 		{			
 			sessionStorage.setItem('access_token', result.newAccessToken);
+	
 			sessionStorage.removeItem('temp_token');
 			window.sessionStorage.setItem('logStatus','loggedIn');
 			console.log('⏳ Logged in !');

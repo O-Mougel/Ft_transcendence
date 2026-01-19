@@ -741,6 +741,7 @@ window.handleLoginClick = async function (event) {
 			{
 				window.sessionStorage.setItem('logStatus','loggedIn');
 				window.sessionStorage.setItem('access_token',result.token);
+				
 				console.log('⏳ Logged in !');
 				alertBoxMsg(`Welcome back ${data.name} ! 😉`);
 				await backToDefaultPage();
