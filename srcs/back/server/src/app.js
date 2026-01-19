@@ -22,6 +22,12 @@ fastify.decorate('authenticate',
 			if (!auth || !auth.startsWith("Bearer ")) {
 				return reply.status(401).send({ message: 'Authentication required', errRef:"authBearerMissing"});
 			}
+			
+			const refresh_token = request.cookies.refresh_token;
+
+			if (!refresh_token) {
+				return reply.status(401).send({ message: 'you are logged out, login first !' })
+			}
 
 			const token = auth.split(" ")[1];
 
