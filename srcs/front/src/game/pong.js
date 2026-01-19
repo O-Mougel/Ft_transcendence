@@ -4,6 +4,11 @@ import { draw, drawScore, resetState } from "./graphics.js";
 import { bindControls } from "./controls.js";
 
 export function initPong(mode = {}) {
+	if (mode.mode === 3 && !sessionStorage.getItem("player2_token")) {
+		window.history.pushState({}, "", `/ranked`);
+		window.dispatchEvent(new PopStateEvent("popstate"));
+		return;
+	}
 	CONTEXT.gameMode = mode.mode;
 	console.log("Setting up Pong..., mode:", mode.mode);
 	console.log("Game ID from initPong:", mode.gameId);

@@ -24,10 +24,6 @@ export default class extends ViewTemplate {
 						<label for="myfileSelector" class="border border-white ml-2 py-2 px-3 cursor-pointer">🗁 Select file</label>
 						<p id="selectedFileName" class="mt-4 text-base text-ellipsis"></p>
 					</div>
-					<h2 class="flex items-start pt-4 w-full text-left">► Confirm your password :</h2>
-					<div class="flex items-start w-[75%] pt-4">
-						<input id="confirmPassword" tabindex="2" class="uppercase ml-4 px-5 w-full hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] rounded-sm border border-[#c2dbf6]" name="confirmPassword" value="" type="password" autocomplete="off" placeholder="Enter your password" maxlength="32" oninput="this.value = this.value.slice(0,32)" >
-					</div>
 					<div class="flex items-start w-[75%] pt-4">
 						<input tabindex="3" class="uppercase ml-4 px-5 hover:text-[#98c6f8] text-ellipsis focus:outline-none  focus:border-[#98c6f8] hover:border-[#98c6f8] border-white rounded-lg border pb-1 sm:pb-2" onclick="saveProfileInfo()" name="updateChanges" type="submit" value="💾 Apply changes">
 						<p id="confirmChangeResults" class="text-ellipsis text-center pl-3 text-[2vw] text-[#e85b51]"></p>

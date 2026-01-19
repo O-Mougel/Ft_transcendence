@@ -19,7 +19,7 @@ export async function alterUser(id, newName, newPath) { // add a check to see if
 	return (user);
 }
 
-export async function createUser(input) {
+export async function createUser(input) { //check password confirmation here to solve sql injection ??
 	const { password, ...rest } = input;
 
 	const { hash, salt } = hashPassword(password);

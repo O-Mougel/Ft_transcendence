@@ -22,15 +22,29 @@ fastify.decorate('authenticate',
 			if (!auth || !auth.startsWith("Bearer ")) {
 				return reply.status(401).send({ message: 'Authentication required', errRef:"authBearerMissing"});
 			}
+			
+			const refresh_token = request.cookies.refresh_token;
+
+			if (!refresh_token) {
+				return reply.status(401).send({ message: 'you are logged out, login first !' })
+			}
 
 			const token = auth.split(" ")[1];
-
-			const decoded = fastify.jwt.verify(token)
+			console.log("Token is : ", token );
+			const decoded = fastify.jwt.verify(token);
 			if (decoded.type != "access")
 				return reply.status(401).send({ message: 'Invalid token to access this path' })
-			request.user = decoded
-		} catch(err) {
-			return reply.status(401).send({ message: 'Invalid or expired JWT', errRef:"expiredJWT"})
+			request.user = decoded;
+		}
+		catch(err) {
+
+			const errCode = err.code;
+			if (errCode === "FAST_JWT_EXPIRED")
+				return reply.status(403).send({ message: 'Expired JWT Token !', errRef:"expiredJWT"})
+			else if (errCode === "FAST_JWT_MALFORMED") 
+				return reply.status(403).send({ message: 'Malformed JWT Token !', errRef:"malformedJWT"})
+			else
+				return reply.status(500).send({ message: 'Couldn\'t verify JWT Token !', errRef:"authenticateOtherError"})
 		}
 	}
 );
@@ -50,8 +64,16 @@ fastify.decorate('logoutauthenticate',
 			if (decoded.scope == "match")
 				return reply.status(401).send({ message: 'Invalid token to access this path' })
 			request.user = decoded
-		} catch(err) {
-			return reply.status(401).send({ message: 'Invalid or expired JWT', errRef:"expiredJWT"})
+		}
+		catch(err) {
+
+			const errCode = err.code;
+			if (errCode === "FAST_JWT_EXPIRED")
+				return reply.status(403).send({ message: 'Expired JWT Token !', errRef:"expiredJWT"})
+			else if (errCode === "FAST_JWT_MALFORMED") 
+				return reply.status(403).send({ message: 'Malformed JWT Token !', errRef:"malformedJWT"})
+			else
+				return reply.status(500).send({ message: 'Couldn\'t verify JWT Token !', errRef:"authenticateOtherError"})
 		}
 	}
 );
@@ -71,9 +93,16 @@ fastify.decorate('twofaauthenticate',
 			if (decoded.type != "2fa")
 				return reply.status(401).send({ message: "token type is not for 2fa!" })
 			request.user = decoded
-		} catch(err) {
-			console.log(" err:", err);
-			return reply.status(401).send({ message: 'Invalid or expired JWT', errRef:"expiredJWT"})
+		}
+		catch(err) {
+
+			const errCode = err.code;
+			if (errCode === "FAST_JWT_EXPIRED")
+				return reply.status(403).send({ message: 'Expired JWT Token !', errRef:"expiredJWT"})
+			else if (errCode === "FAST_JWT_MALFORMED") 
+				return reply.status(403).send({ message: 'Malformed JWT Token !', errRef:"malformedJWT"})
+			else
+				return reply.status(500).send({ message: 'Couldn\'t verify JWT Token !', errRef:"authenticateOtherError"})
 		}
 	}
 );
@@ -90,11 +119,19 @@ fastify.decorate('matchauthenticate',
 			const token = auth.split(" ")[1];
 
 			const decoded = fastify.jwt.verify(token)
-			if (decoded.type == "2fa")
+			if (decoded.type != "match")
 				return reply.status(401).send({ message: 'Invalid token to access this path' })
 			request.user = decoded
-		} catch(err) {
-			return reply.status(401).send({ message: 'Invalid or expired JWT', errRef:"authBearerMissing"})
+		}
+		catch(err) {
+
+			const errCode = err.code;
+			if (errCode === "FAST_JWT_EXPIRED")
+				return reply.status(403).send({ message: 'Expired JWT Token !', errRef:"expiredJWT"})
+			else if (errCode === "FAST_JWT_MALFORMED") 
+				return reply.status(403).send({ message: 'Malformed JWT Token !', errRef:"malformedJWT"})
+			else
+				return reply.status(500).send({ message: 'Couldn\'t verify JWT Token !', errRef:"authenticateOtherError"})
 		}
 	}
 );

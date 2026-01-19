@@ -9,7 +9,13 @@ export default class extends ViewTemplate {
 
 	async init() {
 		await window.loadProfileData();
-		document.getElementById('player2UserName').focus();
+		if (document.getElementById('player2UserName'))
+			document.getElementById('player2UserName').focus();
+		if ((sessionStorage.getItem("player2_token")))
+		{
+			console.log("Player2 logout cleanup");
+			window.sessionStorage.removeItem('player2_token');
+		}
 	}
 
 	async getHTML() {
@@ -61,29 +67,29 @@ export default class extends ViewTemplate {
 							<img src="./img/assets/vs.png" alt="vsImg" class="pt-4 min-w-4 max-w-60 w-[30vw] sm:w-[10vw] aspect-square object-contain shrink-0" />
 						</div>
 					</div>
-					<div class="w-full h-full sm:w-[45%] flex flex-col items-center gap-y-4" id="profile2Login" >
-						<h1 class="text-red-300">Player 2</h1>
-						<h1 class="mb-4">Need to sign in</h1>
-						<input id="player2UserName" tabindex="1"	class="m-auto px-4 w-full sm:w-[90%] hover:text-[#98c6f8] focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] border border-white rounded-lg uppercase" name="playerUsername" value="" type="text" autofocus autocomplete="off" placeholder="Enter your login" maxlength="13" oninput="this.value = this.value.replace(/[^a-zA-Z0-9_]/g, '').slice(0, 13);">
-						<input id="player2Password" tabindex="2"	class="m-auto px-4 w-full sm:w-[90%] hover:text-[#98c6f8] focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] border border-white rounded-lg" name="playerPassword" value="" type="password" autocomplete="off" placeholder="Enter your password" maxlength="32" oninput="this.value = this.value.slice(0,32)">
-						<input id="player2Validation" tabindex="3"	class="m-auto px-4 w-full sm:w-[90%] hover:text-[#98c6f8] focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] border border-white rounded-lg shadow-[0_0_20px_rgba(158,202,237,0.9)] hover:cursor-pointer pb-1 sm:pb-2" onclick="loginPlayer2()" name="login" type="submit" value="Sign In">
-						<p id="Player2Result" class="mt-4 text-base"></p>
-					</div>
-					<div class="w-full h-full sm:w-[45%] hidden flex-col items-center gap-y-4" id="profile2Login2FA" >
+					<form class="w-full h-full sm:w-[45%] flex flex-col items-center gap-y-4" id="profile2Login" >
+							<h1 class="text-red-300">Player 2</h1>
+							<h1 class="mb-4">Need to sign in</h1>
+							<input id="player2UserName" tabindex="1"	class="m-auto px-4 w-full sm:w-[90%] hover:text-[#98c6f8] focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] border border-white rounded-lg uppercase" name="playerUsername" value="" type="text" autofocus autocomplete="off" placeholder="Enter your login" maxlength="13" oninput="this.value = this.value.replace(/[^a-zA-Z0-9_]/g, '').slice(0, 13);">
+							<input id="player2Password" tabindex="2"	class="m-auto px-4 w-full sm:w-[90%] hover:text-[#98c6f8] focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] border border-white rounded-lg" name="playerPassword" value="" type="password" autocomplete="off" placeholder="Enter your password" maxlength="32" oninput="this.value = this.value.slice(0,32)">
+							<input id="player2Validation" tabindex="3"	class="m-auto px-4 w-full sm:w-[90%] hover:text-[#98c6f8] focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] border border-white rounded-lg shadow-[0_0_20px_rgba(158,202,237,0.9)] hover:cursor-pointer pb-1 sm:pb-2" onclick="loginPlayer2(event)" name="login" type="submit" value="Sign In">
+							<p id="Player2Result" class="mt-4 text-base"></p>
+					</form>
+					<form class="w-full h-full sm:w-[45%] hidden flex-col items-center gap-y-4" id="profile2Login2FA" >
 						<h1 class="text-red-300">Player 2</h1>
 						<h1 class="mb-4">Require 2FA</h1>
 						<input id="player2TwoFAInput" tabindex="1"	class="m-auto px-4 w-full hover:text-[#98c6f8] focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] border border-white rounded-lg text-center" name="player2TwoFAInput" value="" type="text" autofocus autocomplete="off" placeholder="Enter your 2FA code" maxlength="6" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);">
-						<input id="player2TwoFAValidation" tabindex="2"	class="m-auto px-4 w-full hover:text-[#98c6f8] focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] border border-white rounded-lg shadow-[0_0_20px_rgba(158,202,237,0.9)] hover:cursor-pointer pb-1 sm:pb-2" onclick="player2TwoFAValidation()" name="validate2FA" type="submit" value="Validate 2FA">
-					</div>
+						<input id="player2TwoFAValidationField" tabindex="2"	class="m-auto px-4 w-full hover:text-[#98c6f8] focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] border border-white rounded-lg shadow-[0_0_20px_rgba(158,202,237,0.9)] hover:cursor-pointer pb-1 sm:pb-2" onclick="player2TwoFAValidation(event)" name="validate2FA" type="submit" value="Validate 2FA">
+					</form>
 					<div class="w-full h-full sm:w-[45%] hidden flex-col items-center gap-y-4" id="profile2Overview">
 						<h1 class="text-red-300">Player 2</h1>
 						<h1 id="Player2Name">[Player2Name]</h1>
-						<img src="./img/userPfp/default.png" alt="userPfpImg" class="min-w-5 max-w-120 w-[20vw] aspect-square rounded-full object-cover shrink-0" />
+						<img id="player2Pfp" src="./img/userPfp/default.png" alt="userPfpImg" class="min-w-5 max-w-120 w-[20vw] aspect-square rounded-full object-cover shrink-0" />
 					</div>
 					
 				</div>
-				<div id="goToGameButtonDiv" class="w-full h-full flex-col hidden">
-					<h1>Go to game</h1>
+				<div id="goToGameButtonDiv" class="w-full h-full flex-col hidden items-center">
+					<a href="/pongRanked" class="px-6 w-[50%] py-3 sm:py-4 bg-[#98c6f8] font-bold rounded-lg hover:bg-[#7aaedc]">Go to game</a>
 				</div>
 			</div>`
 	}

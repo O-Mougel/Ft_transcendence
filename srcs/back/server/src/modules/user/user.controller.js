@@ -144,6 +144,12 @@ export async function loginMatchHandler(request, reply) {
 		});
 	};
 
+	if (user.id == request.user.id)
+		return reply.status(401).send({ //not sure about the error code
+			message: "Player 1 already logged. Login with another player!",
+			errRef:"loginMatchUserNotP1"
+		});
+
 	const isValidPassword = verifyPassword(
 		body.password,
 		user.salt,
@@ -219,7 +225,7 @@ export async function check2faHandler(request, reply) {
 
 export async function refreshTokenHandler(request, reply) {
 	const token = request.cookies.refresh_token;
-	if (!token) return reply.status(412).send({ message: 'Refresh token missing' })
+	if (!token) return reply.status(200).send({ message: 'First time log detected ..' }) //subject to change
 
 	const stored = await findToken(token)
 
@@ -266,17 +272,6 @@ export async function alterUserHandler(request, reply) {
 		return reply.status(404).send({
 			message: "Error ! Couln't find user !", errRef:"alterUserNotFound"
 		});
-	};
-
-	// Verify password
-	const isValidPassword = verifyPassword(
-		body.password,
-		target.salt,
-		target.password);
-
-	if (!isValidPassword) {
-		return reply.status(401).send({
-			message: "Password is incorrect", errRef:"alterPwdIncorrect"});
 	};
 
 	if (target.name != body.name)
@@ -417,7 +412,7 @@ export async function friendRequestHandler(request, reply) {
 
 	if (await alreadyrequested(newfriend.id, request.user.id))
 	return reply.status(422).send({
-		message: "This user already sent you a  !",
+		message: "This user already sent you a friend request !",
 		errRef:"requestDuplicate"
 	});
 

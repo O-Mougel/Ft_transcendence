@@ -43,6 +43,12 @@ export const displayCorrectErrMsg = async (error, data) => {
 		case "expiredJWT":
 			alertBoxMsg(`⚠️ JWT token expired or is invalid !`);
 			break;
+		case "malformedJWT":
+			alertBoxMsg(`⚠️ Unable to refresh token ! Log in again !`);
+			break;
+		case "authenticateOtherError":
+			alertBoxMsg(`⚠️ We were unable to verify your token, please log in again !`);
+			break;
 		case "registerNameTaken":
 			alertBoxMsg(`❌ This username is already used by someone !`);
 			break;
@@ -152,18 +158,25 @@ export const alertBoxMsg = async (msg) => {
 
 export const fetchErrcodeHandler = async (error) => {
 
+
 	const isNotAuth = error.toString().search("\"errRef\":\"authBearerMissing\"") != -1;
 	const isExpired = error.toString().search("\"errRef\":\"expiredJWT\"") != -1;
+	const isMalformed = error.toString().search("\"errRef\":\"malformedJWT\"") != -1;
 	// console.log("[DEBUG] fetchErrcode handle ...", isExpired, isNotAuth);
-	if(isNotAuth || (window.sessionStorage.getItem("logStatus")) == 'loggedOut')
+
+	console.log("IsNotAuth:", isNotAuth);
+	console.log("isMalformed:", isMalformed);
+	console.log("logstatus", window.sessionStorage.getItem("logStatus"));
+
+	if(isNotAuth || (window.sessionStorage.getItem("logStatus")) == 'loggedOut' || isMalformed)
 	{
 		window.sessionStorage.setItem('logStatus', 'loggedOut');
+		alertBoxMsg("⚠️ You were logged-out ! Relog and try again !");
 		backToDefaultPage();
 		return (-1);
 	}
 	else if (isExpired)
 	{
-		
 		if (!(window.sessionStorage.getItem("nbReloadsLeft")))
 			window.sessionStorage.setItem('nbReloadsLeft', 1);
 		else
@@ -297,19 +310,19 @@ export async function isUserAllowedHere() {
 	return(0);
 }
 
-window.acceptFriend = async (username) => {
+window.acceptFriend = async (friendId) => {
 
 	const requestList = document.getElementById('requestList'); //contains the requests
-	if(!requestList || !username) return;
+	if(!requestList || !friendId) return;
 
 	const data = {
-		friendAcceptId: username,
+		friendAcceptId: friendId,
 	};
 
 	try 
 	{
 		const acceptFriendRequestResponse = await fetch('/friend/accept', {
-				method: 'POST',
+				method: 'PATCH',
 				credentials: 'include',
 				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json'},
 				body: JSON.stringify(data),
@@ -359,7 +372,7 @@ window.rejectFriend = async (username) => {
 	try 
 	{
 		const rejectFriendRequestResponse = await fetch('/friend/reject', {
-				method: 'POST',
+				method: 'DELETE',
 				credentials: 'include',
 				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json'},
 				body: JSON.stringify(data),
@@ -506,7 +519,6 @@ window.grabProfileInfo = async function () {
 	const profilePicture = document.getElementById('sidePannelPfp');
 
 	if (!profilePanel || !profileUsername || !profilePicture) return;
-
 	try 
 	{
 		const dataRequestResponse = await fetch('/profile/grab', { //GET request by default without the "request" parameter
@@ -562,7 +574,7 @@ window.sendNewFriendRequest = async function () {
 	try 
 	{
 		const sentFriendRequestResponse = await fetch('/friend/request', {
-				method: 'POST',
+				method: 'PATCH',
 				body: JSON.stringify(data),
 				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json'},
 				credentials: 'include',
@@ -741,6 +753,7 @@ window.handleLoginClick = async function (event) {
 			{
 				window.sessionStorage.setItem('logStatus','loggedIn');
 				window.sessionStorage.setItem('access_token',result.token);
+				
 				console.log('⏳ Logged in !');
 				alertBoxMsg(`Welcome back ${data.name} ! 😉`);
 				await backToDefaultPage();
@@ -837,15 +850,15 @@ window.updateUserPassword = async function (event) {
 	}
 }
 
-window.loginPlayer2 = async function () {
+window.loginPlayer2 = async function (event) {
 
+	event.preventDefault();
 	const username = document.getElementById('player2UserName');
 	const password = document.getElementById('player2Password');
 	const logResult = document.getElementById('Player2Result');
 	const divLogin = document.getElementById('profile2Login');
 	const divLogin2FA = document.getElementById('profile2Login2FA');
 	const profile2Overview = document.getElementById('profile2Overview');
-	const player2Name = document.getElementById('Player2Name');
 	const player2TwoFAInput = document.getElementById('player2TwoFAInput');
 	const goToGameButtonDiv = document.getElementById('goToGameButtonDiv');
 	const Player1Name = document.getElementById('Player1Name');
@@ -891,7 +904,6 @@ window.loginPlayer2 = async function () {
 				throw new Error(`Request failed: ${loginResponse.status} ${text}`);
 		}
 
-		player2Name.innerHTML = data.name;
 		const result = await loginResponse.json();	
 		if (result)
 		{
@@ -908,6 +920,7 @@ window.loginPlayer2 = async function () {
 			else
 			{
 				window.sessionStorage.setItem('player2_token',result.token);
+				await window.loadPlayer2Data();
 				console.log('⏳ Player 2 Logged in !');
 				alertBoxMsg('⏳ Player 2 Logged in !');
 				divLogin.style.display = "none";
@@ -956,7 +969,41 @@ window.loadProfileData = async function () {
 	catch (err) 
 	{
 		if (await fetchErrcodeHandler(err) == 0)
-			return (window.grabProfileInfo());
+			return (window.loadProfileData());
+		console.error('Profile info grab failed !\n => ', err);
+		return ;
+	}
+}
+
+window.loadPlayer2Data = async function () {
+
+	const Player2Name = document.getElementById('Player2Name');
+	const player2Pfp = document.getElementById('player2Pfp');
+
+	if (!Player2Name || !player2Pfp) return;
+
+	try 
+	{
+		const dataRequestResponse = await fetch('/profile/grab2', { //GET request by default without the "request" parameter
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("player2_token")}`},
+				credentials: 'include',
+		});
+	
+		if (!dataRequestResponse.ok) {
+				const text = await dataRequestResponse.text().catch(() => dataRequestResponse.statusText);
+				throw new Error(`Request failed: ${dataRequestResponse.status} ${text}`);
+		}
+		const result = await dataRequestResponse.json();	
+		if (result)
+		{	
+			Player2Name.innerHTML = result.name;
+			player2Pfp.src = result.avatar;
+		}
+	} 
+	catch (err) 
+	{
+		if (await fetchErrcodeHandler(err) == 0)
+			return (window.loadPlayer2Data());
 		console.error('Profile info grab failed !\n => ', err);
 		return ;
 	}
