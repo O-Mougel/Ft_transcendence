@@ -73,7 +73,8 @@ export default class extends ViewTemplate {
 		console.log("Initializing Tournament Size view...");
 		if (sessionStorage.getItem("currentTournamentId")) {
 			console.log("Tournament detected in session storage. Updating nav bar...");
-			document.getElementById('backToTournament').classList.remove('hidden');
+			if (document.getElementById('backToTournament'))
+				document.getElementById('backToTournament').classList.remove('hidden');
 		}
 	}
 

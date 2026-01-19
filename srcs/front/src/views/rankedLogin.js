@@ -9,7 +9,8 @@ export default class extends ViewTemplate {
 
 	async init() {
 		await window.loadProfileData();
-		document.getElementById('player2UserName').focus();
+		if (document.getElementById('player2UserName'))
+			document.getElementById('player2UserName').focus();
 		if ((sessionStorage.getItem("player2_token")))
 		{
 			console.log("Player2 logout cleanup");
