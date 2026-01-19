@@ -54,9 +54,9 @@ export class GameManager {
     const entry = this.games.get(gameId);
     entry.game._reset();
 
-    const user1 = await findUserByName("TEST");
+    const user1 = await findUserByName("OXI");
     entry.game.player1Id = user1.id;
-    const user2 = await findUserByName("TEST");
+    const user2 = await findUserByName("OXI");
     entry.game.player2Id = user2.id;
 
     // optional meta from caller
