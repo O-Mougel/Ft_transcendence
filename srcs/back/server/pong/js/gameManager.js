@@ -11,8 +11,8 @@ export class GameManager {
     this.onGameOver = null;
   }
 
-  _setOnGameOver(cb) {
-    this.onGameOver = cb;
+  _setOnGameOver(callback) {
+    this.onGameOver = callback;
   }
 
   // Ensure a game entry exists for the given gameId
@@ -50,28 +50,38 @@ export class GameManager {
   }
 
   async _startGame(gameId, data) {
+    // console.log("All infos: ", data);
+    // console.log("Starting game with id:", gameId);
+    // console.log("Tournament data:", data._tournament);
     this._ensureGameExist(gameId);
     const entry = this.games.get(gameId);
     entry.game._reset();
+    // console.log("Game mode:", entry?.game);
 
-    const user1 = await findUserByName("TEST");
-    entry.game.player1Id = user1.id;
-    const user2 = await findUserByName("TEST");
-    entry.game.player2Id = user2.id;
+    try {
+      const user1 = await findUserByName("TEST");
+      entry.game.player1Id = user1.id;
+      const user2 = await findUserByName("TEST");
+      entry.game.player2Id = user2.id;
 
-    // optional meta from caller
-    entry.meta = data._tournament ? { ...data._tournament } : null;
+      entry.meta = data._tournament ? { ...data._tournament } : null;
 
-    // let game decide how to use data (mode, player names, etc.)
-    entry.game._start?.(data); // if your game has start()
-    if (typeof entry.game.mode === "number" && typeof data.mode === "number") {
-      entry.game.mode = data.mode;
+      console.log("Starting game:", gameId, "with mode:", data.mode, "and meta:", entry.meta);
+
+      entry.game._start?.(data);
+      if (typeof entry.game.mode === "number" && typeof data.mode === "number") {
+        entry.game.mode = data.mode;
+      }
+
+      this._startTickLoop(gameId);
+      this._startAiLoop(gameId);
+
+      return { ok: true };
     }
-
-    this._startTickLoop(gameId);
-    this._startAiLoop(gameId);
-
-    return { ok: true };
+    catch (err) {
+      console.error("Error starting game:", err);
+      return { ok: false, error: "Failed to start game" };
+    }
   }
 
   _getState(gameId) {
@@ -104,10 +114,8 @@ export class GameManager {
       const state = game._getCurrentGameState();
       if (!state) return;
 
-      // IMPORTANT: emit to the room only
       this.io.to(gameId).emit("game:state", state);
 
-      // Detect game over
       if (gameOver) {
         this.io.to(gameId).emit("game:over", state.score);
 
@@ -115,22 +123,26 @@ export class GameManager {
 
         console.log("Tournament: ", entry.meta?.tournamentId);
 
-        if (game.mode === 1 && !entry.meta?.tournamentId) { // only persist 1v1 matches if not in tournament mode
+        if (game.mode === 1 && !entry.meta?.tournamentId) {
           persistMatch(entry.game).catch((err) => {
             console.error("Error persisting match:", err);
           });
         }
 
-        // notify tournament layer if any
+        // console.log("this.onGameOver:", !!this.onGameOver);
+        // console.log("Emitted game:over for gameId:", gameId);
+        // console.log("Final state:", state);
+        // console.log("Meta data:", entry.meta);
+        // console.log("Game mode:", game.mode);
+
         if (this.onGameOver) {
           try {
-            this.onGameOver({ gameId, state, meta: entry.meta });
+            // this.onGameOver({ gameId, state, meta: entry.meta });
           } catch (e) {
             console.error("onGameOver error:", e);
           }
         }
 
-        // Cleanly stop this match (sequential tournament needs cleanup)
         this._stopLoops(gameId);
         game._reset();
       }
@@ -172,7 +184,7 @@ async function persistMatch(game) {
   if (!game) return;
 
   const state = game._getCurrentGameState();
-  // on game over:
+
   const matchInfos = {
     player1Id: game.player1Id,
     player2Id: game.player1Id,
