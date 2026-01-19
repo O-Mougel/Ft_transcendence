@@ -570,6 +570,7 @@ const router = async () => {
 		{ path: "/tournament", view: tournament },
 		{ path: "/2faLogin", view: Login2fa },
 		{ path: "/ranked", view: rankedLogin },
+		{ path: "/changePassword", view: changePassword },
 	];
 
 	const potentialMan = routes.map(mapElement => { //mapElement is the name of each array element for routes
