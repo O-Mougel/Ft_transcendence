@@ -4,10 +4,9 @@ import { setupSocket, getSocket } from "/game/socket.js"; // you need to export 
 
 export default class extends ViewTemplate {
 
-	constructor(params) {
-		super(params);
+	constructor() {
+		super();
 		this.setTitle("Tournament");
-		this.tournamentId = params?.id || null;
 	}
 
 	async getHTML() {
@@ -16,10 +15,6 @@ export default class extends ViewTemplate {
 		<div class="pt-10 w-[70%] flex flex-col gap-6">
 			<h1 class="text-3xl font-bold text-center">Tournament</h1>
 
-			<div>
-			<div class="text-sm text-[#98c6f8]">Tournament ID</div>
-			<div id="tournamentId" class="text-lg">${this.tournamentId ?? "[missing]"}</div>
-			</div>
 			<div class="flex justify-between items-center border border-[#98c6f8] rounded-lg p-4 bg-black/30">
 
 			<div class="flex gap-3">
