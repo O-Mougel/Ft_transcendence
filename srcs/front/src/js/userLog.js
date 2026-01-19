@@ -309,7 +309,7 @@ window.acceptFriend = async (friendId) => {
 	try 
 	{
 		const acceptFriendRequestResponse = await fetch('/friend/accept', {
-				method: 'POST',
+				method: 'PATCH',
 				credentials: 'include',
 				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json'},
 				body: JSON.stringify(data),
@@ -359,7 +359,7 @@ window.rejectFriend = async (username) => {
 	try 
 	{
 		const rejectFriendRequestResponse = await fetch('/friend/reject', {
-				method: 'POST',
+				method: 'DELETE',
 				credentials: 'include',
 				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json'},
 				body: JSON.stringify(data),
@@ -562,7 +562,7 @@ window.sendNewFriendRequest = async function () {
 	try 
 	{
 		const sentFriendRequestResponse = await fetch('/friend/request', {
-				method: 'POST',
+				method: 'PATCH',
 				body: JSON.stringify(data),
 				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json'},
 				credentials: 'include',
