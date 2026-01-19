@@ -29,12 +29,14 @@ export default class extends ViewTemplate {
 						<p id="confirmChangeResults" class="text-ellipsis text-center pl-3 text-[2vw] text-[#e85b51]"></p>
 					</div>
 				</form>
+				<div class="border-b border-[#98c6f8] w-full pt-5"></div>
 				<div class="px-[3%]">
 					<h2 class="flex items-start w-full text-left pt-4">► Change password :</h2>
 					<div class="flex items-start w-[75%] pt-4">
 						<a tabindex="5" class="uppercase px-5 ml-4 pb-1 sm:pb-2 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg" name="gotoMainMenu" href="/changePassword" data-link>🔑 Change password</a>
 					</div>
 				</div>
+				<div class="border-b border-[#98c6f8] w-full pt-5"></div>
 				<div class="px-[3%] pb-[6%]">
 					<h2 class="flex items-start w-full text-left pt-4">► Enable 2FA :</h2>
 					<div class="flex items-start w-[75%] pt-4">
