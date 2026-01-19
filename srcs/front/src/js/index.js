@@ -610,10 +610,11 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 	})
 	console.group("Page loaded !");
+
 	if (!(sessionStorage.getItem("logStatus")))
 	{
 		console.log("NULL O_O ! Setting to logged out");
-		window.sessionStorage.setItem('logStatus','loggedOut');
+		sessionStorage.setItem('logStatus','loggedOut');
 	}
 	else
 		console.log("Grabbed status ! Current :",sessionStorage.getItem("logStatus"));

@@ -35,24 +35,37 @@ window.addEventListener("resize", reportWindowSize);
 window.addEventListener('keydown', (e) => { //check if we pressed f5 or ctrl+r (or ctrl+F5)
 	try 
 	{
-		const key = e.key || '';
-		if (key === 'F5' || ((key.toLowerCase() === 'r') && (e.ctrlKey || e.metaKey)) || ((key.toLowerCase() === 'F5') && (e.ctrlKey || e.metaKey))) {
-		sessionStorage.setItem('f5WasPressed', 'true');
-		}
-	} catch (err) {}
+		const isF5 = e.code === 'F5' || e.key === 'F5';
+		const isCtrlR = e.key.toLowerCase() === 'r' && (e.ctrlKey || e.metaKey);
+		const isCtrlF5 = isF5 && (e.ctrlKey || e.metaKey);
+
+		if (isF5 || isCtrlR || isCtrlF5)
+			sessionStorage.setItem('f5WasPressed', 'true');
+
+	} catch (err) {
+		console.err("Key listened had an issue !", err);
+	}
 });
 
 window.addEventListener("pagehide", () => {
 
+	if (!(sessionStorage.getItem('f5WasPressed')))
+	{
+		sessionStorage.setItem('f5WasPressed', 'false');
+		sessionStorage.setItem('f5VarNotSet', 'true');
+	}
+
 	const	checkKeyReload = sessionStorage.getItem('f5WasPressed') === 'true';
 	const	reloadTypeResult = isPageReload();
+
+	// sessionStorage.removeItem('f5WasPressed');
 
 	if(checkKeyReload || reloadTypeResult)
 	{
 		backToDefaultPage();
 		return ;
 	}
-	window.sessionStorage.setItem('pagehide', 'logout_fetch_sent');
+	// window.sessionStorage.setItem('pagehide', 'logout_fetch_sent');
 	try 
 	{
 		fetch('/logout', {
