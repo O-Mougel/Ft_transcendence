@@ -297,13 +297,13 @@ export async function isUserAllowedHere() {
 	return(0);
 }
 
-window.acceptFriend = async (username) => {
+window.acceptFriend = async (friendId) => {
 
 	const requestList = document.getElementById('requestList'); //contains the requests
-	if(!requestList || !username) return;
+	if(!requestList || !friendId) return;
 
 	const data = {
-		friendAcceptId: username,
+		friendAcceptId: friendId,
 	};
 
 	try 
@@ -741,6 +741,7 @@ window.handleLoginClick = async function (event) {
 			{
 				window.sessionStorage.setItem('logStatus','loggedIn');
 				window.sessionStorage.setItem('access_token',result.token);
+				
 				console.log('⏳ Logged in !');
 				alertBoxMsg(`Welcome back ${data.name} ! 😉`);
 				await backToDefaultPage();
