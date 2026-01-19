@@ -52,10 +52,7 @@ export async function waitStartGame() {
 		const result = await dataRequestResponse.json();	
 		if (!result) throw new Error('No data received from server');
 
-    console.log("Game id in context before starting game:", CONTEXT.gameId);
-
     if (CONTEXT.gameId) {
-      // console.log("Game ID found in context:", CONTEXT.gameId);
       console.log("Joining existing game with ID:", CONTEXT.gameId);
       socket.emit("game:join", { gameId: CONTEXT.gameId });
       return;

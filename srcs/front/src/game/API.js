@@ -10,8 +10,6 @@ export function handleGameStopped() {
 }
 
 export function handleGameOver(data) {
-	if (CONTEXT.isGameStarted === false || CONTEXT.gameId === null) return; // ????????
-	console.log("Game Over. Final Score:", data);
 	CONTEXT.isGameStarted = false;
 	CONTEXT.gameId = null;
 	resetState();

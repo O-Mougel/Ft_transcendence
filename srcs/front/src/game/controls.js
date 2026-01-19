@@ -1,5 +1,5 @@
 import { CONTEXT } from "./context.js";
-import { handleEscapeKey } from "./socket.js";
+import { handleEscapeKey, updateGameState } from "./socket.js";
 
 export function bindControls() {
   if (CONTEXT.controlsBound) return;
@@ -14,6 +14,7 @@ function handleKeyDown(e) {
   const key = e.key;
   CONTEXT.keysPressed.add(key);
   updateDirections();
+  updateGameState();
 }
 
 function handleKeyUp(e) {
@@ -24,6 +25,7 @@ function handleKeyUp(e) {
   if (key === "Escape" && !CONTEXT.tournamentId) handleEscapeKey();
   CONTEXT.keysPressed.delete(key);
   updateDirections();
+  updateGameState();
 }
 
 function updateDirections() {
