@@ -34,24 +34,24 @@ export function initPong(mode = {}) {
 	const ctx = CONTEXT.ctx = canvas.getContext("2d");
 
 	const scale = window.devicePixelRatio || 1;
-	CONTEXT.scale = scale; // optional but handy
+	CONTEXT.scale = scale;
 
 	const logicalWidth  = CONTEXT.GAME_WIDTH;
 	const logicalHeight = CONTEXT.GAME_HEIGHT;
 
-	// CSS display size (logical units)
+	// CSS display size
 	canvas.style.width  = logicalWidth + "px";
 	canvas.style.height = logicalHeight + "px";
 
-	// Physical backing store size (logical * DPR)
+	// Store size (logical * device pixels ratio)
 	canvas.width  = Math.floor(logicalWidth  * scale);
 	canvas.height = Math.floor(logicalHeight * scale);
 
-	// Reset + apply scale ONCE
+	// Reset + apply scale
 	ctx.setTransform(1, 0, 0, 1, 0, 0);
 	ctx.scale(scale, scale);
 
-	// Optional: prevent scrolling
+	// Prevent scrolling
 	document.body.style.overflow = "hidden";
 	document.documentElement.style.overflow = "hidden";
 

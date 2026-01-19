@@ -15,6 +15,11 @@ import Login2fa from "../views/2faLogin.js";
 import changePassword from "../views/changePassword.js";
 import rankedLogin from "../views/rankedLogin.js";
 
+// stop pong game when navigating away from /pong
+import { emitStopGame } from "../game/socket.js";
+import { CONTEXT } from "../game/context.js";
+
+
 import { displayCorrectErrMsg, isUserAllowedHere } from "./userLog.js";
 import { fetchErrcodeHandler } from "./userLog.js";
 import { alertBoxMsg } from "./userLog.js";
@@ -578,6 +583,8 @@ const router = async () => {
 		};
 	});
 
+	
+
 	let match = potentialMan.find(pm => pm.isMatch); //pm is the name of each array element for potentialMan
 	// find will stop when the function returns true, so when we find a pm.isMatch == true
 
@@ -590,7 +597,7 @@ const router = async () => {
 	}
 
 	const view = new match.mapElement.view();
-
+	
 	document.querySelector("#app").innerHTML = await view.getHTML();
 	adjustNavbar(match.mapElement.path);
 	if (typeof view.init === "function") {
