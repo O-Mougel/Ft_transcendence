@@ -23,7 +23,7 @@ export const CONTEXT = {
 	keysPressed: new Set(),
 	updateIntervalId: null,
 	controlsBound: false,
-	gameMode: 0, // or 2
+	gameMode: 0,
 	tournamentId: null,
 
 	// Dimensions
