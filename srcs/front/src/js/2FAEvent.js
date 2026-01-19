@@ -170,6 +170,7 @@ window.loginWith2FACode = async function (event) {
 		if (result)
 		{			
 			sessionStorage.setItem('access_token', result.newAccessToken);
+	
 			sessionStorage.removeItem('temp_token');
 			window.sessionStorage.setItem('logStatus','loggedIn');
 			console.log('⏳ Logged in !');
@@ -198,8 +199,9 @@ export const goTo2faLogin = async () => {
 	history.pushState(null, null, "/2faLogin");
 }
 
-window.player2TwoFAValidation = async function () {
-	
+window.player2TwoFAValidation = async function (event) {
+
+	event.preventDefault();
 	const TwoFACodeInput = document.getElementById('player2TwoFAInput');
 	if(!TwoFACodeInput) return ;
 	try
@@ -238,6 +240,7 @@ window.player2TwoFAValidation = async function () {
 		{
 			window.sessionStorage.setItem('player2_token',result.matchToken);
 			sessionStorage.removeItem('temp_token');
+			await window.loadPlayer2Data();
 			alertBoxMsg('⏳ Player 2 Logged in !');
 			divLogin.style.display = "none";
 			divLogin2FA.style.display = "none";
