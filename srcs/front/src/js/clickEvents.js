@@ -219,7 +219,6 @@ window.spinMeAround =  function () {
 window.saveProfileInfo = async function () {
 
 	const username = document.getElementById('newUsername');
-	const password = document.getElementById('confirmPassword');
 	const confirmText = document.getElementById('confirmChangeResults');
 	const fileInput = document.getElementById("myfileSelector");
 	const userPfp = document.getElementById('userPfp');
@@ -228,7 +227,7 @@ window.saveProfileInfo = async function () {
 
 	confirmText.innerText = "";
 
-	if (!username || !password || !confirmText || !fileInput || !userPfp || !selectedFileName) return ;
+	if (!username || !confirmText || !fileInput || !userPfp || !selectedFileName) return ;
 	if (!username.value && !selectedFile) // if nothing changed, do nothing
 		return ;
 	if (username)
@@ -243,7 +242,6 @@ window.saveProfileInfo = async function () {
 		{
 			confirmText.innerText = "❌ New username is too long ! (13 max)";
 			username.value = "";
-			password.value = "";
 			username.focus();
 			return ;
 		}
@@ -251,16 +249,9 @@ window.saveProfileInfo = async function () {
 		{
 			confirmText.innerText = "❌ New username cannot be the same as the old one !";
 			username.value = "";
-			password.value = "";
 			username.focus();
 			return ;
 		}
-	}
-	if (!password.value)
-	{
-		confirmText.innerText = "❌ Confirm your password !";
-		password.focus();
-		return ;
 	}
 
 	var fullFilename = userPfp.getAttribute("src");
@@ -273,7 +264,6 @@ window.saveProfileInfo = async function () {
 		else
 		{
 			username.value = "";
-			password.value = "";
 			fileInput.value = "";
 			selectedFileName.textContent = '';
 			alertBoxMsg(`❌ File could not be uploaded !`);
@@ -285,7 +275,6 @@ window.saveProfileInfo = async function () {
 
 	const data = {
 		name: username.value.toUpperCase(),
-		password: password.value,
 		avatar: fullFilename,
 	};
 
@@ -312,7 +301,6 @@ window.saveProfileInfo = async function () {
 			username.placeholder = username.value;
 			userPfp.setAttribute('src', fullFilename);
 			username.value = "";
-			password.value = "";
 		}
 	} 
 	catch (err) 
@@ -320,7 +308,6 @@ window.saveProfileInfo = async function () {
 		if (await fetchErrcodeHandler(err) == 0)
 			return(window.saveProfileInfo());
 		username.value = "";
-		password.value = "";
 		fileInput.value = "";
 		selectedFileName.textContent = '';
 		console.error('⚠️ Could not edit user info!\n', err);
