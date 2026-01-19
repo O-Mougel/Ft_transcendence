@@ -274,17 +274,6 @@ export async function alterUserHandler(request, reply) {
 		});
 	};
 
-	// Verify password
-	const isValidPassword = verifyPassword(
-		body.password,
-		target.salt,
-		target.password);
-
-	if (!isValidPassword) {
-		return reply.status(401).send({
-			message: "Password is incorrect", errRef:"alterPwdIncorrect"});
-	};
-
 	if (target.name != body.name)
 	{
 		const newname = await findUserByName(body.name);

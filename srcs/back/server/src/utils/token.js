@@ -53,18 +53,3 @@ export function generateMatchToken(fastify, user) {
 export function generateRefreshToken() {
 	return crypto.randomBytes(64).toString("hex");
 }
-//
-// export function verifyToken(fastify, auth) {
-// 	try {
-// 		if (!auth || !auth.startsWith("Bearer ")) {
-// 			return reply.status(401).send({ message: 'Authentication required'});
-// 		}
-//
-// 		const token = auth.split(" ")[1];
-//
-// 		const decoded = fastify.jwt.verify(token)
-// 		request.user = decoded
-// 	} catch(err) {
-// 		return reply.status(401).send({ message: 'Invalid or expired JWT'})
-// 	}
-// }
