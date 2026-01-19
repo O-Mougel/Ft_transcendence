@@ -418,6 +418,7 @@ const	navbarHiddenCheck = () => {
 	const	iconProfile = document.getElementById('profileButton');
 	const	status = sessionStorage.getItem("logStatus");
 
+	// console.trace("I am currently : ", status);
 	if (status == "loggedOut")
 	{
 		if (bar1)
@@ -481,6 +482,44 @@ const hideProfileButtons = () => {
 
 
 
+const newtabRelogFetch = async () => {
+	try 
+		{
+			const newTabrefreshTokenResponse = await fetch('/login/refresh', {
+					credentials: 'include',
+					method:'POST'
+			});
+		
+			if (!newTabrefreshTokenResponse.ok) {
+					const text = await newTabrefreshTokenResponse.text().catch(() => newTabrefreshTokenResponse.statusText);
+					throw new Error(`Request failed: ${newTabrefreshTokenResponse.status} ${text}`);
+			}
+			const result = await newTabrefreshTokenResponse.json();	
+			if (result && result.newAccessToken) 
+			{
+				sessionStorage.setItem('access_token', result.newAccessToken); //grab new token
+				sessionStorage.setItem('logStatus', 'loggedIn');
+				// console.log("token after fech is : ", sessionStorage.getItem("access_token"));
+				// console.log("logStatus after fech is : ", sessionStorage.getItem("logStatus"));
+				console.info("Logged back in using refresh_token !");
+			}
+			else if (result)
+			{
+				console.log("A new tab was opened.");
+				return ;
+			}
+			else
+				throw new Error(`Token could not be generated !`);
+		} 
+		catch (err) 
+		{
+			console.info("Nuh uhhhhh !", err);
+			window.sessionStorage.setItem('logStatus', 'loggedOut');
+			// backToDefaultPage();
+		}
+}
+
+
 const forceUserRelog = async () => {
 
 	const view = new logUser();
@@ -504,7 +543,7 @@ export const adjustNavbar = async (path) => {
 		const res = await isUserAllowedHere();
 		if (res == 0) // not allowed
 		{
-			// console.info("Forced relog!");
+			console.info("Forced relog!");
 			await forceUserRelog();
 		}
 	}
@@ -550,6 +589,11 @@ export const adjustNavbar = async (path) => {
 		cb2.checked = false;
 }
 
+const attemptAutolog = async () => {
+	await newtabRelogFetch();
+	await router();
+}
+
 const router = async () => {
 	const routes = [
 		{ path: "/", view: startingFile },
@@ -593,16 +637,16 @@ const router = async () => {
 	const view = new match.mapElement.view();
 
 	document.querySelector("#app").innerHTML = await view.getHTML();
-	adjustNavbar(match.mapElement.path);
+	await adjustNavbar(match.mapElement.path);
 	if (typeof view.init === "function") {
- 		await view.init();
+		await view.init();
 }
 
 };
 
 window.addEventListener("popstate", router);
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
 	document.addEventListener("click", element => {
 		if (element.target.matches("[data-link]")){
 			element.preventDefault();
@@ -619,5 +663,5 @@ document.addEventListener("DOMContentLoaded", () => {
 	else
 		console.log("Grabbed status ! Current :",sessionStorage.getItem("logStatus"));
 	console.groupEnd();
-	router();
+	await attemptAutolog();
 });

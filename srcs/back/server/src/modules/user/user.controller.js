@@ -219,7 +219,7 @@ export async function check2faHandler(request, reply) {
 
 export async function refreshTokenHandler(request, reply) {
 	const token = request.cookies.refresh_token;
-	if (!token) return reply.status(412).send({ message: 'Refresh token missing' })
+	if (!token) return reply.status(200).send({ message: 'First time log detected ..' }) //subject to change
 
 	const stored = await findToken(token)
 
