@@ -168,7 +168,7 @@ export const fetchErrcodeHandler = async (error) => {
 	console.log("isMalformed:", isMalformed);
 	console.log("logstatus", window.sessionStorage.getItem("logStatus"));
 
-	if(isNotAuth || (window.sessionStorage.getItem("logStatus")) == 'loggedOut' || isMalformed)
+	if(isNotAuth || isMalformed)
 	{
 		window.sessionStorage.setItem('logStatus', 'loggedOut');
 		alertBoxMsg("⚠️ You were logged-out ! Relog and try again !");
