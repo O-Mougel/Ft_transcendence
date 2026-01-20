@@ -513,7 +513,7 @@ const displayUserFriends = async () => {
 }
 
 window.grabProfileInfo = async function () {
-
+	
 	const profilePanel = document.getElementById('profilePanel');
 	const profileUsername = document.getElementById('playerGrabbedUsername');
 	const profilePicture = document.getElementById('sidePannelPfp');
