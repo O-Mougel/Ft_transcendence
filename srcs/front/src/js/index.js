@@ -14,6 +14,7 @@ import page404 from "../views/404page.js";
 import Login2fa from "../views/2faLogin.js";
 import changePassword from "../views/changePassword.js";
 import rankedLogin from "../views/rankedLogin.js";
+import matchHistory	from "../views/matchHistory.js";
 
 // stop pong game when navigating away from /pong
 import { emitStopGame } from "../game/socket.js";
@@ -156,7 +157,7 @@ window.grabLoggedUserStats = async () =>
 	}
 }
 
-window.fetchPlayerStats = async (playerId) => 
+window.fetchPlayerStats = async (playerId, playerUsername) => 
 {
 
 	const nbOfMatchCpt2 = document.getElementById("nbOfMatchCpt2");
@@ -173,7 +174,7 @@ window.fetchPlayerStats = async (playerId) =>
 	longestMatchCpt2.innerHTML = "--";
 	biggestStreakCpt2.innerHTML = "--";
 
-	document.getElementById("selectedPlayerUsernameHeader").innerHTML = playerId + " 's stats :";
+	document.getElementById("selectedPlayerUsernameHeader").innerHTML = playerUsername + " 's stats :";
 	
 	try 
 	{
@@ -210,7 +211,7 @@ window.fetchPlayerStats = async (playerId) =>
 	catch (err) 
 	{
 		if (await fetchErrcodeHandler(err) == 0)
-			return(window.fetchPlayerStats(playerId));
+			return(window.fetchPlayerStats(playerId, playerUsername));
 		console.error('⚠️ Couldn\'t fetch user stats in profileStat!\n => ', err);
 	}
 }
@@ -299,7 +300,7 @@ const createFriendsStatLink = async () =>
 					listItem.className = 'w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg focus:border-[#98c6f8] hover:text-[#98c6f8] hover:border-[#98c6f8]';
 					listItem.innerHTML = `${result.friends[i].name}`;
 					listItem.setAttribute('name', clearName);
-					listItem.setAttribute('onclick',`fetchPlayerStats("${result.friends[i].id}")`); // can be broken with weird names
+					listItem.setAttribute('onclick',`fetchPlayerStats("${result.friends[i].id}", "${result.friends[i].name}")`); // can be broken with weird names
 					friendlistProfileParent.appendChild(listItem);
 				}
 			}
@@ -620,6 +621,7 @@ const router = async () => {
 		{ path: "/2faLogin", view: Login2fa },
 		{ path: "/ranked", view: rankedLogin },
 		{ path: "/changePassword", view: changePassword },
+		{ path: "/matchHistory", view: matchHistory },
 	];
 
 	const potentialMan = routes.map(mapElement => { //mapElement is the name of each array element for routes
