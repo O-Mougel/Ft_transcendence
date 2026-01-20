@@ -650,7 +650,8 @@ const router = async () => {
 	{
 		sessionStorage.setItem('pagehide', 'pagehasreloaded');
 		document.querySelector("#app").innerHTML = await new routes[0].view().getHTML();
-		await adjustNavbar("/");
+		adjustNavbar("/");
+		history.pushState(null, null, "/");
 		return ;
 	}
 	document.querySelector("#app").innerHTML = await view.getHTML();
