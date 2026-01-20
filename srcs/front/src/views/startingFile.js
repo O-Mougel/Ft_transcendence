@@ -44,7 +44,7 @@ export default class extends ViewTemplate {
 			<div class="pt-[5vw] h-full w-full">
 				<h1 id="bigMainTitle" class="text-center mx-auto text-[5vw] sm:text-[5vw] 2xl:text-[4vw] w-[80%] my-6 animate-wiggle">FT_Transcendence</h1>
 				<div class=" w-full h-[25%] my-15 content-center m-auto">
-					<img id="deathStarImg" src="/img/assets/death-star.png" class="block w-[40%] max-w-3xl m-auto mb-15 aspect-square" onclick=spinMeAround()>
+					<img id="deathStarImg" src="/img/assets/death-star.png" class="block w-[40%] max-w-3xl m-auto mb-15 aspect-square select-none" onclick=spinMeAround() draggable="false" />
 					<div id="loginButtonContainer" class="animate-float">
 						<a id="mainPageLoginButton" href="/logUser" class="hidden uppercase text-sm md:text-base xl:text-2xl focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis w-1/2 md:w-1/4 border hover:border-[#98c6f8] border-white py-2 px-4 rounded-lg shadow-[0_0_20px_rgba(158,202,237,0.9)]" name="logPageLink" data-link> 🚀 Sign in </a>
 					</div>
