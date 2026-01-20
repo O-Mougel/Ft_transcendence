@@ -89,7 +89,7 @@ export default class extends ViewTemplate {
 					
 				</div>
 				<div id="goToGameButtonDiv" class="w-full h-full flex-col hidden items-center">
-					<a href="/pongRanked" class="px-6 w-[50%] py-3 sm:py-4 bg-[#98c6f8] font-bold rounded-lg hover:bg-[#7aaedc]">Go to game</a>
+					<a href="/pongRanked" class="px-6 w-[50%] py-3 sm:py-4 bg-[#98c6f8] font-bold rounded-lg hover:bg-[#7aaedc]" data-link>Go to game</a>
 				</div>
 			</div>`
 	}
