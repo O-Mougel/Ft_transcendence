@@ -644,6 +644,13 @@ const router = async () => {
 
 	const view = new match.mapElement.view();
 	
+	if(sessionStorage.getItem('pagehide') && sessionStorage.getItem('pagehide') === 'pageshouldreload')
+	{
+		sessionStorage.setItem('pagehide', 'pagehasreloaded');
+		document.querySelector("#app").innerHTML = await new routes[0].view().getHTML();
+		await adjustNavbar("/");
+		return ;
+	}
 	document.querySelector("#app").innerHTML = await view.getHTML();
 	await adjustNavbar(match.mapElement.path);
 	if (typeof view.init === "function") {

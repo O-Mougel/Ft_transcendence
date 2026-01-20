@@ -62,10 +62,11 @@ window.addEventListener("pagehide", () => {
 
 	if(checkKeyReload || reloadTypeResult)
 	{
+		window.sessionStorage.setItem('pagehide', 'pageshouldreload');
 		backToDefaultPage();
 		return ;
 	}
-	// window.sessionStorage.setItem('pagehide', 'logout_fetch_sent');
+	window.sessionStorage.setItem('pagehide', 'logout_fetch_sent');
 	try 
 	{
 		fetch('/logout', {
