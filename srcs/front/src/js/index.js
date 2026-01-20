@@ -14,7 +14,7 @@ import page404 from "../views/404page.js";
 import Login2fa from "../views/2faLogin.js";
 import changePassword from "../views/changePassword.js";
 import rankedLogin from "../views/rankedLogin.js";
-import matchHistory	from "../views/matchHistory.js";
+import UserMatchHistory	from "../views/UserMatchHistory.js";
 
 // stop pong game when navigating away from /pong
 import { emitStopGame } from "../game/socket.js";
@@ -621,7 +621,7 @@ const router = async () => {
 		{ path: "/2faLogin", view: Login2fa },
 		{ path: "/ranked", view: rankedLogin },
 		{ path: "/changePassword", view: changePassword },
-		{ path: "/matchHistory", view: matchHistory },
+		{ path: "/UserMatchHistory", view: UserMatchHistory },
 	];
 
 	const potentialMan = routes.map(mapElement => { //mapElement is the name of each array element for routes
