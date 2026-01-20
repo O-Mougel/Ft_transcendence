@@ -49,7 +49,7 @@ export default class extends ViewTemplate {
 			<div class="flex flex-col sm:flex-row w-full justify-around items-center gap-4">
 				<div class="flex flex-col items-center">
 						<h2 id="playerUsernameProfile" class="text-center pr-2"><u>[username]</u></h2>
-						<img id="userPfpProfile" src="./img/userPfp/default.png" alt="userPfpImg" class="pl-2 pt-4 w-20 h-20 sm:w-[120px] sm:h-[120px] object-cover shrink-0" />
+						<img id="userPfpProfile" src="./img/userPfp/default.png" alt="userPfpImg" class="pl-2 pt-4 w-20 h-20 sm:w-[120px] sm:h-[120px] object-cover shrink-0 select-none" draggable="false" />
 					</div>
 					<a class="uppercase px-5 py-1 z-20 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg" name="gotoMatchHistory" href="/UserMatchHistory" data-link>View match history</a>
 				</div>
