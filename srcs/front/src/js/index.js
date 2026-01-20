@@ -521,7 +521,6 @@ const newtabRelogFetch = async () => {
 		{
 			console.info("Nuh uhhhhh !", err);
 			window.sessionStorage.setItem('logStatus', 'loggedOut');
-			// backToDefaultPage();
 		}
 }
 
@@ -596,7 +595,8 @@ export const adjustNavbar = async (path) => {
 }
 
 const attemptAutolog = async () => {
-	await newtabRelogFetch();
+	if (sessionStorage.getItem('pagehide') !== 'pageshouldreload') //do not try to relog if we reload the page
+		await newtabRelogFetch();
 	await router();
 }
 
@@ -677,6 +677,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	{
 		console.log("NULL O_O ! Setting to logged out");
 		sessionStorage.setItem('logStatus','loggedOut');
+
 	}
 	else
 		console.log("Grabbed status ! Current :",sessionStorage.getItem("logStatus"));
