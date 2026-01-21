@@ -50,13 +50,9 @@ export class GameManager {
   }
 
   async _startGame(gameId, data) {
-    // console.log("All infos: ", data);
-    // console.log("Starting game with id:", gameId);
-    // console.log("Tournament data:", data._tournament);
     this._ensureGameExist(gameId);
     const entry = this.games.get(gameId);
     entry.game._reset();
-    // console.log("Game mode:", entry?.game);
 
     try {
       const user1 = await findUserByName("TEST");

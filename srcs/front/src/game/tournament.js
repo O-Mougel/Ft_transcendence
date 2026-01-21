@@ -122,4 +122,9 @@ function renderTournament(tournament) {
 
 		bracketElement.appendChild(roundBox);
 	});
+	if (tournament.status === "ended") {
+		const nextMatchBtn = document.getElementById("nextMatchBtn");
+		nextMatchBtn.style.display = "none";
+		sessionStorage.removeItem("currentTournamentId");
+	}
 }
