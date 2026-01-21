@@ -642,6 +642,22 @@ const router = async () => {
 		};
 	}
 
+	if (match.mapElement.path === "/pong" || match.mapElement.path === "/pong2" || match.mapElement.path === "/pongAI" || match.mapElement.path === "/pongRanked")
+	{
+		//clear previous game context
+		CONTEXT.gameMode = null;
+		CONTEXT.socket = null;
+		CONTEXT.ctx = null;
+		CONTEXT.gameId = null;
+		CONTEXT.animationFrameId = null;
+		CONTEXT.lastTime = null;
+		CONTEXT.deltaTime = null;
+		CONTEXT.isGameOver = false;
+		CONTEXT.winner = null;
+		if (match.mapElement.path !== "/pong")
+			emitStopGame(); // stop previous game if any
+	}
+
 	const view = new match.mapElement.view();
 	
 	document.querySelector("#app").innerHTML = await view.getHTML();
