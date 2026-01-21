@@ -66,7 +66,7 @@ export const displayCorrectErrMsg = async (error, data) => {
 			alertBoxMsg(`❌ This email is already used by someone !`);
 			break;
 		case "loginInvalidName":
-			alertBoxMsg(`❌ Username is incorrect !`);
+			alertBoxMsg(`❌ Username does not exist !`);
 			break;
 		case "loginInvalidPwd":
 			alertBoxMsg(`❌ Incorrect password !`);
