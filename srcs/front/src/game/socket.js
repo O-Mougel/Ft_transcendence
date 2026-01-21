@@ -2,22 +2,33 @@ import { io } from "https://cdn.socket.io/4.7.2/socket.io.esm.min.js";
 import { CONTEXT } from "./context.js";
 import { handleGameOver, handleGameStopped } from "./API.js";
 import { updateGameScene } from "./pong.js";
+import { alertBoxMsg, fetchErrcodeHandler } from "../js/userLog.js";
 
 let socket = null;
 
 export function setupSocket() {
   if (socket) return socket;
 
+  const token = sessionStorage.getItem("access_token");
+  if (!token) {
+    console.error("No access token found in sessionStorage");
+    return null;
+  }
+
   socket = io({
     path: "/pong/socket.io",
-    // transports: ["websocket"],
-    // // auth : sessionStorage.getItem("access_token") ?? '',
-    // extraHeaders: {
-    //   Authorization: `Bearer ${sessionStorage.getItem("access_token")}`
-    // }
+    transports: ["websocket"],
+    auth: { token },
   });
 
   socket.on("connect", () => { console.log("Connected to WebSocket server"); });
+
+  socket.on("connect_error", async (err) => {
+    alertBoxMsg("❌ Connection error: ${err.message}", "error");
+    console.error("WebSocket connection error:", err);
+    if (await fetchErrcodeHandler(err) == 0) // Good to use ? It seems appropriate but may cause conflicts ?
+          return (setupSocket());
+  });
 
   if (updateGameScene) {
 	  socket.off("game:state");
@@ -79,6 +90,13 @@ export async function waitStartGame() {
     	  player2: "Player2",
       });
     }
+    else if (CONTEXT.gameMode === 3) {
+      socket.emit("game:start", { 
+        mode: 3,
+    	  player1: result.name,
+    	  player2: "PLACEHOLDER PLAYER 2",
+      });
+    }
     else {
       socket.emit("game:start", { 
         mode: 2,
@@ -94,7 +112,7 @@ export async function waitStartGame() {
     });
   } catch (error) {
     if (await fetchErrcodeHandler(err) == 0)
-      return(grabCustomizationPageInfo());
+      return(waitStartGame());
     console.error('⚠️ Couldn\'t grab user info!\n => ', err);
   }
 }

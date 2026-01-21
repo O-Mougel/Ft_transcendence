@@ -14,12 +14,13 @@ export function initTournament() {
 
 		
 	const nextMatchBtn = document.getElementById("nextMatchBtn");
-	const backBtn = document.getElementById("backButton");
+	const quitBtn = document.getElementById("quitButton");
 		
 	// Buttons
-	backBtn.onclick = () => {
+	quitBtn.onclick = () => {
 	  window.history.pushState({}, "", "/tournamentSize");
 	  window.dispatchEvent(new PopStateEvent("popstate"));
+	  socket.emit("tournament:leave", { tournamentId } );
 	};
 		
 	if (CONTEXT.gameId) {
@@ -29,9 +30,6 @@ export function initTournament() {
 		window.dispatchEvent(new PopStateEvent("popstate"));
 	  };
 	} else {
-	//   nextMatchBtn.onclick = () => {
-	// 	socket.emit("tournament:nextMatch", { tournamentId });
-	//   };
 		CONTEXT.tournamentId = tournamentId;
 		nextMatchBtn.onclick = () => {
 			console.log("Starting next match in tournament:", tournamentId);

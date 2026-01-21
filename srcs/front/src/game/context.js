@@ -7,7 +7,7 @@ export const CONTEXT = {
 	canvas: null,
 	ctx: null,
 	startButton: null,
-	backButton: null,
+	quitButton: null,
 	score: null,
 
 	// Game objects

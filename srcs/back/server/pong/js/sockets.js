@@ -10,7 +10,7 @@ export function registerSocketHandlers(io, manager, tournamentManager) {
     // SIMPLE MATCH
     socket.on("game:start", (data = {}) => {
       const gameId = generateGameId();
-      console.log(`SOCKET.JS: Starting new game with id: ${gameId}`);
+      console.log("Game data:", data);
 
       socket.data.gameId = gameId;
       manager.joinGame(gameId, socket);
@@ -89,6 +89,20 @@ export function registerSocketHandlers(io, manager, tournamentManager) {
         const names = data.names;
 
         const tournamentId = tournamentManager.createTournament(size, names);
+        if (!tournamentId) {
+          socket.emit("tournament:error", { message: "create failed" });
+          return;
+        }
+        // leave previous game/tournament if any
+        if (socket.data.gameId) {
+          manager.leaveGame(socket.data.gameId, socket);
+          socket.data.gameId = null;
+        }
+        if (socket.data.tournamentId) {
+          tournamentManager.leaveTournament(socket.data.tournamentId, socket);
+          socket.data.tournamentId = null;
+        } 
+
         socket.data.tournamentId = tournamentId;
 
         const tournament = tournamentManager.getTournament(tournamentId);
@@ -132,7 +146,15 @@ export function registerSocketHandlers(io, manager, tournamentManager) {
 
     socket.on("disconnect", () => {
       const gameId = socket.data.gameId;
-      if (gameId) manager.leaveGame(gameId, socket);
+      if (gameId) {
+        manager.leaveGame(gameId, socket);
+        socket.data.gameId = null;
+      }
+      const tournamentId = socket.data.tournamentId;
+      if (tournamentId) {
+        tournamentManager.leaveTournament(tournamentId, socket);
+        socket.data.tournamentId = null;
+      }
       console.log("User disconnected", socket.id);
     });
   });

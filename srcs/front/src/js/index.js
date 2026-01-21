@@ -651,7 +651,7 @@ const router = async () => {
 		emitStopGame(); // stop previous game if any
 	}
 
-	if (match && match.mapElement.path === "/tournamentSize" && CONTEXT.tournamentId) match.mapElement.path = "/tournament";
+	if (match && match.mapElement.path === "/tournamentSize" && CONTEXT.tournamentId) match.mapElement = routes.find(r => r.path === "/tournament");
 
 	const view = new match.mapElement.view();
 	
