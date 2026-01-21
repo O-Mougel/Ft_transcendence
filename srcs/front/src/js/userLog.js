@@ -513,7 +513,7 @@ const displayUserFriends = async () => {
 }
 
 window.grabProfileInfo = async function () {
-
+	
 	const profilePanel = document.getElementById('profilePanel');
 	const profileUsername = document.getElementById('playerGrabbedUsername');
 	const profilePicture = document.getElementById('sidePannelPfp');
@@ -941,6 +941,71 @@ window.loginPlayer2 = async function (event) {
 	}
 };
 
+window.buildMatchHistoryPage = async function () {
+	const matchHistoryDiv = document.getElementById('matchHistoryDiv');
+
+	if (!matchHistoryDiv) return;
+
+
+	// try 
+	// {
+	// 	const userHistoryRequestResponse = await fetch('/match', {
+	// 			credentials: 'include',
+	// 			headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
+	// 	});
+	
+	// 	if (!userHistoryRequestResponse.ok) {
+	// 			const text = await userHistoryRequestResponse.text().catch(() => userHistoryRequestResponse.statusText);
+	// 			throw new Error(`Request failed: ${userHistoryRequestResponse.status} ${text}`);
+	// 	}
+	// 	const result = await userHistoryRequestResponse.json();	
+	// 	if (result)
+	// 	{
+	// 		matchHistoryDiv.innerHTML = '';
+	// 		if (result.match.length)
+	// 		{
+	// 			for(let i = 0; i < result.match.length; i++) 
+	// 			{
+	// 				var divItem = document.createElement("div");
+	// 				divItem.className = 'flex flex-col bg-[#4ac03d9f] border border-white rounded-lg w-full gap-2 p-4';
+	// 				divItem.innerHTML = `<div class="flex flex-col gap-y-2">
+	// 						<div class="flex flex-row justify-between items-center">
+	// 							<div class="flex flex-col items-start">
+	// 								<p>${result.match[i].createdAt}</p>
+	// 								<p>${result.match[i].duration}</p>
+	// 							</div>
+	// 							<p>${result.match[i].player1score} - ${result.match[i].player2score}</p>
+	// 							<div class="flex flex-col items-end">
+	// 								<p>${result.match[i].type}</p>
+	// 								<p>${result.match[i].round}</p>
+	// 							</div>
+	// 						</div>
+	// 						<div class="flex flex-row justify-between items-center">
+	// 							<div class="flex flex-col items-start">
+	// 								<p>${result.match[i].player1name}</p>
+	// 								<p>${result.match[i].player3name}</p>
+	// 							</div>
+	// 							<p>[imgVS]</p>
+	// 							<div class="flex flex-col items-end">
+	// 								<p>${result.match[i].player2name}</p>
+	// 								<p>${result.match[i].player4name}</p>
+	// 							</div>
+	// 						</div>
+	// 					</div>`;
+	// 				matchHistoryDiv.appendChild(divItem);
+	// 			}
+	// 		}
+	// 	}
+		
+	// } 
+	// catch (err) 
+	// {
+	// 	if (await fetchErrcodeHandler(err) == 0)
+	// 		return(buildMatchHistoryPage());
+	// 	console.error('⚠️ Couldn\'t recover user history!\n => ', err);
+	// }
+}
+	
 window.loadProfileData = async function () {
 
 	const Player1Name = document.getElementById('Player1Name');

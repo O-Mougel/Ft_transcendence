@@ -12,7 +12,7 @@ export default class extends ViewTemplate {
 			<div id="profilePanel" class="hidden absolute animate-slide-in-left right-0 top-0 h-full min-w-80 w-[20%] bg-[url(/img/assets/stars.gif)] z-50 shadow-[0_0_20px_rgba(158,202,237,0.9)] border border-[#98c6f8] overflow-auto">
 				<div class="flex flex-col text-center w-full h-full">
 					<div class="grid h-[30%] place-items-center">
-						<div id="sidePannelPfp" class="bg-[url(/img/userPfp/)default.png] bg-cover p-4 rounded-[50%] opacity-0 shadow object-cover w-[170px] h-[170px]"></div>
+						<div id="sidePannelPfp" class="bg-[url('/img/userPfp/default.png')] bg-cover p-4 rounded-[50%] opacity-0 shadow object-cover w-[170px] h-[170px]"></div>
 					</div>
 					<h1 id="playerGrabbedUsername" class="text-black text-bold mx-4 mb-10 text-2xl ">[username]</h1>
 					<a href="/profileStats" class="mx-4 text-2xl mb-5 border p-4 text-[#798490] hover:text-[#98c6f8]" name="profileLink" data-link>View profile</a>
@@ -57,9 +57,6 @@ export default class extends ViewTemplate {
 							</div>
 						</div>
 					</div>
-					<div id="backToTournament" class="hidden mt-8">
-						<button class="px-6 py-3 bg-transparent border border-[#98c6f8] text-white font-bold rounded-lg hover:bg-white/10" onclick="backToTournamentPage()">← Back to tournament</button>
-					</div>
 					<!-- Tournament creation form -->
 					<div id="tournamentBuiltBlock" class="hidden w-[80%] mx-auto">
 						<form id="tournamentForm" class="mt-[5vw]">
@@ -67,15 +64,6 @@ export default class extends ViewTemplate {
 					</div>
 				</div>
 			</div>`
-	}
-
-	async init() {
-		console.log("Initializing Tournament Size view...");
-		if (sessionStorage.getItem("currentTournamentId")) {
-			console.log("Tournament detected in session storage. Updating nav bar...");
-			if (document.getElementById('backToTournament'))
-				document.getElementById('backToTournament').classList.remove('hidden');
-		}
 	}
 
 }

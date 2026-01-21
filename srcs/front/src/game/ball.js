@@ -8,14 +8,14 @@ export default class Ball {
         this.speedY = 2;
     }
 
-    _draw(ctx) {
+    draw(ctx) {
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
     }
 
-    _reset() {
+    reset() {
         this.x = this.spawnX;
         this.y = this.spawnY;
     }
