@@ -34,7 +34,7 @@ export default class extends ViewTemplate {
 					<div class="w-full mt-3 px-4 flex">
 						<div class="w-[85%] max-w-60">
 							<div class="flex items-center py-2 w-full mt-5">
-								<input id="friendSearchInput" type="text" placeholder="Add friend" maxlength="13" class="h-8 px-2 rounded-l-md border border-white bg-transparent text-white focus:outline-none text-sm" />
+								<input id="friendSearchInput" type="text" placeholder="Add friend" maxlength="13" class="h-8 px-2 rounded-l-md border border-white bg-transparent focus:outline-none text-sm" />
 								<button id="friendSearchButton" class=" h-8 bg-[#98c6f8] text-black rounded-r-md text-sm" onclick=sendNewFriendRequest()>🔍</button>
 							</div>
 							<p id="friendSearchResults" class="mt-4 text-base text-ellipsis"></p>
@@ -42,7 +42,7 @@ export default class extends ViewTemplate {
 					</div>
 				</div>
 			</div>
-			<div class="h-full flex w-full justify-center text-white">
+			<div class="h-full flex w-full justify-center">
 				<div class="pt-5 flex flex-col gap-4 items-center">
 					<canvas id="canvas" class="border-4 rounded-[2%] border-[#98c6f8] w-[64dvw] aspect-16/10"></canvas>
 					<div id="GameOver" class="hidden absolute border-4 rounded-[10%] border-[#98c6f8] justify-center items-center p-4 mt-4">
@@ -53,12 +53,67 @@ export default class extends ViewTemplate {
 							<span id="GameOverScore">0 - 0</span>
 						</div>
 					</div>
-					<span id="LeftPlayer" class="text-2xl">Left Player: [username]</span>
-					<span id="RightPlayer" class="text-2xl">Right Player: [username]</span>
-					<button id="startButton" class="px-6 py-3 bg-[#98c6f8] text-white font-bold rounded-lg hover:bg-[#7aaedc]">Start Game</button>
-					<a id="backToTournament" class="hidden px-6 py-3 bg-transparent border border-[#98c6f8] text-white font-bold rounded-lg hover:bg-white/10 cursor-pointer">Back to tournament</a>
+					<div class="flex justify-between w-full">
+						<div class="flex flex-col items-start justify-start text-blue-300">
+							<span id="LeftPlayer"> </span>
+						</div>
+						<div class="flex flex-col items-end justify-end text-red-300">
+							<span id="RightPlayer"> </span>
+						</div>
+					</div>
+					<button id="startButton" class="px-6 py-3 bg-[#98c6f8] font-bold rounded-lg hover:bg-[#7aaedc]">Start Game</button>
+					
+					<div id="instruction1v1" class="flex flex-col justify-center w-full border border-dashed border-white rounded-lg p-4 pb-8">
+						<span class="pb-4">Controls</span>
+						<div class="flex justify-between w-full">
+							<div class="flex flex-col items-center justify-start w-[25%] text-blue-300">
+								<span>W</span>
+								<span>S</span>
+							</div>
+							<div class="flex flex-col items-center justify-start w-[50%]">
+								<span>move up</span>
+								<span>move down</span>
+							</div>
+							<div class="flex flex-col items-center justify-start w-[25%] text-red-300">
+								<span>🢁</span>
+								<span>🢃</span>
+							</div>
+						</div>
+					</div>
+
+					<div id="instruction2v2" class="hidden flex-col justify-center w-full border border-dashed border-white rounded-lg p-4 pb-8">
+						<span class="pb-4">Controls</span>
+						<div class="flex justify-between w-full">
+							<div class="flex flex-col items-center justify-start w-[25%] text-blue-300">
+								<div class="flex justify-around w-full">
+									<span>W</span>
+									<span>O</span>
+								</div>
+								<div class="flex justify-around w-full">
+									<span>S</span>
+									<span>L</span>
+								</div>
+							</div>
+							<div class="flex flex-col justify-between w-[50%]">
+								<span>move up</span>
+								<span>move down</span>
+							</div>
+							<div class="flex flex-col items-center justify-start w-[25%] text-red-300">
+								<div class="flex justify-around w-full">
+									<span>🢁</span>
+									<span>6</span>
+								</div>
+								<div class="flex justify-around w-full">
+									<span>🢃</span>
+									<span>3</span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<a id="backToTournament" class="hidden px-6 py-3 bg-transparent border border-[#98c6f8] font-bold rounded-lg hover:bg-white/10 cursor-pointer">Back to tournament</a>
 					<!-- Score row under the canvas -->
-					<div id="Scores" class="flex justify-center items-center text-white font-bold hidden">
+					<div id="Scores" class="justify-center items-center font-bold hidden">
 						<div class="flex items-center">
 							<span>Left</span>
 							<h3 class="p-4" id="LeftScore" value="0">0</h3>
@@ -75,9 +130,13 @@ export default class extends ViewTemplate {
 
 	async init() {
 		const mode = (location.pathname === '/pongAI') ? 0 : (location.pathname === '/pongRanked') ? 3 : (location.pathname === '/pong2') ? 2 : 1;
-	 	const module = await import("/game/pong.js");
-
-	 	if (typeof module.initPong === "function") 
+		const module = await import("/game/pong.js");
+		
+		if (typeof module.initPong === "function") 
 			module.initPong({ mode, gameId: CONTEXT.gameId });
+		
+		handlePongModeDisplay(mode);
+		
+
 	}
 }
