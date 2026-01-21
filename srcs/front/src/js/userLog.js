@@ -1073,3 +1073,76 @@ window.loadPlayer2Data = async function () {
 		return ;
 	}
 }
+
+window.handlePongModeDisplay = async function (mode) {
+
+	const LeftPlayer = document.getElementById('LeftPlayer');
+	const RightPlayer = document.getElementById('RightPlayer');
+	const instruction1v1 = document.getElementById('instruction1v1');
+	const instruction2v2 = document.getElementById('instruction2v2');
+
+	if (!LeftPlayer || !RightPlayer || !instruction1v1 || !instruction2v2) return;
+
+	try 
+	{
+		const dataRequestResponse = await fetch('/profile/grab', { //GET request by default without the "request" parameter
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
+				credentials: 'include',
+		});
+	
+		if (!dataRequestResponse.ok) {
+				const text = await dataRequestResponse.text().catch(() => dataRequestResponse.statusText);
+				throw new Error(`Request failed: ${dataRequestResponse.status} ${text}`);
+		}
+		const result = await dataRequestResponse.json();	
+		if (result)
+		{	
+			LeftPlayer.innerHTML = result.name;
+		}
+	}
+	catch (err)
+	{
+		if (await fetchErrcodeHandler(err) == 0)
+			return (window.handlePongModeDisplay());
+		console.error('Profile info grab failed !\n => ', err);
+		return ;
+	}
+
+	if (mode == '0') {
+		RightPlayer.innerHTML = "COMPUTER";
+	}
+	else if (mode == '1') {
+		RightPlayer.innerHTML = "PLAYER 2";
+	}
+	else if (mode == '2') {
+		RightPlayer.innerHTML = "PLAYER 2";
+		instruction1v1.style.display = "none";
+		instruction2v2.style.display = "flex";
+	}
+	else if (mode == '3') {
+		try
+		{
+			const dataRequestResponse = await fetch('/profile/grab2', { //GET request by default without the "request" parameter
+					headers: {Authorization: `Bearer ${sessionStorage.getItem("player2_token")}`},
+					credentials: 'include',
+			});
+		
+			if (!dataRequestResponse.ok) {
+					const text = await dataRequestResponse.text().catch(() => dataRequestResponse.statusText);
+					throw new Error(`Request failed: ${dataRequestResponse.status} ${text}`);
+			}
+			const result = await dataRequestResponse.json();	
+			if (result)
+			{	
+				RightPlayer.innerHTML = result.name;
+			}
+		} 
+		catch (err)
+		{
+			if (await fetchErrcodeHandler(err) == 0)
+				return (window.handlePongModeDisplay());
+			console.error('Profile info grab failed !\n => ', err);
+			return ;
+		}
+		}
+}
