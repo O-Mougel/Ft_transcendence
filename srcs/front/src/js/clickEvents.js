@@ -60,7 +60,7 @@ window.addEventListener("pagehide", () => {
 
 	if(checkKeyReload || reloadTypeResult)
 	{
-		window.sessionStorage.setItem('pagehide', 'pageshouldreload');
+		// window.sessionStorage.setItem('pagehide', 'pageshouldreload');
 		return ;
 	}
 	window.sessionStorage.setItem('pagehide', 'logout_fetch_sent');
@@ -73,7 +73,7 @@ window.addEventListener("pagehide", () => {
 				keepalive: true,
 		});
 		window.sessionStorage.setItem('logStatus', 'loggedOut');
-		window.sessionStorage.setItem('access_token', 'NotValid');
+		window.sessionStorage.setItem('access_token', 'userSelfLogoutToken');
 	} 
 	catch (err) 
 	{
