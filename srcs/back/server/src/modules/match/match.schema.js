@@ -10,9 +10,20 @@ const getMatchResponseSchema = z.object({
   longestMatch: z.number()
 });
 
+const matchItemSchema = z.object({
+	id: z.number(),
+	name: z.string().min(1),
+	avatar: z.string().min(1),
+	online: z.boolean(),
+});
+
+const getMatchHistoryResponseSchema = z.object({
+	matchs: z.array(matchItemSchema)
+});
+
 export const { schemas: matchSchemas, $ref } = buildJsonSchemas({
-  	getMatchResponseSchema
+  	getMatchResponseSchema,
+	getMatchHistoryResponseSchema
 	},
 	{ $id: 'matchSchemas' }, 
 );
-
