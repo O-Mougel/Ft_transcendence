@@ -28,24 +28,24 @@ export function initPong(mode = {}) {
 	}
 
 	// In SPA, stop the game when navigating away
-	window.addEventListener("popstate", () => {
-		console.log("Popstate event detected.");
-		if (isSocketConnected()) {
-			console.log("Navigating away, stopping game.");
-			emitStopGame();
-		}
-	});
+	// window.addEventListener("popstate", () => {
+	// 	console.log("Popstate event detected.");
+	// 	if (isSocketConnected()) {
+	// 		console.log("Navigating away, stopping game.");
+	// 		emitStopGame();
+	// 	}
+	// });
 
-	// Stop game if user leaves the page (enters new URL, closes tab, refreshes, etc.)
-	window.addEventListener("beforeunload", () => {
-		if (isSocketConnected()) {
-			console.log("Window unloading, stopping game.");
-			emitStopGame(); // send final state
-			if (sessionStorage.getItem("currentTournamentId")) {
-				sessionStorage.removeItem("currentTournamentId");
-			}
-		}
-	});
+	// // Stop game if user leaves the page (enters new URL, closes tab, refreshes, etc.)
+	// window.addEventListener("beforeunload", () => {
+	// 	if (isSocketConnected()) {
+	// 		console.log("Window unloading, stopping game.");
+	// 		emitStopGame(); // send final state
+	// 		if (sessionStorage.getItem("currentTournamentId")) {
+	// 			sessionStorage.removeItem("currentTournamentId");
+	// 		}
+	// 	}
+	// });
 
 	const canvas = CONTEXT.canvas;
 	const ctx = CONTEXT.ctx = canvas.getContext("2d");

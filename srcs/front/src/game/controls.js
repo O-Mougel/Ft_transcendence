@@ -8,6 +8,17 @@ export function bindControls() {
   CONTEXT.controlsBound = true;
 }
 
+export function resetControls() {
+  CONTEXT.keysPressed.clear();
+  const { leftPaddle, rightPaddle, leftPaddle2, rightPaddle2 } = CONTEXT;
+  leftPaddle.direction = "none";
+  rightPaddle.direction = "none";
+  if (CONTEXT.gameMode === 2) {
+    leftPaddle2.direction = "none";
+    rightPaddle2.direction = "none";
+  }
+}
+
 function handleKeyDown(e) {
   if (!CONTEXT.isGameStarted) return;
 
