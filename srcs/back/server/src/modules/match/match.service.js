@@ -44,8 +44,8 @@ export async function showstats(id) {
 		}
 	});
 
-	const biggest_streak = result._max.longestStreak ?? 0;
-	const longestMatch = result._max.duration ?? 0;
+	const biggest_streak = result.max.longestStreak ?? 0;
+	const longestMatch = result.max.duration ?? 0;
 
 	return { matchsnb, winrate, biggest_streak, longestMatch } 
 }
