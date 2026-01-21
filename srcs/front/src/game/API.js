@@ -14,4 +14,7 @@ export function handleGameOver(data) {
 	CONTEXT.gameId = null;
 	resetState();
 	printGameOver(data);
+	if (CONTEXT.tournamentId) {
+		CONTEXT.backButton.classList.remove("hidden");
+	}
 }

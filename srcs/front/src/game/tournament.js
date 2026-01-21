@@ -8,7 +8,10 @@ export function initTournament() {
 
 	const tournamentId = extractTournamentId();
 	if (!tournamentId) {
-	  document.getElementById("tournamentStatus").textContent = "Missing tournament id in URL.";
+	  document.getElementById("tournamentStatus").textContent = "Missing tournament id.";
+	  CONTEXT.tournamentId = null;
+	  window.history.pushState({}, "", "/tournamentSize");
+	  window.dispatchEvent(new PopStateEvent("popstate"));
 	  return;
 	}
 
@@ -18,6 +21,9 @@ export function initTournament() {
 		
 	// Buttons
 	quitBtn.onclick = () => {
+	  console.log("Leaving tournament:", tournamentId);
+	  sessionStorage.removeItem("currentTournamentId");
+	  CONTEXT.tournamentId = null;
 	  window.history.pushState({}, "", "/tournamentSize");
 	  window.dispatchEvent(new PopStateEvent("popstate"));
 	  socket.emit("tournament:leave", { tournamentId } );
