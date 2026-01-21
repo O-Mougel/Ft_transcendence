@@ -1,7 +1,8 @@
-import { waitStartGame, isSocketConnected, setupSocket, updateGameState, emitStopGame, joinExistingGame } from "./socket.js";
+import { waitStartGame, isSocketConnected, setupSocket, updateGameState, emitStopGame, joinExistingGame, emitNextMatch } from "./socket.js";
 import { CONTEXT, createGameElements } from "./context.js";
 import { draw, drawScore, resetState } from "./graphics.js";
 import { bindControls } from "./controls.js";
+import tournament from "../views/tournament.js";
 
 export function initPong(mode = {}) {
 	if (mode.mode === 3 && !sessionStorage.getItem("player2_token")) {
@@ -89,6 +90,11 @@ export function initPong(mode = {}) {
 		if (CONTEXT.score) CONTEXT.score.style.display = "flex";
 		if (CONTEXT) CONTEXT.isGameStarted = true;
 		gameInit();
+		CONTEXT.startButton.style.display = "block";
+		CONTEXT.startButton.onclick = () => {
+			startButton.style.display = "none";
+			emitNextMatch(CONTEXT.tournamentId);
+		};
 	} else {
 		CONTEXT.startButton.style.display = "block";
 		CONTEXT.startButton.onclick = startGame;

@@ -29,9 +29,15 @@ export function initTournament() {
 		window.dispatchEvent(new PopStateEvent("popstate"));
 	  };
 	} else {
-	  nextMatchBtn.onclick = () => {
-		socket.emit("tournament:nextMatch", { tournamentId });
-	  };
+	//   nextMatchBtn.onclick = () => {
+	// 	socket.emit("tournament:nextMatch", { tournamentId });
+	//   };
+		CONTEXT.tournamentId = tournamentId;
+		nextMatchBtn.onclick = () => {
+			console.log("Starting next match in tournament:", tournamentId);
+			window.history.pushState({}, "", "/pongTournament");
+			window.dispatchEvent(new PopStateEvent("popstate"));
+		}
 	}
 
 	socket.off("tournament:state");
@@ -50,8 +56,8 @@ export function initTournament() {
 	  CONTEXT.gameMode = 1;
 	  CONTEXT.tournamentId = tournamentId;
 
-	  window.history.pushState({}, "", "/pong");
-	  window.dispatchEvent(new PopStateEvent("popstate"));
+	//   window.history.pushState({}, "", "/pong");
+	//   window.dispatchEvent(new PopStateEvent("popstate"));
 	});
 
 	// Tournament ended

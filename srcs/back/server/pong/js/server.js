@@ -1,5 +1,6 @@
 import Fastify from "fastify";
 import { Server } from "socket.io";
+import fjwt from '@fastify/jwt'
 
 import { registerSocketHandlers } from "./sockets.js";
 import { GameManager } from "./gameManager.js";
@@ -11,6 +12,36 @@ const io = new Server(fastify.server, {
   path: "/pong/socket.io",
   cors: { origin: "*", methods: ["GET", "POST"] },
 });
+
+
+// const fastify = Fastify({ logger: true });
+
+// fastify.register(fjwt, {
+//   secret: process.env.JWT_SECRET
+// });
+
+// const io = new Server(fastify.server, {
+//   path: "/pong/socket.io",
+//   cors: { origin: "*", methods: ["GET", "POST"] },
+//   transports: ["websocket"],
+//   auth: { token: { type: "string", required: true } }
+// });
+
+// io.use((socket, next) => {
+//   try {
+//     const token = socket.handshake.auth?.token;
+//     if (!token) {
+//       return next(new Error("Unauthorized"));
+//     }
+
+//     const payload = fastify.jwt.verify(token);
+//     socket.data.user = payload;
+//     return next();
+//   } catch (e) {
+//     return next(new Error("Invalid token"));
+//   }
+// });
+
 
 const manager = new GameManager(io);
 const tournamentManager = new TournamentManager(manager);
