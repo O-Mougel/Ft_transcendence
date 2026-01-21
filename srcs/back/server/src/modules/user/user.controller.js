@@ -83,10 +83,8 @@ export async function dataGrabHandler(request, reply) {
 }
 
 export async function loginHandler(request, reply) {
-	const body = request.body;
-
-	body.name = body.name.toUpperCase()
-	const user = await findUserByName(body.name);
+	request.name = request.name.toUpperCase()
+	const user = await findUserByName(request.name);
 
 	if (!user) {
 		return reply.status(404).send({
@@ -96,7 +94,7 @@ export async function loginHandler(request, reply) {
 	};
 
 	const isValidPassword = verifyPassword(
-		body.password,
+		request.password,
 		user.salt,
 		user.password);
 
