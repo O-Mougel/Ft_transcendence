@@ -13,9 +13,9 @@ export function registerSocketHandlers(io, manager, tournamentManager) {
       console.log(`SOCKET.JS: Starting new game with id: ${gameId}`);
 
       socket.data.gameId = gameId;
-      manager._joinGame(gameId, socket);
+      manager.joinGame(gameId, socket);
 
-      const info = manager._startGame(gameId, data);
+      const info = manager.startGame(gameId, data);
 
       // Return the gameId to the client
       socket.emit("game:started", { gameId, ...info });
@@ -37,11 +37,11 @@ export function registerSocketHandlers(io, manager, tournamentManager) {
     //   }
 
     //   socket.data.gameId = gameId;
-    //   manager._joinGame(gameId, socket);
+    //   manager.joinGame(gameId, socket);
 
     //   socket.emit("game:joined", { gameId });
     //   // Optionally push current state immediately
-    //   socket.emit("game:state", entry.game._getState());
+    //   socket.emit("game:state", entry.game.getState());
     // });
 
     socket.on("game:join", (data = {}) => {
@@ -58,17 +58,17 @@ export function registerSocketHandlers(io, manager, tournamentManager) {
     }
   
     socket.data.gameId = gameId;
-    manager._joinGame(gameId, socket);
+    manager.joinGame(gameId, socket);
   
     socket.emit("game:joined", { gameId });
-    socket.emit("game:state", entry.game._getCurrentGameState());
+    socket.emit("game:state", entry.game.getCurrentGameState());
   });
 
     socket.on("game:stop", () => {
       const gameId = socket.data.gameId;
       if (!gameId) return;
 
-      manager._stopGame(gameId);
+      manager.stopGame(gameId);
       socket.emit("game:stopped", { gameId });
     });
 
@@ -77,7 +77,7 @@ export function registerSocketHandlers(io, manager, tournamentManager) {
       const gameId = socket.data.gameId;
       if (!gameId || !data) return;
 
-      manager._updatePaddle(gameId, data.Paddle, data.Direction);
+      manager.updatePaddle(gameId, data.Paddle, data.Direction);
     });
 
     // TOURNAMENT
@@ -86,10 +86,10 @@ export function registerSocketHandlers(io, manager, tournamentManager) {
         const size = Number(data.size);
         const names = data.names;
 
-        const tournamentId = tournamentManager._createTournament(size, names);
+        const tournamentId = tournamentManager.createTournament(size, names);
         socket.data.tournamentId = tournamentId;
 
-        const tournament = tournamentManager._getTournament(tournamentId);
+        const tournament = tournamentManager.getTournament(tournamentId);
         socket.emit("tournament:state", { tournamentId, tournament });
       } catch (e) {
         socket.emit("tournament:error", { message: e.message || "create failed" });
@@ -98,7 +98,7 @@ export function registerSocketHandlers(io, manager, tournamentManager) {
 
     socket.on("tournament:getState", (data = {}) => {
       const tournamentId = data.tournamentId || socket.data.tournamentId;
-      const tournament = tournamentManager._getTournament(tournamentId);
+      const tournament = tournamentManager.getTournament(tournamentId);
       if (!tournament) {
         socket.emit("tournament:error", { message: "Tournament not found" });
         return;
@@ -110,19 +110,19 @@ export function registerSocketHandlers(io, manager, tournamentManager) {
       try {
         const tournamentId = data.tournamentId || socket.data.tournamentId;
       
-        if (socket.data.gameId) manager._leaveGame(socket.data.gameId, socket);
+        if (socket.data.gameId) manager.leaveGame(socket.data.gameId, socket);
       
-        const info = tournamentManager._nextMatch(tournamentId);
+        const info = tournamentManager.nextMatch(tournamentId);
       
         socket.data.gameId = info.gameId;
-        manager._joinGame(info.gameId, socket);
+        manager.joinGame(info.gameId, socket);
       
-          manager._startGame(info.gameId, info.startData); // auto-start the match game
+        manager.startGame(info.gameId, info.startData); // auto-start the match game
         
-          socket.emit("match:started", info);
+        socket.emit("match:started", info);
         
-          const tournament = tournamentManager._getTournament(tournamentId);
-          socket.emit("tournament:state", { tournamentId, tournament });
+        const tournament = tournamentManager.getTournament(tournamentId);
+        socket.emit("tournament:state", { tournamentId, tournament });
       } catch (e) {
         socket.emit("tournament:error", { message: e.message || "nextMatch failed" });
       }
@@ -130,7 +130,7 @@ export function registerSocketHandlers(io, manager, tournamentManager) {
 
     socket.on("disconnect", () => {
       const gameId = socket.data.gameId;
-      if (gameId) manager._leaveGame(gameId, socket);
+      if (gameId) manager.leaveGame(gameId, socket);
       console.log("User disconnected", socket.id);
     });
   });

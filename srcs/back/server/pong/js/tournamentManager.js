@@ -68,7 +68,7 @@ export class TournamentManager {
     this.gameToMatch = new Map();
   }
 
-  _createTournament(size, names) {
+  createTournament(size, names) {
     if (![4, 8, 16].includes(size)) throw new Error("Tournament size must be 4, 8, or 16");
     if (!Array.isArray(names) || names.length !== size) throw new Error(`Expected ${size} player names`);
 
@@ -95,11 +95,11 @@ export class TournamentManager {
     return tournamentId;
   }
 
-  _getTournament(tournamentId) {
+  getTournament(tournamentId) {
     return this.tournaments.get(tournamentId) || null;
   }
 
-  _nextMatch(tournamentId) {
+  nextMatch(tournamentId) {
     const tournament = this.tournaments.get(tournamentId);
     if (!tournament) throw new Error("Tournament not found");
     if (tournament.status !== "running") throw new Error("Tournament is finished");
@@ -129,12 +129,12 @@ export class TournamentManager {
         mode: 1,
         player1: match.player1,
         player2: match.player2,
-        _tournament: { tournamentId, r: roundIndex, m: matchIndex },
+        tournament: { tournamentId, r: roundIndex, m: matchIndex },
       },
     };
   }
 
-  _onGameOver({ gameId, state }) {
+  onGameOver({ gameId, state }) {
     const mapping = this.gameToMatch.get(gameId);
     if (!mapping) return null;
 
@@ -160,5 +160,22 @@ export class TournamentManager {
       return { type: "tournamentEnded", tournamentId, winner: tournament.winner };
     }
     return { type: "matchEnded", tournamentId, winner: winnerName };
+  }
+
+  deleteTournament(tournamentId) {
+    const tournament = this.tournaments.get(tournamentId);
+    if (!tournament) return false;
+
+    // Clean up any ongoing match mappings
+    for (const round of tournament.bracket) {
+      for (const match of round) {
+        if (match.gameId) {
+          this.gameToMatch.delete(match.gameId);
+        }
+      }
+    }
+
+    this.tournaments.delete(tournamentId);
+    return true;
   }
 }

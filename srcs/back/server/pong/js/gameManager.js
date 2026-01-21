@@ -11,12 +11,12 @@ export class GameManager {
     this.onGameOver = null;
   }
 
-  _setOnGameOver(callback) {
+  setOnGameOver(callback) {
     this.onGameOver = callback;
   }
 
   // Ensure a game entry exists for the given gameId
-  _ensureGameExist(gameId) {
+  ensureGameExist(gameId) {
     if (this.games.has(gameId)) return;
 
     this.games.set(gameId, {
@@ -28,14 +28,14 @@ export class GameManager {
     });
   }
 
-  _joinGame(gameId, socket) {
-    this._ensureGameExist(gameId);
+  joinGame(gameId, socket) {
+    this.ensureGameExist(gameId);
     const entry = this.games.get(gameId);
     entry.players.add(socket.id);
     socket.join(gameId);
   }
 
-  _leaveGame(gameId, socket) {
+  leaveGame(gameId, socket) {
     const entry = this.games.get(gameId);
     if (!entry) return;
 
@@ -44,19 +44,15 @@ export class GameManager {
 
     // If room is empty, stop loops + delete game
     if (entry.players.size === 0) {
-      this._stopLoops(gameId);
+      this.stopLoops(gameId);
       this.games.delete(gameId);
     }
   }
 
-  async _startGame(gameId, data) {
-    // console.log("All infos: ", data);
-    // console.log("Starting game with id:", gameId);
-    // console.log("Tournament data:", data._tournament);
-    this._ensureGameExist(gameId);
+  async startGame(gameId, data) {
+    this.ensureGameExist(gameId);
     const entry = this.games.get(gameId);
-    entry.game._reset();
-    // console.log("Game mode:", entry?.game);
+    entry.game.reset();
 
     try {
       const user1 = await findUserByName("TEST");
@@ -64,17 +60,17 @@ export class GameManager {
       const user2 = await findUserByName("TEST");
       entry.game.player2Id = user2.id;
 
-      entry.meta = data._tournament ? { ...data._tournament } : null;
+      entry.meta = data.tournament ? { ...data.tournament } : null;
 
       console.log("Starting game:", gameId, "with mode:", data.mode, "and meta:", entry.meta);
 
-      entry.game._start?.(data);
+      entry.game.start?.(data);
       if (typeof entry.game.mode === "number" && typeof data.mode === "number") {
         entry.game.mode = data.mode;
       }
 
-      this._startTickLoop(gameId);
-      this._startAiLoop(gameId);
+      this.startTickLoop(gameId);
+      this.startAiLoop(gameId);
 
       return { ok: true };
     }
@@ -84,34 +80,34 @@ export class GameManager {
     }
   }
 
-  _getState(gameId) {
+  getState(gameId) {
     const entry = this.games.get(gameId);
     if (!entry) return null;
-    return entry.game._getCurrentGameState();
+    return entry.game.getCurrentGameState();
   }
 
-  _stopGame(gameId) {
+  stopGame(gameId) {
     const entry = this.games.get(gameId);
     if (!entry) return;
 
-    entry.game._stop();
-    this._stopLoops(gameId);
+    entry.game.stop();
+    this.stopLoops(gameId);
   }
 
-  _updatePaddle(gameId, side, direction) {
+  updatePaddle(gameId, side, direction) {
     const entry = this.games.get(gameId);
     if (!entry) return;
-    entry.game._updatePaddleDirection(side, direction);
+    entry.game.updatePaddleDirection(side, direction);
   }
 
-  _startTickLoop(gameId) {
+  startTickLoop(gameId) {
     const entry = this.games.get(gameId);
     if (!entry || entry.tickId) return;
 
     entry.tickId = setInterval(() => {
       const { game } = entry;
-      const { gameOver } = game._updateGameState();
-      const state = game._getCurrentGameState();
+      const { gameOver } = game.updateGameState();
+      const state = game.getCurrentGameState();
       if (!state) return;
 
       this.io.to(gameId).emit("game:state", state);
@@ -143,13 +139,13 @@ export class GameManager {
           }
         }
 
-        this._stopLoops(gameId);
-        game._reset();
+        this.stopLoops(gameId);
+        game.reset();
       }
     }, TICK_RATE);
   }
 
-  _startAiLoop(gameId) {
+  startAiLoop(gameId) {
     const entry = this.games.get(gameId);
     if (!entry || entry.aiId) return;
 
@@ -161,11 +157,11 @@ export class GameManager {
       if (game.mode !== 0) return;
 
       const aiPlayer = game.AIPlayer;
-      if (aiPlayer) aiPlayer._updatePrediction();
+      if (aiPlayer) aiPlayer.updatePrediction();
     }, AI_REACTION_TIME);
   }
 
-  _stopLoops(gameId) {
+  stopLoops(gameId) {
     const entry = this.games.get(gameId);
     if (!entry) return;
 
@@ -183,7 +179,7 @@ export class GameManager {
 async function persistMatch(game) {
   if (!game) return;
 
-  const state = game._getCurrentGameState();
+  const state = game.getCurrentGameState();
 
   const matchInfos = {
     player1Id: game.player1Id,
@@ -192,7 +188,7 @@ async function persistMatch(game) {
     player2score: state.score.right,
     winnerId: state.score.left > state.score.right ? game.player1Id : game.player2Id,
     longestStreak: game.longestStreak,
-    duration: game._getDuration(),
+    duration: game.getDuration(),
   };
   createMatch(matchInfos).catch(console.error);
 }

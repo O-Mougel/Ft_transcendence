@@ -60,11 +60,11 @@ export default class extends ViewTemplate {
 					<div class="w-full h-full sm:w-[45%] flex flex-col items-center gap-y-4">
 						<h1 class="text-blue-300">Player 1</h1>
 						<h1 id="Player1Name"> </h1>
-						<img id="player1Pfp" src="" alt="userPfpImg" class="min-w-5 max-w-120 w-[20vw] aspect-square rounded-full object-cover shrink-0" />
+						<img id="player1Pfp" src="" alt="userPfpImg" class="min-w-5 max-w-120 w-[20vw] aspect-square rounded-full object-cover shrink-0 select-none" draggable="false" />
 					</div>
 					<div class="w-full h-full sm:w-[10%] flex flex-col items-center justify-center self-center">
 						<div class="w-full h-full flex flex-col items-center justify-items-stretch">
-							<img src="./img/assets/vs.png" alt="vsImg" class="pt-4 min-w-4 max-w-60 w-[30vw] sm:w-[10vw] aspect-square object-contain shrink-0" />
+							<img src="./img/assets/vs.png" alt="vsImg" class="pt-4 min-w-4 max-w-60 w-[30vw] sm:w-[10vw] aspect-square object-contain shrink-0 select-none" draggable="false" />
 						</div>
 					</div>
 					<form class="w-full h-full sm:w-[45%] flex flex-col items-center gap-y-4" id="profile2Login" >
@@ -84,12 +84,12 @@ export default class extends ViewTemplate {
 					<div class="w-full h-full sm:w-[45%] hidden flex-col items-center gap-y-4" id="profile2Overview">
 						<h1 class="text-red-300">Player 2</h1>
 						<h1 id="Player2Name">[Player2Name]</h1>
-						<img id="player2Pfp" src="./img/userPfp/default.png" alt="userPfpImg" class="min-w-5 max-w-120 w-[20vw] aspect-square rounded-full object-cover shrink-0" />
+						<img id="player2Pfp" src="./img/userPfp/default.png" alt="userPfpImg" class="min-w-5 max-w-120 w-[20vw] aspect-square rounded-full object-cover shrink-0 select-none" draggable="false" />
 					</div>
 					
 				</div>
 				<div id="goToGameButtonDiv" class="w-full h-full flex-col hidden items-center">
-					<a href="/pongRanked" class="px-6 w-[50%] py-3 sm:py-4 bg-[#98c6f8] font-bold rounded-lg hover:bg-[#7aaedc]">Go to game</a>
+					<a href="/pongRanked" class="px-6 w-[50%] py-3 sm:py-4 bg-[#98c6f8] font-bold rounded-lg hover:bg-[#7aaedc]" data-link>Go to game</a>
 				</div>
 			</div>`
 	}

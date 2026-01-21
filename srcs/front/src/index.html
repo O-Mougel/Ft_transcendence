@@ -16,15 +16,15 @@
 			<input class="sr-only peer" id="modListBoxSmall" type="checkbox"/>
 			<label for="modListBoxSmall" class="cursor-pointer select-none flex items-center justify-center bg-[url(/img/assets/navbar/mode.png)] hover:bg-[url(/img/assets/navbar/mode_hover.png)] bg-contain bg-no-repeat bg-center w-10 h-10"></label>
 			<ul class="select-none absolute peer-checked:block hidden self-start text-left h-full w-full z-30" id="modlist">
-				<li class="h-full w-auto text-base bg-gray-400 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pongAI" data-link>🦾</a></li>
-				<li class="h-full w-auto text-base bg-gray-500 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong" data-link>⚔️</a></li>
-				<li class="h-full w-auto text-base bg-gray-600 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong2" data-link>⚔️⚔️</a></li>
-				<li class="h-full w-auto text-base bg-gray-700 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/ranked" data-link>ranked</a></li>
+				<li class="h-full w-auto text-base bg-black hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pongAI" data-link>🦾</a></li>
+				<li class="h-full w-auto text-base bg-black hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong" data-link>⚔️</a></li>
+				<li class="h-full w-auto text-base bg-black hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong2" data-link>⚔️⚔️</a></li>
+				<li class="h-full w-auto text-base bg-black hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/ranked" data-link>🏆</a></li>
 			</ul>
 		</li>
         <li id="navBarCupIconId" class="hidden h-full w-auto px-2"><a class="flex items-center justify-center bg-[url(/img/assets/navbar/tournament.png)] hover:bg-[url(/img/assets/navbar/tournament_hover.png)] bg-contain bg-no-repeat bg-center w-10 h-10" href="/tournamentSize" data-link></a></li>
         <li id="navBarAboutIconId" class="hidden h-full w-auto px-2"><a class="flex items-center justify-center bg-[url(/img/assets/navbar/about.png)] hover:bg-[url(/img/assets/navbar/about_hover.png)] bg-contain bg-no-repeat bg-center w-10 h-10" href="/about" data-link></a></li>
-		<input id="profileButton" type="button" value="" class="flex items-center bg-[url(/img/assets/navbar/profile.png)] hover:bg-[url(/img/assets/navbar/profile_hover.png)] bg-contain bg-no-repeat bg-center ml-auto w-10 h-10 px-5 m-0 mr-5 disabled:opacity-10 disabled:cursor-not-allowed disabled:bg-[url(/img/assets/navbar/profile.png)] hover:cursor-pointer" />
+		<input id="profileButton" type="button" value="" class="flex items-center bg-[url(/img/assets/navbar/profile.png)] hover:bg-[url(/img/assets/navbar/profile_hover.png)] bg-contain bg-no-repeat bg-center ml-auto w-10 h-10 px-5 m-0 mr-5 disabled:opacity-10 disabled:cursor-not-allowed disabled:bg-[url(/img/assets/navbar/profile.png)] hover:cursor-pointer" onclick="grabProfileInfo(event)"/>
     </ul>
 
 	<!-- DEFAULT NAVBAR -->
@@ -34,10 +34,10 @@
 			<input class="sr-only peer" id="modListBox" type="checkbox"/>
 			<label for="modListBox" class="cursor-pointer select-none flex items-center justify-center px-5 h-full w-full hover:text-[#98c6f8] hover:bg-[#1c1b1b]">Modes</label>
 			<ul class="select-none absolute peer-checked:block hidden self-start text-left h-full w-full z-30" id="modlist">
-				<li class="h-full w-auto text-base bg-gray-400 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pongAI" data-link>VS AI 🦾</a></li>
-				<li class="h-full w-auto text-base bg-gray-500 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong" data-link>P⚔️P</a></li>
-				<li class="h-full w-auto text-base bg-gray-600 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong2" data-link>PP⚔️PP</a></li>
-				<li class="h-full w-auto text-base bg-gray-700 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/ranked" data-link>ranked</a></li>
+				<li class="h-full w-auto text-base bg-black rounded-t-lg border-r border-l border-white hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pongAI" data-link>VS AI 🦾</a></li>
+				<li class="h-full w-auto text-base bg-black border-r border-l border-white hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong" data-link>Casual 1⚔️1</a></li>
+				<li class="h-full w-auto text-base bg-black border-r border-l border-white hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong2" data-link>Casual 2⚔️2</a></li>
+				<li class="h-full w-auto text-base bg-black rounded-b-lg border-b border-r border-l border-white hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/ranked" data-link>Ranked 🏆</a></li>
 			</ul>
 		</li>
         <li id="navBarCupId" class="hidden h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/tournamentSize" data-link>Tournament</a></li>

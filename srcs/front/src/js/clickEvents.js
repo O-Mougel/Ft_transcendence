@@ -58,14 +58,12 @@ window.addEventListener("pagehide", () => {
 	const	checkKeyReload = sessionStorage.getItem('f5WasPressed') === 'true';
 	const	reloadTypeResult = isPageReload();
 
-	// sessionStorage.removeItem('f5WasPressed');
-
 	if(checkKeyReload || reloadTypeResult)
 	{
-		backToDefaultPage();
+		window.sessionStorage.setItem('pagehide', 'pageshouldreload');
 		return ;
 	}
-	// window.sessionStorage.setItem('pagehide', 'logout_fetch_sent');
+	window.sessionStorage.setItem('pagehide', 'logout_fetch_sent');
 	try 
 	{
 		fetch('/logout', {
