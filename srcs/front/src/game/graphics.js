@@ -6,13 +6,13 @@ export function draw() {
 
 	ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-	leftPaddle._draw(ctx);
-	rightPaddle._draw(ctx);
+	leftPaddle.draw(ctx);
+	rightPaddle.draw(ctx);
 	if (CONTEXT.gameMode === 2) {
-		leftPaddle2._draw(ctx);
-		rightPaddle2._draw(ctx);
+		leftPaddle2.draw(ctx);
+		rightPaddle2.draw(ctx);
 	}
-	ball._draw(ctx);
+	ball.draw(ctx);
 
 	drawCenterLine();
 }
@@ -43,7 +43,7 @@ export function resetState() {
 	if (!ctx || !canvas) return;
 
 	ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-	ball._reset();
+	ball.reset();
 	leftPaddle.y = (GAME_HEIGHT / 2 - leftPaddle.height / 2);
 	rightPaddle.y = (GAME_HEIGHT / 2 - rightPaddle.height / 2);
 	if (CONTEXT.gameMode === 2) {
