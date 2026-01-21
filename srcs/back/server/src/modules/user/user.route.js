@@ -20,8 +20,8 @@ async function userRoutes(fastify) {
 	fastify.post(
 		'/login', 
 		{
+			preHandler: [fastify.login],
 			schema: {
-				body: $ref("loginSchema"),
 				response: {
 					201: $ref("loginResponseSchema"),
 				}
