@@ -3,118 +3,119 @@
 import * as z from "zod";
 import { buildJsonSchemas } from 'fastify-zod';
 
-const createUserSchema = z.object({
+export const createUserSchema = z.object({
+
+	name: z.string("Name must be a string !").min(3, "Name must be at least 3 characters long").max(13, "Name cannot be longer than 13 characters").regex(/^[a-zA-Z0-9_]+$/, "Name can only contains letters, numbers and underscores"),
 	email: z.string({
-		required_error: "Email is required",
-		invalid_type_error: "Email is not valid"
-	}).email(),
-	name: z.string().min(3).max(13).regex(/^[a-zA-Z0-9_]+$/),
-	password: z.string().min(8).max(32).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/),
-	passwordconfirmation: z.string().min(8).max(32).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/)
+		required_error: "Email field cannot be left empty !",
+		invalid_type_error: "Email format is not valid !"
+	}).email().max(32, "Email cannot be longer than 32 characters"),
+	password: z.string().min(8, "Password must be at least 8 character long").max(32, "Password cannot be longer than 32 characters").regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain at least 1 uppercase, 1 lowercase, 1 number and a special character"),
+	passwordconfirmation: z.string().min(8, "Password must be at least 8 character long").max(32, "Password cannot be longer than 32 characters").regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain at least 1 uppercase, 1 lowercase, 1 number and a special character")
 });
 
-const profileChangesSchema = z.object({
-	name: z.string().min(3).max(13).regex(/^[a-zA-Z0-9_]+$/),
-	avatar: z.string().min(1), //quel pattern verifier ici en regex ??
+export const profileChangesSchema = z.object({
+	name: z.string("Name must be a string !").min(3, "Name must be at least 3 characters long").max(13, "Name cannot be longer than 13 characters").regex(/^[a-zA-Z0-9_]+$/, "Name can only contains letters, numbers and underscores"),
+	avatar: z.string("Path must be a string !").min(1, "Path must be at least 1 character long"),
 });
 
-const profileChangesResponseSchema = z.object({
-	id: z.number(),
+export const profileChangesResponseSchema = z.object({
+	id: z.number().min(1, "ID must have at least 1 number"),
 });
 
-const loginSchema = z.object({//remove
-	name: z.string().min(1).max(13).regex(/^[a-zA-Z0-9_]+$/), //only one here to allow older accounts but still block empty fields
-	password: z.string().min(1).max(32)
+export const loginSchema = z.object({
+	name: z.string("Name must be a string !").min(1, "Name cannot be empty").max(13, "Name cannot be longer than 13 characters").regex(/^[a-zA-Z0-9_]+$/, "Name can only contains letters, numbers and underscores"),
+	password: z.string().min(1, "Password cannot be empty").max(32, "Password cannot be longer than 32 characters").regex(/^[\x20-\x7E]+$/, "Password can only contain printable ASCII characters"),
 });
 
-const loginResponseSchema = z.object({
-	require2fa: z.boolean(),
-	token: z.string().min(1),
+export const loginResponseSchema = z.object({
+	require2fa: z.boolean("require2fa can only be a boolean !"),
+	token: z.string("Token must be a string").min(1, "Token cannot be empty !"),
 });
 
-const qrCodeReplySchema = z.object({
-	qrCode: z.string().min(1).url()
+export const qrCodeReplySchema = z.object({
+	qrCode: z.string("qrCode must be a base64 string.").min(1, "qrCode cannot be empty !").url()
 })
 
-const twofaSchema = z.object({
-	code: z.string().min(6).max(6).regex(/^[0-9]{6,6}$/),
+export const twofaSchema = z.object({
+	code: z.string("2FA code must be a string format !").min(6, "2FA code must contain 6 numbers.").max(6, "2FA code must contain 6 numbers.").regex(/^[0-9]{6,6}$/, "Only numbers can be used for the 2FA code."),
 })
 
-const twofastatusResponseSchema = z.object({
-  twofastatus: z.boolean()
+export const twofastatusResponseSchema = z.object({
+  twofastatus: z.boolean("2FA status can only be a boolean !")
 })
 
-const twofaResponseSchema = z.object({
-	success: z.boolean(),
-	message: z.string().min(1)
+export const twofaResponseSchema = z.object({
+	success: z.boolean("2FA status can only be a boolean !"),
+	message: z.string().min(1, "string cannot be empty.")
 })
 
-const accessTokenResponseSchema = z.object({
+export const accessTokenResponseSchema = z.object({
 	newAccessToken: z.string().min(1),
 });
 
-const infoGrabResponseSchema = z.object({
+export const infoGrabResponseSchema = z.object({
 	id: z.number(),
 	email: z.string().min(1),
 	name: z.string().min(1),
 	avatar: z.string().min(1),
 });
 
-const editPasswordSchema = z.object({
+export const editPasswordSchema = z.object({
 	oldpassword: z.string().min(1),
-	newpassword: z.string().min(8).max(32).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain uppercase, lowercase, number and special character"),
-	newpasswordconfirmation: z.string().min(8).max(32).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain uppercase, lowercase, number and special character"),
+	newpassword: z.string().min(8, "Password must be at least 8 character long").max(32, "Password cannot be longer than 32 characters").regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain at least 1 uppercase, 1 lowercase, 1 number and a special character"),
+	newpasswordconfirmation: z.string().min(8, "Password must be at least 8 character long").max(32, "Password cannot be longer than 32 characters").regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain at least 1 uppercase, 1 lowercase, 1 number and a special character"),
 })
 
-const friendRequestSchema = z.object({
-	friendRequestName: z.string().min(3).max(13).regex(/^[a-zA-Z0-9_]+$/),
+export const friendRequestSchema = z.object({
+	friendRequestName: z.string().min(3, "Friend name must be at least 3 characters long.").max(13, "Friend name cannot be longer than 13 characters.").regex(/^[a-zA-Z0-9_]+$/, "Friend name can only contains letters, numbers and underscores"),
 })
 
-const friendAcceptSchema = z.object({
-	friendAcceptId: z.number()
+export const friendAcceptSchema = z.object({
+	friendAcceptId: z.number().min(1, "Friend ID cannot be empty !")
 })
 
-const friendAcceptResponseSchema = z.object({
+export const friendAcceptResponseSchema = z.object({
 	friendname: z.string(),
 	message: z.string()
 })
 
-const friendDeleteResponseSchema = z.object({
+export const friendDeleteResponseSchema = z.object({
 	removedName: z.string(),
 	message: z.string()
 })
 
-const friendRejectSchema = z.object({
-	friendRejectId: z.number()
+export const friendRejectSchema = z.object({
+	friendRejectId: z.number().min(1, "Cannot reject request with an empty ID !")
 })
 
-const friendDeleteSchema = z.object({
-	friendDeleteId: z.number()
+export const friendDeleteSchema = z.object({
+	friendDeleteId: z.number().min(1, "Cannot delete friend with an empty ID !")
 })
 
-const friendItemSchema = z.object({
+export const friendItemSchema = z.object({
 	id: z.number(),
 	name: z.string().min(1),
 	avatar: z.string().min(1),
 	online: z.boolean(),
 });
 
-const friendsArrayResponseSchema = z.object({
+export const friendsArrayResponseSchema = z.object({
 	friends: z.array(friendItemSchema)
 });
 
-const friendRequestItemSchema = z.object({
+export const friendRequestItemSchema = z.object({
 	id: z.number(),
 	name: z.string().min(1),
 	avatar: z.string().min(1),
 	online: z.boolean(),
 });
 
-const friendRequestResponseSchema = z.object({
+export const friendRequestResponseSchema = z.object({
 	requestOf: z.array(friendRequestItemSchema)
 });
 
-const fileUploadResponseSchema = z.object({
+export const fileUploadResponseSchema = z.object({
   path: z.string().min(1).max(255).regex(/^[a-zA-Z0-9._-]+$/)
 });
 
