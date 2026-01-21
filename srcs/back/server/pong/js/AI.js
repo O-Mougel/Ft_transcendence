@@ -16,7 +16,7 @@ export class AIPlayer {
 	this.lastApproaching = false;
   }
 
-  _updatePrediction() {
+  updatePrediction() {
 	const ball = this.game.ball;
 
 	const approaching = ball.vx > 0;
