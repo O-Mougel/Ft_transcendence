@@ -57,9 +57,6 @@ export default class extends ViewTemplate {
 							</div>
 						</div>
 					</div>
-					<div id="backToTournament" class="hidden mt-8">
-						<button class="px-6 py-3 bg-transparent border border-[#98c6f8] text-white font-bold rounded-lg hover:bg-white/10" onclick="backToTournamentPage()">← Back to tournament</button>
-					</div>
 					<!-- Tournament creation form -->
 					<div id="tournamentBuiltBlock" class="hidden w-[80%] mx-auto">
 						<form id="tournamentForm" class="mt-[5vw]">
@@ -67,15 +64,6 @@ export default class extends ViewTemplate {
 					</div>
 				</div>
 			</div>`
-	}
-
-	async init() {
-		console.log("Initializing Tournament Size view...");
-		if (sessionStorage.getItem("currentTournamentId")) {
-			console.log("Tournament detected in session storage. Updating nav bar...");
-			if (document.getElementById('backToTournament'))
-				document.getElementById('backToTournament').classList.remove('hidden');
-		}
 	}
 
 }

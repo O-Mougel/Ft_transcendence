@@ -161,4 +161,21 @@ export class TournamentManager {
     }
     return { type: "matchEnded", tournamentId, winner: winnerName };
   }
+
+  _deleteTournament(tournamentId) {
+    const tournament = this.tournaments.get(tournamentId);
+    if (!tournament) return false;
+
+    // Clean up any ongoing match mappings
+    for (const round of tournament.bracket) {
+      for (const match of round) {
+        if (match.gameId) {
+          this.gameToMatch.delete(match.gameId);
+        }
+      }
+    }
+
+    this.tournaments.delete(tournamentId);
+    return true;
+  }
 }
