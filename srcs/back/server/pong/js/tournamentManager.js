@@ -58,7 +58,7 @@ function chooseWinner(match, score) {
   if (!score || typeof score.left !== "number" || typeof score.right !== "number") return match.player1; // fallback on invalid score
  
   if (score.left === score.right) return match.player1; // fallback on draw
-  return (score.left > score.right) ? match.player1 : match.player2;
+  return (score.left >= score.right) ? match.player1 : match.player2;
 }
 
 export class TournamentManager {
@@ -132,6 +132,37 @@ export class TournamentManager {
         tournament: { tournamentId, r: roundIndex, m: matchIndex },
       },
     };
+
+  }
+  
+  // matchAborted(match, state) {
+  //   match.status = "aborted";
+  //   match.winner = chooseWinner(match, state.score);
+  // }
+  onGameStopped(gameId) {
+    const mapping = this.gameToMatch.get(gameId);
+    if (!mapping) return;
+
+    const { tournamentId, r, m } = mapping;
+    const tournament = this.tournaments.get(tournamentId);
+    if (!tournament) return;
+
+    const match = tournament.bracket[r][m];
+    if (!match) return;
+
+    match.status = "aborted";
+    match.winner = chooseWinner(match, { score: { left: 0, right: 0 } });
+
+    advanceWinner(tournament, r, m, match.winner);
+
+    // clear current and mapping
+    tournament.current = null;
+    this.gameToMatch.delete(gameId);
+
+    if (tournament.status === "finished") {
+      return { type: "tournamentEnded", tournamentId, winner: tournament.winner };
+    }
+    return { type: "matchEnded", tournamentId, winner: match.winner };
   }
 
   onGameOver({ gameId, state }) {

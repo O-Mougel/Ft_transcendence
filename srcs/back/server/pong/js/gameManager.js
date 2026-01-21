@@ -11,8 +11,8 @@ export class GameManager {
     this.onGameOver = null;
   }
 
-  setOnGameOver(callback) {
-    this.onGameOver = callback;
+  setOnGameOver(gameState) {
+    this.onGameOver = gameState;
   }
 
   // Ensure a game entry exists for the given gameId
