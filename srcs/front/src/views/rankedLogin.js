@@ -53,9 +53,8 @@ export default class extends ViewTemplate {
 				</div>
 			</div>
 
-			<div class="pt-[3%]">
-			</div>
-			<div class="pt-[3%] pb-4 mx-[3%] gap-y-4 flex flex-col rounded-xl outline-none border border-blue-300 bg-[url(/img/assets/stars.gif)] bg-cover bg-center shadow-[0_0_20px_rgba(158,202,237,0.9)]">
+			
+			<div class="pt-[3%] mt-[3%] pb-4 mx-[3%] gap-y-4 flex flex-col rounded-xl outline-none border border-blue-300 bg-[url(/img/assets/stars.gif)] bg-cover bg-center shadow-[0_0_20px_rgba(158,202,237,0.9)]">
 				<div class="flex flex-col sm:flex-row items-start px-4">
 					<div class="w-full h-full sm:w-[45%] flex flex-col items-center gap-y-4">
 						<h1 class="text-blue-300">Player 1</h1>
