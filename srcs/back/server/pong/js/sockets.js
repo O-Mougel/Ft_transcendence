@@ -99,7 +99,7 @@ export function registerSocketHandlers(io, manager, tournamentManager) {
           socket.data.gameId = null;
         }
         if (socket.data.tournamentId) {
-          tournamentManager.leaveTournament(socket.data.tournamentId, socket);
+          tournamentManager.deleteTournament(socket.data.tournamentId, socket);
           socket.data.tournamentId = null;
         } 
 
@@ -144,6 +144,15 @@ export function registerSocketHandlers(io, manager, tournamentManager) {
       }
     });
 
+    socket.on("tournament:leave", (data = {}) => {
+      const tournamentId = data.tournamentId || socket.data.tournamentId;
+      if (tournamentId) {
+        tournamentManager.deleteTournament(tournamentId, socket);
+        socket.data.tournamentId = null;
+        console.log("Tournament deleted: ", tournamentId);
+      }
+    });
+
     socket.on("disconnect", () => {
       const gameId = socket.data.gameId;
       if (gameId) {
@@ -152,7 +161,7 @@ export function registerSocketHandlers(io, manager, tournamentManager) {
       }
       const tournamentId = socket.data.tournamentId;
       if (tournamentId) {
-        tournamentManager.leaveTournament(tournamentId, socket);
+        tournamentManager.deleteTournament(tournamentId, socket);
         socket.data.tournamentId = null;
       }
       console.log("User disconnected", socket.id);

@@ -19,10 +19,10 @@ export function initPong(mode = {}) {
 
 	CONTEXT.canvas = document.getElementById("canvas");
 	CONTEXT.startButton = document.getElementById("startButton");
-	CONTEXT.quitButton = document.getElementById("backToTournament");
+	CONTEXT.backButton = document.getElementById("backToTournament");
 	CONTEXT.score = document.getElementById("Scores");
 
-	if (!CONTEXT.canvas || !CONTEXT.startButton || !CONTEXT.score || !CONTEXT.quitButton) {
+	if (!CONTEXT.canvas || !CONTEXT.startButton || !CONTEXT.score || !CONTEXT.backButton) {
 		console.error("Pong: canvas or startButton not found in DOM.");
 		return;
 	}
@@ -92,16 +92,20 @@ export function initPong(mode = {}) {
 		CONTEXT.startButton.onclick = () => {
 			startButton.style.display = "none";
 			emitNextMatch(CONTEXT.tournamentId);
+			CONTEXT.backButton.classList.add("hidden");
 		};
 	} else {
 		CONTEXT.startButton.style.display = "block";
 		CONTEXT.startButton.onclick = startGame;
 	}
 
-	if (CONTEXT.tournamentId) {
-		CONTEXT.quitButton.classList.remove("hidden");
-		CONTEXT.quitButton.onclick = () => {
-			window.history.pushState({}, "", `/tournament`);
+	const url = window.location.href;
+	console.log("Current URL:", url);
+
+	if (CONTEXT.tournamentId && url.includes("/pongTournament")) {
+		CONTEXT.backButton.classList.remove("hidden");
+		CONTEXT.backButton.onclick = () => {
+			window.history.pushState({}, "", `/tournamentSize`);
 			window.dispatchEvent(new PopStateEvent("popstate"));
 		};
 	}
