@@ -22,8 +22,7 @@ model User {
   auth2fa          Boolean  @default(false)
   twofasecret      String?
   online           Boolean  @default(false)
-  ai               Boolean  @default(false)
-  invited          Boolean  @default(false) 
+  aiInvited        Boolean  @default(false)
   matchesAsPlayer1 Match[]  @relation("Player1Matches")
   matchesAsPlayer2 Match[]  @relation("Player2Matches")
   createdAt        DateTime @default(now())
@@ -32,14 +31,20 @@ model User {
 model Match {
   id            Int      @id @default(autoincrement())
   player1Id     Int
-  player2Id     Int
+  player2Id     Int      @default(0) //AI/Invited player as default
   player1       User     @relation("Player1Matches", fields: [player1Id], references: [id])
   player2       User     @relation("Player2Matches", fields: [player2Id], references: [id])
-  player1score  Int
-  player2score  Int
+  player1Score  Int
+  player2Score  Int
   winnerId	    Int
   longestStreak Int
   duration		Int
+  finish        Boolean	 //false = aborted/true = finnished
+  type          String   //'tournament', 'ranked', '1v1', '2v2', 'AI'
+  player2name   String?  @default("") //'AI' or login of the invited player
+  round         String?  @default("") //for the tournament 'Final' 'Semifinal' 'Quaterfinal' 'Octofinals' '16th-finals'
+  player3name   String?  @default("") //for 2v2 login of the invited player
+  player4name   String?  @default("") //for 2v2 login of the invited player
   createdAt     DateTime @default(now())
 }
 

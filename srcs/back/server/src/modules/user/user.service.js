@@ -4,7 +4,7 @@ import { db } from "../../utils/prisma.js";
 import { hashPassword } from "../../utils/hash.js";
 import { generateRefreshToken } from "../../utils/token.js";
 
-export async function alterUser(id, newName, newPath) { // add a check to see if new username exists already
+export async function alterUser(id, newName, newPath) {
 
 	const user = await db.user.update({
 		where: {
@@ -308,4 +308,19 @@ export async function deleteRefreshToken(token) {
 			token: token
 		}
 	})
+}
+
+export async function createAIinvited(){
+	if (!await db.user.findUnique({where: { id: 0 }})) {
+		await db.user.create({
+			data: {
+				id: 0,
+				email: "",
+				name: "AI/Invited",
+				password: "",
+				salt: "",
+				aiInvited: true
+			}
+		})
+	}
 }
