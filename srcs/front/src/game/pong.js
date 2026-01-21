@@ -50,24 +50,39 @@ export function initPong(mode = {}) {
 	const canvas = CONTEXT.canvas;
 	const ctx = CONTEXT.ctx = canvas.getContext("2d");
 
-	const scale = window.devicePixelRatio || 1;
+const scale = window.devicePixelRatio || 1;
 	CONTEXT.scale = scale;
 
-	const logicalWidth  = CONTEXT.GAME_WIDTH;
-	const logicalHeight = CONTEXT.GAME_HEIGHT;
+	// Resize canvas drawing buffer to match displayed CSS size (and DPR)
+	const resizeCanvasToElement = () => {
+		const rect = canvas.getBoundingClientRect();
+		const cssW = Math.max(1, Math.floor(rect.width));
+		const cssH = Math.max(1, Math.floor(rect.height));
 
-	// CSS display size
-	canvas.style.width  = logicalWidth + "px";
-	canvas.style.height = logicalHeight + "px";
+		// keep logical drawing coordinates in CSS pixels so game math uses those values
+		CONTEXT.GAME_WIDTH = cssW;
+		CONTEXT.GAME_HEIGHT = cssH;
 
-	// Store size (logical * device pixels ratio)
-	canvas.width  = Math.floor(logicalWidth  * scale);
-	canvas.height = Math.floor(logicalHeight * scale);
+		// set backing buffer in device pixels
+		const backingW = Math.floor(cssW * scale);
+		const backingH = Math.floor(cssH * scale);
+		if (canvas.width !== backingW || canvas.height !== backingH) {
+			canvas.width = backingW;
+			canvas.height = backingH;
+		}
 
-	// Reset + apply scale
-	ctx.setTransform(1, 0, 0, 1, 0, 0);
-	ctx.scale(scale, scale);
+		// ensure CSS width/height match the element rect (some frameworks may change these)
+		canvas.style.width = cssW + "px";
+		canvas.style.height = cssH + "px";
 
+		// reset transform and apply DPR scaling so drawing uses CSS pixel coordinates
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
+		ctx.scale(scale, scale);
+	};
+
+	// initial size and keep responsive on resize
+	resizeCanvasToElement();
+	window.addEventListener("resize", resizeCanvasToElement);
 	// Prevent scrolling
 	document.body.style.overflow = "hidden";
 	document.documentElement.style.overflow = "hidden";
