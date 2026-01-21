@@ -1,8 +1,7 @@
-import { waitStartGame, isSocketConnected, setupSocket, updateGameState, emitStopGame, joinExistingGame, emitNextMatch } from "./socket.js";
+import { waitStartGame, isSocketConnected, setupSocket, emitStopGame, joinExistingGame, emitNextMatch } from "./socket.js";
 import { CONTEXT, createGameElements } from "./context.js";
 import { draw, drawScore, resetState } from "./graphics.js";
 import { bindControls } from "./controls.js";
-import tournament from "../views/tournament.js";
 
 export function initPong(mode = {}) {
 	if (mode.mode === 3 && !sessionStorage.getItem("player2_token")) {
@@ -20,33 +19,33 @@ export function initPong(mode = {}) {
 
 	CONTEXT.canvas = document.getElementById("canvas");
 	CONTEXT.startButton = document.getElementById("startButton");
-	CONTEXT.backButton = document.getElementById("backToTournament");
+	CONTEXT.quitButton = document.getElementById("backToTournament");
 	CONTEXT.score = document.getElementById("Scores");
 
-	if (!CONTEXT.canvas || !CONTEXT.startButton || !CONTEXT.score || !CONTEXT.backButton) {
+	if (!CONTEXT.canvas || !CONTEXT.startButton || !CONTEXT.score || !CONTEXT.quitButton) {
 		console.error("Pong: canvas or startButton not found in DOM.");
 		return;
 	}
 
-	// // In SPA, stop the game when navigating away
-	// window.addEventListener("popstate", () => {
-	// 	console.log("Popstate event detected.");
-	// 	if (isSocketConnected()) {
-	// 		console.log("Navigating away, stopping game.");
-	// 		emitStopGame();
-	// 	}
-	// });
+	// In SPA, stop the game when navigating away
+	window.addEventListener("popstate", () => {
+		console.log("Popstate event detected.");
+		if (isSocketConnected()) {
+			console.log("Navigating away, stopping game.");
+			emitStopGame();
+		}
+	});
 
-	// // Stop game if user leaves the page (enters new URL, closes tab, refreshes, etc.)
-	// window.addEventListener("beforeunload", () => {
-	// 	if (isSocketConnected()) {
-	// 		console.log("Window unloading, stopping game.");
-	// 		emitStopGame(); // send final state
-	// 		if (sessionStorage.getItem("currentTournamentId")) {
-	// 			sessionStorage.removeItem("currentTournamentId");
-	// 		}
-	// 	}
-	// });
+	// Stop game if user leaves the page (enters new URL, closes tab, refreshes, etc.)
+	window.addEventListener("beforeunload", () => {
+		if (isSocketConnected()) {
+			console.log("Window unloading, stopping game.");
+			emitStopGame(); // send final state
+			if (sessionStorage.getItem("currentTournamentId")) {
+				sessionStorage.removeItem("currentTournamentId");
+			}
+		}
+	});
 
 	const canvas = CONTEXT.canvas;
 	const ctx = CONTEXT.ctx = canvas.getContext("2d");
@@ -83,7 +82,6 @@ export function initPong(mode = {}) {
 	if (CONTEXT.tournamentId/* && CONTEXT.gameId*/) {
 		CONTEXT.startButton.style.display = "none";
 		joinExistingGame(CONTEXT.gameId);
-		scheduleClientUpdates();
 		resetState();
 
 		if (CONTEXT.startButton) CONTEXT.startButton.style.display = "none";
@@ -101,13 +99,13 @@ export function initPong(mode = {}) {
 	}
 
 	if (CONTEXT.tournamentId) {
-		CONTEXT.backButton.classList.remove("hidden");
-		CONTEXT.backButton.onclick = () => {
+		CONTEXT.quitButton.classList.remove("hidden");
+		CONTEXT.quitButton.onclick = () => {
 			window.history.pushState({}, "", `/tournament`);
 			window.dispatchEvent(new PopStateEvent("popstate"));
 		};
 	}
-
+	
 	draw();
 }
 
@@ -151,7 +149,6 @@ function startGame() {
 	console.log("Game Started");
 
 	waitStartGame();
-	scheduleClientUpdates();
 	resetState();
 
 	if (CONTEXT.startButton) CONTEXT.startButton.style.display = "none";
@@ -164,10 +161,4 @@ function gameInit() {
 	const { ctx, GAME_WIDTH, GAME_HEIGHT } = CONTEXT;
 	ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 	draw();
-}
-
-function scheduleClientUpdates() {
-	if (CONTEXT.updateIntervalId) return;
-	CONTEXT.updateIntervalId = setInterval(updateGameState, 1000 / 60); // 60 FPS
-	console.log("Client updates scheduled.");
 }

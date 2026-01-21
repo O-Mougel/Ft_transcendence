@@ -16,7 +16,7 @@ import { AIPlayer } from './AI.js';
 
 export class Game {
   constructor() {
-    this.mode = 0; // 0 = vs AI, 1 = 2 paddles, 2 = 4 paddles
+    this.mode = 0; // 0 = vs AI, 1 = 2 paddles, 2 = 4 paddles, 3 = ranked
     this.isGameStarted = false;
 
     this.leftScore = 0;
@@ -359,7 +359,7 @@ export class Game {
       }
       this.AIPlayer = new AIPlayer(this.rightPaddle, this.leftPaddle, this);
       console.log('Player name:', this.leftPaddle.name, this.rightPaddle.name);
-    } else if (this.mode === 1) {
+    } else if (this.mode === 1 || this.mode === 3) {
       if (data) {
         this.leftPaddle.name = data.player1;
         this.rightPaddle.name = data.player2;
