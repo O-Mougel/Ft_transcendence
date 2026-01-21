@@ -27,11 +27,23 @@ export function initPong(mode = {}) {
 		return;
 	}
 
-	// // Stop game if user leaves the page
+	// // In SPA, stop the game when navigating away
+	// window.addEventListener("popstate", () => {
+	// 	console.log("Popstate event detected.");
+	// 	if (isSocketConnected()) {
+	// 		console.log("Navigating away, stopping game.");
+	// 		emitStopGame();
+	// 	}
+	// });
+
+	// // Stop game if user leaves the page (enters new URL, closes tab, refreshes, etc.)
 	// window.addEventListener("beforeunload", () => {
 	// 	if (isSocketConnected()) {
 	// 		console.log("Window unloading, stopping game.");
 	// 		emitStopGame(); // send final state
+	// 		if (sessionStorage.getItem("currentTournamentId")) {
+	// 			sessionStorage.removeItem("currentTournamentId");
+	// 		}
 	// 	}
 	// });
 
@@ -67,7 +79,7 @@ export function initPong(mode = {}) {
 	setupSocket();
 	bindControls();
 	
-	if (CONTEXT.tournamentId && CONTEXT.gameId) {
+	if (CONTEXT.tournamentId/* && CONTEXT.gameId*/) {
 		CONTEXT.startButton.style.display = "none";
 		joinExistingGame(CONTEXT.gameId);
 		scheduleClientUpdates();
