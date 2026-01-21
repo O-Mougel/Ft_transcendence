@@ -91,7 +91,7 @@ export async function loginHandler(request, reply) {
 
 	if (!user) {
 		return reply.status(404).send({
-			message: "Invalid name. Try again!",
+			message: "User does not exist ! Try again!",
 			errRef:"loginInvalidName"
 		});
 	};
