@@ -1,6 +1,6 @@
 // match.controller.js
 
-import { showstats } from "./match.service.js";
+import { showstats, getMatchs } from "./match.service.js";
 import { findUserById, alreadyfriend } from "../user/user.service.js";
 
 export async function getMatchsHandler(request, reply) {
@@ -30,4 +30,8 @@ export async function getFriendMatchsHandler(request, reply) {
 	const stats = await showstats(userId);
 
 	return stats;
+}
+
+export async function getMatchHistoryHandler(request, reply){
+	return await getMatchs(request.user.id)
 }

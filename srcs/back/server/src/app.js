@@ -7,6 +7,7 @@ import userRoutes from "./modules/user/user.route.js";
 import matchRoutes from "./modules/match/match.route.js";
 import { userSchemas } from './modules/user/user.schema.js';
 import { matchSchemas } from './modules/match/match.schema.js'
+import { createAIinvited } from "./modules/user/user.service.js";
 
 const fastify = Fastify({logger: true});
 
@@ -150,7 +151,6 @@ await fastify.register(import('@fastify/multipart'), { //import for file upload
   limits: { fileSize: 5 * 1024 * 1024 } // about 5MB
 });
 
-//if not exist create ia and invited player in database 
 
 async function main() {
     for (const schema of [...userSchemas, ...matchSchemas]) {
@@ -159,6 +159,7 @@ async function main() {
 
     fastify.register(userRoutes)
     fastify.register(matchRoutes)
+	await createAIinvited();
 
     try {
         await fastify.listen({ port: 3000, host: "0.0.0.0" });

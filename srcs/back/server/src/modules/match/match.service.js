@@ -3,12 +3,10 @@
 import { db } from "../../utils/prisma.js";
 import { findUserByName } from "../user/user.service.js"
 
-export async function createMatch(input)
+export async function createMatch(input) //player1Id, player2Id(only in ranked), player1Score, player2Score, winnerId (-1 if aborted), longestStreak, duration, finish, type, other value if they are existent 
 {
-    const { player1Id, player2Id , ...rest } = input;
-
 	const match = await db.match.create({
-        data: {...rest, player1Id, player2Id}
+        data: input
     });
 
     return match;
@@ -21,11 +19,13 @@ export async function showstats(id) {
 				{ player1Id: id },
 				{ player2Id: id },
 			],
+			finish: true,
 		},
 	})
 	const win = await db.match.count({
 		where: {
-			winnerId: id
+			winnerId: id,
+			finish: true,
 		},
 	})
 	const calc = win / matchsnb * 100;
@@ -37,10 +37,11 @@ export async function showstats(id) {
 				{ player1Id: id },
 				{ player2Id: id },
 			],
+			finish: true,
 		},
 		_max: {
 			longestStreak: true,
-			duration: true
+			duration: true,
 		}
 	});
 
@@ -48,4 +49,19 @@ export async function showstats(id) {
 	const longestMatch = result._max.duration ?? 0;
 
 	return { matchsnb, winrate, biggest_streak, longestMatch } 
+}
+
+export async function getMatchs(id) {
+	const matchs = await db.match.findMany({
+		where: {
+			OR: [
+				{ player1Id: id },
+				{ player2Id: id },
+			],
+		},
+		orderBy: {
+			createdAt: 'desc',
+		},
+	})
+	return matchs
 }
