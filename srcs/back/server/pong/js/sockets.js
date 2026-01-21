@@ -117,12 +117,12 @@ export function registerSocketHandlers(io, manager, tournamentManager) {
         socket.data.gameId = info.gameId;
         manager._joinGame(info.gameId, socket);
       
-          manager._startGame(info.gameId, info.startData); // auto-start the match game
+        manager._startGame(info.gameId, info.startData); // auto-start the match game
         
-          socket.emit("match:started", info);
+        socket.emit("match:started", info);
         
-          const tournament = tournamentManager._getTournament(tournamentId);
-          socket.emit("tournament:state", { tournamentId, tournament });
+        const tournament = tournamentManager._getTournament(tournamentId);
+        socket.emit("tournament:state", { tournamentId, tournament });
       } catch (e) {
         socket.emit("tournament:error", { message: e.message || "nextMatch failed" });
       }
