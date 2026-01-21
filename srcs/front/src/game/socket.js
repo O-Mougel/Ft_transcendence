@@ -8,7 +8,14 @@ let socket = null;
 export function setupSocket() {
   if (socket) return socket;
 
-  socket = io({ path: "/pong/socket.io" });
+  socket = io({
+    path: "/pong/socket.io",
+    // transports: ["websocket"],
+    // // auth : sessionStorage.getItem("access_token") ?? '',
+    // extraHeaders: {
+    //   Authorization: `Bearer ${sessionStorage.getItem("access_token")}`
+    // }
+  });
 
   socket.on("connect", () => { console.log("Connected to WebSocket server"); });
 
@@ -107,6 +114,18 @@ export function emitStopGame() {
   socket.emit("game:stop");
 }
 
+export function emitNextMatch(tournamentId) {
+  if (!isSocketConnected()) {
+    console.log("Cannot start next match: Not connected to server");
+    return;
+  }
+  if (!tournamentId) {
+    console.log("Cannot start next match: No tournament ID provided");
+    return;
+  }
+  socket.emit("tournament:nextMatch", { tournamentId });
+}
+
 export function updateGameState() {
   const { isGameStarted, leftPaddle, rightPaddle, leftPaddle2, rightPaddle2 } = CONTEXT;
   if (!isGameStarted || !socket) return;
@@ -126,7 +145,7 @@ export function handleEscapeKey() {
 	  return;
   }
   if (!CONTEXT.isGameStarted || CONTEXT.tournamentId) return;
-  socket.emit("game:stop");
+    socket.emit("game:stop");
 }
 
 export function getSocket() {

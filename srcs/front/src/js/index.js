@@ -616,6 +616,7 @@ const router = async () => {
 		{ path: "/pong", view: pong },
 		{ path: "/pong2", view: pong },
 		{ path: "/pongRanked", view: pong },
+		{ path: "/pongTournament", view: pong },
 		{ path: "/logUser", view: logUser },
 		{ path: "/tournament", view: tournament },
 		{ path: "/2faLogin", view: Login2fa },
@@ -644,21 +645,13 @@ const router = async () => {
 		};
 	}
 
-	if (match.mapElement.path === "/pong" || match.mapElement.path === "/pong2" || match.mapElement.path === "/pongAI" || match.mapElement.path === "/pongRanked")
-	{
-		//clear previous game context
-		CONTEXT.gameMode = null;
-		CONTEXT.socket = null;
-		CONTEXT.ctx = null;
+	if (CONTEXT.isGameStarted || CONTEXT.gameId) {
+		CONTEXT.isGameStarted = false;
 		CONTEXT.gameId = null;
-		CONTEXT.animationFrameId = null;
-		CONTEXT.lastTime = null;
-		CONTEXT.deltaTime = null;
-		CONTEXT.isGameOver = false;
-		CONTEXT.winner = null;
-		if (match.mapElement.path !== "/pong")
-			emitStopGame(); // stop previous game if any
+		emitStopGame(); // stop previous game if any
 	}
+
+	if (match && match.mapElement.path === "/tournamentSize" && CONTEXT.tournamentId) match.mapElement.path = "/tournament";
 
 	const view = new match.mapElement.view();
 	

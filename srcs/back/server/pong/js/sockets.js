@@ -5,7 +5,7 @@ function generateGameId() {
 
 export function registerSocketHandlers(io, manager, tournamentManager) {
   io.on("connection", (socket) => {
-    // console.log("User connected, socket id: ", socket.id);
+    console.log("User connected, socket id: ", socket.id);
 
     // SIMPLE MATCH
     socket.on("game:start", (data = {}) => {
@@ -70,6 +70,8 @@ export function registerSocketHandlers(io, manager, tournamentManager) {
 
       manager.stopGame(gameId);
       socket.emit("game:stopped", { gameId });
+      // if in tournament, notify tournament manager
+      tournamentManager.onGameStopped(gameId);
     });
 
     // Client sends: { Paddle: "...", Direction: "..." }
