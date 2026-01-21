@@ -1,4 +1,5 @@
 import { CONTEXT } from "./context.js";
+import { resetControls } from "./controls.js";
 
 export function draw() {
 	const { ctx, canvas, GAME_WIDTH, GAME_HEIGHT, leftPaddle, rightPaddle, leftPaddle2, rightPaddle2, ball } = CONTEXT;
@@ -54,6 +55,7 @@ export function resetState() {
 	rightPaddle.score = 0;
 	CONTEXT.isGameStarted = false;
 	drawScore();
+	resetControls();
 
 	if (score)
 		score.style.display = "none";
