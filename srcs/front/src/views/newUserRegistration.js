@@ -18,7 +18,7 @@ export default class extends ViewTemplate {
 						</div>
 						<h2 class="flex items-start">► Enter your email:</h2>
 						<div class="flex items-start pt-5 ">
-							<input id="newUserEmail" tabindex="2" class="w-[60vw] ml-4 hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] h-[3vh] rounded-sm border border-[#c2dbf6] py-[2vw] pr-5 pl-5 mb-[35px]" name="newUserEmailField" value="" type="text" autocomplete="off" placeholder="Email" >
+							<input id="newUserEmail" tabindex="2" class="w-[60vw] ml-4 hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] h-[3vh] rounded-sm border border-[#c2dbf6] py-[2vw] pr-5 pl-5 mb-[35px]" name="newUserEmailField" value="" type="text" autocomplete="off" maxlength="32" placeholder="exemple@domain.fr" >
 						</div>
 						<h2 class="flex items-start">► Add a password :</h2>
 						<div class="flex items-start pt-5">

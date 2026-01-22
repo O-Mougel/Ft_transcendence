@@ -28,8 +28,12 @@ export const displayCorrectErrMsg = async (error, data) => {
 	if (index < 0)
 	{
 		//Not from a custom response, zod schema err instead
-		const errindex = error.toString().indexOf("\"message\"");
-		alertBoxMsg("🆘 " + error.toString().substring(errindex));
+		// alertBoxMsg("❌ An error happened but don't worry, it's not your fault");
+		const index2 = error.toString().indexOf("\"message\"");
+		let errstrZod = error.toString().substring(index2);	
+		let keyZod = errstrZod.substring(errstrZod.indexOf(":") + 2,errstrZod.indexOf("}") - 1);
+		// alertBoxMsg(errstrZod);
+		console.info("Displayed : ", keyZod);
 		return;
 	}
 	let errstr = error.toString().substring(index);	
@@ -46,6 +50,12 @@ export const displayCorrectErrMsg = async (error, data) => {
 		case "malformedJWT":
 			alertBoxMsg(`⚠️ Unable to refresh token ! Log in again !`);
 			break;
+		case "tokenNoRefresh":
+			alertBoxMsg(`⚠️ Token could not be refreshed, you need to log-in again before performing another action.`);
+			break;
+		case "userSelfLogoutToken":
+			alertBoxMsg(`⚠️ You cannot perform this action while logged out !`);
+			break;
 		case "authenticateOtherError":
 			alertBoxMsg(`⚠️ We were unable to verify your token, please log in again !`);
 			break;
@@ -56,7 +66,7 @@ export const displayCorrectErrMsg = async (error, data) => {
 			alertBoxMsg(`❌ This email is already used by someone !`);
 			break;
 		case "loginInvalidName":
-			alertBoxMsg(`❌ Username is incorrect !`);
+			alertBoxMsg(`❌ Username does not exist !`);
 			break;
 		case "loginInvalidPwd":
 			alertBoxMsg(`❌ Incorrect password !`);
@@ -162,16 +172,20 @@ export const fetchErrcodeHandler = async (error) => {
 	const isNotAuth = error.toString().search("\"errRef\":\"authBearerMissing\"") != -1;
 	const isExpired = error.toString().search("\"errRef\":\"expiredJWT\"") != -1;
 	const isMalformed = error.toString().search("\"errRef\":\"malformedJWT\"") != -1;
-	// console.log("[DEBUG] fetchErrcode handle ...", isExpired, isNotAuth);
+	const isSelfLogout = error.toString().search("\"errRef\":\"userSelfLogout\"") != -1;
+	const tokenNoRefresh = error.toString().search("\"errRef\":\"tokenNoRefresh\"") != -1;
 
-	console.log("IsNotAuth:", isNotAuth);
-	console.log("isMalformed:", isMalformed);
-	console.log("logstatus", window.sessionStorage.getItem("logStatus"));
-
-	if(isNotAuth || isMalformed)
+	if(isNotAuth || isMalformed || isSelfLogout || tokenNoRefresh)
 	{
 		window.sessionStorage.setItem('logStatus', 'loggedOut');
-		alertBoxMsg("⚠️ You were logged-out ! Relog and try again !");
+		if (isSelfLogout)
+			alertBoxMsg("⚠️ You need to be logged in to perform this action !");
+		else if (isNotAuth)
+			alertBoxMsg("⚠️ Missing bearer token in the request ! Log in again !");
+		else if (tokenNoRefresh)
+			alertBoxMsg(`⚠️ Token could not be refreshed, you need to log-in again before performing another action.`);
+		else
+			alertBoxMsg("⚠️ Malformed JWT Token ! Log in again !");
 		backToDefaultPage();
 		return (-1);
 	}
@@ -217,7 +231,7 @@ export const fetchErrcodeHandler = async (error) => {
 		{
 			console.error("⚠️ Could not refresh tokens ... please log back in !"); //is this enough ?
 			window.sessionStorage.setItem('logStatus', 'loggedOut');
-			window.sessionStorage.setItem('access_token', 'NotValid');
+			window.sessionStorage.setItem('access_token', 'tokenNoRefresh');
 			backToDefaultPage();
 			return (-1);
 		}
@@ -228,9 +242,10 @@ export const fetchErrcodeHandler = async (error) => {
 
 const fieldValidity = (username, pwd, pwdconf, requestR, email) => {
 
-	if(!requestR) return false;
+	if(!requestR || !pwdconf) return false;
+
 	requestR.innerText = "";
-	if (!username || !username.value || username.value.length < 3)
+	if (!username || !username.value || username.length >= 3)
 	{
 		requestR.innerText = "❌ Username must be at least 3 characters !";
 		username.focus();
@@ -268,7 +283,13 @@ const fieldValidity = (username, pwd, pwdconf, requestR, email) => {
 		pwd.focus();
 		return false;
 	}
-	if (!pwdconf || (pwd.value != pwdconf.value))
+	if (!pwdconf.value)
+	{
+		requestR.innerText = "❌ You must confirm your password first!";
+		pwdconf.focus();
+		return false;
+	}
+	if (pwd.value != pwdconf.value)
 	{
 		requestR.innerText = "❌ Both passwords must match !";
 		pwd.value = '';
@@ -623,7 +644,7 @@ export async function logoutUser() {
 			console.log('⏳ Logging out ...');
 			alertBoxMsg("✅ You are now logged out");
 			window.sessionStorage.setItem('logStatus', 'loggedOut');
-			window.sessionStorage.setItem('access_token', 'NotValid;)');
+			window.sessionStorage.setItem('access_token', 'userSelfLogoutToken');
 			backToDefaultPage();
 		}
 	} 
@@ -638,6 +659,7 @@ export async function logoutUser() {
 window.handleNewUserCreate = async function (event) {
 
 	event.preventDefault();
+
 	const username = document.getElementById('newUsernameNewUser');
 	const email = document.getElementById('newUserEmail');
 	const password = document.getElementById('firstPasswordNewUser');
@@ -653,7 +675,6 @@ window.handleNewUserCreate = async function (event) {
 		password: password.value,
 		passwordconfirmation: passwordConfirm.value,
 	};
-	
 	try 
 	{
 		const newUserResponse = await fetch('/register', {
@@ -686,10 +707,10 @@ window.handleNewUserCreate = async function (event) {
 	{
 		if (await fetchErrcodeHandler(err) == 0)
 			return(window.handleNewUserCreate(event));
-		username.value = "";
-		email.value = "";
-		password.value = "";
-		passwordConfirm.value = "";
+		// username.value = "";
+		// email.value = "";
+		// password.value = "";
+		// passwordConfirm.value = "";
 		console.error('Could not create new user !\n => ', err);
 		displayCorrectErrMsg(err, "dummydata");
 	}
@@ -782,10 +803,10 @@ window.updateUserPassword = async function (event) {
 		const confirmNewPassword = document.getElementById('confirmNewPasswordInput');
 		const requestResult = document.getElementById('changePasswordResult');
 		
-		requestResult.innerText = "";
-		if (!oldPassword || !newPassword || !confirmNewPassword)
+		if (!oldPassword || !newPassword || !confirmNewPassword || !requestResult)
 			return ;
-
+		requestResult.innerText = "";
+		
 		if (!oldPassword.value || !newPassword.value || !confirmNewPassword.value)
 		{
 			requestResult.innerText = "❌ Passwords fields cannot be empty !";
@@ -933,7 +954,7 @@ window.loginPlayer2 = async function (event) {
 	catch (err) 
 	{
 		if (await fetchErrcodeHandler(err) == 0)
-			return(window.handleLoginClick(event));
+			return(window.loginPlayer2(event));
 		username.value = "";
 		password.value = "";
 		console.error('Login error !\n => ', err);

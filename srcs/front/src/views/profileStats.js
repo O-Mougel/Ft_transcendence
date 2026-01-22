@@ -42,9 +42,8 @@ export default class extends ViewTemplate {
 				</div>
 			</div>
 
-			<div class="pt-[3%]">
-			</div>
-			<div class="pt-[3%] relative flex flex-col gap-y-4 items-center mx-[3%] px-4 rounded-xl outline-none border border-blue-300 bg-[url(/img/assets/stars.gif)] bg-cover bg-center shadow-[0_0_20px_rgba(158,202,237,0.9)]">
+			
+			<div class="pt-[3%] mt-[3%] relative flex flex-col gap-y-4 items-center mx-[3%] px-4 rounded-xl outline-none border border-blue-300 bg-[url(/img/assets/stars.gif)] bg-cover bg-center shadow-[0_0_20px_rgba(158,202,237,0.9)]">
 			<h1 class="m-0">Statistics :</h1>
 			<div class="flex flex-col sm:flex-row w-full justify-around items-center gap-4">
 				<div class="flex flex-col items-center">

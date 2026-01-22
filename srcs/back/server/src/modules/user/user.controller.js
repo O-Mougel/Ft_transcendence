@@ -20,6 +20,7 @@ export async function registerUserHandler(request, reply) {
 
 	const body = request.body;
 	body.name = body.name.toUpperCase()
+
 	const name = await findUserByName(body.name);
 
 	const { passwordconfirmation, ...rest } = body;
@@ -75,8 +76,8 @@ export async function dataGrabHandler(request, reply) {
 
 	} catch (error) {
 		console.error(error);
-		return reply.status(500).send({
-			message: "User info could not be grabbed !",
+		return reply.status(404).send({
+			message: "User info could not be found within database !",
 			error:error
 		});
 	}
@@ -90,7 +91,7 @@ export async function loginHandler(request, reply) {
 
 	if (!user) {
 		return reply.status(404).send({
-			message: "Invalid name. Try again!",
+			message: "User does not exist ! Try again!",
 			errRef:"loginInvalidName"
 		});
 	};
@@ -286,7 +287,7 @@ export async function alterUserHandler(request, reply) {
 
 	const updatedUser = await alterUser(userId, body.name, body.avatar);
 	if (!updatedUser) {
-		return reply.status(500).send({
+		return reply.status(409).send({
 			message: "Error ! Couln't modify user !", errRef:"alterInnerFail"
 		});
 	};
@@ -342,8 +343,8 @@ export async function logoutHandler(request, reply) {
 		return reply.status(201).send({ message: "Logged out..." });
 
 	} catch (err) {
-		return reply.status(500).send({
-			message: "Internal server error on logout !"
+		return reply.status(403).send({
+			message: "Error on logout !"
 		});
 	}
 	
@@ -354,7 +355,7 @@ export async function editPasswordHandler(request, reply) {
 	const user = await findUserById(request.user.id);
 
 	if (!user) {
-		return reply.status(500).send({
+		return reply.status(404).send({
 			message: "User not found in database",
 			errRef:"editPasswordInnerFail"
 		});
@@ -574,7 +575,7 @@ export async function uploadProfilePicHandler(request, reply) {
 	try {
 		await fs.promises.writeFile(filePath, buffer);
 	} catch (err) {
-		return reply.code(500).send({
+		return reply.code(403).send({
 			message: "Failed to save file",
 			errRef: "uploadWriteFailed",
 		});

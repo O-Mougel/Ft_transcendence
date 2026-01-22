@@ -2,7 +2,9 @@
 
 import { $ref } from "./user.schema.js";
 import { logoutHandler, loginHandler, check2faHandler, registerUserHandler, dataGrabHandler, alterUserHandler, get2fastatusHandler, activate2faHandler, deactivate2faHandler, editPasswordHandler, friendRequestHandler, friendAcceptHandler, getFriendsHandler, getFriendRequestHandler, friendDeleteHandler, friendRejectHandler, refreshTokenHandler, loginMatchHandler, uploadProfilePicHandler, checkLogStatus } from "./user.controller.js";
-
+/// for safeParse
+import { createUserSchema, loginSchema, twofaSchema, profileChangesSchema, editPasswordSchema, friendRequestSchema, friendAcceptSchema, friendRejectSchema, friendDeleteSchema} from "./user.schema.js";
+//
 async function userRoutes(fastify) {
 	fastify.post(
 		'/register', 
@@ -12,6 +14,13 @@ async function userRoutes(fastify) {
 				response: {
 					201: $ref("loginResponseSchema"),
 				},
+			},
+			preValidation: async (request, reply) => {
+				const parsed = createUserSchema.safeParse(request.body);
+				if (!parsed.success) {
+					const errors = parsed.error.issues.map(i => ({ path: i.path, message: i.message }));
+					return reply.code(400).send({ statusCode: 400, error: 'Bad request: Incorrect Zod Parsing !', errContext: errors });
+				}
 			},
 		}, 
 		registerUserHandler,
@@ -25,7 +34,14 @@ async function userRoutes(fastify) {
 				response: {
 					201: $ref("loginResponseSchema"),
 				}
-			}
+			},
+			preValidation: async (request, reply) => {
+				const parsed = loginSchema.safeParse(request.body);
+				if (!parsed.success) {
+					const errors = parsed.error.issues.map(i => ({ path: i.path, message: i.message }));
+					return reply.code(400).send({ statusCode: 400, error: 'Bad request: Incorrect Zod Parsing !', errContext: errors });
+				}
+			},
 		}, 
 		loginHandler
 	);
@@ -47,7 +63,14 @@ async function userRoutes(fastify) {
                 response: {
                     201: $ref("loginResponseSchema"),
                 }
-            }
+            },
+			preValidation: async (request, reply) => {
+				const parsed = loginSchema.safeParse(request.body);
+				if (!parsed.success) {
+					const errors = parsed.error.issues.map(i => ({ path: i.path, message: i.message }));
+					return reply.code(400).send({ statusCode: 400, error: 'Bad request: Incorrect Zod Parsing !', errContext: errors });
+				}
+			},
         }, 
         loginMatchHandler
     );
@@ -61,7 +84,14 @@ async function userRoutes(fastify) {
                 response: {
                     201: $ref("accessTokenResponseSchema"),
                 }
-            }
+            },
+			preValidation: async (request, reply) => {
+				const parsed = twofaSchema.safeParse(request.body);
+				if (!parsed.success) {
+					const errors = parsed.error.issues.map(i => ({ path: i.path, message: i.message }));
+					return reply.code(400).send({ statusCode: 400, error: 'Bad request: Incorrect Zod Parsing !', errContext: errors });
+				}
+			},
         }, 
         check2faHandler
     );
@@ -87,7 +117,14 @@ async function userRoutes(fastify) {
                 response: {
                     201: $ref("accessTokenResponseSchema"),
                 }
-            }
+            },
+			preValidation: async (request, reply) => {
+				const parsed = twofaSchema.safeParse(request.body);
+				if (!parsed.success) {
+					const errors = parsed.error.issues.map(i => ({ path: i.path, message: i.message }));
+					return reply.code(400).send({ statusCode: 400, error: 'Bad request: Incorrect Zod Parsing !', errContext: errors });
+				}
+			},
         }, 
         check2faHandler
     );
@@ -128,6 +165,13 @@ async function userRoutes(fastify) {
 					200: $ref("profileChangesResponseSchema"), //reponse et schema de reponse ?
 				},
 			},
+			preValidation: async (request, reply) => {
+				const parsed = profileChangesSchema.safeParse(request.body);
+				if (!parsed.success) {
+					const errors = parsed.error.issues.map(i => ({ path: i.path, message: i.message }));
+					return reply.code(400).send({ statusCode: 400, error: 'Bad request: Incorrect Zod Parsing !', errContext: errors });
+				}
+			},
 		}, 
 		alterUserHandler,
 	);
@@ -167,7 +211,14 @@ async function userRoutes(fastify) {
 				response: {
 					201: $ref("twofaResponseSchema"), //reponse et schema de reponse ?
 				}
-			}
+			},
+			preValidation: async (request, reply) => {
+				const parsed = twofaSchema.safeParse(request.body);
+				if (!parsed.success) {
+					const errors = parsed.error.issues.map(i => ({ path: i.path, message: i.message }));
+					return reply.code(400).send({ statusCode: 400, error: 'Bad request: Incorrect Zod Parsing !', errContext: errors });
+				}
+			},
 		}, 
 		check2faHandler
 	);
@@ -175,13 +226,7 @@ async function userRoutes(fastify) {
 	fastify.patch(
 		'/profile/2fa/deactivate', 
 		{
-			preHandler: [fastify.authenticate], //reponse et schema de reponse ?
-			// schema: {
-			//	 body: $ref("profileChangesSchema"),
-			//	 response: {
-			//		 200: $ref("profileChangesResponseSchema"),
-			//	 },
-			// },
+			preHandler: [fastify.authenticate],
 		}, 
 		deactivate2faHandler,
 	);
@@ -191,7 +236,14 @@ async function userRoutes(fastify) {
 		{
 			preHandler: [fastify.authenticate],
 			schema: {
-				body: $ref("editPasswordSchema"), //reponse et schema de reponse ?
+				body: $ref("editPasswordSchema"),
+			},
+			preValidation: async (request, reply) => {
+				const parsed = editPasswordSchema.safeParse(request.body);
+				if (!parsed.success) {
+					const errors = parsed.error.issues.map(i => ({ path: i.path, message: i.message }));
+					return reply.code(400).send({ statusCode: 400, error: 'Bad request: Incorrect Zod Parsing !', errContext: errors });
+				}
 			},
 		},
 		editPasswordHandler
@@ -212,6 +264,13 @@ async function userRoutes(fastify) {
 			schema: {
 				body: $ref("friendRequestSchema"), //reponse et schema de reponse ?
 			},
+			preValidation: async (request, reply) => {
+				const parsed = friendRequestSchema.safeParse(request.body);
+				if (!parsed.success) {
+					const errors = parsed.error.issues.map(i => ({ path: i.path, message: i.message }));
+					return reply.code(400).send({ statusCode: 400, error: 'Bad request: Incorrect Zod Parsing !', errContext: errors });
+				}
+			},
 		},
 		friendRequestHandler // returns newFriend even with no response clause
 	)
@@ -226,6 +285,13 @@ async function userRoutes(fastify) {
 				    200: $ref("friendAcceptResponseSchema"),
 				},
 			},
+			preValidation: async (request, reply) => {
+				const parsed = friendAcceptSchema.safeParse(request.body);
+				if (!parsed.success) {
+					const errors = parsed.error.issues.map(i => ({ path: i.path, message: i.message }));
+					return reply.code(400).send({ statusCode: 400, error: 'Bad request: Incorrect Zod Parsing !', errContext: errors });
+				}
+			},
 		},
 		friendAcceptHandler
 	)
@@ -236,6 +302,13 @@ async function userRoutes(fastify) {
 			preHandler: [fastify.authenticate],
 			schema: {
 				body: $ref("friendRejectSchema"), //reponse et schema de reponse ?
+			},
+			preValidation: async (request, reply) => {
+				const parsed = friendRejectSchema.safeParse(request.body);
+				if (!parsed.success) {
+					const errors = parsed.error.issues.map(i => ({ path: i.path, message: i.message }));
+					return reply.code(400).send({ statusCode: 400, error: 'Bad request: Incorrect Zod Parsing !', errContext: errors });
+				}
 			},
 		},
 		friendRejectHandler
@@ -250,6 +323,13 @@ async function userRoutes(fastify) {
 				response: {
 				    200: $ref("friendDeleteResponseSchema"),
 				},
+			},
+			preValidation: async (request, reply) => {
+				const parsed = friendDeleteSchema.safeParse(request.body);
+				if (!parsed.success) {
+					const errors = parsed.error.issues.map(i => ({ path: i.path, message: i.message }));
+					return reply.code(400).send({ statusCode: 400, error: 'Bad request: Incorrect Zod Parsing !', errContext: errors });
+				}
 			},
 		},
 		friendDeleteHandler
