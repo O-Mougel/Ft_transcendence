@@ -143,7 +143,7 @@ async function uploadFileToServer(fileObj) {
 			return (await uploadFileToServer(fileObj));
 		console.error('File upload failed !\n => ', err);
 		filenameStr.innerText = "❌ File upload failed";
-		displayCorrectErrMsg(err, "dummydata");
+		displayCorrectErrMsg(err);
 		return null;
 	}
 
@@ -309,6 +309,6 @@ window.saveProfileInfo = async function () {
 		fileInput.value = "";
 		selectedFileName.textContent = '';
 		console.error('⚠️ Could not edit user info!\n', err);
-		displayCorrectErrMsg(err, data.name);
+		displayCorrectErrMsg(err);
 	}	
 };
