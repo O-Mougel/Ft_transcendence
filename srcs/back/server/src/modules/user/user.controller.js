@@ -84,10 +84,8 @@ export async function dataGrabHandler(request, reply) {
 }
 
 export async function loginHandler(request, reply) {
-	const body = request.body;
-
-	body.name = body.name.toUpperCase()
-	const user = await findUserByName(body.name);
+	request.name = request.name.toUpperCase()
+	const user = await findUserByName(request.name);
 
 	if (!user) {
 		return reply.status(404).send({
@@ -97,7 +95,7 @@ export async function loginHandler(request, reply) {
 	};
 
 	const isValidPassword = verifyPassword(
-		body.password,
+		request.password,
 		user.salt,
 		user.password);
 
@@ -581,4 +579,107 @@ export async function uploadProfilePicHandler(request, reply) {
 		});
 	}
 	return reply.code(201).send({ path: `./img/userPfp/${savedFilename}` });
+}
+
+async function getFriends(userId) {
+  if (friendsCache.has(userId)) return friendsCache.get(userId); //et si ca change ca ??
+
+  const friends = await findfriends(userId) //et si le user n'a pas d'ami
+
+  const ids = friends.friends.map(f => f.id);
+  friendsCache.set(userId, ids);
+  return ids;
+}
+
+async function notifyFriends(userId, online) {
+  const friends = await getFriends(userId);
+
+  const payload = JSON.stringify({ //use zod
+    type: "friend_presence",
+    userId,
+    online,
+  });
+
+  for (const friendId of friends) {
+    const sockets = userSockets.get(friendId);
+    if (!sockets) continue;
+
+    for (const ws of sockets) {
+      ws.send(payload);
+    }
+  }
+}
+
+async function onlineFriends(userId, socket) {
+	
+	const friendIds = await getFriends(userId);
+
+	const onlineFriends = friendIds.filter(fid =>
+		presenceCount.get(fid) > 0
+	);
+
+	socket.send(JSON.stringify({
+		type: "presence:snapshot",
+		onlineFriends
+	}));
+
+}
+
+const userSockets = new Map(); // userId -> Set<ws>
+const presenceCount = new Map(); // userId -> number
+const friendsCache = new Map(); // userId -> number[]
+
+export async function webSocketHandler(connection, request) { //check pour tous les amis quand on viens de se connercter 
+	const socket = connection.socket;
+	const token = request.query.token;
+
+	if (!token) {
+		socket.close(1008, 'Missing token');
+		return;
+	}
+
+	let user;
+	try {
+		const decoded = request.server.jwt.verify(token);
+		if (decoded.type != "access"){
+		socket.close(1008, 'Invalid token');
+		return;
+		}
+		user = decoded;
+	} catch {
+		socket.close(1008, 'Invalid token');
+		return;
+	}
+
+	const userId = user.id;
+
+	// 🔹 envoyer l’état actuel des amis à l’utilisateur qui vient de se connecter
+	await onlineFriend(userId, socket)
+
+
+	// sockets
+	if (!userSockets.has(userId)){
+		userSockets.set(userId, new Set());
+	}
+	userSockets.get(userId).add(socket);
+
+	// compteur
+	presenceCount.set(userId, (presenceCount.get(userId) ?? 0) + 1);
+
+	// broadcastPresence
+	if (presenceCount.get(userId) >= 1) {
+		await notifyFriends(userId, true);
+	}
+
+	socket.on('close', async () => {
+		userSockets.get(userId)?.delete(socket);
+
+		const count = presenceCount.get(userId) - 1;
+		if (count == 0) {
+			presenceCount.delete(userId);
+			await notifyFriends(userId, false);
+		} else {
+			presenceCount.set(userId, count);
+		}
+	});
 }

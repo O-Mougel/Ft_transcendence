@@ -78,6 +78,27 @@ export async function getMatchs(id) {
 				{ player2Id: id },
 			],
 		},
+		select: {
+			id: true,
+			player1: {
+				select: {
+					name: true,
+				},
+			},
+			player2: {
+				select: {
+					id: true,
+					name: true,
+				},
+			},
+			player1Score: true,
+			player2Score: true,
+			winnerId: true,
+			type: true,
+			player2name: true,
+			round: true,
+			createdAt: true,
+		},
 		orderBy: {
 			createdAt: 'desc',
 		},
