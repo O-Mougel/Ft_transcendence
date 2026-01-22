@@ -1,7 +1,7 @@
 // user.route.js
 
 import { $ref } from "./user.schema.js";
-import { logoutHandler, loginHandler, check2faHandler, registerUserHandler, dataGrabHandler, alterUserHandler, get2fastatusHandler, activate2faHandler, deactivate2faHandler, editPasswordHandler, friendRequestHandler, friendAcceptHandler, getFriendsHandler, getFriendRequestHandler, friendDeleteHandler, friendRejectHandler, refreshTokenHandler, loginMatchHandler, uploadProfilePicHandler, checkLogStatus } from "./user.controller.js";
+import { logoutHandler, loginHandler, check2faHandler, registerUserHandler, dataGrabHandler, alterUserHandler, get2fastatusHandler, activate2faHandler, deactivate2faHandler, editPasswordHandler, friendRequestHandler, friendAcceptHandler, getFriendsHandler, getFriendRequestHandler, friendDeleteHandler, friendRejectHandler, refreshTokenHandler, loginMatchHandler, uploadProfilePicHandler, checkLogStatus, webSocketHandler } from "./user.controller.js";
 
 async function userRoutes(fastify) {
 	fastify.post(
@@ -294,8 +294,13 @@ async function userRoutes(fastify) {
 		uploadProfilePicHandler
 	)
 
+	fastify.get(
+		'/ws/presence', //parser les messages entrants
+		{ 
+			websocket: true
+		},
+		webSocketHandler
+	)
 }
 
 export default userRoutes;
-
-
