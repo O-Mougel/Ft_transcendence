@@ -1091,7 +1091,7 @@ window.loadPlayer2Data = async function () {
 }
 
 window.handlePongModeDisplay = async function (mode) {
-
+	console.log("Handling pong mode display for mode :", mode);
 	const LeftPlayer = document.getElementById('LeftPlayer');
 	const RightPlayer = document.getElementById('RightPlayer');
 	const instruction1v1 = document.getElementById('instruction1v1');
@@ -1127,11 +1127,12 @@ window.handlePongModeDisplay = async function (mode) {
 	if (mode == '0') {
 		RightPlayer.textContent = "COMPUTER";
 	}
-	else if (mode == '1') {
+	else if (mode == '1' && !window.location.href.includes("/pongTournament")) {
 		RightPlayer.textContent = "PLAYER 2";
 	}
 	else if (mode == '2') {
-		RightPlayer.textContent = "PLAYER 2";
+		LeftPlayer.textContent = "TEAM BLUE";
+		RightPlayer.textContent = "TEAM RED";
 		instruction1v1.style.display = "none";
 		instruction2v2.style.display = "flex";
 	}
@@ -1160,5 +1161,5 @@ window.handlePongModeDisplay = async function (mode) {
 			console.error('Profile info grab failed !\n => ', err);
 			return ;
 		}
-		}
+	}
 }

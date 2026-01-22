@@ -135,8 +135,17 @@ export default class extends ViewTemplate {
 		if (typeof module.initPong === "function") 
 			module.initPong({ mode, gameId: CONTEXT.gameId });
 		
-		handlePongModeDisplay(mode);
-		
+		if (window.location.href.includes("/pongTournament") && CONTEXT.tournamentId) {
+			console.log("Setting player names for tournament mode:");
+			const LeftPlayer = document.getElementById('LeftPlayer');
+			const RightPlayer = document.getElementById('RightPlayer');
+			if (LeftPlayer && RightPlayer) {
+				LeftPlayer.textContent = CONTEXT.leftName || "Player 1";
+				RightPlayer.textContent = CONTEXT.rightName || "Player 2";
+			}
+			return;
+		}
 
+		handlePongModeDisplay(mode);
 	}
 }

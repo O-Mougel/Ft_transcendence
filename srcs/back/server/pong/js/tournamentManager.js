@@ -61,6 +61,15 @@ function chooseWinner(match, score) {
   return (score.left >= score.right) ? match.player1 : match.player2;
 }
 
+function randomizeNames(names) {
+  const array = names.slice();
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
 export class TournamentManager {
   constructor(gameManager) {
     this.gameManager = gameManager;
@@ -81,7 +90,7 @@ export class TournamentManager {
     if (new Set(loweredNames).size !== loweredNames.length) throw new Error("Names must be unique"); // If there are duplicates after cleaning (different array size)
 
     const tournamentId = generateTournamentId();
-    const players = cleanedArray;
+    const players = randomizeNames(cleanedArray);
 
     const tournament = {
       id: tournamentId,

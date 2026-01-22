@@ -38,15 +38,29 @@ export function initTournament() {
 	} else {
 		CONTEXT.tournamentId = tournamentId;
 		nextMatchBtn.onclick = () => {
-			console.log("Starting next match in tournament:", tournamentId);
-			window.history.pushState({}, "", "/pongTournament");
-			window.dispatchEvent(new PopStateEvent("popstate"));
+			if (!CONTEXT.tournamentState) {
+				console.log("Tournament state not loaded yet.");
+				sessionStorage.removeItem("currentTournamentId");
+				window.history.pushState({}, "", "/tournamentSize");
+				window.dispatchEvent(new PopStateEvent("popstate"));
+				return;
+			}
+			const nextMatch = findNextReadyMatch(CONTEXT.tournamentState);
+			console.log("Next match:", nextMatch);
+			if (nextMatch) {
+				console.log("Next match found:", nextMatch);
+				CONTEXT.leftName = nextMatch.match.player1;
+				CONTEXT.rightName = nextMatch.match.player2;
+				window.history.pushState({}, "", "/pongTournament");
+				window.dispatchEvent(new PopStateEvent("popstate"));
+			}
 		}
 	}
 
 	socket.off("tournament:state");
 	socket.on("tournament:state", ({ tournamentId: tid, tournament }) => {
 	  if (tid !== tournamentId) return;
+	  CONTEXT.tournamentState = tournament;
 	  renderTournament(tournament);
 	});
 		
@@ -57,6 +71,7 @@ export function initTournament() {
 	  CONTEXT.gameId = info.gameId;
 	  CONTEXT.leftName = info.player1;
 	  CONTEXT.rightName = info.player2;
+	  console.log("Match started player1:", info.player1, "player2:", info.player2, "gameId:", info.gameId);
 	  CONTEXT.gameMode = 1;
 	  CONTEXT.tournamentId = tournamentId;
 
@@ -137,4 +152,16 @@ function renderTournament(tournament) {
 		nextMatchBtn.style.display = "none";
 		sessionStorage.removeItem("currentTournamentId");
 	}
+}
+
+function findNextReadyMatch(tournament) {
+	for (let r = 0; r < tournament.bracket.length; r++) {
+	  for (let m = 0; m < tournament.bracket[r].length; m++) {
+		const match = tournament.bracket[r][m];
+		if (match.status === "ready") {
+		  return { r, m, match };
+		}
+	  }
+	}
+	return null;
 }

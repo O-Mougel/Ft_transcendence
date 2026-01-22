@@ -25,6 +25,9 @@ export const CONTEXT = {
 	controlsBound: false,
 	gameMode: 0,
 	tournamentId: null,
+	tournamentState: null,
+	leftName: "Player 1",
+	rightName: "Player 2",
 
 	// Dimensions
 	PADDLE_WIDTH: 10,
