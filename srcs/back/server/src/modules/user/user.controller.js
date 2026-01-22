@@ -7,7 +7,7 @@ import crypto from 'crypto'; //random file name
 import { pipeline } from 'stream/promises'; //file writing
 import { fileTypeFromBuffer } from "file-type";
 /////
-import { createUser, findUserByName, findUserById, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend, rejectfriend, deletefriend, deletesecret2fa, activate2fa, get2fastatus, saveRefreshToken, findToken, rotateRefreshToken, deleteAllForUser, deleteRefreshToken } from "./user.service.js";
+import { createUser, findUserByName, findUserById, alterUser, changePassword, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend, rejectfriend, deletefriend, deletesecret2fa, activate2fa, get2fastatus, saveRefreshToken, findToken, rotateRefreshToken, deleteAllForUser, deleteRefreshToken } from "./user.service.js";
 import { verifyPassword } from "../../utils/hash.js";
 import { generateAccessToken, generateRefreshToken, generate2faToken, generateMatchToken } from "../../utils/token.js";
 import { generateSecret, verify2fa } from "../../utils/twofa.js"
@@ -52,7 +52,6 @@ export async function registerUserHandler(request, reply) {
 			sameSite: "strict"
 		})
 
-		setOnlineStatus(user.id, true)
 		return reply.code(201).send({ require2fa: false, token: accessToken });
 
 	} catch (error) {
@@ -127,7 +126,6 @@ export async function loginHandler(request, reply) {
 		sameSite: "strict"
 	})
 
-	setOnlineStatus(user.id, true)
 	return reply.code(201).send({ require2fa: false, token: accessToken});
 }
 
@@ -217,8 +215,6 @@ export async function check2faHandler(request, reply) {
 		sameSite: "strict"
 	})
 
-	await setOnlineStatus(user.id, true)
-
 	return reply.code(201).send({ newAccessToken: accessToken });
 }
 
@@ -228,14 +224,10 @@ export async function refreshTokenHandler(request, reply) {
 
 	const stored = await findToken(token)
 
-	reply.clearCookie("refresh_token");
-
 	if (!stored) {
 		return reply.status(403).send({ message: "Invalid refresh_token !" });
 	}
 	
-	await setOnlineStatus(stored.user_id, false)
-
 	const now = Date.now()
 	if (stored.expires_at < now) {
 		await deleteAllForUser(stored.user_id)
@@ -243,6 +235,7 @@ export async function refreshTokenHandler(request, reply) {
 	}
 
 	// rotation
+	reply.clearCookie("refresh_token");
 	const refreshToken = await rotateRefreshToken(stored.user_id, token)
 	const user = await findUserById(stored.user_id);
 	const newAccessToken = generateAccessToken(request.server, user);
@@ -254,9 +247,7 @@ export async function refreshTokenHandler(request, reply) {
 		sameSite: "strict"
 	})
 
-	await setOnlineStatus(user.id, true)
-
-	return reply.code(201).send({newAccessToken: newAccessToken});
+	return reply.code(200).send({newAccessToken: newAccessToken});
 }
 
 export async function alterUserHandler(request, reply) {
@@ -334,7 +325,6 @@ export async function logoutHandler(request, reply) {
 	const token = request.cookies.refreshToken;
 
 	try {
-		await setOnlineStatus(request.user.id, false)
 		if (token)
 			deleteRefreshToken(token)
 		reply.clearCookie("refresh_token");
@@ -428,6 +418,50 @@ export async function friendRequestHandler(request, reply) {
 	});
 }
 
+function sendToUser(userId, payload) {
+	const sockets = userSockets.get(userId);
+	if (!sockets) return;
+
+	for (const s of sockets) {
+		s.send(JSON.stringify(payload));
+	}
+}
+
+async function syncPresenceOnFriendAdd(a, b) {
+
+	// A reçoit le statut de B
+	if (presenceCount.get(b) > 0) {
+		sendToUser(a, {
+			type: "presence:update",
+			userId: b,
+			isOnline: true
+		});
+	}
+	else {
+		sendToUser(a, {
+			type: "presence:update",
+			userId: b,
+			isOnline: false
+		});
+	}
+
+	// B reçoit le statut de A
+	if (presenceCount.get(a) > 0) {
+		sendToUser(b, {
+			type: "presence:update",
+			userId: a,
+			isOnline:true
+		});
+	}
+	else {
+		sendToUser(b, {
+			type: "presence:update",
+			userId: a,
+			isOnline:false
+		});
+	}
+}
+
 export async function friendAcceptHandler(request, reply) {
 	const body = request.body;
 
@@ -452,6 +486,8 @@ export async function friendAcceptHandler(request, reply) {
 	});
 
 	await acceptfriend(request.user.id, newfriend.id) // can fail ?????? try catch
+
+	await syncPresenceOnFriendAdd(request.user.id, newfriend.id);
 
 	return { friendname: newfriend.name, message: "New friend added !" }; 
 }
@@ -582,9 +618,7 @@ export async function uploadProfilePicHandler(request, reply) {
 }
 
 async function getFriends(userId) {
-  if (friendsCache.has(userId)) return friendsCache.get(userId); //et si ca change ca ??
-
-  const friends = await findfriends(userId) //et si le user n'a pas d'ami
+  const friends = await findfriends(userId)
 
   const ids = friends.friends.map(f => f.id);
   friendsCache.set(userId, ids);
@@ -610,7 +644,7 @@ async function notifyFriends(userId, online) {
   }
 }
 
-async function onlineFriends(userId, socket) {
+async function onlineFriend(userId, socket) {
 	
 	const friendIds = await getFriends(userId);
 
@@ -629,7 +663,7 @@ const userSockets = new Map(); // userId -> Set<ws>
 const presenceCount = new Map(); // userId -> number
 const friendsCache = new Map(); // userId -> number[]
 
-export async function webSocketHandler(connection, request) { //check pour tous les amis quand on viens de se connercter 
+export async function webSocketHandler(connection, request) {
 	const socket = connection.socket;
 	const token = request.query.token;
 
@@ -667,7 +701,7 @@ export async function webSocketHandler(connection, request) { //check pour tous 
 	presenceCount.set(userId, (presenceCount.get(userId) ?? 0) + 1);
 
 	// broadcastPresence
-	if (presenceCount.get(userId) >= 1) {
+	if (presenceCount.get(userId) == 1) {
 		await notifyFriends(userId, true);
 	}
 
