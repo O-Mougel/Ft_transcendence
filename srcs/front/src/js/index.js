@@ -43,12 +43,14 @@ window.confirmFriendRemoval = async () =>
 	if (!friendRemover2000 || friendRemover2000.value == "dummyvalue") // no friend selected
 		return ;
 	
+	let parsedID = parseInt(friendRemover2000.value); 
+	if (!parsedID)
+		return ;
+
 	const data = {
-		friendDeleteId: friendRemover2000.value,
+		friendDeleteId: parsedID,
 	};
 
-	// 	console.log("frienddeletename : ", friendRemover2000.value);
-	// return ;
 	try 
 	{
 		const removeFriendRequestResponse = await fetch('/friend/delete', {
@@ -75,7 +77,7 @@ window.confirmFriendRemoval = async () =>
 		if (await fetchErrcodeHandler(err) == 0)
 			return(window.confirmFriendRemoval());
 		console.error('⚠️ Couldn\'t delete selected friend !\n => ', err);
-		displayCorrectErrMsg(err, data.frienddeletename);
+		displayCorrectErrMsg(err);
 	}
 }
 
@@ -99,7 +101,7 @@ window.fillFriendRemovalBox = async (friendArray) =>
 		// listItem.className = 'py-2 flex items-center justify-between';
 		listItem.innerHTML = `${friendArray[i].name}`; // TODO : special cases to handle
 		listItem.setAttribute('name', clearName);
-		listItem.setAttribute('value', `${friendArray[i].id}`);
+		listItem.setAttribute('value', friendArray[i].id);
 		friendRemover2000.appendChild(listItem);
 	}
 }	
