@@ -14,6 +14,22 @@ import {
 
 import { AIPlayer } from './AI.js';
 
+function getTournamentRound(tournament) {
+  if (!tournament) return null;
+  const size = tournament.size;
+  const round = tournament.r;
+
+  const roundsMap = {
+    4: ["Semifinal", "Final"],
+    8: ["Quaterfinal", "Semifinal", "Final"],
+    16: ["Octofinal", "Quaterfinal", "Semifinal", "Final"],
+  };
+
+  const rounds = roundsMap[size];
+  if (!rounds || round < 0 || round >= rounds.length) return null;
+  return rounds[round];
+}
+
 export class Game {
   constructor() {
     this.mode = 0; // 0 = vs AI, 1 = 2 paddles, 2 = 4 paddles, 3 = ranked
@@ -24,9 +40,11 @@ export class Game {
     this.nbExchanges = 0;
     this.longestStreak = 0;
     this.AIPlayer = null;
+    this.tournamentId = null;
+    this.tournamentRound = null;
 
-    this.player1Id = null;
-    this.player2Id = null;
+    this.player1 = null;
+    this.player2 = null;
 
     this.startTime = null;
 
@@ -350,30 +368,26 @@ export class Game {
 
   start(data) {
     this.isGameStarted = true;
+    this.tournamentId = data?.tournament?.tournamentId || null;
+    if (this.tournamentId)
+      this.tournamentRound = getTournamentRound(data?.tournament);
+    console.log('Starting game data:', data);
     console.log('Game started', this.mode !== 2 ? '2 Paddles' : '4 Paddles');
     if (this.mode === 0) {
-      this.ball.vx = -1;
-      if (data) {
-        this.leftPaddle.name = data.player1;
-        this.rightPaddle.name = data.player2;
-      }
       this.AIPlayer = new AIPlayer(this.rightPaddle, this.leftPaddle, this);
-      console.log('Player name:', this.leftPaddle.name, this.rightPaddle.name);
-    } else if (this.mode === 1 || this.mode === 3) {
-      if (data) {
-        this.leftPaddle.name = data.player1;
-        this.rightPaddle.name = data.player2;
-      }
-      console.log('Player names:', this.leftPaddle.name, this.rightPaddle.name);
-    } else {
-      if (data) {
-        this.leftPaddle.name = data.player1;
-        this.rightPaddle.name = data.player2;
-        this.leftPaddle2.name = data.player3;
-        this.rightPaddle2.name = data.player4;
-      }
-      console.log('Player names:', this.leftPaddle.name, this.rightPaddle.name, this.leftPaddle2.name, this.rightPaddle2.name);
-    }
+    } //else if (this.mode === 1 || this.mode === 3) {
+    //   if (data) {
+    //     this.leftPaddle.name = data.player1;
+    //     this.rightPaddle.name = data.player2;
+    //   }
+    // } else {
+    //   if (data) {
+    //     this.leftPaddle.name = data.player1;
+    //     this.rightPaddle.name = data.player2;
+    //     this.leftPaddle2.name = data.player3;
+    //     this.rightPaddle2.name = data.player4;
+    //   }
+    // }
     this.startTime = Date.now() / 1000;
     this.normalizeBallVelocity();
   }

@@ -75,26 +75,29 @@ export async function waitStartGame() {
       socket.emit("game:join", { gameId: CONTEXT.gameId });
       return;
     }
+    const tokenP1 = sessionStorage.getItem("access_token");
+
     if (CONTEXT.gameMode === 0) {
       console.log("Starting single-player game against AI opponent");
       socket.emit("game:start", { 
         mode: 0,
-    	  player1: result.name,
+    	  player1Token: tokenP1,
     	  player2: "AIOpponent",
       });
     }
     else if (CONTEXT.gameMode === 1) {
       socket.emit("game:start", { 
         mode: 1,
-    	  player1: result.name,
+    	  player1Token: tokenP1,
     	  player2: "Player2",
       });
     }
     else if (CONTEXT.gameMode === 3) {
+      const tokenP2 = sessionStorage.getItem("player2_token");
       socket.emit("game:start", { 
         mode: 3,
-    	  player1: result.name,
-    	  player2: "PLACEHOLDER PLAYER 2",
+    	  player1Token: tokenP1,
+    	  player2Token: tokenP2,
       });
     }
     else {

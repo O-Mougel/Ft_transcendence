@@ -2,6 +2,9 @@ import { createGame } from "./game.js";
 import { AI_REACTION_TIME, TICK_RATE } from "./config.js";
 import { createMatch } from "../../src/modules/match/match.service.js"
 import { findUserByName } from "../../src/modules/user/user.service.js"
+import { verifyPlayerToken } from "./server.js";
+import { getMatchRound } from "./tournamentManager.js";
+
 
 export class GameManager {
   constructor(io) {
@@ -32,6 +35,7 @@ export class GameManager {
     this.ensureGameExist(gameId);
     const entry = this.games.get(gameId);
     entry.players.add(socket.id);
+    entry.game.player1 = socket.data.user;
     socket.join(gameId);
   }
 
@@ -55,14 +59,20 @@ export class GameManager {
     entry.game.reset();
 
     try {
-      const user1 = await findUserByName("TEST");
-      entry.game.player1Id = user1.id;
-      const user2 = await findUserByName("TEST");
-      entry.game.player2Id = user2.id;
+      if (data.mode === 3) {
+        var verifiedPlayer2 = verifyPlayerToken(data.player2Token);
+        if (!verifiedPlayer2) {
+          socket.emit("error", { message: "Invalid player 2 token" });
+          return;
+        }
+        entry.game.player2 = verifiedPlayer2;
+      }
+      else {
+        entry.game.player2 = { username: "Guest", id: 0 };
+      }
+      // entry.meta = data.tournament ? { ...data.tournament } : null;
 
-      entry.meta = data.tournament ? { ...data.tournament } : null;
-
-      console.log("Starting game:", gameId, "with mode:", data.mode, "and meta:", entry.meta);
+      // console.log("Starting game:", gameId, "with mode:", data.mode, "and meta:", entry.meta);
 
       entry.game.start?.(data);
       if (typeof entry.game.mode === "number" && typeof data.mode === "number") {
@@ -117,9 +127,9 @@ export class GameManager {
 
         if (this.onGameOver) this.onGameOver({ gameId, state });
 
-        console.log("Tournament: ", entry.meta?.tournamentId);
+        // console.log("Tournament: ", entry.meta?.tournamentId);
 
-        if (game.mode === 1 && !entry.meta?.tournamentId) {
+        if (game.mode !== 2) {
           persistMatch(entry.game).catch((err) => {
             console.error("Error persisting match:", err);
           });
@@ -181,14 +191,36 @@ async function persistMatch(game) {
 
   const state = game.getCurrentGameState();
 
-  const matchInfos = {
-    player1Id: game.player1Id,
-    player2Id: game.player1Id,
-    player1score: state.score.left,
-    player2score: state.score.right,
-    winnerId: state.score.left > state.score.right ? game.player1Id : game.player2Id,
+  const type = game.mode === 0 ? "AI" : game.mode === 3 ? "ranked" : "1v1";
+
+  if (game.tournamentId) {
+    type = "tournament";
+  }
+
+  console.log("Persisting match:", {
+    player1Id: game.player1.id,
+    player2Id: game.player2.id,
+    player1Score: state.score.left,
+    player2Score: state.score.right,
+    winnerId: state.score.left > state.score.right ? game.player1.id : game.player2.id,
     longestStreak: game.longestStreak,
     duration: game.getDuration(),
+    type: type,
+    round: game.tournamentRound,
+    finish: true,
+  });
+
+  const matchInfos = {
+    player1Id: game.player1.id,
+    player2Id: game.player2.id,
+    player1Score: state.score.left,
+    player2Score: state.score.right,
+    winnerId: state.score.left > state.score.right ? game.player1.id : game.player2.id,
+    longestStreak: game.longestStreak,
+    duration: game.getDuration(),
+    type: type,
+    round: game.tournamentRound,
+    finish: true,
   };
   createMatch(matchInfos).catch(console.error);
 }

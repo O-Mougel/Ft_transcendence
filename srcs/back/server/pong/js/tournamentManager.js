@@ -66,10 +66,12 @@ export class TournamentManager {
     this.gameManager = gameManager;
     this.tournaments = new Map();
     this.gameToMatch = new Map();
+    this.tournamentSize = null;
   }
 
   createTournament(size, names) {
     if (![4, 8, 16].includes(size)) throw new Error("Tournament size must be 4, 8, or 16");
+    this.tournamentSize = size;
     if (!Array.isArray(names) || names.length !== size) throw new Error(`Expected ${size} player names`);
 
     const cleanedArray = names.map(n => String(n ?? "").trim()); // ensure strings and trim whitespace
@@ -115,6 +117,14 @@ export class TournamentManager {
     match.status = "playing";
     match.gameId = gameId;
 
+    // set tournamentId in game instance
+    // const gameEntry = this.gameManager.games.get(gameId);
+    // console.log("Game Entry for ID:", gameId, "is", gameEntry);
+    // if (gameEntry) {
+    //   gameEntry.tournamentId = tournamentId;
+    //   gameEntry.game.tournamentRound = getMatchRound(tournamentId, gameId);
+    // }
+
     tournament.current = { r: roundIndex, m: matchIndex, gameId };
     this.gameToMatch.set(gameId, { tournamentId, r: roundIndex, m: matchIndex });
 
@@ -129,7 +139,7 @@ export class TournamentManager {
         mode: 1,
         player1: match.player1,
         player2: match.player2,
-        tournament: { tournamentId, r: roundIndex, m: matchIndex },
+        tournament: { tournamentId, r: roundIndex, m: matchIndex, size: tournament.size},
       },
     };
 
@@ -209,4 +219,24 @@ export class TournamentManager {
     this.tournaments.delete(tournamentId);
     return true;
   }
+}
+
+// return level of round depending of tournament size (4, 8, 16) "Octofinals"=3, "Quarterfinals"=2, "Semifinals"=1, "Final"=0
+export function getMatchRound(tournamentId, gameId) {
+  console.log("getMatchRound called with tournamentId:", tournamentId, "and gameId:", gameId);
+  if (!tournamentId || !gameId) return null;
+  const tournament = tournamentManager.getTournament(tournamentId);
+  if (!tournament) return null;
+  console.log("Getting match round for tournament ID:", tournamentId, "and game ID:", gameId);
+
+  for (let roundIndex = 0; roundIndex < tournament.bracket.length; roundIndex++) {
+    for (let matchIndex = 0; matchIndex < tournament.bracket[roundIndex].length; matchIndex++) {
+      const match = tournament.bracket[roundIndex][matchIndex];
+      if (match.gameId === gameId) {
+        const roundsTotal = tournament.bracket.length;
+        return roundsTotal - roundIndex;
+      }
+    }
+  }
+  return null;
 }
