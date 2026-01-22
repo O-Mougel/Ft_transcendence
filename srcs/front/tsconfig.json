@@ -7,4 +7,14 @@
     "outDir": "./src/js",
 	"rootDir": "./src/ts/eventTS"
   },
+
+  "include": [
+    "src/ts/eventTS/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+	"/src/js",
+	"src/ts/gameTS",
+	"src/ts/viewTS"
+  ]
 }

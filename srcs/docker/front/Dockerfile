@@ -5,10 +5,11 @@ WORKDIR /usr/src/app
 
 #faster for cache
 COPY front/package.json ./
-COPY front/package-lock.json ./
+# COPY front/package-lock.json ./
 COPY front/tsconfig.json ./
 
-RUN npm ci
+# RUN npm ci
+RUN npm install
 RUN npm install -g nodemon
 
 COPY . .
