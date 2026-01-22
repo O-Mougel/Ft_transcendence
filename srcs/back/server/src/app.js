@@ -46,7 +46,7 @@ fastify.decorate('authenticate',
 			const refresh_token = request.cookies.refresh_token;
 
 			if (!refresh_token) {
-				return reply.status(401).send({ message: 'you are logged out, login first !' })
+				return reply.status(401).send({ message: 'You are logged out, please login first !', errRef:"userSelfLogout" })
 			}
 
 			const token = auth.split(" ")[1];

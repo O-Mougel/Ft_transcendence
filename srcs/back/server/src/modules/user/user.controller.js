@@ -495,7 +495,7 @@ export async function friendDeleteHandler(request, reply) {
 	if (!await alreadyfriend(request.user.id, friend.id))
 	return reply.status(403).send({
 		message: "This user is not your friend!",
-		errRef:"deteteNotFriends"
+		errRef:"deleteNotFriends"
 	});
 
 	await deletefriend(request.user.id, friend.id) // can fail ?????? try catch

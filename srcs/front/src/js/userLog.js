@@ -22,7 +22,7 @@ const hideAlertBoxMsg = async () => {
 	alertBox.innerHTML = "Hey ! I'm supposed to be hidden ! >:(";
 }
 
-export const displayCorrectErrMsg = async (error, data) => {
+export const displayCorrectErrMsg = async (error) => {
 
 	const index = error.toString().indexOf("\"errRef\"");
 	if (index < 0)
@@ -81,13 +81,13 @@ export const displayCorrectErrMsg = async (error, data) => {
 			alertBoxMsg(`⚠️ Invalid credentials !`);
 			break;
 		case "alterUsernameTaken":
-			alertBoxMsg(`❌ Username \"${data}\" is already used !`);
+			alertBoxMsg(`❌ The username you chose is already used !`);
 			break;
 		case "alterInnerFail":
 			alertBoxMsg(`⚠️ Server side error ! Couldn't edit profile !`);
 			break;
 		case "requestUserNotFound":
-			alertBoxMsg(`❌ User \"${data}\" does not exist !`);
+			alertBoxMsg(`❌ Selected user does not exist !`);
 			break;
 		case "requestSelfFriend":
 			alertBoxMsg(` Cannot ask yourself as a friend !`);
@@ -128,7 +128,7 @@ export const displayCorrectErrMsg = async (error, data) => {
 		case "requestCantAccept":
 			alertBoxMsg(`❌ Invalid friend request ! Cannot accept !`);
 			break;
-		case "deteteNotFriends":
+		case "deleteNotFriends":
 			alertBoxMsg(`❌ Selected user is not your friend !`);
 			break;
 		case "uploadNotMultipart":
@@ -375,7 +375,7 @@ window.acceptFriend = async (friendId) => {
 		if (await fetchErrcodeHandler(err) == 0)
 			return(window.acceptFriend(username));
 		console.error('⚠️ Couldn\'t accept friend request !\n =>', err);
-		displayCorrectErrMsg(err, data.friendrejectname);
+		displayCorrectErrMsg(err);
 	}
 }
 
@@ -424,7 +424,7 @@ window.rejectFriend = async (username) => {
 		if (await fetchErrcodeHandler(err) == 0)
 			return(window.rejectFriend(username));
 		console.error('⚠️ Couldn\'t reject friend request !\n =>', err);
-		displayCorrectErrMsg(err, data.friendrejectname);
+		displayCorrectErrMsg(err);
 	}
 }
 
@@ -475,8 +475,8 @@ const checkForFriendRequests = async () => {
 				listItem.innerHTML = `
 				<span class="text-sm">↪ ${safeName}</span>
 				<span class="flex items-center gap-2">
-					<button class="accept-request px-2 py-1 rounded" onclick="acceptFriend('${friendId}')" title="Accept">✅</button>
-					<button class="reject-request px-2 py-1 rounded" onclick="rejectFriend('${friendId}')" title="Reject">❌</button>
+					<button class="accept-request px-2 py-1 rounded" onclick="acceptFriend(${friendId})" title="Accept">✅</button>
+					<button class="reject-request px-2 py-1 rounded" onclick="rejectFriend(${friendId})" title="Reject">❌</button>
 				</span>`;
 				requestList.appendChild(listItem);
 			}
@@ -515,10 +515,10 @@ const displayUserFriends = async () => {
 				var listItem = document.createElement("li");
 				let	clearName = result.friends[i].name + "[4242]";
 				listItem.className = 'py-2 flex items-center justify-between ml-5';
-				if (result.friends[i].online)
-					listItem.innerHTML = `<span class="text-sm border w-full p-2 mb-2" name="${clearName}">🟢 ${result.friends[i].name}</span>`;
-				else
-					listItem.innerHTML = `<span class="text-sm border w-full p-2 mb-2" name="${clearName}">🔴 ${result.friends[i].name}</span>`;
+				// if (result.friends[i].online)
+				// 	listItem.innerHTML = `<span class="text-sm border w-full p-2 mb-2" name="${clearName}">🟢 ${result.friends[i].name}</span>`; 
+				// else
+					listItem.innerHTML = `<span class="text-sm border w-full p-2 mb-2" name="${clearName}">🔴 ${result.friends[i].name}</span>`;// false now
 					
 				friendList.appendChild(listItem);
 			}
@@ -618,7 +618,7 @@ window.sendNewFriendRequest = async function () {
 		if (await fetchErrcodeHandler(err) == 0)
 			return(window.sendNewFriendRequest());
 		console.error('Could not send friend request !\n => ', err);
-		displayCorrectErrMsg(err, data.friendRequestName);
+		displayCorrectErrMsg(err);
 	}
 }
 
@@ -712,7 +712,7 @@ window.handleNewUserCreate = async function (event) {
 		// password.value = "";
 		// passwordConfirm.value = "";
 		console.error('Could not create new user !\n => ', err);
-		displayCorrectErrMsg(err, "dummydata");
+		displayCorrectErrMsg(err);
 	}
 };
 
@@ -783,7 +783,7 @@ window.handleLoginClick = async function (event) {
 		username.value = "";
 		password.value = "";
 		console.error('Login error !\n => ', err);
-		displayCorrectErrMsg(err, "dummydata");
+		displayCorrectErrMsg(err);
 	}
 };
 
@@ -862,7 +862,7 @@ window.updateUserPassword = async function (event) {
 		if (await fetchErrcodeHandler(err) == 0)
 			return(window.updateUserPassword(event));
 		console.error('Failed to update password!\n => ', err);
-		displayCorrectErrMsg(err, "dummydata");
+		displayCorrectErrMsg(err);
 	}
 }
 
@@ -953,7 +953,7 @@ window.loginPlayer2 = async function (event) {
 		username.value = "";
 		password.value = "";
 		console.error('Login error !\n => ', err);
-		displayCorrectErrMsg(err, "dummydata");
+		displayCorrectErrMsg(err);
 	}
 };
 
