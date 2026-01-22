@@ -84,8 +84,8 @@ const scale = window.devicePixelRatio || 1;
 	resizeCanvasToElement();
 	window.addEventListener("resize", resizeCanvasToElement);
 	// Prevent scrolling
-	document.body.style.overflow = "hidden";
-	document.documentElement.style.overflow = "hidden";
+	// document.body.style.overflow = "hidden";
+	// document.documentElement.style.overflow = "hidden";
 
 	console.log("Tournament ID:", CONTEXT.tournamentId);
 	console.log("Game ID:", CONTEXT.gameId);
