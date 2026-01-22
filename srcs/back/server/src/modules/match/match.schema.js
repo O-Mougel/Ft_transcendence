@@ -12,9 +12,14 @@ const getMatchResponseSchema = z.object({
 
 const matchItemSchema = z.object({
 	id: z.number(),
-	name: z.string().min(1),
-	avatar: z.string().min(1),
-	online: z.boolean(),
+	player1name: z.string(),
+	player2name: z.string(),
+	player1Score: z.number(), 
+	player2Score: z.number(), 
+	win: z.boolean(),	   
+	type: z.string(),         
+	round: z.string(),        
+	createdAt: z.date()
 });
 
 const getMatchHistoryResponseSchema = z.object({
@@ -22,7 +27,7 @@ const getMatchHistoryResponseSchema = z.object({
 });
 
 export const { schemas: matchSchemas, $ref } = buildJsonSchemas({
-  	getMatchResponseSchema,
+	getMatchResponseSchema,
 	getMatchHistoryResponseSchema
 	},
 	{ $id: 'matchSchemas' }, 
