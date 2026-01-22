@@ -1113,7 +1113,7 @@ window.handlePongModeDisplay = async function (mode) {
 		const result = await dataRequestResponse.json();	
 		if (result)
 		{	
-			LeftPlayer.innerHTML = result.name;
+			LeftPlayer.textContent = result.name;
 		}
 	}
 	catch (err)
@@ -1125,13 +1125,13 @@ window.handlePongModeDisplay = async function (mode) {
 	}
 
 	if (mode == '0') {
-		RightPlayer.innerHTML = "COMPUTER";
+		RightPlayer.textContent = "COMPUTER";
 	}
 	else if (mode == '1') {
-		RightPlayer.innerHTML = "PLAYER 2";
+		RightPlayer.textContent = "PLAYER 2";
 	}
 	else if (mode == '2') {
-		RightPlayer.innerHTML = "PLAYER 2";
+		RightPlayer.textContent = "PLAYER 2";
 		instruction1v1.style.display = "none";
 		instruction2v2.style.display = "flex";
 	}
