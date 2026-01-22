@@ -79,7 +79,7 @@ export default class extends ViewTemplate {
 							</ul>
 						</div>
 					</div>
-					<h2 id="selectedPlayerUsernameHeader" class="hidden text-center pr-2 py-2 text-blue-900 mt-3">[--]</h2>
+					<h2 id="selectedPlayerUsernameHeader" class="hidden overflow-hidden text-center pr-2 py-2 text-blue-900 mt-3">[--]</h2>
 					<div id="friendStatDisplayBox" class="hidden border border-white rounded-lg w-full p-4 gap-4 flex-wrap justify-between animate-fade-in-scale">
 						<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
 							<p>Match played</p>
@@ -98,7 +98,7 @@ export default class extends ViewTemplate {
 							<p id="biggestStreakCpt2">--</p>
 						</div>
 					</div>
-					<h3 class="py-2">Remove a friend :</h3>
+					<h3 class="py-2 overflow-hidden">Remove a friend :</h3>
 					<div class="flex flex-col sm:flex-row items-center justify-center gap-4">
 						<select id="selectBoxFriendRemover" class="h-full border bg-black hover:cursor-pointer sm:mb-2">
 							<option value="dummyvalue">--Select a friend--</option>
