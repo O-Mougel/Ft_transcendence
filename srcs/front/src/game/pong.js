@@ -1,41 +1,127 @@
-import { emitStartGame, isSocketConnected, setupSocket, updateGameState } from "./socket.js";
+import { waitStartGame, isSocketConnected, setupSocket, emitStopGame, joinExistingGame, emitNextMatch } from "./socket.js";
 import { CONTEXT, createGameElements } from "./context.js";
 import { draw, drawScore, resetState } from "./graphics.js";
 import { bindControls } from "./controls.js";
 
-export function initPong( mode = {} ) {
+export function initPong(mode = {}) {
+	if (mode.mode === 3 && !sessionStorage.getItem("player2_token")) {
+		window.history.pushState({}, "", `/ranked`);
+		window.dispatchEvent(new PopStateEvent("popstate"));
+		return;
+	}
 	CONTEXT.gameMode = mode.mode;
 	console.log("Setting up Pong..., mode:", mode.mode);
+	console.log("Game ID from initPong:", mode.gameId);
+
+	if (mode.gameId) {
+		CONTEXT.gameId = mode.gameId;
+	}
+
 	CONTEXT.canvas = document.getElementById("canvas");
-	if (CONTEXT.canvas) CONTEXT.ctx = CONTEXT.canvas.getContext("2d");
 	CONTEXT.startButton = document.getElementById("startButton");
+	CONTEXT.backButton = document.getElementById("backToTournament");
 	CONTEXT.score = document.getElementById("Scores");
 
-	if (!CONTEXT.canvas || !CONTEXT.startButton) {
+	if (!CONTEXT.canvas || !CONTEXT.startButton || !CONTEXT.score || !CONTEXT.backButton) {
 		console.error("Pong: canvas or startButton not found in DOM.");
 		return;
 	}
 
-	const scale = window.devicePixelRatio;
-	CONTEXT.canvas.width = Math.floor(CONTEXT.GAME_WIDTH * scale);
-	CONTEXT.canvas.height = Math.floor(CONTEXT.GAME_HEIGHT * scale);
-	CONTEXT.ctx.scale(scale, scale);
+	// In SPA, stop the game when navigating away
+	// window.addEventListener("popstate", () => {
+	// 	console.log("Popstate event detected.");
+	// 	if (isSocketConnected()) {
+	// 		console.log("Navigating away, stopping game.");
+	// 		emitStopGame();
+	// 	}
+	// });
 
-	CONTEXT.GAME_HEIGHT = CONTEXT.canvas.height;
-	CONTEXT.GAME_WIDTH = CONTEXT.canvas.width;
+	// // Stop game if user leaves the page (enters new URL, closes tab, refreshes, etc.)
+	// window.addEventListener("beforeunload", () => {
+	// 	if (isSocketConnected()) {
+	// 		console.log("Window unloading, stopping game.");
+	// 		emitStopGame(); // send final state
+	// 		if (sessionStorage.getItem("currentTournamentId")) {
+	// 			sessionStorage.removeItem("currentTournamentId");
+	// 		}
+	// 	}
+	// });
 
-	// Optional: prevent scrolling while Pong is active
-	document.body.style.overflow = "hidden";
-	document.documentElement.style.overflow = "hidden";
+	const canvas = CONTEXT.canvas;
+	const ctx = CONTEXT.ctx = canvas.getContext("2d");
 
-	CONTEXT.startButton.style.display = "block";
-	CONTEXT.startButton.onclick = startGame;
+	const scale = window.devicePixelRatio || 1;
+	CONTEXT.scale = scale;
 
+	// Resize canvas drawing buffer to match displayed CSS size (and DPR)
+	const resizeCanvasToElement = () => {
+		const rect = canvas.getBoundingClientRect();
+		const cssW = Math.max(1, Math.floor(rect.width));
+		const cssH = Math.max(1, Math.floor(rect.height));
+
+		// keep logical drawing coordinates in CSS pixels so game math uses those values
+		CONTEXT.GAME_WIDTH = cssW;
+		CONTEXT.GAME_HEIGHT = cssH;
+
+		// set backing buffer in device pixels
+		const backingW = Math.floor(cssW * scale);
+		const backingH = Math.floor(cssH * scale);
+		if (canvas.width !== backingW || canvas.height !== backingH) {
+			canvas.width = backingW;
+			canvas.height = backingH;
+		}
+
+		// ensure CSS width/height match the element rect (some frameworks may change these)
+		canvas.style.width = cssW + "px";
+		canvas.style.height = cssH + "px";
+
+		// reset transform and apply DPR scaling so drawing uses CSS pixel coordinates
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
+		ctx.scale(scale, scale);
+	};
+
+	// initial size and keep responsive on resize
+	resizeCanvasToElement();
+	window.addEventListener("resize", resizeCanvasToElement);
+	// Prevent scrolling
+	// document.body.style.overflow = "hidden";
+	// document.documentElement.style.overflow = "hidden";
+
+	const pongTournamentUrl = window.location.href.includes("/pongTournament");
+		
 	createGameElements();
 	setupSocket();
 	bindControls();
+	
+	if (CONTEXT.tournamentId/* && CONTEXT.gameId*/ && pongTournamentUrl) {
+		CONTEXT.startButton.style.display = "none";
+		joinExistingGame(CONTEXT.gameId);
+		resetState();
 
-	// Initial draw
+		if (CONTEXT.startButton) CONTEXT.startButton.style.display = "none";
+		if (CONTEXT.score) CONTEXT.score.style.display = "flex";
+		if (CONTEXT) CONTEXT.isGameStarted = true;
+		gameInit();
+		CONTEXT.startButton.style.display = "block";
+		CONTEXT.startButton.onclick = () => {
+			startButton.style.display = "none";
+			emitNextMatch(CONTEXT.tournamentId);
+			CONTEXT.backButton.classList.add("hidden");
+		};
+	} else {
+		CONTEXT.startButton.style.display = "block";
+		CONTEXT.startButton.onclick = startGame;
+	}
+
+
+	if (CONTEXT.tournamentId && pongTournamentUrl) {
+		CONTEXT.backButton.classList.remove("hidden");
+		CONTEXT.backButton.onclick = () => {
+			window.history.pushState({}, "", `/tournamentSize`);
+			window.dispatchEvent(new PopStateEvent("popstate"));
+		};
+	}
+	
 	draw();
 }
 
@@ -66,7 +152,6 @@ export function updateGameScene(data) {
 		{
 			leftPaddle.score = left;
 			rightPaddle.score = right;
-			console.log(`Score - Left: ${left}, Right: ${right}`);
 			drawScore(left, right);
 		}
 	}
@@ -79,25 +164,17 @@ function startGame() {
 
 	console.log("Game Started");
 
-	emitStartGame();
-	scheduleClientUpdates();
+	waitStartGame();
 	resetState();
 
 	if (CONTEXT.startButton) CONTEXT.startButton.style.display = "none";
 	if (CONTEXT.score) CONTEXT.score.style.display = "flex";
 	if (CONTEXT) CONTEXT.isGameStarted = true;
-
 	gameInit();
 }
 
 function gameInit() {
-	const { ctx, canvas } = CONTEXT;
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	const { ctx, GAME_WIDTH, GAME_HEIGHT } = CONTEXT;
+	ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 	draw();
-}
-
-function scheduleClientUpdates() {
-	if (CONTEXT.updateIntervalId) return;
-	CONTEXT.updateIntervalId = setInterval(updateGameState, 1000 / 60); // 60 FPS
-	console.log("Client updates scheduled.");
 }

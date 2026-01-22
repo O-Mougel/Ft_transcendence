@@ -18,7 +18,5 @@ export default class Ball {
     reset() {
         this.x = this.spawnX;
         this.y = this.spawnY;
-        // this.speedX = 3.0;
-        // this.speedY = 3.0;
     }
 }
