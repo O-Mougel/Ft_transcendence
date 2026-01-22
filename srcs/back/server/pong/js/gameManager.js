@@ -193,6 +193,8 @@ async function persistMatch(game) {
 
   const type = game.mode === 0 ? "AI" : game.mode === 3 ? "ranked" : game.tournamentId ? "tournament" : "1v1";
 
+  const player2name = type === "AI" ? "COMPUTER" : "1v1" ? " Guest" : "tournament" ? null : null;
+
   const matchInfos = {
     player1Id: game.player1.id,
     player2Id: game.player2.id,
@@ -203,6 +205,7 @@ async function persistMatch(game) {
     duration: game.getDuration(),
     type: type,
     round: game.tournamentRound,
+	player2name,
   };
   createMatch(matchInfos).catch(console.error);
 }
