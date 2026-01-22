@@ -1,4 +1,3 @@
-
 function generateGameId() {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
@@ -10,7 +9,6 @@ export function registerSocketHandlers(io, manager, tournamentManager) {
     // SIMPLE MATCH
     socket.on("game:start", (data = {}) => {
       const gameId = generateGameId();
-      console.log("Game data:", data);
 
       socket.data.gameId = gameId;
       manager.joinGame(gameId, socket);
