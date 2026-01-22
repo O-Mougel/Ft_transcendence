@@ -95,7 +95,7 @@ async function userRoutes(fastify) {
         {
             schema: {
                 response: {
-                    201: $ref("accessTokenResponseSchema"),
+                    200: $ref("accessTokenResponseSchema"),
                 }
             }
         }, 

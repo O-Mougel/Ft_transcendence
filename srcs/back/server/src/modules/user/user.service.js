@@ -51,7 +51,6 @@ export async function findUserByName(name) {
 	return user;
 }
 
-
 export async function findUserById(id) {
 	const user = await db.user.findUnique({
 		where: {
