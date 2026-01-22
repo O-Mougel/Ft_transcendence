@@ -4,7 +4,7 @@
     "module": "esnext",
     "moduleResolution": "node",
 	"skipLibCheck": true,
-    "outDir": "./src/js",
-	"rootDir": "./src/ts/eventTS"
+    "outDir": "./src/game",
+	"rootDir": "./src/ts/gameTS"
   },
 }
