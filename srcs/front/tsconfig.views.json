@@ -7,4 +7,13 @@
     "outDir": "./src/views",
 	"rootDir": "./src/ts/viewTS"
   },
+  "include": [
+    "src/ts/viewTS/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+	"src/views",
+	"src/ts/eventTS",
+	"src/ts/gameTS"
+  ]
 }
