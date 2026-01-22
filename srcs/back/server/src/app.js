@@ -31,7 +31,11 @@ fastify.decorate('authenticate',
 			}
 
 			const token = auth.split(" ")[1];
-			console.log("Token is : ", token );
+			
+			if (token === "userSelfLogoutToken")
+				return reply.status(401).send({ message: 'User logged himself out, can\'t perform action', errRef:"userSelfLogout" })
+			if (token === "tokenNoRefresh")
+				return reply.status(401).send({ message: 'Token expired and could not be refreshed, you need to log-in again before performing another action.', errRef:"tokenNoRefresh" })
 			const decoded = fastify.jwt.verify(token);
 			if (decoded.type != "access")
 				return reply.status(401).send({ message: 'Invalid token to access this path' })
@@ -45,7 +49,7 @@ fastify.decorate('authenticate',
 			else if (errCode === "FAST_JWT_MALFORMED") 
 				return reply.status(403).send({ message: 'Malformed JWT Token !', errRef:"malformedJWT"})
 			else
-				return reply.status(500).send({ message: 'Couldn\'t verify JWT Token !', errRef:"authenticateOtherError"})
+				return reply.status(403).send({ message: 'Couldn\'t verify JWT Token !', errRef:"authenticateOtherError"})
 		}
 	}
 );
@@ -61,6 +65,11 @@ fastify.decorate('logoutauthenticate',
 
 			const token = auth.split(" ")[1];
 
+			if (token === "userSelfLogoutToken")
+				return reply.status(401).send({ message: 'User logged himself out, can\'t perform action', errRef:"userSelfLogout" })
+			if (token === "tokenNoRefresh")
+				return reply.status(401).send({ message: 'Token expired and could not be refreshed, you need to log-in again before performing another action.', errRef:"tokenNoRefresh" })
+
 			const decoded = fastify.jwt.verify(token)
 			if (decoded.scope == "match")
 				return reply.status(401).send({ message: 'Invalid token to access this path' })
@@ -74,7 +83,7 @@ fastify.decorate('logoutauthenticate',
 			else if (errCode === "FAST_JWT_MALFORMED") 
 				return reply.status(403).send({ message: 'Malformed JWT Token !', errRef:"malformedJWT"})
 			else
-				return reply.status(500).send({ message: 'Couldn\'t verify JWT Token !', errRef:"authenticateOtherError"})
+				return reply.status(403).send({ message: 'Couldn\'t verify JWT Token !', errRef:"authenticateOtherError"})
 		}
 	}
 );
@@ -89,6 +98,12 @@ fastify.decorate('twofaauthenticate',
 			}
 
 			const token = auth.split(" ")[1];
+
+			if (token === "userSelfLogoutToken")
+				return reply.status(401).send({ message: 'User logged himself out, can\'t perform action', errRef:"userSelfLogout" })
+			if (token === "tokenNoRefresh")
+				return reply.status(401).send({ message: 'Token expired and could not be refreshed, you need to log-in again before performing another action.', errRef:"tokenNoRefresh" })
+
 			const decoded = fastify.jwt.verify(token)
 
 			if (decoded.type != "2fa")
@@ -103,7 +118,7 @@ fastify.decorate('twofaauthenticate',
 			else if (errCode === "FAST_JWT_MALFORMED") 
 				return reply.status(403).send({ message: 'Malformed JWT Token !', errRef:"malformedJWT"})
 			else
-				return reply.status(500).send({ message: 'Couldn\'t verify JWT Token !', errRef:"authenticateOtherError"})
+				return reply.status(403).send({ message: 'Couldn\'t verify JWT Token !', errRef:"authenticateOtherError"})
 		}
 	}
 );
@@ -119,6 +134,11 @@ fastify.decorate('matchauthenticate',
 
 			const token = auth.split(" ")[1];
 
+			if (token === "userSelfLogoutToken")
+				return reply.status(401).send({ message: 'User logged himself out, can\'t perform action', errRef:"userSelfLogout" })
+			if (token === "tokenNoRefresh")
+				return reply.status(401).send({ message: 'Token expired and could not be refreshed, you need to log-in again before performing another action.', errRef:"tokenNoRefresh" })
+
 			const decoded = fastify.jwt.verify(token)
 			if (decoded.type != "match")
 				return reply.status(401).send({ message: 'Invalid token to access this path' })
@@ -132,7 +152,7 @@ fastify.decorate('matchauthenticate',
 			else if (errCode === "FAST_JWT_MALFORMED") 
 				return reply.status(403).send({ message: 'Malformed JWT Token !', errRef:"malformedJWT"})
 			else
-				return reply.status(500).send({ message: 'Couldn\'t verify JWT Token !', errRef:"authenticateOtherError"})
+				return reply.status(403).send({ message: 'Couldn\'t verify JWT Token !', errRef:"authenticateOtherError"})
 		}
 	}
 );

@@ -251,7 +251,7 @@ window.player2TwoFAValidation = async function (event) {
 	catch (err)
 	{
 		if (await fetchErrcodeHandler(err) == 0)
-			return(window.loginWith2FACode());
-		console.error('Failed to log with 2FA!\n => ', err);
+			return(window.player2TwoFAValidation());
+		console.error('Failed to validate 2FA!\n => ', err);
 	}
 }

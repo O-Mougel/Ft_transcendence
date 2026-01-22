@@ -263,7 +263,7 @@ export const show2FAStatus = async () =>
 	{
 		if (await fetchErrcodeHandler(err) == 0)
 			return(show2FAStatus());
-		console.error('⚠️ Failed to disable 2FA!\n => ', err);
+		console.error('⚠️ Failed to display 2FA status!\n => ', err);
 	}
 
 }
@@ -519,7 +519,6 @@ const newtabRelogFetch = async () => {
 		} 
 		catch (err) 
 		{
-			console.info("Nuh uhhhhh !", err);
 			window.sessionStorage.setItem('logStatus', 'loggedOut');
 		}
 }

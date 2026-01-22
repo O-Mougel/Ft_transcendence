@@ -3,7 +3,7 @@
   "version": "1.0",
   "description": "very cool project",
   "scripts": {
-    "dev": "tailwindcss -i ./src/css/input.css -o ./src/css/output.css --watch",
+    "dev": "tailwindcss -i ./src/css/input.css -o ./src/css/output.css --watch=always",
 	"start": "tsc --watch"
   },
   "devDependencies": {

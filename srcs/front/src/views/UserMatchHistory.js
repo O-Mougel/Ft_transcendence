@@ -43,10 +43,8 @@ export default class extends ViewTemplate {
 			</div>
 
 
-			<div class="pt-[3%]">
-			</div>
-			<div class="pt-[3%] relative flex flex-col gap-y-4 items-center mx-[3%] px-4 rounded-xl outline-none border border-blue-300 bg-[url(/img/assets/stars.gif)] bg-cover bg-center shadow-[0_0_20px_rgba(158,202,237,0.9)]">
-			<h1 class="pb-4">Match History :</h1>
+			<div class="pt-[3%] mt-[3%] relative flex flex-col gap-y-4 pb-10 items-center mx-[3%] px-4 rounded-xl outline-none border border-blue-300 bg-[url(/img/assets/stars.gif)] bg-cover bg-center shadow-[0_0_20px_rgba(158,202,237,0.9)]">
+				<h1 class="pb-4">Match History :</h1>
 				<div id="matchHistoryDiv" class="flex flex-col w-full justify-center items-center gap-4 pb-4">
 
 					<div class="flex flex-col bg-[#4ac03d9f] border border-white rounded-lg w-full gap-2 p-4">
@@ -104,6 +102,9 @@ export default class extends ViewTemplate {
 					</div>
 
 				</div>
+			</div>
+			<div class="mt-5 flex justify-center">
+				<a id="backToProfileButton" href="/profileStats" class="inline uppercase text-sm md:text-base xl:text-2xl h-full focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis w-1/2 md:w-1/4 border hover:border-[#98c6f8] border-white py-2 px-4 rounded-lg" name="backtoProfileButton" data-link> 👤 Back to profile </a>
 			</div>`
 	}
 
