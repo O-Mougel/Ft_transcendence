@@ -14,7 +14,7 @@ export function handleGameOver(data) {
 	CONTEXT.gameId = null;
 	resetState();
 	printGameOver(data);
-	if (CONTEXT.tournamentId) {
+	if (CONTEXT.tournamentId && window.location.href.includes("/pongTournament")) {
 		CONTEXT.backButton.classList.remove("hidden");
 	}
 }
