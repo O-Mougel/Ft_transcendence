@@ -9,9 +9,8 @@ export default class extends ViewTemplate {
 
 	async getHTML() {
 		return `
-			<div class="pt-[3%]">
-			</div>
-			<div class="pt-[3%] flex flex-col gap-y-4 items-center mx-[3%] px-4 rounded-xl outline-none border border-blue-300 bg-[url(/img/assets/stars.gif)] bg-cover bg-center shadow-[0_0_20px_rgba(158,202,237,0.9)]">
+			
+			<div class="pt-[3%] mt-[3%] flex flex-col gap-y-4 items-center mx-[3%] px-4 rounded-xl outline-none border border-blue-300 bg-[url(/img/assets/stars.gif)] bg-cover bg-center shadow-[0_0_20px_rgba(158,202,237,0.9)]">
 				<h1 class="pb-4">Change your password</h1>
 				<form class="flex flex-col items-center">
 					<label class="mb-2">Current Password :</label>
