@@ -36,7 +36,7 @@ export default class extends ViewTemplate {
 								<input id="friendSearchInput" type="text" placeholder="Add friend" maxlength="13" class="h-8 px-2 rounded-l-md border border-white bg-transparent text-white focus:outline-none text-sm" />
 								<button id="friendSearchButton" class=" h-8 bg-[#98c6f8] text-black rounded-r-md text-sm" onclick=sendNewFriendRequest()>🔍</button>
 							</div>
-							<p id="friendSearchResults" class="mt-4 text-base text-ellipsis"></p>
+							<p id="friendSearchResults" class="bg-[#c03d3d9f] mt-4 text-base text-ellipsis"></p>
 						</div>
 					</div>
 				</div>
@@ -47,59 +47,7 @@ export default class extends ViewTemplate {
 				<h1 class="pb-4">Match History :</h1>
 				<div id="matchHistoryDiv" class="flex flex-col w-full justify-center items-center gap-4 pb-4">
 
-					<div class="flex flex-col bg-[#4ac03d9f] border border-white rounded-lg w-full gap-2 p-4">
-						<div class="flex flex-col gap-y-2">
-							<div class="flex flex-row justify-between items-center">
-								<div class="flex flex-col items-start">
-									<p>[Date]</p>
-									<p>[Duration]</p>
-								</div>
-								<p>[Scoreboard]</p>
-								<div class="flex flex-col items-end">
-									<p>[Mode]</p>
-									<p>[round]</p>
-								</div>
-							</div>
-							<div class="flex flex-row justify-between items-center">
-								<div class="flex flex-col items-start">
-									<p>[Player1]</p>
-									<p>[Player2]</p>
-								</div>
-								<p>[imgVS]</p>
-								<div class="flex flex-col items-end">
-									<p>[Player3]</p>
-									<p>[Player4]</p>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="flex flex-col bg-[#d42d2d9f] border border-white rounded-lg w-full gap-2 p-4">
-						<div class="flex flex-col gap-y-2">
-							<div class="flex flex-row justify-between items-center">
-								<div class="flex flex-col items-start">
-									<p>[Date]</p>
-									<p>[Duration]</p>
-								</div>
-								<p>[Scoreboard]</p>
-								<div class="flex flex-col items-end">
-									<p>[Mode]</p>
-									<p>[round]</p>
-								</div>
-							</div>
-							<div class="flex flex-row justify-between items-center">
-								<div class="flex flex-col items-start">
-									<p>[Player1]</p>
-									<p>[Player2]</p>
-								</div>
-								<p>[imgVS]</p>
-								<div class="flex flex-col items-end">
-									<p>[Player3]</p>
-									<p>[Player4]</p>
-								</div>
-							</div>
-						</div>
-					</div>
+				<!-- Match history items will be dynamically inserted here -->
 
 				</div>
 			</div>
