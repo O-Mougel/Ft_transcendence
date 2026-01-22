@@ -50,7 +50,7 @@ export function initPong(mode = {}) {
 	const canvas = CONTEXT.canvas;
 	const ctx = CONTEXT.ctx = canvas.getContext("2d");
 
-const scale = window.devicePixelRatio || 1;
+	const scale = window.devicePixelRatio || 1;
 	CONTEXT.scale = scale;
 
 	// Resize canvas drawing buffer to match displayed CSS size (and DPR)
@@ -87,14 +87,13 @@ const scale = window.devicePixelRatio || 1;
 	// document.body.style.overflow = "hidden";
 	// document.documentElement.style.overflow = "hidden";
 
-	console.log("Tournament ID:", CONTEXT.tournamentId);
-	console.log("Game ID:", CONTEXT.gameId);
+	const pongTournamentUrl = window.location.href.includes("/pongTournament");
 		
 	createGameElements();
 	setupSocket();
 	bindControls();
 	
-	if (CONTEXT.tournamentId/* && CONTEXT.gameId*/) {
+	if (CONTEXT.tournamentId/* && CONTEXT.gameId*/ && pongTournamentUrl) {
 		CONTEXT.startButton.style.display = "none";
 		joinExistingGame(CONTEXT.gameId);
 		resetState();
@@ -114,10 +113,8 @@ const scale = window.devicePixelRatio || 1;
 		CONTEXT.startButton.onclick = startGame;
 	}
 
-	const url = window.location.href;
-	console.log("Current URL:", url);
 
-	if (CONTEXT.tournamentId && url.includes("/pongTournament")) {
+	if (CONTEXT.tournamentId && pongTournamentUrl) {
 		CONTEXT.backButton.classList.remove("hidden");
 		CONTEXT.backButton.onclick = () => {
 			window.history.pushState({}, "", `/tournamentSize`);

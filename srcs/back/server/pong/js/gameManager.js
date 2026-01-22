@@ -191,24 +191,7 @@ async function persistMatch(game) {
 
   const state = game.getCurrentGameState();
 
-  const type = game.mode === 0 ? "AI" : game.mode === 3 ? "ranked" : "1v1";
-
-  if (game.tournamentId) {
-    type = "tournament";
-  }
-
-  console.log("Persisting match:", {
-    player1Id: game.player1.id,
-    player2Id: game.player2.id,
-    player1Score: state.score.left,
-    player2Score: state.score.right,
-    winnerId: state.score.left > state.score.right ? game.player1.id : game.player2.id,
-    longestStreak: game.longestStreak,
-    duration: game.getDuration(),
-    type: type,
-    round: game.tournamentRound,
-    finish: true,
-  });
+  const type = game.mode === 0 ? "AI" : game.mode === 3 ? "ranked" : game.tournamentId ? "tournament" : "1v1";
 
   const matchInfos = {
     player1Id: game.player1.id,
@@ -220,7 +203,6 @@ async function persistMatch(game) {
     duration: game.getDuration(),
     type: type,
     round: game.tournamentRound,
-    finish: true,
   };
   createMatch(matchInfos).catch(console.error);
 }

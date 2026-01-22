@@ -371,8 +371,8 @@ export class Game {
     this.tournamentId = data?.tournament?.tournamentId || null;
     if (this.tournamentId)
       this.tournamentRound = getTournamentRound(data?.tournament);
-    console.log('Starting game data:', data);
-    console.log('Game started', this.mode !== 2 ? '2 Paddles' : '4 Paddles');
+    const gameMode = ["AI", "2P", "4P", "RANKED"];
+    console.log('Game started', gameMode[data.mode]);
     if (this.mode === 0) {
       this.AIPlayer = new AIPlayer(this.rightPaddle, this.leftPaddle, this);
     } //else if (this.mode === 1 || this.mode === 3) {
