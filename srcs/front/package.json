@@ -2,11 +2,9 @@
   "name": "ft_transcendance",
   "version": "1.0",
   "description": "very cool project",
-  "main": "index.js",
   "scripts": {
-    "dev": "tailwindcss -i ./src/css/input.css -o ./src/css/output.css --watch",
-    "build": "tsc",
-	"start": "nodemon src/server.js"
+    "dev": "tailwindcss -i ./src/css/input.css -o ./src/css/output.css --watch=always",
+	"start": "tsc --watch"
   },
   "devDependencies": {
     "@tailwindcss/cli": "4.1.16",

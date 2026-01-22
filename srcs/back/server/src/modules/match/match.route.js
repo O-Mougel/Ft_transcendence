@@ -1,29 +1,46 @@
 // match.route.js
 
 import { $ref } from "./match.schema.js";
-import { createMatchHandler, getMatchsHandler } from "./match.controller.js";
+import { getMatchsHandler, getFriendMatchsHandler, getMatchHistoryHandler } from "./match.controller.js";
 
 async function matchRoutes(fastify) {
-	fastify.post(
-		'/match',
+	fastify.get(
+		'/match/self',
 		{
 			preHandler: [fastify.authenticate],
 			schema: {
-				body: $ref("createMatchSchema"),
 				response: {
-					201: $ref("createMatchResponseSchema")
+					200: $ref("getMatchResponseSchema")
 				},
 			},
 		},
-		createMatchHandler,
+		getMatchsHandler,
 	)
 
 	fastify.get(
-		'/match',
+		'/match/:friendId',
 		{
 			preHandler: [fastify.authenticate],
+			schema: {
+				response: {
+					200: $ref("getMatchResponseSchema")
+				},
+			},
 		},
-		getMatchsHandler,
+		getFriendMatchsHandler,
+	)
+
+	fastify.get(
+		'/match/history',
+		{
+			preHandler: [fastify.authenticate],
+			schema: {
+				response: {
+					200: $ref("getMatchHistoryResponseSchema")
+				},
+			},
+		},
+		getMatchHistoryHandler,
 	)
 }
 

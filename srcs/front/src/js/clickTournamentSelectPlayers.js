@@ -1,132 +1,60 @@
-window.get4PlayerName = function (event) {
-	event.preventDefault();
+import { setupSocket, getSocket } from "/game/socket.js";
+import { alertBoxMsg } from "./userLog.js";
 
-	const player1 = document.getElementById('player1');
-	const player2 = document.getElementById('player2');
-	const player3 = document.getElementById('player3');
-	const player4 = document.getElementById('player4');
+function collectPlayerNames(expectedCount) {
+  const names = [];
+  for (let i = 1; i <= expectedCount; i++) {
+    const element = document.getElementById(`player${i}`);
+    if (!element) throw new Error(`Missing input player${i}`);
+    names.push(element.value.trim());
+  }
+  return names;
+}
 
-	if (player1.value === "")
-		player1.value = "Player 1";
-	if (player2.value === "")
-		player2.value = "Player 2";
-	if (player3.value === "")
-		player3.value = "Player 3";
-	if (player4.value === "")
-		player4.value = "Player 4";
+function validateNames(names, expectedCount) {
+  if (names.length !== expectedCount) return `Expected ${expectedCount} players.`;
 
-	console.log("Player 1: ", player1.value);
-	console.log("Player 2: ", player2.value);
-	console.log("Player 3: ", player3.value);
-	console.log("Player 4: ", player4.value);
-};
+  if (names.some(n => n.length === 0)) return "All player names must be filled.";
 
-window.get8PlayerName = function (event) {
-	event.preventDefault();
+  // avoid duplicates (case-insensitive)
+  const lowered = names.map(n => n.toLowerCase());
+  const set = new Set(lowered);
+  if (set.size !== lowered.length) return "Player names must be unique.";
 
-	const player1 = document.getElementById('player1');
-	const player2 = document.getElementById('player2');
-	const player3 = document.getElementById('player3');
-	const player4 = document.getElementById('player4');
-	const player5 = document.getElementById('player5');
-	const player6 = document.getElementById('player6');
-	const player7 = document.getElementById('player7');
-	const player8 = document.getElementById('player8');
+  // optional: length constraints
+  if (names.some(n => n.length > 20)) return "Player names must be <= 20 characters.";
 
-	if (player1.value === "")
-		player1.value = "Player 1";
-	if (player2.value === "")
-		player2.value = "Player 2";
-	if (player3.value === "")
-		player3.value = "Player 3";
-	if (player4.value === "")
-		player4.value = "Player 4";
-	if (player5.value === "")
-		player5.value = "Player 5";
-	if (player6.value === "")
-		player6.value = "Player 6";
-	if (player7.value === "")
-		player7.value = "Player 7";
-	if (player8.value === "")
-		player8.value = "Player 8";
+  return null;
+}
 
-	console.log("Player 1: ", player1.value);
-	console.log("Player 2: ", player2.value);
-	console.log("Player 3: ", player3.value);
-	console.log("Player 4: ", player4.value);
-	console.log("Player 5: ", player5.value);
-	console.log("Player 6: ", player6.value);
-	console.log("Player 7: ", player7.value);
-	console.log("Player 8: ", player8.value);
-};
+export async function startTournament(expectedCount, event) {
+  setupSocket();
+  const socket = getSocket();
 
-window.get16PlayerName = function (event) {
-	event.preventDefault();
+  event.preventDefault();
 
-	const player1 = document.getElementById('player1');
-	const player2 = document.getElementById('player2');
-	const player3 = document.getElementById('player3');
-	const player4 = document.getElementById('player4');
-	const player5 = document.getElementById('player5');
-	const player6 = document.getElementById('player6');
-	const player7 = document.getElementById('player7');
-	const player8 = document.getElementById('player8');
-	const player9 = document.getElementById('player9');
-	const player10 = document.getElementById('player10');
-	const player11 = document.getElementById('player11');
-	const player12 = document.getElementById('player12');
-	const player13 = document.getElementById('player13');
-	const player14 = document.getElementById('player14');
-	const player15 = document.getElementById('player15');
-	const player16 = document.getElementById('player16');
+  const names = collectPlayerNames(expectedCount);
+  const err = validateNames(names, expectedCount);
+  if (err) {
+    alertBoxMsg("❌ " + err);
+    return;
+  }
 
-	if (player1.value === "")
-		player1.value = "Player 1";
-	if (player2.value === "")
-		player2.value = "Player 2";
-	if (player3.value === "")
-		player3.value = "Player 3";
-	if (player4.value === "")
-		player4.value = "Player 4";
-	if (player5.value === "")
-		player5.value = "Player 5";
-	if (player6.value === "")
-		player6.value = "Player 6";
-	if (player7.value === "")
-		player7.value = "Player 7";
-	if (player8.value === "")
-		player8.value = "Player 8";
-	if (player9.value === "")
-		player9.value = "Player 9";
-	if (player10.value === "")
-		player10.value = "Player 10";
-	if (player11.value === "")
-		player11.value = "Player 11";
-	if (player12.value === "")
-		player12.value = "Player 12";
-	if (player13.value === "")
-		player13.value = "Player 13";
-	if (player14.value === "")
-		player14.value = "Player 14";
-	if (player15.value === "")
-		player15.value = "Player 15";
-	if (player16.value === "")
-		player16.value = "Player 16";
+  console.log("Creating tournament with players:", names);
 
-	console.log("Player 1: ", player1.value);
-	console.log("Player 2: ", player2.value);
-	console.log("Player 3: ", player3.value);
-	console.log("Player 4: ", player4.value);
-	console.log("Player 5: ", player5.value);
-	console.log("Player 6: ", player6.value);
-	console.log("Player 7: ", player7.value);
-	console.log("Player 8: ", player8.value);
-	console.log("Player 9: ", player9.value);
-	console.log("Player 10: ", player10.value);
-	console.log("Player 11: ", player11.value);
-	console.log("Player 12: ", player12.value);
-	console.log("Player 13: ", player13.value);
-	console.log("Player 14: ", player14.value);
-	console.log("Player 15: ", player15.value);
-	console.log("Player 16: ", player16.value);
-};
+  socket.emit("tournament:create", { size: expectedCount, names });
+
+  socket.once("tournament:state", ({ tournamentId }) => {
+    console.log("Tournament created with ID:", tournamentId);
+    sessionStorage.setItem("currentTournamentId", tournamentId);
+    window.history.pushState({}, "", `/tournament`);
+    window.dispatchEvent(new PopStateEvent("popstate"));
+
+    // sequential model: start first match when ready
+    // socket.emit("tournament:nextMatch", { tournamentId });
+  });
+
+  socket.once("tournament:error", (e) => {
+    alertBoxMsg("❌ " + (e?.message || "Failed to create tournament"));
+  });
+}

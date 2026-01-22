@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
-    "target": "ES2020",                          // Emit JavaScript targeting ES2020 features (async/await, etc.)
-    "module": "nodenext",                        
-    "moduleResolution": "nodenext",                        
-	"sourceMap": true,
+    "target": "es2022",
+    "module": "esnext",
+    "moduleResolution": "node",
 	"skipLibCheck": true,
-    "outDir": "./src/js",                            // Write compiled .js files into the "dist" folder
+    "outDir": "./src/js",
+	"rootDir": "./src/ts",
   },
-  "include": ["./src/**/*.ts"],                     // Files to include (glob relative to this tsconfig). Matches files under src
 }

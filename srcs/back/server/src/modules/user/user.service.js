@@ -2,8 +2,9 @@
 
 import { db } from "../../utils/prisma.js";
 import { hashPassword } from "../../utils/hash.js";
+import { generateRefreshToken } from "../../utils/token.js";
 
-export async function alterUser(id, newName, newPath) { // add a check to see if new username exists already
+export async function alterUser(id, newName, newPath) {
 
 	const user = await db.user.update({
 		where: {
@@ -18,35 +19,36 @@ export async function alterUser(id, newName, newPath) { // add a check to see if
 	return (user);
 }
 
-export async function createUser(input) {
+export async function createUser(input) { //check password confirmation here to solve sql injection ??
 	const { password, ...rest } = input;
 
 	const { hash, salt } = hashPassword(password);
 
 	const user = await db.user.create({
-			data: {...rest, salt, password: hash}
+		data: {...rest, salt, password: hash}
 	});
 
 	return user;
 }
 
-export async function findUserByName(name) { //grabs every field from given name
+export async function checkIfUserExists(name) { // if count = 0, doesn't exist
+	const result = await db.user.count({
+		where: {
+			name: name,
+		},
+	});
+
+	return result;
+}	
+
+export async function findUserByName(name) {
 	const user = await db.user.findUnique({
 		where: {
 			name: name,
 		},
 	})
 
-		return user;
-}
-
-export async function setOnlineStatus(id, status) {
-	await db.user.update({
-		where: { id: id },
-		data: {
-			online: status,
-		},
-	})
+	return user;
 }
 
 export async function findUserById(id) {
@@ -56,24 +58,22 @@ export async function findUserById(id) {
 		},
 	})
 
-    return user;
+	return user;
 }
 
 export async function changePassword(id, newpassword) {
-  const { hash, salt } = hashPassword(newpassword);
+	const { hash, salt } = hashPassword(newpassword);
 
-  const user = await db.user.update({
-    where: {id: id},
-    data:{
-      password: hash,
-      salt: salt,
-    },
-  })
+	const user = await db.user.update({
+		where: {id: id},
+		data:{
+			password: hash,
+			salt: salt,
+		},
+	})
 
-  return user;
+	return user;
 }
-
-//update 2fa
 
 export async function alreadyrequested(id, friendid) {
 	const user = await db.user.findFirst({
@@ -149,30 +149,165 @@ export async function acceptfriend(id, friendid) {
 	})
 }
 
+export async function rejectfriend(id, friendid) {
+	await db.user.update({
+		where: {id: id},
+		data: {
+			request: {
+				disconnect: {id: friendid},
+			},
+		},
+	}),
+	await db.user.update({
+		where: {id: friendid},
+		data: {
+			request: {
+				disconnect: {id: id},
+			},
+		},
+	})
+}
+
+export async function deletefriend(id, friendid) {
+	await db.user.update({
+		where: {id: id},
+		data: {
+			friends: {
+				disconnect: {id: friendid},
+			},
+		},
+	}),
+	await db.user.update({
+		where: {id: friendid},
+		data: {
+			friends: {
+				disconnect: {id: id},
+			},
+		},
+	})
+}
+
 export async function findrequests(id) {
 	const requests = await db.user.findUnique({
 		where: {id: id},
 		select: {
-			requestOf: true,
+			requestOf: {
+				select: {
+					id: true,
+					name: true,
+				},
+			},
 		},
 	})
-	
+
 	return requests
 }
 
 export async function findfriends(id) {
-	const friends = await db.user.findUnique({
+	const friendsObj = await db.user.findUnique({
 		where: {id: id},
 		select: {
 			friends: {
-        select: {
-          name: true,
-          avatar: true,
-          online: true,
-        },
-      },
+				select: {
+					id: true,
+					name: true,
+				},
+			},
 		},
 	})
 	
-	return friends
+	return friendsObj
+}
+
+export async function savesecret2fa(id, secret) {
+	await db.user.update({
+		where: { id: id },
+		data: {
+			twofasecret: secret
+		}
+	});
+}
+
+export async function deletesecret2fa(id) {
+	await db.user.update({
+		where: {
+			id: id,
+		},
+		data: {
+			twofasecret: null,
+			auth2fa: false,
+		},
+	})
+}
+
+export async function activate2fa(id) {
+	await db.user.update({
+		where: { id: id },
+		data: {
+			auth2fa: true
+		}
+	});
+}
+
+export async function get2fastatus(id) {
+	const status = await db.user.findUnique({
+		where: { id: id },
+		select: {
+			auth2fa: true
+		}
+	});
+	return status
+}
+
+export async function saveRefreshToken(id, token)
+{
+	await db.refreshTokens.create({
+		data:{
+			user_id: id,
+			token: token,
+			expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) // 14 jours
+		}
+	})
+}
+
+export async function findToken(token) {
+	return await db.refreshTokens.findUnique({
+	where: { token: token }
+	})
+}
+
+export async function deleteAllForUser(id) {
+	await db.refreshTokens.deleteMany ({
+	where: { user_id: id }
+	})
+}
+
+export async function rotateRefreshToken(id, token) {
+	await deleteRefreshToken(token)
+	const newRefreshToken = generateRefreshToken();
+	await saveRefreshToken(id, newRefreshToken)
+	return newRefreshToken
+}
+
+export async function deleteRefreshToken(token) {
+	await db.refreshTokens.delete({
+		where: {
+			token: token
+		}
+	})
+}
+
+export async function createAIinvited(){
+	if (!await db.user.findUnique({where: { id: 0 }})) {
+		await db.user.create({
+			data: {
+				id: 0,
+				email: "",
+				name: "AI/Invited",
+				password: "",
+				salt: "",
+				aiInvited: true
+			}
+		})
+	}
 }

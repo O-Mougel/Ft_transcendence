@@ -3,51 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="./css/output.css" rel="stylesheet">
-  <link rel="icon" href="/img/Goug.ico">
+  <link href="/css/output.css" rel="stylesheet">
+  <link rel="icon" href="/img/assets/death-star.png">
   <title>Single page app</title>
 </head>
-<body class="h-screen w-screen m-0 bg-[url(/img/starField.gif)] bg-cover bg-center backdrop-blur-[2px] text-center text-[2vw] 2xl:text-3xl text-white">
+<body class="h-screen w-screen m-0 bg-[url(/img/assets/starField.gif)] bg-cover bg-center bg-fixed backdrop-blur-[2px] text-center text-[3vw] sm:text-[2vw] 2xl:text-3xl text-white">
 
 	<!-- SMALL NAVBAR --------------------------------->
-	<ul class="sm:hidden flex h-[5%] w-full m-0 p-0 list-none items-center">
-        <li class="h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/" data-link>H</a></li>
-        <li class="h-full w-auto relative">
+	<ul class="sm:hidden flex h-[10%] max-h-14 w-full m-0 p-0 pt-2 list-none items-center">
+        <li id="navBarHomeIconId" class="hidden h-full w-auto px-2"><a class="flex items-center justify-center bg-[url(/img/assets/navbar/home.png)] hover:bg-[url(/img/assets/navbar/home_hover.png)] bg-contain bg-no-repeat bg-center w-10 h-10" href="/" data-link></a></li>
+        <li id="navBarModesIconId" class="hidden h-full w-auto relative px-2">
 			<input class="sr-only peer" id="modListBoxSmall" type="checkbox"/>
-			<label for="modListBoxSmall" class="cursor-pointer select-none flex items-center justify-center px-5 h-full w-full hover:text-[#98c6f8] hover:bg-[#1c1b1b]">M</label>
+			<label for="modListBoxSmall" class="cursor-pointer select-none flex items-center justify-center bg-[url(/img/assets/navbar/mode.png)] hover:bg-[url(/img/assets/navbar/mode_hover.png)] bg-contain bg-no-repeat bg-center w-10 h-10"></label>
 			<ul class="select-none absolute peer-checked:block hidden self-start text-left h-full w-full z-30" id="modlist">
-				<li class="h-full w-auto text-base bg-amber-400 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/versusAI" data-link>🦾</a></li>
-				<li class="h-full w-auto text-base bg-amber-500 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/playerBattle" data-link>⚔️</a></li>
+				<li class="h-full w-auto text-base bg-gray-400 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pongAI" data-link>🦾</a></li>
+				<li class="h-full w-auto text-base bg-gray-500 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong" data-link>⚔️</a></li>
+				<li class="h-full w-auto text-base bg-gray-600 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong2" data-link>⚔️⚔️</a></li>
+				<li class="h-full w-auto text-base bg-gray-700 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/ranked" data-link>ranked</a></li>
 			</ul>
 		</li>
-        <li class="h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/tournament" data-link>T</a></li>
-        <li class="h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/about" data-link>A</a></li>
-		<input id="profileButton" type="button" value="Profile" class="flex items-center text-white bg-[#302f2f] hover:bg-[#1c1b1b] ml-auto px-5 m-0" />
+        <li id="navBarCupIconId" class="hidden h-full w-auto px-2"><a class="flex items-center justify-center bg-[url(/img/assets/navbar/tournament.png)] hover:bg-[url(/img/assets/navbar/tournament_hover.png)] bg-contain bg-no-repeat bg-center w-10 h-10" href="/tournamentSize" data-link></a></li>
+        <li id="navBarAboutIconId" class="hidden h-full w-auto px-2"><a class="flex items-center justify-center bg-[url(/img/assets/navbar/about.png)] hover:bg-[url(/img/assets/navbar/about_hover.png)] bg-contain bg-no-repeat bg-center w-10 h-10" href="/about" data-link></a></li>
+		<input id="profileButton" type="button" value="" class="flex items-center bg-[url(/img/assets/navbar/profile.png)] hover:bg-[url(/img/assets/navbar/profile_hover.png)] bg-contain bg-no-repeat bg-center ml-auto w-10 h-10 px-5 m-0 mr-5 disabled:opacity-10 disabled:cursor-not-allowed disabled:bg-[url(/img/assets/navbar/profile.png)] hover:cursor-pointer" onclick="grabProfileInfo(event)"/>
     </ul>
 
 	<!-- DEFAULT NAVBAR -->
 	<ul class="hidden sm:flex h-[5%] w-full m-0 p-0 list-none items-center">
-		<li class="h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/" data-link>Home</a></li>
-		<li class="h-full w-auto relative">
+		<li id="navBarHomeId" class="hidden h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/" data-link>Home</a></li>
+		<li id="navBarModesId"class="hidden h-full w-auto relative">
 			<input class="sr-only peer" id="modListBox" type="checkbox"/>
 			<label for="modListBox" class="cursor-pointer select-none flex items-center justify-center px-5 h-full w-full hover:text-[#98c6f8] hover:bg-[#1c1b1b]">Modes</label>
 			<ul class="select-none absolute peer-checked:block hidden self-start text-left h-full w-full z-30" id="modlist">
-				<li class="h-full w-auto text-base bg-amber-400 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/versusAI" data-link>VS AI 🦾</a></li>
-				<li class="h-full w-auto text-base bg-amber-500 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/playerBattle" data-link>PVP ⚔️</a></li>
+				<li class="h-full w-auto text-base bg-gray-400 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pongAI" data-link>VS AI 🦾</a></li>
+				<li class="h-full w-auto text-base bg-gray-500 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong" data-link>P⚔️P</a></li>
+				<li class="h-full w-auto text-base bg-gray-600 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong2" data-link>PP⚔️PP</a></li>
+				<li class="h-full w-auto text-base bg-gray-700 hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/ranked" data-link>ranked</a></li>
 			</ul>
 		</li>
-        <li class="h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/tournament" data-link>Tournament</a></li>
-		<li class="h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/about" data-link>About</a></li>
-		<input id="profileButton2" type="button" value="Profile" class="flex items-center hover:text-[#98c6f8] hover:bg-[#1c1b1b] ml-auto px-5 m-0 h-full" />
+        <li id="navBarCupId" class="hidden h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/tournamentSize" data-link>Tournament</a></li>
+		<li id="navBarAboutId" class="hidden h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/about" data-link>About</a></li>
+		<input id="profileButton2" type="button" value="Profile" class="flex items-center hover:text-[#98c6f8] hover:bg-[#1c1b1b] disabled:opacity-10 disabled:cursor-not-allowed ml-auto px-5 m-0 h-full hover:cursor-pointer" onclick="grabProfileInfo(event)" disabled/>
     </ul>
 
+	<!-- ALERT BOX -->
+	<span id="alertBox" class="hidden animate-fade-in-scale fixed top-4 left-1/2 transform -translate-x-1/2 px-4 py-3 z-50 text-center rounded-lg uppercase bg-black border border-white shadow-[0_0_20px_rgba(158,202,237,0.9)]"></span>
+
 	<!--  MAIN DIV -->
-	<div id="app" class="h-[95%] relative w-full"></div>
+	<div id="app" class="h-[90%] sm:h-[95%] relative w-full"></div>
 
 	<!-- SCRIPTS -->
 	<script type="module" src="/js/index.js"></script>
 	<script type="module" src="/js/clickEvents.js"></script>
+	<script type="module" src="/js/clickTournamentSelectPlayers.js"></script>
 	<script type="module" src="/js/userLog.js"></script>
-	
+	<script type="module" src="/js/2FAEvent.js"></script>
 </body>
 </html>
