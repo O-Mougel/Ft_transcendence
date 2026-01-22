@@ -95,8 +95,6 @@ const friendDeleteSchema = z.object({
 const friendItemSchema = z.object({
 	id: z.number(),
 	name: z.string().min(1),
-	avatar: z.string().min(1),
-	online: z.boolean(),
 });
 
 const friendsArrayResponseSchema = z.object({
@@ -106,8 +104,6 @@ const friendsArrayResponseSchema = z.object({
 const friendRequestItemSchema = z.object({
 	id: z.number(),
 	name: z.string().min(1),
-	avatar: z.string().min(1),
-	online: z.boolean(),
 });
 
 const friendRequestResponseSchema = z.object({

@@ -3,6 +3,7 @@
 import Fastify from "fastify";
 import fjwt from '@fastify/jwt'
 import fCookie from '@fastify/cookie'
+import websocket from '@fastify/websocket'
 import userRoutes from "./modules/user/user.route.js";
 import matchRoutes from "./modules/match/match.route.js";
 import { userSchemas } from './modules/user/user.schema.js';
@@ -14,6 +15,8 @@ const fastify = Fastify({logger: true});
 fastify.register(fjwt, {
     secret: process.env.JWT_SECRET
 });
+
+fastify.register(websocket);
 
 fastify.decorate('login',
 	async (request, reply) => {
@@ -47,7 +50,6 @@ fastify.decorate('authenticate',
 			}
 
 			const token = auth.split(" ")[1];
-			console.log("Token is : ", token );
 			const decoded = fastify.jwt.verify(token);
 			if (decoded.type != "access")
 				return reply.status(401).send({ message: 'Invalid token to access this path' })
