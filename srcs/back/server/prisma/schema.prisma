@@ -21,7 +21,6 @@ model User {
   requestOf        User[]   @relation("FriendRequest")
   auth2fa          Boolean  @default(false)
   twofasecret      String?
-  online           Boolean  @default(false)
   aiInvited        Boolean  @default(false)
   matchesAsPlayer1 Match[]  @relation("Player1Matches")
   matchesAsPlayer2 Match[]  @relation("Player2Matches")
@@ -39,12 +38,9 @@ model Match {
   winnerId	    Int
   longestStreak Int
   duration		Int
-  finish        Boolean	 //false = aborted/true = finnished
   type          String   //'tournament', 'ranked', '1v1', '2v2', 'AI'
   player2name   String?  @default("") //'AI' or login of the invited player
   round         String?  @default("") //for the tournament 'Final' 'Semifinal' 'Quaterfinal' 'Octofinals' '16th-finals'
-  player3name   String?  @default("") //for 2v2 login of the invited player
-  player4name   String?  @default("") //for 2v2 login of the invited player
   createdAt     DateTime @default(now())
 }
 
