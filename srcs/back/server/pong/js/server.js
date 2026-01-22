@@ -100,3 +100,14 @@ fastify.listen({ port: 3002, host: "0.0.0.0" }, (err) => {
     process.exit(1);
   }
 });
+
+export function verifyPlayerToken(token) {
+  // In a real implementation, verify the token properly
+  try {
+    const payload = fastify.jwt.verify(token);
+    return payload;
+  } catch (e) {
+    console.error("Token verification error:", e);
+    return null;
+  }
+}
