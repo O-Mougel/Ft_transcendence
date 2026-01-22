@@ -740,17 +740,12 @@ window.handleLoginClick = async function (event) {
 		return ;
 	}
 
-	const data = {
-		// name: username.value.toUpperCase(),
-		name: username.value,
-		password: password.value,
-	};		
+	let base64Credentials = btoa((username.value.toString() + ":" + password.value.toString()));
 	try 
 	{
 		const loginResponse = await fetch('/login', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(data),
+				headers: {Authorization: `Basic ${base64Credentials}`},
 		});
 	
 		if (!loginResponse.ok) {
@@ -776,7 +771,7 @@ window.handleLoginClick = async function (event) {
 				window.sessionStorage.setItem('access_token',result.token);
 				
 				console.log('⏳ Logged in !');
-				alertBoxMsg(`Welcome back ${data.name} ! 😉`);
+				alertBoxMsg(`Welcome back ${username.value} ! 😉`);
 				await backToDefaultPage();
 			}
 		}
