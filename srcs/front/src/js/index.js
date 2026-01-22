@@ -657,10 +657,10 @@ const router = async () => {
 	if(sessionStorage.getItem('pagehide') && sessionStorage.getItem('pagehide') === 'pageshouldreload')
 	{
 		sessionStorage.setItem('pagehide', 'pagehasreloaded');
-		document.querySelector("#app").innerHTML = await new routes[0].view().getHTML();
-		adjustNavbar("/");
-		history.pushState(null, null, "/");
-		return ;
+		// document.querySelector("#app").innerHTML = await new routes[0].view().getHTML();
+		// adjustNavbar("/");
+		// history.pushState(null, null, "/");
+		// return ;
 	}
 	document.querySelector("#app").innerHTML = await view.getHTML();
 	await adjustNavbar(match.mapElement.path);

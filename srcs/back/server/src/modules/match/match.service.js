@@ -12,6 +12,15 @@ export async function createMatch(input) //player1Id, player2Id(only in ranked),
 }
 
 export async function showstats(id) {
+	// const input = {
+	// 	player1Id: 1,
+	// 	player2Id: 0,
+	// 	player1Score: 10,
+	// 	player2Score: 0,
+	// 	winnerId: 1,
+	// 	longestStreak: 40,
+	// }
+
 	const matchsnb = await db.match.count({
 		where: {
 			OR: [

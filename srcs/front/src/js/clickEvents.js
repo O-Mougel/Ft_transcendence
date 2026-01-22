@@ -60,7 +60,7 @@ window.addEventListener("pagehide", () => {
 
 	if(checkKeyReload || reloadTypeResult)
 	{
-		// window.sessionStorage.setItem('pagehide', 'pageshouldreload');
+		window.sessionStorage.setItem('pagehide', 'pageshouldreload');
 		return ;
 	}
 	window.sessionStorage.setItem('pagehide', 'logout_fetch_sent');

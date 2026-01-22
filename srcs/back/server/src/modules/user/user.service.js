@@ -51,14 +51,6 @@ export async function findUserByName(name) {
 	return user;
 }
 
-export async function setOnlineStatus(id, status) {
-	await db.user.update({
-		where: { id: id },
-		data: {
-			online: status,
-		},
-	})
-}
 
 export async function findUserById(id) {
 	const user = await db.user.findUnique({
@@ -292,9 +284,9 @@ export async function deleteAllForUser(id) {
 }
 
 export async function rotateRefreshToken(id, token) {
-	deleteRefreshToken(token)
+	await deleteRefreshToken(token)
 	const newRefreshToken = generateRefreshToken();
-	saveRefreshToken(id, newRefreshToken)
+	await saveRefreshToken(id, newRefreshToken)
 	return newRefreshToken
 }
 

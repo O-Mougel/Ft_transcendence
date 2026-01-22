@@ -7,7 +7,7 @@ import crypto from 'crypto'; //random file name
 import { pipeline } from 'stream/promises'; //file writing
 import { fileTypeFromBuffer } from "file-type";
 /////
-import { createUser, findUserByName, findUserById, alterUser, changePassword, setOnlineStatus, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend, rejectfriend, deletefriend, deletesecret2fa, activate2fa, get2fastatus, saveRefreshToken, findToken, rotateRefreshToken, deleteAllForUser, deleteRefreshToken } from "./user.service.js";
+import { createUser, findUserByName, findUserById, alterUser, changePassword, findfriends, findrequests, acceptfriend, alreadyfriend, alreadyrequested, requestfriend, rejectfriend, deletefriend, deletesecret2fa, activate2fa, get2fastatus, saveRefreshToken, findToken, rotateRefreshToken, deleteAllForUser, deleteRefreshToken } from "./user.service.js";
 import { verifyPassword } from "../../utils/hash.js";
 import { generateAccessToken, generateRefreshToken, generate2faToken, generateMatchToken } from "../../utils/token.js";
 import { generateSecret, verify2fa } from "../../utils/twofa.js"
@@ -52,7 +52,6 @@ export async function registerUserHandler(request, reply) {
 			sameSite: "strict"
 		})
 
-		setOnlineStatus(user.id, true)
 		return reply.code(201).send({ require2fa: false, token: accessToken });
 
 	} catch (error) {
@@ -127,7 +126,6 @@ export async function loginHandler(request, reply) {
 		sameSite: "strict"
 	})
 
-	setOnlineStatus(user.id, true)
 	return reply.code(201).send({ require2fa: false, token: accessToken});
 }
 
@@ -217,34 +215,34 @@ export async function check2faHandler(request, reply) {
 		sameSite: "strict"
 	})
 
-	await setOnlineStatus(user.id, true)
-
 	return reply.code(201).send({ newAccessToken: accessToken });
 }
 
 export async function refreshTokenHandler(request, reply) {
 	const token = request.cookies.refresh_token;
-	if (!token) return reply.status(200).send({ message: 'First time log detected ..' }) //subject to change
+	if (!token) return reply.status(403).send({ message: 'Refresh_token cookie is missing !' })
 
 	const stored = await findToken(token)
 
-	reply.clearCookie("refresh_token");
-
+	
 	if (!stored) {
 		return reply.status(403).send({ message: "Invalid refresh_token !" });
 	}
 	
-	await setOnlineStatus(stored.user_id, false)
-
 	const now = Date.now()
 	if (stored.expires_at < now) {
 		await deleteAllForUser(stored.user_id)
 		return reply.status(403).send({ message: "Expired refresh_token !" });
 	}
-
+	
 	// rotation
+	reply.clearCookie("refresh_token");
 	const refreshToken = await rotateRefreshToken(stored.user_id, token)
 	const user = await findUserById(stored.user_id);
+
+	if (!user)
+		return reply.status(403).send({ message: "User ID not found in db !" });
+
 	const newAccessToken = generateAccessToken(request.server, user);
 	reply.setCookie('refresh_token', refreshToken, {
 		path: '/',
@@ -253,8 +251,6 @@ export async function refreshTokenHandler(request, reply) {
 		secure: true,
 		sameSite: "strict"
 	})
-
-	await setOnlineStatus(user.id, true)
 
 	return reply.code(201).send({newAccessToken: newAccessToken});
 }
@@ -334,9 +330,8 @@ export async function logoutHandler(request, reply) {
 	const token = request.cookies.refreshToken;
 
 	try {
-		await setOnlineStatus(request.user.id, false)
 		if (token)
-			deleteRefreshToken(token)
+			await deleteRefreshToken(token)
 		reply.clearCookie("refresh_token");
 		return reply.status(201).send({ message: "Logged out..." });
 
@@ -377,7 +372,7 @@ export async function editPasswordHandler(request, reply) {
 		});
 	}
 
-	changePassword(user.id, body.newpassword);
+	await changePassword(user.id, body.newpassword);
 
 	return reply.status(200).send({
 		message: "Password edited successfully!"
