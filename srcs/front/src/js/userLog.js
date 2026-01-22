@@ -978,34 +978,34 @@ window.buildMatchHistoryPage = async function () {
 		if (result)
 		{
 			matchHistoryDiv.innerHTML = '';
-			if (result.matchs.length)
+			if (result.match.length)
 			{
-				for(let i = 0; i < result.matchs.length; i++) 
+				for(let i = 0; i < result.match.length; i++) 
 				{
 					var divItem = document.createElement("div");
 					divItem.className = 'flex flex-col bg-[#4ac03d9f] border border-white rounded-lg w-full gap-2 p-4';
 					divItem.innerHTML = `<div class="flex flex-col gap-y-2">
 							<div class="flex flex-row justify-between items-center">
 								<div class="flex flex-col items-start w-[40%]">
-									<p>${result.matchs[i].createdAt}</p>
-									<p>${result.matchs[i].duration}</p>
+									<p>${result.match[i].createdAt}</p>
+									<p>${result.match[i].duration} seconds</p>
 								</div>
-								<p class="w-[20%]">${result.matchs[i].player1Score} - ${result.matchs[i].player2Score}</p>
+								<p class="w-[20%]">${result.match[i].player1Score} - ${result.match[i].player2Score}</p>
 								<div class="flex flex-col items-end w-[40%]">
-									<p>${result.matchs[i].type}</p>
-									<p>${result.matchs[i].round}</p>
+									<p>${result.match[i].type}</p>
+									<p>${result.match[i].round}</p>
 								</div>
 							</div>
 							<div class="flex flex-row justify-between items-center">
 								<div class="flex flex-col items-start w-[50%]">
-									<p>${result.matchs[i].player1name}</p>
+									<p>${result.match[i].player1name}</p>
 								</div>
 								<div class="flex flex-col items-end w-[50%]">
-									<p>${result.matchs[i].player2name}</p>
+									<p>${result.match[i].player2name}</p>
 								</div>
 							</div>
 						</div>`;
-					if (result.matchs[i].player1Score < result.matchs[i].player2Score)
+					if (result.match[i].player1Score < result.match[i].player2Score)
 						divItem.style.backgroundColor = "#c03d3d9f";
 					matchHistoryDiv.appendChild(divItem);
 				}
