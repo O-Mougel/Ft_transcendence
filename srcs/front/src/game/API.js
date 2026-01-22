@@ -4,13 +4,17 @@ import { CONTEXT } from "./context.js";
 export function handleGameStopped() {
 	console.log("Game Stopped by server");
 	CONTEXT.isGameStarted = false;
+	CONTEXT.gameId = null;
 	resetState();
 	draw();
 }
 
 export function handleGameOver(data) {
-	console.log("Game Over. Final Score:", data);
 	CONTEXT.isGameStarted = false;
+	CONTEXT.gameId = null;
 	resetState();
 	printGameOver(data);
+	if (CONTEXT.tournamentId && window.location.href.includes("/pongTournament")) {
+		CONTEXT.backButton.classList.remove("hidden");
+	}
 }
