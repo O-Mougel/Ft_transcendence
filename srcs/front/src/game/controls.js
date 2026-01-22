@@ -32,7 +32,7 @@ function handleKeyUp(e) {
   const key = e.key;
 
   // ESC stops the game
-  if (key === "Escape" && !CONTEXT.tournamentId) handleEscapeKey();
+  if (key === "Escape") handleEscapeKey();
   CONTEXT.keysPressed.delete(key);
   updateDirections();
 }
