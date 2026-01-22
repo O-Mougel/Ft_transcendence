@@ -56,10 +56,12 @@ export async function showstats(id) {
 	console.log("\n\n\n------");
 	console.log(result);
 	console.log("-------\n\n\n");
+	let biggest_streak;
+	let longestMatch;
 	if (result)
 	{
-	const biggest_streak = result.max.longestStreak ?? 0;
-	const longestMatch = result.max.duration ?? 0;
+		biggest_streak = result._max.longestStreak ?? 0;
+		longestMatch = result._max.duration ?? 0;
 	}
 	else
 	{
