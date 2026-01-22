@@ -204,8 +204,6 @@ export async function findrequests(id) {
 				select: {
 					id: true,
 					name: true,
-					avatar: true,
-					online: true,
 				},
 			},
 		},
@@ -222,8 +220,6 @@ export async function findfriends(id) {
 				select: {
 					id: true,
 					name: true,
-					avatar: true,
-					online: true,
 				},
 			},
 		},

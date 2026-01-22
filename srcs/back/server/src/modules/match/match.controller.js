@@ -33,5 +33,15 @@ export async function getFriendMatchsHandler(request, reply) {
 }
 
 export async function getMatchHistoryHandler(request, reply){
-	return await getMatchs(request.user.id)
+	const matchs = await getMatchs(request.user.id)
+	const matches = matchs.map(match => ({
+		...match,
+		win: match.winnerId == request.user.id,
+		player2name: match.player2.id == 0 ? match.player2name : match.player2.name,
+		player1name: match.player1.name
+	}));
+	return { matchs: matches }
 }
+
+//faire passer tous les matcha dans une fonction qui check le winner et remplace le player2 name si c'est pas le bon
+//return matchs

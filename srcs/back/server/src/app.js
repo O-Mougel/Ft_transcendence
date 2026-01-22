@@ -3,6 +3,7 @@
 import Fastify from "fastify";
 import fjwt from '@fastify/jwt'
 import fCookie from '@fastify/cookie'
+import websocket from '@fastify/websocket'
 import userRoutes from "./modules/user/user.route.js";
 import matchRoutes from "./modules/match/match.route.js";
 import { userSchemas } from './modules/user/user.schema.js';
@@ -14,6 +15,24 @@ const fastify = Fastify({logger: true});
 fastify.register(fjwt, {
     secret: process.env.JWT_SECRET
 });
+
+fastify.register(websocket);
+
+fastify.decorate('login',
+	async (request, reply) => {
+		const basic = request.headers.authorization;
+
+		if (!basic || !basic.startsWith("Basic ")) {
+			return reply.status(401).send({ message: 'Authentication required', errRef:"authBasicMissing"});
+		}
+
+		const auth = basic.split(" ")[1];
+		const decoded = atob(auth)
+		const splited = decoded.split((":"));
+		request.name = splited[0]
+		request.password = splited[1]
+	}
+);
 
 fastify.decorate('authenticate',
 	async (request, reply) => {
