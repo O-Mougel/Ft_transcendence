@@ -36,13 +36,6 @@ async function userRoutes(fastify) {
 					201: $ref("loginResponseSchema"),
 				}
 			},
-			preValidation: async (request, reply) => {
-				const parsed = loginSchema.safeParse(request.body);
-				if (!parsed.success) {
-					const errors = parsed.error.issues.map(i => ({ path: i.path, message: i.message }));
-					return reply.code(400).send({ statusCode: 400, error: 'Bad request: Incorrect Zod Parsing !', errContext: errors });
-				}
-			},
 		}, 
 		loginHandler
 	);
@@ -102,7 +95,7 @@ async function userRoutes(fastify) {
         {
             schema: {
                 response: {
-                    201: $ref("accessTokenResponseSchema"),
+                    200: $ref("accessTokenResponseSchema"),
                 }
             }
         }, 
