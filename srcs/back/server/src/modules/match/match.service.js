@@ -27,7 +27,6 @@ export async function showstats(id) {
 				{ player1Id: id },
 				{ player2Id: id },
 			],
-			finish: true,
 		},
 	})
 
@@ -39,7 +38,6 @@ export async function showstats(id) {
 	const win = await db.match.count({
 		where: {
 			winnerId: id,
-			finish: true,
 		},
 	})
 	const calc = win / matchsnb * 100; //divide by zero ?
@@ -51,7 +49,6 @@ export async function showstats(id) {
 				{ player1Id: id },
 				{ player2Id: id },
 			],
-			finish: true,
 		},
 		_max: {
 			longestStreak: true,
