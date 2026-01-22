@@ -18,12 +18,13 @@ const matchItemSchema = z.object({
 	player2Score: z.number(), 
 	win: z.boolean(),	   
 	type: z.string(),         
-	round: z.string(),        
+	round: z.string(),
+	duration: z.number(),
 	createdAt: z.date()
 });
 
 const getMatchHistoryResponseSchema = z.object({
-	matchs: z.array(matchItemSchema)
+	match: z.array(matchItemSchema),
 });
 
 export const { schemas: matchSchemas, $ref } = buildJsonSchemas({

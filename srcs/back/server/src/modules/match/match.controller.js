@@ -9,10 +9,15 @@ export async function getMatchsHandler(request, reply) {
 	return stats;
 }
 
-export async function getFriendMatchsHandler(request, reply) {
+export async function getFriendMatchsHandler(request, reply) { //check friend id et pas de ciuwbrg
 	const { friendId } = request.params
 
 	const userId = Number(friendId)
+
+	if (!userId)
+		return reply.status(400).send({
+			message: "invalid friend id ! Try again!"
+		});
 
 	const friend = await findUserById(userId);
 	if (!friend) {	
@@ -38,10 +43,13 @@ export async function getMatchHistoryHandler(request, reply){
 		...match,
 		win: match.winnerId == request.user.id,
 		player2name: match.player2.id == 0 ? match.player2name : match.player2.name,
-		player1name: match.player1.name
+		player1name: match.player1.name,
+		createdAt: new Date(match.createdAt).toLocaleString("fr-FR", {day: "2-digit",
+			month: "2-digit",
+			year: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
+		})
 	}));
-	return { matchs: matches }
+	return { match: matches }
 }
-
-//faire passer tous les matcha dans une fonction qui check le winner et remplace le player2 name si c'est pas le bon
-//return matchs
