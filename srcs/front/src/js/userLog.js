@@ -1005,7 +1005,7 @@ window.buildMatchHistoryPage = async function () {
 								</div>
 							</div>
 						</div>`;
-					if (result.match[i].player1Score < result.match[i].player2Score)
+					if (!result.match[i].win)
 						divItem.style.backgroundColor = "#c03d3d9f";
 					matchHistoryDiv.appendChild(divItem);
 				}
