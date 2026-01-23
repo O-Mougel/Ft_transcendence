@@ -1,13 +1,12 @@
-import ViewTemplate from "./ViewTemplate.js";	
+import ViewTemplate from "./ViewTemplate.js";
 
-export default class extends ViewTemplate {
-	constructor()
-	{
+export default class LoginView extends ViewTemplate {
+	constructor() {
 		super();
 		this.setTitle("Login page");
 	}
 
-	async getHTML() {
+	async getHTML(): Promise<string> {
 		return `
 			<div id="profilePanel" class="hidden absolute animate-slide-in-left right-0 top-0 h-full min-w-80 w-[20%] bg-[url(/img/assets/stars.gif)] z-50 shadow-[0_0_20px_rgba(158,202,237,0.9)] border border-[#98c6f8] overflow-auto">
 				<div class="flex flex-col text-center w-full h-full">
@@ -56,12 +55,11 @@ export default class extends ViewTemplate {
 					<a class="flex items-center justify-center px-5 h-full w-full text-sm mt-4 hover:text-[#98c6f8]" href="/newUserRegistration" data-link>New ? Create account</a>
 					<p id="signInResult" class="mt-4 text-base"></p>
 				</form>
-			</div>`
+			</div>`;
 	}
 
-	async init()
-	{
-		if (document.getElementById('clientUsername'))
-			document.getElementById('clientUsername').focus();
+	async init(): Promise<void> {
+		const usernameInput = document.getElementById('clientUsername');
+		if (usernameInput) usernameInput.focus();
 	}
 }

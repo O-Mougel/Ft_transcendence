@@ -1,96 +1,98 @@
 import { CONTEXT } from "/game/context.js";
 import { setupSocket, getSocket } from "/game/socket.js";
+import type { Socket } from '../types/socket.types';
+import type { Tournament, TournamentStateData, MatchStartedData, TournamentEndedData } from '../types/socket.types';
 
-export function initTournament() {
+export function initTournament(): void {
 	// ensure socket exists
 	setupSocket();
 	const socket = getSocket();
 
 	const tournamentId = extractTournamentId();
 	if (!tournamentId) {
-	  document.getElementById("tournamentStatus").textContent = "Missing tournament id.";
-	  CONTEXT.tournamentId = null;
-	  window.history.pushState({}, "", "/tournamentSize");
-	  window.dispatchEvent(new PopStateEvent("popstate"));
-	  return;
+		const statusEl = document.getElementById("tournamentStatus");
+		if (statusEl) statusEl.textContent = "Missing tournament id.";
+		CONTEXT.tournamentId = null;
+		window.history.pushState({}, "", "/tournamentSize");
+		window.dispatchEvent(new PopStateEvent("popstate"));
+		return;
 	}
 
-		
-	const nextMatchBtn = document.getElementById("nextMatchBtn");
-	const quitBtn = document.getElementById("quitButton");
-		
+
+	const nextMatchBtn = document.getElementById("nextMatchBtn") as HTMLButtonElement | null;
+	const quitBtn = document.getElementById("quitButton") as HTMLButtonElement | null;
+
 	// Buttons
-	quitBtn.onclick = () => {
-	  console.log("Leaving tournament:", tournamentId);
-	  sessionStorage.removeItem("currentTournamentId");
-	  CONTEXT.tournamentId = null;
-	  window.history.pushState({}, "", "/tournamentSize");
-	  window.dispatchEvent(new PopStateEvent("popstate"));
-	  socket.emit("tournament:leave", { tournamentId } );
-	};
-		
-	if (CONTEXT.gameId) {
-	  nextMatchBtn.textContent = "Back to Match";
-	  nextMatchBtn.onclick = () => {
-		window.history.pushState({}, "", "/pong");
-		window.dispatchEvent(new PopStateEvent("popstate"));
-	  };
-	} else {
-		CONTEXT.tournamentId = tournamentId;
-		nextMatchBtn.onclick = () => {
-			console.log("Starting next match in tournament:", tournamentId);
-			window.history.pushState({}, "", "/pongTournament");
+	if (quitBtn && socket) {
+		quitBtn.onclick = (): void => {
+			console.log("Leaving tournament:", tournamentId);
+			sessionStorage.removeItem("currentTournamentId");
+			CONTEXT.tournamentId = null;
+			window.history.pushState({}, "", "/tournamentSize");
 			window.dispatchEvent(new PopStateEvent("popstate"));
+			socket.emit("tournament:leave", { tournamentId });
+		};
+	}
+
+	if (nextMatchBtn) {
+		if (CONTEXT.gameId) {
+			nextMatchBtn.textContent = "Back to Match";
+			nextMatchBtn.onclick = (): void => {
+				window.history.pushState({}, "", "/pong");
+				window.dispatchEvent(new PopStateEvent("popstate"));
+			};
+		} else {
+			CONTEXT.tournamentId = tournamentId;
+			nextMatchBtn.onclick = (): void => {
+				console.log("Starting next match in tournament:", tournamentId);
+				window.history.pushState({}, "", "/pongTournament");
+				window.dispatchEvent(new PopStateEvent("popstate"));
+			};
 		}
 	}
 
-	socket.off("tournament:state");
-	socket.on("tournament:state", ({ tournamentId: tid, tournament }) => {
-	  if (tid !== tournamentId) return;
-	  renderTournament(tournament);
-	});
-		
-	socket.off("match:started");
-	socket.on("match:started", (info) => {
-	if (info.tournamentId && info.tournamentId !== tournamentId) return;
-	  
-	  CONTEXT.gameId = info.gameId;
-	  CONTEXT.leftName = info.player1;
-	  CONTEXT.rightName = info.player2;
-	  CONTEXT.gameMode = 1;
-	  CONTEXT.tournamentId = tournamentId;
+	if (socket) {
+		socket.off("tournament:state");
+		socket.on("tournament:state", (data: unknown): void => {
+			const stateData = data as TournamentStateData;
+			if (stateData.tournamentId !== tournamentId) return;
+			renderTournament(stateData.tournament);
+		});
 
-	//   window.history.pushState({}, "", "/pong");
-	//   window.dispatchEvent(new PopStateEvent("popstate"));
-	});
+		socket.off("match:started");
+		socket.on("match:started", (data: unknown): void => {
+			const info = data as MatchStartedData;
+			if (info.tournamentId && info.tournamentId !== tournamentId) return;
 
-	// Tournament ended
-	socket.off("tournament:ended");
-	socket.on("tournament:ended", ({ tournamentId: tid, winner }) => {
-		if (tid !== tournamentId) return;
-		const winnerLine = document.getElementById("winnerLine");
-		console.log("Tournament ended, winner:", winner);
-		console.log("nextMatchBtn:", nextMatchBtn);
-		// nextMatchBtn.innerText = "Tournament Ended";
-		// nextMatchBtn.onclick = null;
-		// nextMatchBtn.innerText = "Tournament Ended";
-		// nextMatchBtn.display = "none";
-		// nextMatchBtn.disabled = true;
-		nextMatchBtn.style.display = "hidden";
-		// sessionStorage.removeItem("currentTournamentId");
-		CONTEXT.tournamentId = null;
-	});
+			CONTEXT.gameId = info.gameId;
+			CONTEXT.leftName = info.player1;
+			CONTEXT.rightName = info.player2;
+			CONTEXT.gameMode = 1;
+			CONTEXT.tournamentId = tournamentId;
+		});
 
-	socket.emit("tournament:getState", { tournamentId });
+		// Tournament ended
+		socket.off("tournament:ended");
+		socket.on("tournament:ended", (data: unknown): void => {
+			const endData = data as TournamentEndedData;
+			if (endData.tournamentId !== tournamentId) return;
+			console.log("Tournament ended, winner:", endData.winner);
+			console.log("nextMatchBtn:", nextMatchBtn);
+			if (nextMatchBtn) nextMatchBtn.style.display = "hidden";
+			CONTEXT.tournamentId = null;
+		});
+
+		socket.emit("tournament:getState", { tournamentId });
+	}
 }
 
-function extractTournamentId() {
+function extractTournamentId(): string | null {
 	const storedTournamentId = sessionStorage.getItem("currentTournamentId");
 	if (storedTournamentId) return storedTournamentId;
 	return null;
 }
 
-function renderTournament(tournament) {
+function renderTournament(tournament: Tournament): void {
 	const statusElement = document.getElementById("tournamentStatus");
 	const currentMatchElement = document.getElementById("currentMatch");
 	const bracketElement = document.getElementById("bracket");
@@ -100,22 +102,22 @@ function renderTournament(tournament) {
 
 	// Current match
 	if (tournament.current) {
-	  	const { r, m } = tournament.current;
-	  	currentMatchElement.textContent = `Current match: Round ${r + 1}, Match ${m + 1}`;
+			const { r, m } = tournament.current;
+			currentMatchElement.textContent = `Current match: Round ${r + 1}, Match ${m + 1}`;
 	} else {
-	  	currentMatchElement.textContent = "No match running.";
+			currentMatchElement.textContent = "No match running.";
 	}
 
 	// Bracket rendering
 	bracketElement.innerHTML = "";
 	// Display each round as a column-like card
 	tournament.bracket.forEach((round, r) => {
-	  	const roundBox = document.createElement("div");
-	  	roundBox.className = "border border-[#98c6f8] rounded-lg p-3 bg-black/20";
+			const roundBox = document.createElement("div");
+			roundBox.className = "border border-[#98c6f8] rounded-lg p-3 bg-black/20";
 
 		const title = document.createElement("div");
-	  	title.className = "font-bold text-[#98c6f8] mb-2";
-	  	title.textContent = `Round ${r + 1}`;
+			title.className = "font-bold text-[#98c6f8] mb-2";
+			title.textContent = `Round ${r + 1}`;
 		roundBox.appendChild(title);
 
 		round.forEach((match, m) => {
@@ -133,8 +135,8 @@ function renderTournament(tournament) {
 		bracketElement.appendChild(roundBox);
 	});
 	if (tournament.status === "ended") {
-		const nextMatchBtn = document.getElementById("nextMatchBtn");
-		nextMatchBtn.style.display = "none";
+		const nextMatchBtn = document.getElementById("nextMatchBtn") as HTMLButtonElement | null;
+		if (nextMatchBtn) nextMatchBtn.style.display = "none";
 		sessionStorage.removeItem("currentTournamentId");
 	}
 }

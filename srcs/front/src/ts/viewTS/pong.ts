@@ -1,14 +1,14 @@
 import ViewTemplate from "./ViewTemplate.js";
 import { CONTEXT } from "../../game/context.js";
+import type { GameMode } from '../types/game.types';
 
-export default class extends ViewTemplate {
-	constructor()
-	{
+export default class PongView extends ViewTemplate {
+	constructor() {
 		super();
 		this.setTitle("Select Modes");
 	}
 
-	async getHTML() {
+	async getHTML(): Promise<string> {
 		return `
 			<div id="profilePanel" class="hidden absolute animate-slide-in-left right-0 top-0 h-full min-w-80 w-[20%] bg-[url(/img/assets/stars.gif)] z-50 shadow-[0_0_20px_rgba(158,202,237,0.9)] border border-[#98c6f8] overflow-auto">
 				<div class="flex flex-col text-center w-full h-full">
@@ -49,7 +49,7 @@ export default class extends ViewTemplate {
 						<div class="flex items-center">
 							<span>Game Over</span>
 						</div>
-						<div class="flex justify-center items-center">					
+						<div class="flex justify-center items-center">
 							<span id="GameOverScore">0 - 0</span>
 						</div>
 					</div>
@@ -62,7 +62,7 @@ export default class extends ViewTemplate {
 						</div>
 					</div>
 					<button id="startButton" class="px-6 py-3 bg-[#98c6f8] font-bold rounded-lg hover:bg-[#7aaedc]">Start Game</button>
-					
+
 					<div id="instruction1v1" class="flex flex-col justify-center w-full border border-dashed border-white rounded-lg p-4 pb-8">
 						<span class="pb-4">Controls</span>
 						<div class="flex justify-between w-full">
@@ -128,15 +128,13 @@ export default class extends ViewTemplate {
 			</div>`;
 	}
 
-	async init() {
-		const mode = (location.pathname === '/pongAI') ? 0 : (location.pathname === '/pongRanked') ? 3 : (location.pathname === '/pong2') ? 2 : 1;
+	async init(): Promise<void> {
+		const mode: GameMode = (location.pathname === '/pongAI') ? 0 : (location.pathname === '/pongRanked') ? 3 : (location.pathname === '/pong2') ? 2 : 1;
 		const module = await import("/game/pong.js");
-		
-		if (typeof module.initPong === "function") 
-			module.initPong({ mode, gameId: CONTEXT.gameId });
-		
-		handlePongModeDisplay(mode);
-		
 
+		if (typeof module.initPong === "function")
+			module.initPong({ mode, gameId: CONTEXT.gameId });
+
+		handlePongModeDisplay(mode);
 	}
 }

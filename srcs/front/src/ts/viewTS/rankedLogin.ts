@@ -1,24 +1,22 @@
-import ViewTemplate from "./ViewTemplate.js";	
+import ViewTemplate from "./ViewTemplate.js";
 
-export default class extends ViewTemplate {
-	constructor()
-	{
+export default class RankedLoginView extends ViewTemplate {
+	constructor() {
 		super();
 		this.setTitle("Ranked");
 	}
 
-	async init() {
+	async init(): Promise<void> {
 		await window.loadProfileData();
-		if (document.getElementById('player2UserName'))
-			document.getElementById('player2UserName').focus();
-		if ((sessionStorage.getItem("player2_token")))
-		{
+		const player2UserName = document.getElementById('player2UserName');
+		if (player2UserName) player2UserName.focus();
+		if (sessionStorage.getItem("player2_token")) {
 			console.log("Player2 logout cleanup");
 			window.sessionStorage.removeItem('player2_token');
 		}
 	}
 
-	async getHTML() {
+	async getHTML(): Promise<string> {
 		return `
 			<div id="profilePanel" class="hidden absolute animate-slide-in-left right-0 top-0 h-full min-w-80 w-[20%] bg-[url(/img/assets/stars.gif)] z-50 shadow-[0_0_20px_rgba(158,202,237,0.9)] border border-[#98c6f8] overflow-auto">
 				<div class="flex flex-col text-center w-full h-full">
@@ -53,7 +51,7 @@ export default class extends ViewTemplate {
 				</div>
 			</div>
 
-			
+
 			<div class="pt-[3%] mt-[3%] pb-4 mx-[3%] gap-y-4 flex flex-col rounded-xl outline-none border border-blue-300 bg-[url(/img/assets/stars.gif)] bg-cover bg-center shadow-[0_0_20px_rgba(158,202,237,0.9)]">
 				<div class="flex flex-col sm:flex-row items-start px-4">
 					<div class="w-full h-full sm:w-[45%] flex flex-col items-center gap-y-4">
@@ -85,12 +83,11 @@ export default class extends ViewTemplate {
 						<h1 id="Player2Name">[Player2Name]</h1>
 						<img id="player2Pfp" src="./img/userPfp/default.png" alt="userPfpImg" class="min-w-5 max-w-120 w-[20vw] aspect-square rounded-full object-cover shrink-0 select-none" draggable="false" />
 					</div>
-					
+
 				</div>
 				<div id="goToGameButtonDiv" class="w-full h-full flex-col hidden items-center">
 					<a href="/pongRanked" class="px-6 w-[50%] py-3 sm:py-4 bg-[#98c6f8] font-bold rounded-lg hover:bg-[#7aaedc]" data-link>Go to game</a>
 				</div>
-			</div>`
+			</div>`;
 	}
 }
-

@@ -1,14 +1,13 @@
 import ViewTemplate from "./ViewTemplate.js";
 
-export default class extends ViewTemplate {
-
+export default class TournamentView extends ViewTemplate {
 	constructor() {
 		super();
 		this.setTitle("Tournament");
 	}
 
-	async getHTML() {
-	return `
+	async getHTML(): Promise<string> {
+		return `
 		<div class="h-full w-full flex justify-center text-white">
 		<div class="pt-10 w-[70%] flex flex-col gap-6">
 			<h1 class="text-3xl font-bold text-center">Tournament</h1>
@@ -32,12 +31,12 @@ export default class extends ViewTemplate {
         </div>
       </div>
     `;
-  }
+	}
 
-	async init() {
-	 	const module = await import("/game/tournament.js");
-   	if (typeof module.initTournament === "function") {
-    	module.initTournament();
-   	}
-  }
+	async init(): Promise<void> {
+		const module = await import("/game/tournament.js");
+		if (typeof module.initTournament === "function") {
+			module.initTournament();
+		}
+	}
 }

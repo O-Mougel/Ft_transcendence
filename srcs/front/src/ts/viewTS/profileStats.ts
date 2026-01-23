@@ -1,13 +1,12 @@
-import ViewTemplate from "./ViewTemplate.js";	
+import ViewTemplate from "./ViewTemplate.js";
 
-export default class extends ViewTemplate {
-	constructor()
-	{
+export default class ProfileStatsView extends ViewTemplate {
+	constructor() {
 		super();
 		this.setTitle("Profile");
 	}
 
-	async getHTML() {
+	async getHTML(): Promise<string> {
 		return `
 			<div id="profilePanel" class="hidden absolute animate-slide-in-left right-0 top-0 h-full min-w-80 w-[20%] bg-[url(/img/assets/stars.gif)] z-50 shadow-[0_0_20px_rgba(158,202,237,0.9)] border border-[#98c6f8] overflow-auto">
 				<div class="flex flex-col text-center w-full h-full">
@@ -42,7 +41,7 @@ export default class extends ViewTemplate {
 				</div>
 			</div>
 
-			
+
 			<div class="pt-[3%] mt-[3%] relative flex flex-col gap-y-4 items-center mx-[3%] px-4 rounded-xl outline-none border border-blue-300 bg-[url(/img/assets/stars.gif)] bg-cover bg-center shadow-[0_0_20px_rgba(158,202,237,0.9)]">
 			<h1 class="m-0">Statistics :</h1>
 			<div class="flex flex-col sm:flex-row w-full justify-around items-center gap-4">
@@ -70,7 +69,7 @@ export default class extends ViewTemplate {
 						<p id="biggestStreakCpt">0</p>
 					</div>
 				</div>
-				
+
 				<div class="w-[90%] my-2 rounded-xl outline-none border border-blue-300 shadow-[0_0_20px_rgba(158,202,237,0.9)]" >
 					<div>
 						<h2 class="py-2" >Select a friend to see his stats :</h2>
@@ -110,9 +109,9 @@ export default class extends ViewTemplate {
 				</div>
 					<div class="py-5 mt-2" >
 						<a tabindex="5" class="uppercase px-5 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg" name="gotoMainMenu" href="/" data-link>🚀 Back to menu</a>
-					</div>	
+					</div>
 				<div class="pb-2 sm:pb-12">
 				</div>
-			</div>`
+			</div>`;
 	}
 }

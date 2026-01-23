@@ -1,13 +1,12 @@
-import ViewTemplate from "./ViewTemplate.js";	
+import ViewTemplate from "./ViewTemplate.js";
 
-export default class extends ViewTemplate {
-	constructor()
-	{
+export default class AboutFileView extends ViewTemplate {
+	constructor() {
 		super();
 		this.setTitle("About");
 	}
 
-	async getHTML() {
+	async getHTML(): Promise<string> {
 		return `
 			<div id="profilePanel" class="hidden absolute animate-slide-in-left right-0 top-0 h-full min-w-80 w-[20%] bg-[url(/img/assets/stars.gif)] z-50 shadow-[0_0_20px_rgba(158,202,237,0.9)] border border-[#98c6f8] overflow-auto">
 				<div class="flex flex-col text-center w-full h-full">
@@ -50,6 +49,6 @@ export default class extends ViewTemplate {
 				<div class="flex items-start w-[50%] py-5">
 					<h3 class="flex items-start text-sm text-[#44494f] pl-6">Because the blackhole was near, makes sense if you ask me</h2>
 				</div>
-			</form>`
+			</form>`;
 	}
 }

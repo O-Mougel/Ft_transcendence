@@ -1,8 +1,8 @@
-import tournament from "../views/tournament.js";
 import Ball from "./ball.js";
 import Paddle from "./paddle.js";
+import type { GameContext, GameMode } from '../types/game.types';
 
-export const CONTEXT = {
+export const CONTEXT: GameContext = {
 	// HTML elements
 	canvas: null,
 	ctx: null,
@@ -20,10 +20,10 @@ export const CONTEXT = {
 	// Game state
 	isGameStarted: false,
 	gameId: null,
-	keysPressed: new Set(),
+	keysPressed: new Set<string>(),
 	updateIntervalId: null,
 	controlsBound: false,
-	gameMode: 0,
+	gameMode: 0 as GameMode,
 	tournamentId: null,
 
 	// Dimensions
@@ -34,7 +34,7 @@ export const CONTEXT = {
 	GAME_HEIGHT: 500,
 };
 
-export function createGameElements() {
+export function createGameElements(): void {
 	const { GAME_WIDTH, GAME_HEIGHT, BALL_RADIUS, PADDLE_WIDTH, PADDLE_HEIGHT } = CONTEXT;
 
 	const width_ratio = GAME_WIDTH / 800;
@@ -64,7 +64,7 @@ export function createGameElements() {
 	);
 
 	if (CONTEXT.gameMode !== 2) return;
-	
+
 	CONTEXT.leftPaddle2 = new Paddle(
 		GAME_WIDTH / 4 - PADDLE_WIDTH * width_ratio,
 		GAME_HEIGHT / 2,

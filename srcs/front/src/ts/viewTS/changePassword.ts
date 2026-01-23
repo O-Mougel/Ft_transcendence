@@ -1,13 +1,12 @@
-import ViewTemplate from "./ViewTemplate.js";	
+import ViewTemplate from "./ViewTemplate.js";
 
-export default class extends ViewTemplate {
-	constructor()
-	{
+export default class ChangePasswordView extends ViewTemplate {
+	constructor() {
 		super();
 		this.setTitle("Change Password");
 	}
 
-	async getHTML() {
+	async getHTML(): Promise<string> {
 		return `
 			<div id="profilePanel" class="hidden absolute animate-slide-in-left right-0 top-0 h-full min-w-80 w-[20%] bg-[url(/img/assets/stars.gif)] z-50 shadow-[0_0_20px_rgba(158,202,237,0.9)] border border-[#98c6f8] overflow-auto">
 				<div class="flex flex-col text-center w-full h-full">
@@ -46,10 +45,10 @@ export default class extends ViewTemplate {
 				<form class="flex flex-col items-center">
 					<label class="mb-2">Current Password :</label>
 					<input autofocus tabindex="1" class="w-full text-center border border-white rounded-lg hover:text-[#98c6f8] hover:border-[#98c6f8]" type="password" id="currentPasswordInput" autocomplete="off" placeholder="Current password" maxlength="32" oninput="this.value = this.value.slice(0,32)">
-					
+
 					<label class="mt-4 mb-2">New Password :</label>
 					<input autofocus tabindex="2" class="w-full text-center border border-white rounded-lg hover:text-[#98c6f8] hover:border-[#98c6f8]" type="password" id="newPasswordInput" autocomplete="off" placeholder="New password" maxlength="32" oninput="this.value = this.value.slice(0,32)">
-					
+
 					<label class="mt-4 mb-2">Confirm New Password :</label>
 					<input autofocus tabindex="3" class="w-full text-center border border-white rounded-lg hover:text-[#98c6f8] hover:border-[#98c6f8]" type="password" id="confirmNewPasswordInput" autocomplete="off" placeholder="Confirm new password" maxlength="32" oninput="this.value = this.value.slice(0,32)">
 					<input id="changePasswordButton" class="mt-4 p-4 sm:p-5 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg cursor-pointer" type="submit" value="Change Password" onclick="updateUserPassword(event)">
@@ -60,6 +59,6 @@ export default class extends ViewTemplate {
 				</div>
 				<div class="pb-7">
 				</div>
-			</div>`
+			</div>`;
 	}
 }

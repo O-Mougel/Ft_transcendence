@@ -1,13 +1,12 @@
-import ViewTemplate from "./ViewTemplate.js";	
+import ViewTemplate from "./ViewTemplate.js";
 
-export default class extends ViewTemplate {
-	constructor()
-	{
+export default class UserMatchHistoryView extends ViewTemplate {
+	constructor() {
 		super();
 		this.setTitle("Match History");
 	}
 
-	async getHTML() {
+	async getHTML(): Promise<string> {
 		return `
 			<div id="profilePanel" class="hidden absolute animate-slide-in-left right-0 top-0 h-full min-w-80 w-[20%] bg-[url(/img/assets/stars.gif)] z-50 shadow-[0_0_20px_rgba(158,202,237,0.9)] border border-[#98c6f8] overflow-auto">
 				<div class="flex flex-col text-center w-full h-full">
@@ -105,11 +104,10 @@ export default class extends ViewTemplate {
 			</div>
 			<div class="mt-5 flex justify-center">
 				<a id="backToProfileButton" href="/profileStats" class="inline uppercase text-sm md:text-base xl:text-2xl h-full focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis w-1/2 md:w-1/4 border hover:border-[#98c6f8] border-white py-2 px-4 rounded-lg" name="backtoProfileButton" data-link> 👤 Back to profile </a>
-			</div>`
+			</div>`;
 	}
 
-	async init()
-	{
+	async init(): Promise<void> {
 		await window.buildMatchHistoryPage();
 	}
 }

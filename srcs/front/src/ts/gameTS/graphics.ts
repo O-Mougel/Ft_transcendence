@@ -1,25 +1,27 @@
 import { CONTEXT } from "./context.js";
 import { resetControls } from "./controls.js";
+import type { GameOverData } from '../types/game.types';
 
-export function draw() {
+export function draw(): void {
 	const { ctx, canvas, GAME_WIDTH, GAME_HEIGHT, leftPaddle, rightPaddle, leftPaddle2, rightPaddle2, ball } = CONTEXT;
 	if (!ctx || !canvas) return;
 
 	ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-	leftPaddle.draw(ctx);
-	rightPaddle.draw(ctx);
+	if (leftPaddle) leftPaddle.draw(ctx);
+	if (rightPaddle) rightPaddle.draw(ctx);
 	if (CONTEXT.gameMode === 2) {
-		leftPaddle2.draw(ctx);
-		rightPaddle2.draw(ctx);
+		if (leftPaddle2) leftPaddle2.draw(ctx);
+		if (rightPaddle2) rightPaddle2.draw(ctx);
 	}
-	ball.draw(ctx);
+	if (ball) ball.draw(ctx);
 
 	drawCenterLine();
 }
 
-function drawCenterLine() {
+function drawCenterLine(): void {
 	const { ctx, GAME_WIDTH, GAME_HEIGHT } = CONTEXT;
+	if (!ctx) return;
 	ctx.strokeStyle = "white";
 	ctx.setLineDash([10, 10]);
 	ctx.beginPath();
@@ -29,30 +31,38 @@ function drawCenterLine() {
 	ctx.setLineDash([]);
 }
 
-export function drawScore() {
+export function drawScore(): void {
 	const { leftPaddle, rightPaddle, score } = CONTEXT;
-	if (score) {
+	if (score && leftPaddle && rightPaddle) {
 		const leftScore = score.querySelector("#LeftScore");
 		const rightScore = score.querySelector("#RightScore");
 		if (leftScore) leftScore.textContent = String(leftPaddle.score);
-	  	if (rightScore) rightScore.textContent = String(rightPaddle.score);
+		if (rightScore) rightScore.textContent = String(rightPaddle.score);
 	}
 }
 
-export function resetState() {
+export function resetState(): void {
 	const { ctx, canvas, ball, leftPaddle, rightPaddle, leftPaddle2, rightPaddle2, score, startButton, GAME_HEIGHT, GAME_WIDTH } = CONTEXT;
 	if (!ctx || !canvas) return;
 
 	ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-	ball.reset();
-	leftPaddle.y = (GAME_HEIGHT / 2 - leftPaddle.height / 2);
-	rightPaddle.y = (GAME_HEIGHT / 2 - rightPaddle.height / 2);
-	if (CONTEXT.gameMode === 2) {
-		leftPaddle2.y = (GAME_HEIGHT / 2 - leftPaddle2.height / 2);
-		rightPaddle2.y = (GAME_HEIGHT / 2 - rightPaddle2.height / 2);
+	if (ball) ball.reset();
+	if (leftPaddle) {
+		leftPaddle.y = (GAME_HEIGHT / 2 - leftPaddle.height / 2);
 	}
-	leftPaddle.score = 0;
-	rightPaddle.score = 0;
+	if (rightPaddle) {
+		rightPaddle.y = (GAME_HEIGHT / 2 - rightPaddle.height / 2);
+	}
+	if (CONTEXT.gameMode === 2) {
+		if (leftPaddle2) {
+			leftPaddle2.y = (GAME_HEIGHT / 2 - leftPaddle2.height / 2);
+		}
+		if (rightPaddle2) {
+			rightPaddle2.y = (GAME_HEIGHT / 2 - rightPaddle2.height / 2);
+		}
+	}
+	if (leftPaddle) leftPaddle.score = 0;
+	if (rightPaddle) rightPaddle.score = 0;
 	CONTEXT.isGameStarted = false;
 	drawScore();
 	resetControls();
@@ -68,7 +78,7 @@ export function resetState() {
 		startButton.style.display = "block";
 }
 
-export function printGameOver(data) {
+export function printGameOver(data: GameOverData): void {
 	console.log("printGameOver called with data:", data);
 	const { left, right } = data;
 	const gameOverDiv = document.getElementById("GameOver");

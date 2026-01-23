@@ -1,25 +1,26 @@
 import { CONTEXT } from "./context.js";
 import { handleEscapeKey, updateGameState } from "./socket.js";
+import type { PaddleDirection } from '../types/game.types';
 
-export function bindControls() {
+export function bindControls(): void {
   if (CONTEXT.controlsBound) return;
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
   CONTEXT.controlsBound = true;
 }
 
-export function resetControls() {
+export function resetControls(): void {
   CONTEXT.keysPressed.clear();
   const { leftPaddle, rightPaddle, leftPaddle2, rightPaddle2 } = CONTEXT;
-  leftPaddle.direction = "none";
-  rightPaddle.direction = "none";
+  if (leftPaddle) leftPaddle.direction = "none";
+  if (rightPaddle) rightPaddle.direction = "none";
   if (CONTEXT.gameMode === 2) {
-    leftPaddle2.direction = "none";
-    rightPaddle2.direction = "none";
+    if (leftPaddle2) leftPaddle2.direction = "none";
+    if (rightPaddle2) rightPaddle2.direction = "none";
   }
 }
 
-function handleKeyDown(e) {
+function handleKeyDown(e: KeyboardEvent): void {
   if (!CONTEXT.isGameStarted) return;
 
   const key = e.key;
@@ -27,7 +28,7 @@ function handleKeyDown(e) {
   updateDirections();
 }
 
-function handleKeyUp(e) {
+function handleKeyUp(e: KeyboardEvent): void {
   if (!CONTEXT.isGameStarted) return;
   const key = e.key;
 
@@ -37,17 +38,19 @@ function handleKeyUp(e) {
   updateDirections();
 }
 
-function updateDirections() {
+function updateDirections(): void {
   const { keysPressed, leftPaddle, rightPaddle, leftPaddle2, rightPaddle2 } = CONTEXT;
 
-  const state = { right: rightPaddle.direction, left: leftPaddle.direction };
+  if (!leftPaddle || !rightPaddle) return;
+
+  const state: { right: PaddleDirection; left: PaddleDirection } = { right: rightPaddle.direction, left: leftPaddle.direction };
 
   // Right paddle or Right paddle2: arrow keys
   if (CONTEXT.gameMode === 1 || CONTEXT.gameMode === 3) {
     if (keysPressed.has("ArrowUp") && !keysPressed.has("ArrowDown")) rightPaddle.direction = "up";
     else if (keysPressed.has("ArrowDown") && !keysPressed.has("ArrowUp")) rightPaddle.direction = "down";
     else rightPaddle.direction = "none";
-  } else if (CONTEXT.gameMode === 2) {
+  } else if (CONTEXT.gameMode === 2 && rightPaddle2) {
     if (keysPressed.has("ArrowUp") && !keysPressed.has("ArrowDown")) rightPaddle2.direction = "up";
     else if (keysPressed.has("ArrowDown") && !keysPressed.has("ArrowUp")) rightPaddle2.direction = "down";
     else rightPaddle2.direction = "none";
@@ -65,7 +68,9 @@ function updateDirections() {
 
   if (CONTEXT.gameMode !== 2) return;
 
-  const state2 = { right: rightPaddle2.direction, left: leftPaddle2.direction };
+  if (!leftPaddle2 || !rightPaddle2) return;
+
+  const state2: { right: PaddleDirection; left: PaddleDirection } = { right: rightPaddle2.direction, left: leftPaddle2.direction };
 
   // Left paddle 2: O/L
   const o = keysPressed.has("o") || keysPressed.has("O");
