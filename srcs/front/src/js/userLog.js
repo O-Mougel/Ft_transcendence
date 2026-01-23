@@ -756,6 +756,7 @@ window.handleLoginClick = async function (event) {
 		const result = await loginResponse.json();	
 		if (result)
 		{
+			const savedName = username.value;
 			username.value = "";
 			password.value = "";
 			
@@ -771,7 +772,7 @@ window.handleLoginClick = async function (event) {
 				window.sessionStorage.setItem('access_token',result.token);
 				
 				console.log('⏳ Logged in !');
-				alertBoxMsg(`Welcome back ${username.value} ! 😉`);
+				alertBoxMsg(`Welcome back ${savedName} ! 😉`);
 				await backToDefaultPage();
 			}
 		}
