@@ -39,7 +39,16 @@ export async function getFriendMatchsHandler(request, reply) { //check friend id
 
 export async function getMatchHistoryHandler(request, reply){
 	const matchs = await getMatchs(request.user.id)
-	const matches = matchs.map(match => ({
+	const matches = matchs.map(match => {
+		if(match.player2.id == request.user.id) {
+			const temp = match.player1;
+			match.player1 = match.player2;
+			match.player2 = temp;
+			const tempscore = match.player1Score;
+			match.player1Score = match.player2Score;
+			match.player2Score = tempscore;
+		}
+		return {
 		...match,
 		win: match.winnerId == request.user.id,
 		player2name: match.player2.id == 0 ? match.player2name : match.player2.name,
@@ -50,6 +59,7 @@ export async function getMatchHistoryHandler(request, reply){
 			hour: "2-digit",
 			minute: "2-digit",
 		})
-	}));
+	}});
+
 	return { match: matches }
 }
