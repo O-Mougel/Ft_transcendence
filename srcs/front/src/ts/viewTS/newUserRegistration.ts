@@ -1,13 +1,12 @@
-import ViewTemplate from "./ViewTemplate.js";	
+import ViewTemplate from "./ViewTemplate.js";
 
-export default class extends ViewTemplate {
-	constructor()
-	{
+export default class NewUserRegistrationView extends ViewTemplate {
+	constructor() {
 		super();
 		this.setTitle("Create account");
 	}
 
-	async getHTML() {
+	async getHTML(): Promise<string> {
 		return `
 			<div class="pt-[1vh] h-full w-full">
 				<div class="mx-[3%] rounded-xl outline-none border border-blue-300 bg-[url(/img/assets/stars.gif)] bg-cover bg-center flex flex-col shadow-[0_0_20px_rgba(158,202,237,0.9)]">
@@ -39,6 +38,6 @@ export default class extends ViewTemplate {
 						</div>
 					</form>
 				</div>
-			</div>`
+			</div>`;
 	}
 }

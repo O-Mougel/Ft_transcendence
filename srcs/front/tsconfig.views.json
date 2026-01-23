@@ -3,17 +3,31 @@
     "target": "es2022",
     "module": "esnext",
     "moduleResolution": "node",
-	"skipLibCheck": true,
+    "skipLibCheck": true,
     "outDir": "./src/views",
-	"rootDir": "./src/ts/viewTS"
+    "rootDir": "./src/ts/viewTS",
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "../types/*": ["./src/ts/types/*"]
+    }
   },
   "include": [
-    "src/ts/viewTS/**/*"
+    "src/ts/viewTS/**/*",
+    "src/ts/types/**/*"
   ],
   "exclude": [
     "node_modules",
-	"src/views",
-	"src/ts/eventTS",
-	"src/ts/gameTS"
+    "src/views",
+    "src/ts/eventTS",
+    "src/ts/gameTS"
   ]
 }
