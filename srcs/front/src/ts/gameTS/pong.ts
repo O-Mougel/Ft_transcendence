@@ -1,15 +1,17 @@
-import { waitStartGame, isSocketConnected, setupSocket, emitStopGame, joinExistingGame, emitNextMatch } from "./socket.js";
+import { waitStartGame, isSocketConnected, setupSocket, emitNextMatch, joinExistingGame } from "./socket.js";
 import { CONTEXT, createGameElements } from "./context.js";
 import { draw, drawScore, resetState } from "./graphics.js";
 import { bindControls } from "./controls.js";
+import type { GameInitOptions, GameMode } from '../types/game.types';
+import type { GameStateData } from '../types/socket.types';
 
-export function initPong(mode = {}) {
+export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 	if (mode.mode === 3 && !sessionStorage.getItem("player2_token")) {
 		window.history.pushState({}, "", `/ranked`);
 		window.dispatchEvent(new PopStateEvent("popstate"));
 		return;
 	}
-	CONTEXT.gameMode = mode.mode;
+	CONTEXT.gameMode = mode.mode as GameMode;
 	console.log("Setting up Pong..., mode:", mode.mode);
 	console.log("Game ID from initPong:", mode.gameId);
 
@@ -17,9 +19,9 @@ export function initPong(mode = {}) {
 		CONTEXT.gameId = mode.gameId;
 	}
 
-	CONTEXT.canvas = document.getElementById("canvas");
-	CONTEXT.startButton = document.getElementById("startButton");
-	CONTEXT.backButton = document.getElementById("backToTournament");
+	CONTEXT.canvas = document.getElementById("canvas") as HTMLCanvasElement | null;
+	CONTEXT.startButton = document.getElementById("startButton") as HTMLButtonElement | null;
+	CONTEXT.backButton = document.getElementById("backToTournament") as HTMLButtonElement | null;
 	CONTEXT.score = document.getElementById("Scores");
 
 	if (!CONTEXT.canvas || !CONTEXT.startButton || !CONTEXT.score || !CONTEXT.backButton) {
@@ -27,34 +29,19 @@ export function initPong(mode = {}) {
 		return;
 	}
 
-	// In SPA, stop the game when navigating away
-	// window.addEventListener("popstate", () => {
-	// 	console.log("Popstate event detected.");
-	// 	if (isSocketConnected()) {
-	// 		console.log("Navigating away, stopping game.");
-	// 		emitStopGame();
-	// 	}
-	// });
-
-	// // Stop game if user leaves the page (enters new URL, closes tab, refreshes, etc.)
-	// window.addEventListener("beforeunload", () => {
-	// 	if (isSocketConnected()) {
-	// 		console.log("Window unloading, stopping game.");
-	// 		emitStopGame(); // send final state
-	// 		if (sessionStorage.getItem("currentTournamentId")) {
-	// 			sessionStorage.removeItem("currentTournamentId");
-	// 		}
-	// 	}
-	// });
-
 	const canvas = CONTEXT.canvas;
 	const ctx = CONTEXT.ctx = canvas.getContext("2d");
 
-const scale = window.devicePixelRatio || 1;
+	if (!ctx) {
+		console.error("Pong: could not get 2d context.");
+		return;
+	}
+
+	const scale = window.devicePixelRatio || 1;
 	CONTEXT.scale = scale;
 
 	// Resize canvas drawing buffer to match displayed CSS size (and DPR)
-	const resizeCanvasToElement = () => {
+	const resizeCanvasToElement = (): void => {
 		const rect = canvas.getBoundingClientRect();
 		const cssW = Math.max(1, Math.floor(rect.width));
 		const cssH = Math.max(1, Math.floor(rect.height));
@@ -83,54 +70,57 @@ const scale = window.devicePixelRatio || 1;
 	// initial size and keep responsive on resize
 	resizeCanvasToElement();
 	window.addEventListener("resize", resizeCanvasToElement);
-	// Prevent scrolling
-	// document.body.style.overflow = "hidden";
-	// document.documentElement.style.overflow = "hidden";
 
 	console.log("Tournament ID:", CONTEXT.tournamentId);
 	console.log("Game ID:", CONTEXT.gameId);
-		
+
 	createGameElements();
 	setupSocket();
 	bindControls();
-	
-	if (CONTEXT.tournamentId/* && CONTEXT.gameId*/) {
-		CONTEXT.startButton.style.display = "none";
+
+	if (CONTEXT.tournamentId) {
+		if (CONTEXT.startButton) CONTEXT.startButton.style.display = "none";
 		joinExistingGame(CONTEXT.gameId);
 		resetState();
 
 		if (CONTEXT.startButton) CONTEXT.startButton.style.display = "none";
 		if (CONTEXT.score) CONTEXT.score.style.display = "flex";
-		if (CONTEXT) CONTEXT.isGameStarted = true;
+		CONTEXT.isGameStarted = true;
 		gameInit();
-		CONTEXT.startButton.style.display = "block";
-		CONTEXT.startButton.onclick = () => {
-			startButton.style.display = "none";
-			emitNextMatch(CONTEXT.tournamentId);
-			CONTEXT.backButton.classList.add("hidden");
-		};
+		if (CONTEXT.startButton) {
+			CONTEXT.startButton.style.display = "block";
+			CONTEXT.startButton.onclick = (): void => {
+				if (CONTEXT.startButton) CONTEXT.startButton.style.display = "none";
+				emitNextMatch(CONTEXT.tournamentId);
+				if (CONTEXT.backButton) CONTEXT.backButton.classList.add("hidden");
+			};
+		}
 	} else {
-		CONTEXT.startButton.style.display = "block";
-		CONTEXT.startButton.onclick = startGame;
+		if (CONTEXT.startButton) {
+			CONTEXT.startButton.style.display = "block";
+			CONTEXT.startButton.onclick = startGame;
+		}
 	}
 
 	const url = window.location.href;
 	console.log("Current URL:", url);
 
-	if (CONTEXT.tournamentId && url.includes("/pongTournament")) {
+	if (CONTEXT.tournamentId && url.includes("/pongTournament") && CONTEXT.backButton) {
 		CONTEXT.backButton.classList.remove("hidden");
-		CONTEXT.backButton.onclick = () => {
+		CONTEXT.backButton.onclick = (): void => {
 			window.history.pushState({}, "", `/tournamentSize`);
 			window.dispatchEvent(new PopStateEvent("popstate"));
 		};
 	}
-	
+
 	draw();
 }
 
-export function updateGameScene(data) {
+export function updateGameScene(data: GameStateData): void {
 	if (!data) return;
 	const { ball, leftPaddle, rightPaddle, GAME_WIDTH, GAME_HEIGHT, isGameStarted } = CONTEXT;
+
+	if (!ball || !leftPaddle || !rightPaddle) return;
 
 	// Ball
 	if (typeof data.ball?.x === "number") ball.x = data.ball.x * GAME_WIDTH;
@@ -142,8 +132,8 @@ export function updateGameScene(data) {
 	if (typeof data.paddles?.right === "number") rightPaddle.y = data.paddles.right * GAME_HEIGHT;
 	if (CONTEXT.gameMode === 2) {
 		const { leftPaddle2, rightPaddle2 } = CONTEXT;
-		if (typeof data.paddles?.left2 === "number") leftPaddle2.y = data.paddles.left2 * GAME_HEIGHT;
-		if (typeof data.paddles?.right2 === "number") rightPaddle2.y = data.paddles.right2 * GAME_HEIGHT;
+		if (leftPaddle2 && typeof data.paddles?.left2 === "number") leftPaddle2.y = data.paddles.left2 * GAME_HEIGHT;
+		if (rightPaddle2 && typeof data.paddles?.right2 === "number") rightPaddle2.y = data.paddles.right2 * GAME_HEIGHT;
 	}
 
 	// Score
@@ -155,13 +145,13 @@ export function updateGameScene(data) {
 		{
 			leftPaddle.score = left;
 			rightPaddle.score = right;
-			drawScore(left, right);
+			drawScore();
 		}
 	}
 	if (isGameStarted) draw();
 }
 
-function startGame() {
+function startGame(): void {
 	if (!isSocketConnected())
 		return;
 
@@ -172,12 +162,13 @@ function startGame() {
 
 	if (CONTEXT.startButton) CONTEXT.startButton.style.display = "none";
 	if (CONTEXT.score) CONTEXT.score.style.display = "flex";
-	if (CONTEXT) CONTEXT.isGameStarted = true;
+	CONTEXT.isGameStarted = true;
 	gameInit();
 }
 
-function gameInit() {
+function gameInit(): void {
 	const { ctx, GAME_WIDTH, GAME_HEIGHT } = CONTEXT;
+	if (!ctx) return;
 	ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 	draw();
 }

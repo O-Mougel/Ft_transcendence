@@ -1,13 +1,12 @@
-import ViewTemplate from "./ViewTemplate.js";	
+import ViewTemplate from "./ViewTemplate.js";
 
-export default class extends ViewTemplate {
-	constructor()
-	{
+export default class TournamentSizeView extends ViewTemplate {
+	constructor() {
 		super();
 		this.setTitle("Select Tournament Size");
 	}
 
-	async getHTML() {
+	async getHTML(): Promise<string> {
 		return `
 			<div id="profilePanel" class="hidden absolute animate-slide-in-left right-0 top-0 h-full min-w-80 w-[20%] bg-[url(/img/assets/stars.gif)] z-50 shadow-[0_0_20px_rgba(158,202,237,0.9)] border border-[#98c6f8] overflow-auto">
 				<div class="flex flex-col text-center w-full h-full">
@@ -43,7 +42,7 @@ export default class extends ViewTemplate {
 			</div>
 			<div class="h-full w-full flex flex-col">
 				<div class="h-[93%] w-full pt-[5%] text-center ml-auto mr-auto">
-					<div id="tournamentNbPlayerSelect"> 
+					<div id="tournamentNbPlayerSelect">
 						<h1 class="">Select the number of players in the tournament</h1>
 						<div class=" text-[4vw] flex gap-5 px-[40%] justify-around mt-8 mx-auto flex-col sm:flex-row sm:px-[5%] sm:text-[5vw]">
 							<div class="flex-1 flex items-center justify-center aspect-square hover:text-[#98c6f8] rounded-[10%] font-bold border-[1vw]">
@@ -63,7 +62,6 @@ export default class extends ViewTemplate {
 						</form>
 					</div>
 				</div>
-			</div>`
+			</div>`;
 	}
-
 }

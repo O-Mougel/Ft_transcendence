@@ -1,14 +1,15 @@
-export default class {
-	constructor() {
+import type { IViewTemplate } from '../types/view.types';
 
+export default abstract class ViewTemplate implements IViewTemplate {
+	constructor() {
+		// Base constructor
 	}
 
-setTitle(title) {
-	document.title = title;
-}
+	setTitle(title: string): void {
+		document.title = title;
+	}
 
-async getHTML(){
-	return "";
-}
+	abstract getHTML(): Promise<string>;
 
+	async init?(): Promise<void>;
 }
