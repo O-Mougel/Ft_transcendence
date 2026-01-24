@@ -1,30 +1,26 @@
-import { logoutUser } from "./userLog.js";
-import { backToDefaultPage } from "./userLog.js";
-import { fetchErrcodeHandler } from "./userLog.js";
-import { alertBoxMsg } from "./userLog.js";
-import { displayCorrectErrMsg } from "./userLog.js";
-import { startTournament } from "./clickTournamentSelectPlayers.js";
+import { fetchErrcodeHandler, alertBoxMsg, displayCorrectErrMsg } from "./userLog";
+import { startTournament } from "./clickTournamentSelectPlayers";
+import type { FileUploadResponse, ProfileEditData } from "../types/api.types";
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", (): void => {
+	document.addEventListener("click", (element: MouseEvent): void => {
+		const target = element.target as HTMLElement;
+		if (target.matches('#profileButton') || target.matches('#profileButton2')) {
+			const panel = document.getElementById('profilePanel') as HTMLElement | null;
+			if (!panel) return;
 
-	document.addEventListener("click", element => {
-		if (element.target.matches('#profileButton') || element.target.matches('#profileButton2'))
-		{
-			const panel = document.getElementById('profilePanel');
-			if(!panel) return;
-
-			if (panel.style.display == "none")
+			if (panel.style.display === "none")
 				panel.style.display = "flex";
 			else
-				panel.style.display = "none"
+				panel.style.display = "none";
 		}
-	})
+	});
 });
 
-function reportWindowSize() {
-	const panel = document.getElementById('profilePanel');
+function reportWindowSize(): void {
+	const panel = document.getElementById('profilePanel') as HTMLElement | null;
 	if (!panel) return;
-	var style = window.getComputedStyle(panel);
+	const style = window.getComputedStyle(panel);
 	if (style.display === 'none')
 		return;
 	panel.style.display = 'none';
@@ -32,9 +28,8 @@ function reportWindowSize() {
 
 window.addEventListener("resize", reportWindowSize);
 
-window.addEventListener('keydown', (e) => { //check if we pressed f5 or ctrl+r (or ctrl+F5)
-	try 
-	{
+window.addEventListener('keydown', (e: KeyboardEvent): void => {
+	try {
 		const isF5 = e.code === 'F5' || e.key === 'F5';
 		const isCtrlR = e.key.toLowerCase() === 'r' && (e.ctrlKey || e.metaKey);
 		const isCtrlF5 = isF5 && (e.ctrlKey || e.metaKey);
@@ -43,150 +38,128 @@ window.addEventListener('keydown', (e) => { //check if we pressed f5 or ctrl+r (
 			sessionStorage.setItem('f5WasPressed', 'true');
 
 	} catch (err) {
-		console.err("Key listened had an issue !", err);
+		console.error("Key listened had an issue !", err);
 	}
 });
 
-window.addEventListener("pagehide", () => {
-
-	if (!(sessionStorage.getItem('f5WasPressed')))
-	{
+window.addEventListener("pagehide", (): void => {
+	if (!(sessionStorage.getItem('f5WasPressed'))) {
 		sessionStorage.setItem('f5WasPressed', 'false');
 		sessionStorage.setItem('f5VarNotSet', 'true');
 	}
 
-	const	checkKeyReload = sessionStorage.getItem('f5WasPressed') === 'true';
-	const	reloadTypeResult = isPageReload();
+	const checkKeyReload = sessionStorage.getItem('f5WasPressed') === 'true';
+	const reloadTypeResult = isPageReload();
 
-	if(checkKeyReload || reloadTypeResult)
-	{
+	if (checkKeyReload || reloadTypeResult) {
 		window.sessionStorage.setItem('pagehide', 'pageshouldreload');
-		return ;
+		return;
 	}
 	window.sessionStorage.setItem('pagehide', 'logout_fetch_sent');
-	try 
-	{
+	try {
 		fetch('/logout', {
-				method: 'POST',
-				credentials: 'include',
-				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
-				keepalive: true,
+			method: 'POST',
+			credentials: 'include',
+			headers: { Authorization: `Bearer ${sessionStorage.getItem("access_token")}` },
+			keepalive: true,
 		});
 		window.sessionStorage.setItem('logStatus', 'loggedOut');
 		window.sessionStorage.setItem('access_token', 'userSelfLogoutToken');
-	} 
-	catch (err) 
-	{
-		//ignore for now
+	} catch (err) {
+		// ignore for now
 	}
- })
+});
 
-window.onFileSelected = function (inputFileSelector) {
-
-	const selectedFileName = document.getElementById('selectedFileName');
-	if(!inputFileSelector || !selectedFileName) return;
+window.onFileSelected = function (inputFileSelector: HTMLInputElement): void {
+	const selectedFileName = document.getElementById('selectedFileName') as HTMLElement | null;
+	if (!inputFileSelector || !selectedFileName) return;
 	const file = inputFileSelector.files && inputFileSelector.files[0];
-	
-	if (file)
-	{
+
+	if (file) {
 		selectedFileName.textContent = file.name;
-	}
-	else
+	} else {
 		selectedFileName.textContent = '';
+	}
 };
 
-function isPageReload() {
-
+function isPageReload(): boolean {
 	try {
-		const entries = performance.getEntriesByType && performance.getEntriesByType('navigation');
-		if (entries && entries.length && entries[0].type === 'reload')
-		{
-			window.sessionStorage.setItem('nbReloadsLeft', 1);
+		const entries = performance.getEntriesByType && performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
+		if (entries && entries.length && entries[0].type === 'reload') {
+			window.sessionStorage.setItem('nbReloadsLeft', '1');
 			return true;
 		}
-	}
-	catch (e) {}
+	} catch (e) { }
 	return false;
 }
 
-async function uploadFileToServer(fileObj) {
-
-	const fileInput = document.getElementById('myfileSelector');
-	const filenameStr = document.getElementById('selectedFileName');
+async function uploadFileToServer(fileObj: File): Promise<string | null> {
+	const fileInput = document.getElementById('myfileSelector') as HTMLInputElement | null;
+	const filenameStr = document.getElementById('selectedFileName') as HTMLElement | null;
 	if (!fileInput || !filenameStr) return null;
 	const formData = new FormData();
 	formData.append("myfileSelector", fileObj);
 
-	try 
-	{
+	try {
 		const fileUploadFetchResponse = await fetch('/file_upload', {
-				method: 'POST',
-				credentials: 'include',
-				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
-				body: formData,
+			method: 'POST',
+			credentials: 'include',
+			headers: { Authorization: `Bearer ${sessionStorage.getItem("access_token")}` },
+			body: formData,
 		});
-	
+
 		if (!fileUploadFetchResponse.ok) {
-				const text = await fileUploadFetchResponse.text().catch(() => fileUploadFetchResponse.statusText);
-				throw new Error(`Request failed: ${fileUploadFetchResponse.status} ${text}`);
+			const text = await fileUploadFetchResponse.text().catch(() => fileUploadFetchResponse.statusText);
+			throw new Error(`Request failed: ${fileUploadFetchResponse.status} ${text}`);
 		}
-		const result = await fileUploadFetchResponse.json();	
-		if (result)
-		{
+		const result: FileUploadResponse = await fileUploadFetchResponse.json();
+		if (result) {
 			console.log("Upload fetch success ✅");
 			return result.path;
 		}
-	} 
-	catch (err) 
-	{
-		if (await fetchErrcodeHandler(err) == 0)
-			return (await uploadFileToServer(fileObj));
+	} catch (err) {
+		if (await fetchErrcodeHandler(err as Error) === 0)
+			return await uploadFileToServer(fileObj);
 		console.error('File upload failed !\n => ', err);
 		filenameStr.innerText = "❌ File upload failed";
-		displayCorrectErrMsg(err);
+		displayCorrectErrMsg(err as Error);
 		return null;
 	}
-
+	return null;
 }
 
-window.backToTournamentPage =  function () {
+window.backToTournamentPage = function (): void {
 	window.history.pushState({}, "", "/tournament");
 	window.dispatchEvent(new PopStateEvent("popstate"));
 };
 
-window.validatePlayerNameFields =  function (nbPlayers, event) {
-
-	let i;
-	for(i = 1; i <= nbPlayers; i++) 
-	{
-		let currentInput = document.getElementById(`player${i}`);
-		if (currentInput)
-		{
+window.validatePlayerNameFields = function (nbPlayers: number, event: Event): void {
+	for (let i = 1; i <= nbPlayers; i++) {
+		const currentInput = document.getElementById(`player${i}`) as HTMLInputElement | null;
+		if (currentInput) {
 			if (!currentInput.value)
 				currentInput.value = currentInput.placeholder;
-		}
-		else
+		} else {
 			console.log(`Input player${i} not found !`);
+		}
 	}
 	startTournament(nbPlayers, event);
+};
 
-}
-window.createCustomTournamentPage =  function (nbPlayers) {
+window.createCustomTournamentPage = function (nbPlayers: number): void {
+	if (nbPlayers !== 4 && nbPlayers !== 8 && nbPlayers !== 16)
+		return;
+	const tournamentNbPlayerSelect = document.getElementById('tournamentNbPlayerSelect') as HTMLElement | null;
+	const tournamentBuiltBlock = document.getElementById('tournamentBuiltBlock') as HTMLElement | null;
+	if (!tournamentBuiltBlock || !tournamentNbPlayerSelect) return;
 
-	if (nbPlayers != 4 && nbPlayers != 8 && nbPlayers != 16)
-		return ;
-	const tournamentNbPlayerSelect = document.getElementById('tournamentNbPlayerSelect');
-	const tournamentBuiltBlock = document.getElementById('tournamentBuiltBlock');
-	if (!tournamentBuiltBlock || !tournamentNbPlayerSelect) return ;
-	
 	tournamentNbPlayerSelect.style.display = "none";
 	tournamentBuiltBlock.style.display = "block";
-	tournamentBuiltBlock.innerHTML = ""; //clear all previous input fields
+	tournamentBuiltBlock.innerHTML = "";
 
- 	let i;
- 	for(i = 1; i <= nbPlayers; i++) 
-	{
-		var listItem = document.createElement("input");
+	let i: number;
+	for (i = 1; i <= nbPlayers; i++) {
+		const listItem = document.createElement("input");
 		listItem.setAttribute('placeholder', "Player" + `${i}`);
 		listItem.setAttribute('id', "player" + `${i}`);
 		listItem.setAttribute('placeholder', "Player " + `${i}`);
@@ -194,105 +167,96 @@ window.createCustomTournamentPage =  function (nbPlayers) {
 		listItem.className = 'pb-2 w-[40%] mt-[1vw] ml-4 pl-5 mx-auto hover:text-[#98c6f8] focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]" type="text" autofocus autocomplete="off"';
 		tournamentBuiltBlock.appendChild(listItem);
 	}
-	
-	var usernameInputDiv = document.createElement("div");
-	usernameInputDiv.className ="mt-5";
-	usernameInputDiv.innerHTML = `<input tabindex=\"${i}\" class=\"shadow-[0_0_20px_rgba(158,202,237,0.9)] w-[20vw] mt-[1vw] h-[4vw] focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] border hover:border-[#98c6f8] border-white rounded-lg \" name=\"start4Players\" type=\"submit\" value=\"Start\" onclick=\"validatePlayerNameFields(${nbPlayers} ,event)\">`
+
+	const usernameInputDiv = document.createElement("div");
+	usernameInputDiv.className = "mt-5";
+	usernameInputDiv.innerHTML = `<input tabindex=\"${i}\" class=\"shadow-[0_0_20px_rgba(158,202,237,0.9)] w-[20vw] mt-[1vw] h-[4vw] focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] border hover:border-[#98c6f8] border-white rounded-lg \" name=\"start4Players\" type=\"submit\" value=\"Start\" onclick=\"validatePlayerNameFields(${nbPlayers} ,event)\">`;
 	tournamentBuiltBlock.appendChild(usernameInputDiv);
-}
+};
 
-window.spinMeAround =  function () {
-
-	const deathStarImg = document.getElementById('deathStarImg');
+window.spinMeAround = function (): void {
+	const deathStarImg = document.getElementById('deathStarImg') as HTMLElement | null;
 
 	if (!deathStarImg) return;
 
-	if(deathStarImg.classList.contains("animate-spin"))
+	if (deathStarImg.classList.contains("animate-spin"))
 		deathStarImg.classList.remove("animate-spin");
 	else
 		deathStarImg.classList.add("animate-spin");
+};
 
-}
+window.saveProfileInfo = async function (): Promise<void> {
+	const username = document.getElementById('newUsername') as HTMLInputElement | null;
+	const confirmText = document.getElementById('confirmChangeResults') as HTMLElement | null;
+	const fileInput = document.getElementById("myfileSelector") as HTMLInputElement | null;
+	const userPfp = document.getElementById('userPfp') as HTMLImageElement | null;
+	const selectedFileName = document.getElementById('selectedFileName') as HTMLElement | null;
 
-window.saveProfileInfo = async function () {
+	if (!username || !confirmText || !fileInput || !userPfp || !selectedFileName) return;
 
-	const username = document.getElementById('newUsername');
-	const confirmText = document.getElementById('confirmChangeResults');
-	const fileInput = document.getElementById("myfileSelector");
-	const userPfp = document.getElementById('userPfp');
-	const selectedFileName = document.getElementById('selectedFileName');
-	const selectedFile = fileInput.files[0];
-
+	const selectedFile = fileInput.files?.[0];
 	confirmText.innerText = "";
 
-	if (!username || !confirmText || !fileInput || !userPfp || !selectedFileName) return ;
-	if (!username.value && !selectedFile) // if nothing changed, do nothing
-		return ;
-	if (username)
-	{
-		if (username.value && username.value.length < 3)
-		{
+	if (!username.value && !selectedFile)
+		return;
+
+	if (username) {
+		if (username.value && username.value.length < 3) {
 			confirmText.innerText = "❌ Username must be at least 3 characters !";
 			username.focus();
-			return ;
+			return;
 		}
-		if (username.value.length > 13)
-		{
+		if (username.value.length > 13) {
 			confirmText.innerText = "❌ New username is too long ! (13 max)";
 			username.value = "";
 			username.focus();
-			return ;
+			return;
 		}
-		if (username.value == username.placeholder)
-		{
+		if (username.value === username.placeholder) {
 			confirmText.innerText = "❌ New username cannot be the same as the old one !";
 			username.value = "";
 			username.focus();
-			return ;
+			return;
 		}
 	}
 
-	var fullFilename = userPfp.getAttribute("src");
+	let fullFilename = userPfp.getAttribute("src") || "";
 
-	if (selectedFile && selectedFile.name)
-	{
+	if (selectedFile && selectedFile.name) {
 		const uploadPath = await uploadFileToServer(selectedFile);
 		if (uploadPath)
 			fullFilename = uploadPath;
-		else
-		{
+		else {
 			username.value = "";
 			fileInput.value = "";
 			selectedFileName.textContent = '';
 			alertBoxMsg(`❌ File could not be uploaded !`);
-			return ;
+			return;
 		}
 	}
 	if (!username.value)
 		username.value = username.placeholder;
 
-	const data = {
+	const data: ProfileEditData = {
 		name: username.value.toUpperCase(),
 		avatar: fullFilename,
 	};
 
-	try 
-	{
+	try {
 		const applyChangeResponse = await fetch('/profile/edit', {
-				method: 'PATCH',
-				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json'},
-				credentials: 'include',
-				body: JSON.stringify(data),
+			method: 'PATCH',
+			headers: { Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, 'Content-Type': 'application/json' },
+			credentials: 'include',
+			body: JSON.stringify(data),
 		});
-	
+
 		if (!applyChangeResponse.ok) {
-				const text = await applyChangeResponse.text().catch(() => applyChangeResponse.statusText);
-				throw new Error(`Request failed: ${applyChangeResponse.status} ${text}`);
+			const text = await applyChangeResponse.text().catch(() => applyChangeResponse.statusText);
+			throw new Error(`Request failed: ${applyChangeResponse.status} ${text}`);
 		}
 		const result = await applyChangeResponse.json();
-	
-		if (result)
-		{
+
+		if (result) {
 			alertBoxMsg(`✅ User was updated !`);
 			selectedFileName.textContent = '';
 			fileInput.value = "";
@@ -300,15 +264,13 @@ window.saveProfileInfo = async function () {
 			userPfp.setAttribute('src', fullFilename);
 			username.value = "";
 		}
-	} 
-	catch (err) 
-	{
-		if (await fetchErrcodeHandler(err) == 0)
-			return(window.saveProfileInfo());
+	} catch (err) {
+		if (await fetchErrcodeHandler(err as Error) === 0)
+			return window.saveProfileInfo();
 		username.value = "";
 		fileInput.value = "";
 		selectedFileName.textContent = '';
 		console.error('⚠️ Could not edit user info!\n', err);
-		displayCorrectErrMsg(err);
-	}	
+		displayCorrectErrMsg(err as Error);
+	}
 };

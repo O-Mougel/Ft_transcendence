@@ -30,7 +30,7 @@ declare global {
     buildMatchHistoryPage: () => Promise<void>;
 
     // Game
-    handlePongModeDisplay: (mode: string) => Promise<void>;
+    handlePongModeDisplay: (mode: number) => Promise<void>;
 
     // 2FA
     showQRCode: (event: Event) => Promise<void>;
