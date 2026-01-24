@@ -1,5 +1,4 @@
 import { io } from "https://cdn.socket.io/4.7.2/socket.io.esm.min.js";
-// import { io } from "socket.io-client";
 import { CONTEXT } from "./context.js";
 import { handleGameOver, handleGameStopped } from "./API.js";
 import { updateGameScene } from "./pong.js";
@@ -9,56 +8,66 @@ import type { GameOverData } from '../types/game.types';
 let socket: SocketType | null = null;
 
 export function setupSocket(): SocketType | null {
-  if (socket) return socket;
 
-  const token = sessionStorage.getItem("access_token");
-  if (!token) {
-    console.error("No access token found in sessionStorage");
-    return null;
-  }
+	if (socket) return socket;
 
-  socket = io({
-    path: "/pong/socket.io",
-    transports: ["websocket"],
-    auth: { token },
-  }) as SocketType;
+	const token = sessionStorage.getItem("access_token");
+	if (!token) {
+		console.error("No access token found in sessionStorage");
+		return null;
+	}
 
-  socket.on("connect", () => { console.log("Connected to WebSocket server"); });
+	socket = io({
+		path: "/pong/socket.io",
+		transports: ["websocket"],
+		auth: { token },
+	}) as SocketType;
 
-  socket.on("connect_error", async (err: Error) => {
-    console.error("WebSocket connection error:", err);
-    return null;
-  });
+	socket.on("connect", () => { console.log("Connected to WebSocket server"); });
 
-  if (updateGameScene) {
-	  socket.off("game:state");
-	  socket.on("game:state", (data: GameStateData) => updateGameScene?.(data));
-  }
+	socket.on("connect_error",	(err: unknown) => {
+	console.error("WebSocket connection error:", err);
+		return null;
+	});
 
-  if (handleGameStopped) {
-	  socket.off("game:stopped");
-	  socket.on("game:stopped", handleGameStopped);
-  }
+	if (typeof updateGameScene === "function") 
+	{
+		socket.off("game:state");
+		socket.on("game:state", (...args: unknown[]) => {
+			const data = args[0] as GameStateData;
+			updateGameScene(data);
+			});
+	}
 
-  if (handleGameOver) {
-	  socket.off("game:over");
-	  socket.on("game:over", (data: GameOverData) => handleGameOver(data));
-  }
+	if (typeof handleGameStopped === "function") 
+	{
+		socket.off("game:stopped");
+		socket.on("game:stopped", handleGameStopped);
+	}
 
-  return socket;
+	if (typeof handleGameOver === "function")
+	{
+		socket.off("game:over");
+		socket.on("game:over", (...args: unknown[]) => {
+			const data = args[0] as GameOverData;
+			(handleGameOver as (d: GameOverData) => void)(data);
+			});
+	}
+
+	return socket;
 }
 
 export function isSocketConnected(): boolean {
-  return !!(socket && socket.connected);
+	return !!(socket && socket.connected);
 }
 
 export async function waitStartGame(): Promise<void> {
-  if (!isSocketConnected()) {
-	  console.log("Cannot start game: Not connected to server");
-	  return;
-  }
-  try {
-    const dataRequestResponse = await fetch('/profile/grab', {
+	if (!isSocketConnected()) {
+		console.log("Cannot start game: Not connected to server");
+		return;
+	}
+	try {
+		const dataRequestResponse = await fetch('/profile/grab', {
 				credentials: 'include',
 				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
 		});
@@ -70,105 +79,106 @@ export async function waitStartGame(): Promise<void> {
 		const result = await dataRequestResponse.json();
 		if (!result) throw new Error('No data received from server');
 
-    if (CONTEXT.gameId && socket) {
-      console.log("Joining existing game with ID:", CONTEXT.gameId);
-      socket.emit("game:join", { gameId: CONTEXT.gameId });
-      return;
-    }
-    const tokenP1 = sessionStorage.getItem("access_token");
+		if (CONTEXT.gameId && socket) {
+			console.log("Joining existing game with ID:", CONTEXT.gameId);
+			socket.emit("game:join", { gameId: CONTEXT.gameId });
+			return;
+		}
+		const tokenP1 = sessionStorage.getItem("access_token");
 
-    if (!socket) return;
+		if (!socket) return;
 
-    if (CONTEXT.gameMode === 0) {
-      console.log("Starting single-player game against AI opponent");
-      socket.emit("game:start", {
-        mode: 0,
-    	  player1Token: tokenP1,
-    	  player2: "AIOpponent",
-      });
-    }
-    else if (CONTEXT.gameMode === 1) {
-      socket.emit("game:start", {
-        mode: 1,
-    	  player1Token: tokenP1,
-    	  player2: "Player2",
-      });
-    }
-    else if (CONTEXT.gameMode === 3) {
-      const tokenP2 = sessionStorage.getItem("player2_token");
-      socket.emit("game:start", {
-        mode: 3,
-    	  player1Token: tokenP1,
-    	  player2Token: tokenP2,
-      });
-    }
-    else {
-      socket.emit("game:start", {
-        mode: 2,
-    	  player1: "Player 1",
-    	  player2: "Player 2",
-        player3: "Player 3",
-        player4: "Player 4",
-      });
-    }
+		if (CONTEXT.gameMode === 0) {
+			console.log("Starting single-player game against AI opponent");
+			socket.emit("game:start", {
+				mode: 0,
+				player1Token: tokenP1,
+				player2: "AIOpponent",
+			});
+		}
+		else if (CONTEXT.gameMode === 1) {
+			socket.emit("game:start", {
+				mode: 1,
+				player1Token: tokenP1,
+				player2: "Player2",
+			});
+		}
+		else if (CONTEXT.gameMode === 3) {
+			const tokenP2 = sessionStorage.getItem("player2_token");
+			socket.emit("game:start", {
+				mode: 3,
+				player1Token: tokenP1,
+				player2Token: tokenP2,
+			});
+		}
+		else {
+			socket.emit("game:start", {
+				mode: 2,
+				player1: "Player 1",
+				player2: "Player 2",
+				player3: "Player 3",
+				player4: "Player 4",
+			});
+		}
 
-    socket.once("game:started", (data: GameStartedData) => {
-      console.log("Game started with data:", data);
-    });
-  } catch (err) {
-    console.error('Couldn\'t grab user info!\n => ', err);
-  }
+		socket.once("game:started", (...args: unknown[]) => {
+		const data = args[0] as GameStartedData;
+		console.log("Game started with data:", data);
+	});
+	} catch (err) {
+		console.error('Couldn\'t grab user info!\n => ', err);
+	}
 }
 
 export function startNewGame(payload: unknown): void {
-  if (!isSocketConnected() || !socket) return;
-  socket.emit("game:start", payload);
+	if (!isSocketConnected() || !socket) return;
+	socket.emit("game:start", payload);
 }
 
 export function joinExistingGame(gameId: string | null): void {
-  if (!isSocketConnected() || !socket || !gameId) return;
-  socket.emit("game:join", { gameId });
+	if (!isSocketConnected() || !socket || !gameId) return;
+	socket.emit("game:join", { gameId });
 }
 
 export function emitStopGame(): void {
-  if (!isSocketConnected() || !socket) return;
-  socket.emit("game:stop");
+	if (!isSocketConnected() || !socket) return;
+	socket.emit("game:stop");
 }
 
 export function emitNextMatch(tournamentId: string | null): void {
-  if (!isSocketConnected() || !socket) {
-    console.log("Cannot start next match: Not connected to server");
-    return;
-  }
-  if (!tournamentId) {
-    console.log("Cannot start next match: No tournament ID provided");
-    return;
-  }
-  socket.emit("tournament:nextMatch", { tournamentId });
+	if (!isSocketConnected() || !socket) {
+		console.log("Cannot start next match: Not connected to server");
+		return;
+	}
+	if (!tournamentId) {
+		console.log("Cannot start next match: No tournament ID provided");
+		return;
+	}
+	socket.emit("tournament:nextMatch", { tournamentId });
 }
 
 export function updateGameState(): void {
-  const { isGameStarted, leftPaddle, rightPaddle, leftPaddle2, rightPaddle2 } = CONTEXT;
-  if (!isGameStarted || !socket) return;
+	const { isGameStarted, leftPaddle, rightPaddle, leftPaddle2, rightPaddle2 } = CONTEXT;
+	if (!isGameStarted || !socket) return;
 
-  if (leftPaddle) socket.emit("game:move", { Paddle: "left", Direction: leftPaddle.direction });
-  if (rightPaddle) socket.emit("game:move", { Paddle: "right",	Direction: rightPaddle.direction });
+	if (leftPaddle) socket.emit("game:move", { Paddle: "left", Direction: leftPaddle.direction });
+	if (rightPaddle) socket.emit("game:move", { Paddle: "right",	Direction: rightPaddle.direction });
 
-  if (CONTEXT.gameMode !== 2) return;
+	if (CONTEXT.gameMode !== 2) return;
 
-  if (leftPaddle2) socket.emit("game:move", { Paddle: "left2", Direction: leftPaddle2.direction });
-  if (rightPaddle2) socket.emit("game:move", { Paddle: "right2", Direction: rightPaddle2.direction });
+	if (leftPaddle2) socket.emit("game:move", { Paddle: "left2", Direction: leftPaddle2.direction });
+	if (rightPaddle2) socket.emit("game:move", { Paddle: "right2", Direction: rightPaddle2.direction });
 }
 
 export function handleEscapeKey(): void {
-  if (!isSocketConnected() || !socket) {
-	  console.log("Cannot stop game: Not connected to server");
-	  return;
-  }
-  if (!CONTEXT.isGameStarted || CONTEXT.tournamentId) return;
-    socket.emit("game:stop");
+	if (!isSocketConnected() || !socket) {
+		console.log("Cannot stop game: Not connected to server");
+		return;
+	}
+	if (!CONTEXT.isGameStarted || CONTEXT.tournamentId) return;
+		socket.emit("game:stop");
 }
 
 export function getSocket(): SocketType | null {
-  return socket;
+	return socket;
 }
