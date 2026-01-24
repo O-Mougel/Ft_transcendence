@@ -1,6 +1,6 @@
-import startingFile from "../viewTS/startingFile";
-import { goTo2faLogin } from "./2FAEvent";
-import { adjustNavbar } from "./index";
+import startingFile from "../viewTS/startingFile.js";
+import { goTo2faLogin } from "./2FAEvent.js";
+import { adjustNavbar } from "./index.js";
 import type {
 	FriendAcceptData,
 	FriendRejectData,
