@@ -22,13 +22,10 @@
   },
 
   "include": [
-    "src/ts/eventTS/**/*",
     "src/ts/types/**/*"
   ],
   "exclude": [
     "node_modules",
-    "/src/js",
-    "src/ts/gameTS",
-    "src/ts/viewTS"
+    "./src/js",
   ]
 }

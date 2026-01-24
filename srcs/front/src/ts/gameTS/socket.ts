@@ -1,4 +1,5 @@
-import { io } from "https://cdn.socket.io/4.7.2/socket.io.esm.min.js";
+// import { io } from "https://cdn.socket.io/4.7.2/socket.io.esm.min.js";
+import { io } from "socket.io-client";
 import { CONTEXT } from "./context.js";
 import { handleGameOver, handleGameStopped } from "./API.js";
 import { updateGameScene } from "./pong.js";
@@ -25,7 +26,6 @@ export function setupSocket(): SocketType | null {
   socket.on("connect", () => { console.log("Connected to WebSocket server"); });
 
   socket.on("connect_error", async (err: Error) => {
-    console.error(`Connection error: ${err.message}`, "error");
     console.error("WebSocket connection error:", err);
     return null;
   });
