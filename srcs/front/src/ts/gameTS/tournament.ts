@@ -1,5 +1,5 @@
-import { CONTEXT } from "/game/context.js";
-import { setupSocket, getSocket } from "/game/socket.js";
+import { CONTEXT } from "./context.js";
+import { setupSocket, getSocket } from "./socket.js";
 import type { Socket } from '../types/socket.types';
 import type { Tournament, TournamentStateData, MatchStartedData, TournamentEndedData } from '../types/socket.types';
 
