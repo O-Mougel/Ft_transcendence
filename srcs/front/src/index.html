@@ -10,16 +10,16 @@
 <body class="select-none h-screen w-screen m-0 bg-[url(/img/assets/starField.gif)] bg-cover bg-center bg-fixed backdrop-blur-[2px] text-center text-[3vw] sm:text-[2vw] 2xl:text-3xl text-white">
 
 	<!-- SMALL NAVBAR --------------------------------->
-	<ul class="sm:hidden flex h-[10%] max-h-14 w-full m-0 p-0 pt-2 list-none items-center">
+	<ul class="lg:hidden flex h-[10%] max-h-14 w-full m-0 p-0 pt-2 list-none items-center">
         <li id="navBarHomeIconId" class="hidden h-full w-auto px-2"><a class="flex items-center justify-center bg-[url(/img/assets/navbar/home.png)] hover:bg-[url(/img/assets/navbar/home_hover.png)] bg-contain bg-no-repeat bg-center w-10 h-10" href="/" data-link></a></li>
         <li id="navBarModesIconId" class="hidden h-full w-auto relative px-2">
 			<input class="sr-only peer" id="modListBoxSmall" type="checkbox"/>
 			<label for="modListBoxSmall" class="cursor-pointer select-none flex items-center justify-center bg-[url(/img/assets/navbar/mode.png)] hover:bg-[url(/img/assets/navbar/mode_hover.png)] bg-contain bg-no-repeat bg-center w-10 h-10"></label>
 			<ul class="select-none absolute peer-checked:block hidden self-start text-left h-full w-full z-30" id="modlist">
-				<li class="h-full w-auto text-base bg-black hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pongAI" data-link>🦾</a></li>
-				<li class="h-full w-auto text-base bg-black hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong" data-link>⚔️</a></li>
-				<li class="h-full w-auto text-base bg-black hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong2" data-link>⚔️⚔️</a></li>
-				<li class="h-full w-auto text-base bg-black hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/ranked" data-link>🏆</a></li>
+				<li class="h-full w-auto text-base bg-black rounded-t-lg border-r border-l border-white hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pongAI" data-link>🦾</a></li>
+				<li class="h-full w-auto text-base bg-black border-r border-l border-white hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong" data-link>👤</a></li>
+				<li class="h-full w-auto text-base bg-black border-r border-l border-white hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/ranked" data-link>👨‍💼</a></li>
+				<li class="h-full w-auto text-base bg-black rounded-b-lg border-b border-r border-l border-white hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong2" data-link>👥</a></li>
 			</ul>
 		</li>
         <li id="navBarCupIconId" class="hidden h-full w-auto px-2"><a class="flex items-center justify-center bg-[url(/img/assets/navbar/tournament.png)] hover:bg-[url(/img/assets/navbar/tournament_hover.png)] bg-contain bg-no-repeat bg-center w-10 h-10" href="/tournamentSize" data-link></a></li>
@@ -28,16 +28,16 @@
     </ul>
 
 	<!-- DEFAULT NAVBAR -->
-	<ul class="hidden sm:flex h-[5%] w-full m-0 p-0 list-none items-center">
+	<ul class="hidden lg:flex h-[5%] w-full m-0 p-0 list-none items-center">
 		<li id="navBarHomeId" class="hidden h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/" data-link>Home</a></li>
 		<li id="navBarModesId"class="hidden h-full w-auto relative">
 			<input class="sr-only peer" id="modListBox" type="checkbox"/>
 			<label for="modListBox" class="cursor-pointer select-none flex items-center justify-center px-5 h-full w-full hover:text-[#98c6f8] hover:bg-[#1c1b1b]">Modes</label>
 			<ul class="select-none absolute peer-checked:block hidden self-start text-left h-full w-full z-30" id="modlist">
-				<li class="h-full w-auto text-base bg-black rounded-t-lg border-r border-l border-white hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pongAI" data-link>VS AI 🦾</a></li>
-				<li class="h-full w-auto text-base bg-black border-r border-l border-white hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong" data-link>Casual 1⚔️1</a></li>
-				<li class="h-full w-auto text-base bg-black border-r border-l border-white hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/pong2" data-link>Casual 2⚔️2</a></li>
-				<li class="h-full w-auto text-base bg-black rounded-b-lg border-b border-r border-l border-white hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/ranked" data-link>Ranked 🏆</a></li>
+				<li class="h-full w-auto text-base bg-black rounded-t-lg border-r border-l border-white hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-1 h-full w-full" href="/pongAI" data-link>VS AI 🦾</a></li>
+				<li class="h-full w-auto text-base bg-black border-r border-l border-white hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-1 h-full w-full" href="/pong" data-link>vs guest 👤</a></li>
+				<li class="h-full w-auto text-base bg-black border-r border-l border-white hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-1 h-full w-full" href="/ranked" data-link>vs user 👨‍💼</a></li>
+				<li class="h-full w-auto text-base bg-black rounded-b-lg border-b border-r border-l border-white hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-1 h-full w-full" href="/pong2" data-link>2 vs 2 👥</a></li>
 			</ul>
 		</li>
         <li id="navBarCupId" class="hidden h-full w-auto hover:text-[#98c6f8] hover:bg-[#1c1b1b]"><a class="flex items-center justify-center px-5 h-full w-full" href="/tournamentSize" data-link>Tournament</a></li>
