@@ -959,65 +959,64 @@ window.buildMatchHistoryPage = async function (): Promise<void> {
 
 	if (!matchHistoryDiv) return;
 
-
-	// try 
-	// {
-	// 	const userHistoryRequestResponse = await fetch('/match', {
-	// 			credentials: 'include',
-	// 			headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
-	// 	});
+	try 
+	{
+		const userHistoryRequestResponse = await fetch('/match/history', {
+				credentials: 'include',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
+		});
 	
-	// 	if (!userHistoryRequestResponse.ok) {
-	// 			const text = await userHistoryRequestResponse.text().catch(() => userHistoryRequestResponse.statusText);
-	// 			throw new Error(`Request failed: ${userHistoryRequestResponse.status} ${text}`);
-	// 	}
-	// 	const result = await userHistoryRequestResponse.json();	
-	// 	if (result)
-	// 	{
-	// 		matchHistoryDiv.innerHTML = '';
-	// 		if (result.match.length)
-	// 		{
-	// 			for(let i = 0; i < result.match.length; i++) 
-	// 			{
-	// 				var divItem = document.createElement("div");
-	// 				divItem.className = 'flex flex-col bg-[#4ac03d9f] border border-white rounded-lg w-full gap-2 p-4';
-	// 				divItem.innerHTML = `<div class="flex flex-col gap-y-2">
-	// 						<div class="flex flex-row justify-between items-center">
-	// 							<div class="flex flex-col items-start">
-	// 								<p>${result.match[i].createdAt}</p>
-	// 								<p>${result.match[i].duration}</p>
-	// 							</div>
-	// 							<p>${result.match[i].player1score} - ${result.match[i].player2score}</p>
-	// 							<div class="flex flex-col items-end">
-	// 								<p>${result.match[i].type}</p>
-	// 								<p>${result.match[i].round}</p>
-	// 							</div>
-	// 						</div>
-	// 						<div class="flex flex-row justify-between items-center">
-	// 							<div class="flex flex-col items-start">
-	// 								<p>${result.match[i].player1name}</p>
-	// 								<p>${result.match[i].player3name}</p>
-	// 							</div>
-	// 							<p>[imgVS]</p>
-	// 							<div class="flex flex-col items-end">
-	// 								<p>${result.match[i].player2name}</p>
-	// 								<p>${result.match[i].player4name}</p>
-	// 							</div>
-	// 						</div>
-	// 					</div>`;
-	// 				matchHistoryDiv.appendChild(divItem);
-	// 			}
-	// 		}
-	// 	}
+		if (!userHistoryRequestResponse.ok) {
+				const text = await userHistoryRequestResponse.text().catch(() => userHistoryRequestResponse.statusText);
+				throw new Error(`Request failed: ${userHistoryRequestResponse.status} ${text}`);
+		}
+		const result = await userHistoryRequestResponse.json();	
+		if (result)
+		{
+			matchHistoryDiv.innerHTML = '';
+			if (result.match.length)
+			{
+				for(let i = 0; i < result.match.length; i++) 
+				{
+					var divItem = document.createElement("div");
+					divItem.className = 'flex flex-col bg-[#4ac03d9f] border border-white rounded-lg w-full gap-2 p-4';
+					divItem.innerHTML = `<div class="flex flex-col gap-y-2">
+							<div class="flex flex-row justify-between items-center">
+								<div class="flex flex-col items-start w-[40%]">
+									<p>${result.match[i].createdAt}</p>
+									<p>${result.match[i].duration} seconds</p>
+								</div>
+								<p class="w-[20%]">${result.match[i].player1Score} - ${result.match[i].player2Score}</p>
+								<div class="flex flex-col items-end w-[40%]">
+									<p>${result.match[i].type}</p>
+									<p>${result.match[i].round}</p>
+								</div>
+							</div>
+							<div class="flex flex-row justify-between items-center">
+								<div class="flex flex-col items-start w-[50%]">
+									<p>${result.match[i].player1name}</p>
+								</div>
+								<div class="flex flex-col items-end w-[50%]">
+									<p>${result.match[i].player2name}</p>
+								</div>
+							</div>
+						</div>`;
+					if (!result.match[i].win)
+						divItem.style.backgroundColor = "#c03d3d9f";
+					matchHistoryDiv.appendChild(divItem);
+				}
+			}
+		}
 		
-	// } 
-	// catch (err) 
-	// {
-	// 	if (await fetchErrcodeHandler(err as Error) == 0)
-	// 		return(buildMatchHistoryPage());
-	// 	console.error('⚠️ Couldn\'t recover user history!\n => ', err);
-	// }
+	} 
+	catch (err) 
+	{
+		if (await fetchErrcodeHandler(err as Error) == 0)
+			return(window.buildMatchHistoryPage());
+		console.error('⚠️ Couldn\'t recover user history!\n => ', err);
+	}
 }
+
 	
 window.loadProfileData = async function (): Promise<void> {
 	const Player1Name = document.getElementById('Player1Name') as HTMLElement | null;

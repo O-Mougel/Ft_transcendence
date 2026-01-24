@@ -130,7 +130,7 @@ export default class PongView extends ViewTemplate {
 
 	async init(): Promise<void> {
 		const mode: GameMode = (location.pathname === '/pongAI') ? 0 : (location.pathname === '/pongRanked') ? 3 : (location.pathname === '/pong2') ? 2 : 1;
-		const module = await import("../gameTS/pong");
+		const module = await import("../gameTS/pong.js");
 
 		if (typeof module.initPong === "function")
 			module.initPong({ mode, gameId: CONTEXT.gameId });
