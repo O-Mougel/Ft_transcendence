@@ -40,15 +40,15 @@ export default class AboutFileView extends ViewTemplate {
 					</div>
 				</div>
 			</div>
-			<form class="py-[3%] px-[2%] ">
-				<h2 class="flex items-start text-amber-50">✦ Who did this ?</h2>
-				<div class="flex items-start w-[50%] py-5">
-					<h3 class="flex items-start text-sm pl-6 text-[#44494f]">Only lchapard, truly the best out there</h2>
+			<div class="py-[3%] px-[2%] ">
+				<h1 class="flex items-start text-amber-50">✦ Who made this website ?</h1>
+				<div class="flex items-start w-full py-5">
+					<h2 class="flex items-start pl-6 text-[#44494f]">This project was made by lchapard, omougel, vdomasch, and bhumeau.</h2>
 				</div>
-				<h2 class="flex items-start text-amber-50">✦ Why the space theme ?</h2>
-				<div class="flex items-start w-[50%] py-5">
-					<h3 class="flex items-start text-sm text-[#44494f] pl-6">Because the blackhole was near, makes sense if you ask me</h2>
+				<h1 class="flex items-start text-amber-50">✦ Why the space theme ?</h1>
+				<div class="flex items-start w-full py-5">
+					<h2 class="flex items-start text-[#44494f] pl-6">Because the blackhole was near, makes sense if you ask me</h2>
 				</div>
-			</form>`;
+			</div>`;
 	}
 }
