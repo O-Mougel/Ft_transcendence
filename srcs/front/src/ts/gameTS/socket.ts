@@ -2,7 +2,6 @@ import { io } from "https://cdn.socket.io/4.7.2/socket.io.esm.min.js";
 import { CONTEXT } from "./context.js";
 import { handleGameOver, handleGameStopped } from "./API.js";
 import { updateGameScene } from "./pong.js";
-import { alertBoxMsg, fetchErrcodeHandler } from "../js/userLog.js";
 import type { GameStateData, GameStartedData, Socket as SocketType } from '../types/socket.types';
 import type { GameOverData } from '../types/game.types';
 
@@ -26,10 +25,8 @@ export function setupSocket(): SocketType | null {
   socket.on("connect", () => { console.log("Connected to WebSocket server"); });
 
   socket.on("connect_error", async (err: Error) => {
-    alertBoxMsg(`Connection error: ${err.message}`, "error");
+    console.error(`Connection error: ${err.message}`, "error");
     console.error("WebSocket connection error:", err);
-    if (await fetchErrcodeHandler(err) === 0)
-          return (setupSocket());
     return null;
   });
 
@@ -119,8 +116,6 @@ export async function waitStartGame(): Promise<void> {
       console.log("Game started with data:", data);
     });
   } catch (err) {
-    if (await fetchErrcodeHandler(err) === 0)
-      return(waitStartGame());
     console.error('Couldn\'t grab user info!\n => ', err);
   }
 }

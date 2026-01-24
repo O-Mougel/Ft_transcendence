@@ -5,7 +5,7 @@
     "moduleResolution": "node",
     "skipLibCheck": true,
     "outDir": "./src/js",
-    "rootDir": "./src/ts/eventTS",
+    "rootDir": "./src/ts",
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,

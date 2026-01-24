@@ -5,7 +5,7 @@
     "moduleResolution": "node",
     "skipLibCheck": true,
     "outDir": "./src/game",
-    "rootDir": "./src/ts/gameTS",
+    "rootDir": "./src/ts",
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
