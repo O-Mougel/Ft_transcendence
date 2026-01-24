@@ -1,28 +1,35 @@
-import startingFile from "../views/startingFile.js";
-import { goTo2faLogin } from "./2FAEvent.js";
-import { adjustNavbar } from "./index.js";
+import startingFile from "../viewTS/startingFile";
+import { goTo2faLogin } from "./2FAEvent";
+import { adjustNavbar } from "./index";
+import type {
+	FriendAcceptData,
+	FriendRejectData,
+	FriendRequestData,
+	NewUserData,
+} from "../types/api.types";
 
-export const backToDefaultPage = async () => {
-
+export const backToDefaultPage = async (): Promise<void> => {
 	const view = new startingFile();
-	document.querySelector("#app").innerHTML = await view.getHTML();
+	const appElement = document.querySelector("#app") as HTMLElement | null;
+	if (appElement) {
+		appElement.innerHTML = await view.getHTML();
+	}
 	adjustNavbar("/");
 	if (typeof view.init === "function") {
-		 await view.init();
+		await view.init();
 	}
-	history.pushState(null, null, "/");
+	history.pushState(null, "", "/");
 }
 
-const hideAlertBoxMsg = async () => {
-
-	const alertBox = document.getElementById('alertBox');
+const hideAlertBoxMsg = async (): Promise<void> => {
+	const alertBox = document.getElementById('alertBox') as HTMLElement | null;
 	if (!alertBox) return;
 
 	alertBox.style.display = 'none';
 	alertBox.innerHTML = "Hey ! I'm supposed to be hidden ! >:(";
 }
 
-export const displayCorrectErrMsg = async (error) => {
+export const displayCorrectErrMsg = async (error: Error | string): Promise<void> => {
 
 	const index = error.toString().indexOf("\"errRef\"");
 	if (index < 0)
@@ -156,9 +163,8 @@ export const displayCorrectErrMsg = async (error) => {
 
 }
 
-export const alertBoxMsg = async (msg) => {
-		
-	const alertBox = document.getElementById('alertBox');
+export const alertBoxMsg = async (msg: string): Promise<void> => {
+	const alertBox = document.getElementById('alertBox') as HTMLElement | null;
 	if (!alertBox) return;
 
 	alertBox.style.display = 'inline';
@@ -166,7 +172,7 @@ export const alertBoxMsg = async (msg) => {
 	setTimeout(hideAlertBoxMsg, 3000);
 }
 
-export const fetchErrcodeHandler = async (error) => {
+export const fetchErrcodeHandler = async (error: Error | string): Promise<number> => {
 
 
 	const isNotAuth = error.toString().search("\"errRef\":\"authBearerMissing\"") != -1;
@@ -192,18 +198,18 @@ export const fetchErrcodeHandler = async (error) => {
 	else if (isExpired)
 	{
 		if (!(window.sessionStorage.getItem("nbReloadsLeft")))
-			window.sessionStorage.setItem('nbReloadsLeft', 1);
+			window.sessionStorage.setItem('nbReloadsLeft', '1');
 		else
 		{
-			let reloadCpt =	parseInt(window.sessionStorage.getItem('nbReloadsLeft'));
-			if (reloadCpt == 0) 
+			const reloadCpt = parseInt(window.sessionStorage.getItem('nbReloadsLeft') || '0');
+			if (reloadCpt == 0)
 			{
 				window.sessionStorage.setItem('logStatus', 'loggedOut');
 				console.log("No tries left ! backToDefaultPage !");
 				backToDefaultPage();
 				return (-1);
 			}
-			window.sessionStorage.setItem('nbReloadsLeft', reloadCpt - 1);
+			window.sessionStorage.setItem('nbReloadsLeft', String(reloadCpt - 1));
 		}
 		console.info("Token expired or invalid ! Refreshing...");
 		try 
@@ -222,7 +228,7 @@ export const fetchErrcodeHandler = async (error) => {
 			{
 				window.sessionStorage.setItem('access_token', result.newAccessToken); //grab new token
 				console.info("Token refreshed.");
-				window.sessionStorage.setItem('nbReloadsLeft', 1);
+				window.sessionStorage.setItem('nbReloadsLeft', '1');
 			}
 			else
 				throw new Error(`Token could not be generated !`);
@@ -240,21 +246,26 @@ export const fetchErrcodeHandler = async (error) => {
 	return(42);
 }
 
-const fieldValidity = (username, pwd, pwdconf, requestR, email) => {
-
-	if(!requestR || !pwdconf) return false;
+const fieldValidity = (
+	username: HTMLInputElement | null,
+	pwd: HTMLInputElement | null,
+	pwdconf: HTMLInputElement | null,
+	requestR: HTMLElement | null,
+	email: HTMLInputElement | null
+): boolean => {
+	if (!requestR || !pwdconf) return false;
 
 	requestR.innerText = "";
-	if (!username || !username.value || username.length >= 3)
+	if (!username || !username.value || username.value.length < 3)
 	{
 		requestR.innerText = "❌ Username must be at least 3 characters !";
-		username.focus();
+		if (username) username.focus();
 		return false;
 	}
 	else if (!email || !email.value)
 	{
 		requestR.innerText = "❌ Email cannot be empty !";
-		email.focus();
+		if (email) email.focus();
 		return false;
 	}
 	else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value))
@@ -266,7 +277,7 @@ const fieldValidity = (username, pwd, pwdconf, requestR, email) => {
 	else if (!pwd || !pwd.value || pwd.value.length < 8)
 	{
 		requestR.innerText = "❌ Password must be at least 8 characters long !";
-		pwd.focus();
+		if (pwd) pwd.focus();
 		return false;
 	}
 	else if (pwd.value.length > 32)
@@ -300,10 +311,8 @@ const fieldValidity = (username, pwd, pwdconf, requestR, email) => {
 	return (true);
 }
 
-export async function isUserAllowedHere() {
-
-	try 
-	{
+export async function isUserAllowedHere(): Promise<number> {
+	try {
 		const logUserCheckResponse = await fetch('/login/loggedUserCheck', {
 				credentials: 'include',
 				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
@@ -319,9 +328,9 @@ export async function isUserAllowedHere() {
 			return(1); //user is logged
 		}
 	} 
-	catch (err) 
+	catch (err)
 	{
-		if (await fetchErrcodeHandler(err) == 0)
+		if (await fetchErrcodeHandler(err as Error) == 0)
 			return (isUserAllowedHere());
 		alertBoxMsg(`❌ You are not allowed to be here ! Log-in first !`);
 		console.error("\n❌No valid credentials ! Back to Login page !\n");
@@ -331,12 +340,11 @@ export async function isUserAllowedHere() {
 	return(0);
 }
 
-window.acceptFriend = async (friendId) => {
+window.acceptFriend = async (friendId: number): Promise<void> => {
+	const requestList = document.getElementById('requestList') as HTMLElement | null;
+	if (!requestList || !friendId) return;
 
-	const requestList = document.getElementById('requestList'); //contains the requests
-	if(!requestList || !friendId) return;
-
-	const data = {
+	const data: FriendAcceptData = {
 		friendAcceptId: friendId,
 	};
 
@@ -367,27 +375,27 @@ window.acceptFriend = async (friendId) => {
 				}
 			}
 			alertBoxMsg(`✅ You are now friend with \"${result.friendname} !\"`);
-			grabProfileInfo();
+			window.grabProfileInfo();
 		}
 	}
-	catch (err) 
+	catch (err)
 	{
-		if (await fetchErrcodeHandler(err) == 0)
-			return(window.acceptFriend(username));
+		if (await fetchErrcodeHandler(err as Error) == 0)
+			return window.acceptFriend(friendId);
 		console.error('⚠️ Couldn\'t accept friend request !\n =>', err);
-		displayCorrectErrMsg(err);
+		displayCorrectErrMsg(err as Error);
 	}
 }
 
-window.rejectFriend = async (username) => {
-	const requestList = document.getElementById('requestList'); //contains the requests
-	const requestLabel = document.getElementById('requestCheckLabel');
-	const requestBlock = document.getElementById('pendingRequestBlock');
+window.rejectFriend = async (friendId: number): Promise<void> => {
+	const requestList = document.getElementById('requestList') as HTMLElement | null;
+	const requestLabel = document.getElementById('requestCheckLabel') as HTMLElement | null;
+	const requestBlock = document.getElementById('pendingRequestBlock') as HTMLElement | null;
 
-	if(!requestList || !requestLabel || !requestBlock || !username) return;
+	if (!requestList || !requestLabel || !requestBlock || !friendId) return;
 
-	const data = {
-		friendRejectId: username,
+	const data: FriendRejectData = {
+		friendRejectId: friendId,
 	};
 
 	try 
@@ -408,33 +416,32 @@ window.rejectFriend = async (username) => {
 		{
 			if(requestList.hasChildNodes())
 			{
-				let	clearName = username + "[42]";
+				const clearName = result.rejectedName + "[42]";
 				const currentElement = document.getElementsByName(clearName);
 				if (currentElement && currentElement.length > 0)
 				{
 					const target = currentElement[0];
 					target.remove();
 				}
-				grabProfileInfo();
+				window.grabProfileInfo();
 			}
 		}
 	}
-	catch (err) 
+	catch (err)
 	{
-		if (await fetchErrcodeHandler(err) == 0)
-			return(window.rejectFriend(username));
+		if (await fetchErrcodeHandler(err as Error) == 0)
+			return window.rejectFriend(friendId);
 		console.error('⚠️ Couldn\'t reject friend request !\n =>', err);
-		displayCorrectErrMsg(err);
+		displayCorrectErrMsg(err as Error);
 	}
 }
 
-const checkForFriendRequests = async () => {
-	
-	const requestList = document.getElementById('requestList'); //contains the requests
-	const requestLabel = document.getElementById('requestCheckLabel'); //contains the requests
-	const requestBlock = document.getElementById('pendingRequestBlock'); //contains the requests
+const checkForFriendRequests = async (): Promise<void> => {
+	const requestList = document.getElementById('requestList') as HTMLElement | null;
+	const requestLabel = document.getElementById('requestCheckLabel') as HTMLElement | null;
+	const requestBlock = document.getElementById('pendingRequestBlock') as HTMLElement | null;
 
-	if(!requestList || !requestLabel || !requestBlock) return;
+	if (!requestList || !requestLabel || !requestBlock) return;
 
 	try 
 	{
@@ -484,16 +491,15 @@ const checkForFriendRequests = async () => {
 	} 
 	catch (err) 
 	{
-		if (await fetchErrcodeHandler(err) == 0)
+		if (await fetchErrcodeHandler(err as Error) == 0)
 			return(checkForFriendRequests());
 		console.error('⚠️ Couldn\'t display friend requests !\n =>', err);
 	}
 
 }
 
-const displayUserFriends = async () => {
-	
-	const friendList = document.getElementById('friendlist');
+const displayUserFriends = async (): Promise<void> => {
+	const friendList = document.getElementById('friendlist') as HTMLElement | null;
 	if (!friendList) return;
 	try 
 	{
@@ -526,18 +532,17 @@ const displayUserFriends = async () => {
 	} 
 	catch (err) 
 	{
-		if (await fetchErrcodeHandler(err) == 0)
+		if (await fetchErrcodeHandler(err as Error) == 0)
 			return(displayUserFriends());
 		console.error('⚠️ Couldn\'t grab user friend info !\n => ', err);
 	}
 
 }
 
-window.grabProfileInfo = async function () {
-	
-	const profilePanel = document.getElementById('profilePanel');
-	const profileUsername = document.getElementById('playerGrabbedUsername');
-	const profilePicture = document.getElementById('sidePannelPfp');
+window.grabProfileInfo = async function (): Promise<void> {
+	const profilePanel = document.getElementById('profilePanel') as HTMLElement | null;
+	const profileUsername = document.getElementById('playerGrabbedUsername') as HTMLElement | null;
+	const profilePicture = document.getElementById('sidePannelPfp') as HTMLElement | null;
 
 	if (!profilePanel || !profileUsername || !profilePicture) return;
 	try 
@@ -573,7 +578,7 @@ window.grabProfileInfo = async function () {
 	} 
 	catch (err) 
 	{
-		if (await fetchErrcodeHandler(err) == 0)
+		if (await fetchErrcodeHandler(err as Error) == 0)
 			return (window.grabProfileInfo());
 		console.error('Profile info grab failed !\n => ', err);
 		return ;
@@ -583,12 +588,11 @@ window.grabProfileInfo = async function () {
 }
 
 
-window.sendNewFriendRequest = async function () {
+window.sendNewFriendRequest = async function (): Promise<void> {
+	const friendReqInput = document.getElementById('friendSearchInput') as HTMLInputElement | null;
+	if (!friendReqInput || !friendReqInput.value) return;
 
-	const friendReqInput = document.getElementById('friendSearchInput');
-	if (!friendReqInput || !friendReqInput.value) return ; //if field empty do nothing
-
-	const data = {
+	const data: FriendRequestData = {
 		friendRequestName: friendReqInput.value,
 	};
 
@@ -615,19 +619,17 @@ window.sendNewFriendRequest = async function () {
 	} 
 	catch (err) 
 	{
-		if (await fetchErrcodeHandler(err) == 0)
+		if (await fetchErrcodeHandler(err as Error) == 0)
 			return(window.sendNewFriendRequest());
 		console.error('Could not send friend request !\n => ', err);
-		displayCorrectErrMsg(err);
+		displayCorrectErrMsg(err as Error);
 	}
 }
 
 window.logoutUser = logoutUser;
 
-export async function logoutUser() {
-
-	try 
-	{
+export async function logoutUser(): Promise<void> {
+	try {
 		const logoutResponse = await fetch('/logout', {
 				method: 'POST',
 				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
@@ -650,30 +652,29 @@ export async function logoutUser() {
 	} 
 	catch (err) 
 	{
-		if (await fetchErrcodeHandler(err) == 0)
+		if (await fetchErrcodeHandler(err as Error) == 0)
 			return(window.logoutUser());
 		console.error('⚠️ Couldn\'t log out user !\n => ', err);
 	}
 }
 
-window.handleNewUserCreate = async function (event) {
-
+window.handleNewUserCreate = async function (event: Event): Promise<void> {
 	event.preventDefault();
 
-	const username = document.getElementById('newUsernameNewUser');
-	const email = document.getElementById('newUserEmail');
-	const password = document.getElementById('firstPasswordNewUser');
-	const passwordConfirm = document.getElementById('confirmPasswordNewUser');
-	const requestResult = document.getElementById('saveNewUserInfo');
+	const username = document.getElementById('newUsernameNewUser') as HTMLInputElement | null;
+	const email = document.getElementById('newUserEmail') as HTMLInputElement | null;
+	const password = document.getElementById('firstPasswordNewUser') as HTMLInputElement | null;
+	const passwordConfirm = document.getElementById('confirmPasswordNewUser') as HTMLInputElement | null;
+	const requestResult = document.getElementById('saveNewUserInfo') as HTMLElement | null;
 
-	if(fieldValidity(username, password, passwordConfirm, requestResult, email) == false)
-		return ;
+	if (fieldValidity(username, password, passwordConfirm, requestResult, email) === false)
+		return;
 
-	const data = {
-		email: email.value,
-		name: username.value.toUpperCase(),
-		password: password.value,
-		passwordconfirmation: passwordConfirm.value,
+	const data: NewUserData = {
+		email: email!.value,
+		name: username!.value.toUpperCase(),
+		password: password!.value,
+		passwordconfirmation: passwordConfirm!.value,
 	};
 	try 
 	{
@@ -689,14 +690,14 @@ window.handleNewUserCreate = async function (event) {
 		}
 		const result = await newUserResponse.json();
 	
-		if (result) 
+		if (result)
 		{
 			console.log('✅ User created');
 			alertBoxMsg(`✅ User \"${data.name}\" created successfully!`);
-			username.value = "";
-			email.value = "";
-			password.value = "";
-			passwordConfirm.value = "";
+			if (username) username.value = "";
+			if (email) email.value = "";
+			if (password) password.value = "";
+			if (passwordConfirm) passwordConfirm.value = "";
 			window.sessionStorage.setItem('logStatus','loggedIn');
 			window.sessionStorage.setItem('access_token',result.token);
 			alertBoxMsg(`Welcome ${data.name} ! 😉`);
@@ -705,23 +706,22 @@ window.handleNewUserCreate = async function (event) {
 	} 
 	catch (err) 
 	{
-		if (await fetchErrcodeHandler(err) == 0)
+		if (await fetchErrcodeHandler(err as Error) == 0)
 			return(window.handleNewUserCreate(event));
 		// username.value = "";
 		// email.value = "";
 		// password.value = "";
 		// passwordConfirm.value = "";
 		console.error('Could not create new user !\n => ', err);
-		displayCorrectErrMsg(err);
+		displayCorrectErrMsg(err as Error);
 	}
 };
 
-window.handleLoginClick = async function (event) {
-
+window.handleLoginClick = async function (event: Event): Promise<void> {
 	event.preventDefault();
-	const username = document.getElementById('clientUsername');
-	const password = document.getElementById('clientPassword');
-	const logResult = document.getElementById('signInResult');
+	const username = document.getElementById('clientUsername') as HTMLInputElement | null;
+	const password = document.getElementById('clientPassword') as HTMLInputElement | null;
+	const logResult = document.getElementById('signInResult') as HTMLElement | null;
 
 	if (!username || !password || !logResult) return;
 
@@ -778,28 +778,26 @@ window.handleLoginClick = async function (event) {
 	} 
 	catch (err) 
 	{
-		if (await fetchErrcodeHandler(err) == 0)
+		if (await fetchErrcodeHandler(err as Error) == 0)
 			return(window.handleLoginClick(event));
 		username.value = "";
 		password.value = "";
 		console.error('Login error !\n => ', err);
-		displayCorrectErrMsg(err);
+		displayCorrectErrMsg(err as Error);
 	}
 };
 
-window.updateUserPassword = async function (event) {
-	
+window.updateUserPassword = async function (event: Event): Promise<void> {
 	event.preventDefault();
 
-	try
-	{
-		const oldPassword = document.getElementById('currentPasswordInput');
-		const newPassword = document.getElementById('newPasswordInput');
-		const confirmNewPassword = document.getElementById('confirmNewPasswordInput');
-		const requestResult = document.getElementById('changePasswordResult');
-		
+	try {
+		const oldPassword = document.getElementById('currentPasswordInput') as HTMLInputElement | null;
+		const newPassword = document.getElementById('newPasswordInput') as HTMLInputElement | null;
+		const confirmNewPassword = document.getElementById('confirmNewPasswordInput') as HTMLInputElement | null;
+		const requestResult = document.getElementById('changePasswordResult') as HTMLElement | null;
+
 		if (!oldPassword || !newPassword || !confirmNewPassword || !requestResult)
-			return ;
+			return;
 		requestResult.innerText = "";
 		
 		if (!oldPassword.value || !newPassword.value || !confirmNewPassword.value)
@@ -859,25 +857,24 @@ window.updateUserPassword = async function (event) {
 	} 
 	catch (err)
 	{
-		if (await fetchErrcodeHandler(err) == 0)
+		if (await fetchErrcodeHandler(err as Error) == 0)
 			return(window.updateUserPassword(event));
 		console.error('Failed to update password!\n => ', err);
-		displayCorrectErrMsg(err);
+		displayCorrectErrMsg(err as Error);
 	}
 }
 
-window.loginPlayer2 = async function (event) {
-
+window.loginPlayer2 = async function (event: Event): Promise<void> {
 	event.preventDefault();
-	const username = document.getElementById('player2UserName');
-	const password = document.getElementById('player2Password');
-	const logResult = document.getElementById('Player2Result');
-	const divLogin = document.getElementById('profile2Login');
-	const divLogin2FA = document.getElementById('profile2Login2FA');
-	const profile2Overview = document.getElementById('profile2Overview');
-	const player2TwoFAInput = document.getElementById('player2TwoFAInput');
-	const goToGameButtonDiv = document.getElementById('goToGameButtonDiv');
-	const Player1Name = document.getElementById('Player1Name');
+	const username = document.getElementById('player2UserName') as HTMLInputElement | null;
+	const password = document.getElementById('player2Password') as HTMLInputElement | null;
+	const logResult = document.getElementById('Player2Result') as HTMLElement | null;
+	const divLogin = document.getElementById('profile2Login') as HTMLElement | null;
+	const divLogin2FA = document.getElementById('profile2Login2FA') as HTMLElement | null;
+	const profile2Overview = document.getElementById('profile2Overview') as HTMLElement | null;
+	const player2TwoFAInput = document.getElementById('player2TwoFAInput') as HTMLInputElement | null;
+	const goToGameButtonDiv = document.getElementById('goToGameButtonDiv') as HTMLElement | null;
+	const Player1Name = document.getElementById('Player1Name') as HTMLElement | null;
 
 	if (!username || !password || !logResult) return;
 
@@ -894,13 +891,13 @@ window.loginPlayer2 = async function (event) {
 		password.focus();
 		return ;
 	}
-	else if (username.value.toUpperCase() == Player1Name.innerHTML.toUpperCase())
+	else if (Player1Name && username.value.toUpperCase() == Player1Name.innerHTML.toUpperCase())
 	{
 		logResult.innerText = "❌ Player 2 username cannot be the same as Player 1 !";
 		username.value = "";
 		password.value = "";
 		username.focus();
-		return ;
+		return;
 	}
 
 	const data = {
@@ -929,9 +926,9 @@ window.loginPlayer2 = async function (event) {
 			if (result.require2fa == true)
 			{
 				window.sessionStorage.setItem('temp_token',result.token);
-				divLogin.style.display = "none";
-				divLogin2FA.style.display = "flex";
-				player2TwoFAInput.focus();
+				if (divLogin) divLogin.style.display = "none";
+				if (divLogin2FA) divLogin2FA.style.display = "flex";
+				if (player2TwoFAInput) player2TwoFAInput.focus();
 			}
 			else
 			{
@@ -939,26 +936,26 @@ window.loginPlayer2 = async function (event) {
 				await window.loadPlayer2Data();
 				console.log('⏳ Player 2 Logged in !');
 				alertBoxMsg('⏳ Player 2 Logged in !');
-				divLogin.style.display = "none";
-				divLogin2FA.style.display = "none";
-				profile2Overview.style.display = "flex";
-				goToGameButtonDiv.style.display = "flex";
+				if (divLogin) divLogin.style.display = "none";
+				if (divLogin2FA) divLogin2FA.style.display = "none";
+				if (profile2Overview) profile2Overview.style.display = "flex";
+				if (goToGameButtonDiv) goToGameButtonDiv.style.display = "flex";
 			}
 		}
 	} 
 	catch (err) 
 	{
-		if (await fetchErrcodeHandler(err) == 0)
+		if (await fetchErrcodeHandler(err as Error) == 0)
 			return(window.loginPlayer2(event));
 		username.value = "";
 		password.value = "";
 		console.error('Login error !\n => ', err);
-		displayCorrectErrMsg(err);
+		displayCorrectErrMsg(err as Error);
 	}
 };
 
-window.buildMatchHistoryPage = async function () {
-	const matchHistoryDiv = document.getElementById('matchHistoryDiv');
+window.buildMatchHistoryPage = async function (): Promise<void> {
+	const matchHistoryDiv = document.getElementById('matchHistoryDiv') as HTMLElement | null;
 
 	if (!matchHistoryDiv) return;
 
@@ -1016,16 +1013,15 @@ window.buildMatchHistoryPage = async function () {
 	// } 
 	// catch (err) 
 	// {
-	// 	if (await fetchErrcodeHandler(err) == 0)
+	// 	if (await fetchErrcodeHandler(err as Error) == 0)
 	// 		return(buildMatchHistoryPage());
 	// 	console.error('⚠️ Couldn\'t recover user history!\n => ', err);
 	// }
 }
 	
-window.loadProfileData = async function () {
-
-	const Player1Name = document.getElementById('Player1Name');
-	const player1Pfp = document.getElementById('player1Pfp');
+window.loadProfileData = async function (): Promise<void> {
+	const Player1Name = document.getElementById('Player1Name') as HTMLElement | null;
+	const player1Pfp = document.getElementById('player1Pfp') as HTMLImageElement | null;
 
 	if (!Player1Name || !player1Pfp) return;
 
@@ -1049,17 +1045,16 @@ window.loadProfileData = async function () {
 	} 
 	catch (err) 
 	{
-		if (await fetchErrcodeHandler(err) == 0)
+		if (await fetchErrcodeHandler(err as Error) == 0)
 			return (window.loadProfileData());
 		console.error('Profile info grab failed !\n => ', err);
 		return ;
 	}
 }
 
-window.loadPlayer2Data = async function () {
-
-	const Player2Name = document.getElementById('Player2Name');
-	const player2Pfp = document.getElementById('player2Pfp');
+window.loadPlayer2Data = async function (): Promise<void> {
+	const Player2Name = document.getElementById('Player2Name') as HTMLElement | null;
+	const player2Pfp = document.getElementById('player2Pfp') as HTMLImageElement | null;
 
 	if (!Player2Name || !player2Pfp) return;
 
@@ -1083,19 +1078,18 @@ window.loadPlayer2Data = async function () {
 	} 
 	catch (err) 
 	{
-		if (await fetchErrcodeHandler(err) == 0)
+		if (await fetchErrcodeHandler(err as Error) == 0)
 			return (window.loadPlayer2Data());
 		console.error('Profile info grab failed !\n => ', err);
 		return ;
 	}
 }
 
-window.handlePongModeDisplay = async function (mode) {
-
-	const LeftPlayer = document.getElementById('LeftPlayer');
-	const RightPlayer = document.getElementById('RightPlayer');
-	const instruction1v1 = document.getElementById('instruction1v1');
-	const instruction2v2 = document.getElementById('instruction2v2');
+window.handlePongModeDisplay = async function (mode: number): Promise<void> {
+	const LeftPlayer = document.getElementById('LeftPlayer') as HTMLElement | null;
+	const RightPlayer = document.getElementById('RightPlayer') as HTMLElement | null;
+	const instruction1v1 = document.getElementById('instruction1v1') as HTMLElement | null;
+	const instruction2v2 = document.getElementById('instruction2v2') as HTMLElement | null;
 
 	if (!LeftPlayer || !RightPlayer || !instruction1v1 || !instruction2v2) return;
 
@@ -1118,24 +1112,24 @@ window.handlePongModeDisplay = async function (mode) {
 	}
 	catch (err)
 	{
-		if (await fetchErrcodeHandler(err) == 0)
-			return (window.handlePongModeDisplay());
+		if (await fetchErrcodeHandler(err as Error) == 0)
+			return window.handlePongModeDisplay(mode);
 		console.error('Profile info grab failed !\n => ', err);
 		return ;
 	}
 
-	if (mode == '0') {
+	if (mode === 0) {
 		RightPlayer.textContent = "COMPUTER";
 	}
-	else if (mode == '1') {
+	else if (mode === 1) {
 		RightPlayer.textContent = "PLAYER 2";
 	}
-	else if (mode == '2') {
+	else if (mode === 2) {
 		RightPlayer.textContent = "PLAYER 2";
 		instruction1v1.style.display = "none";
 		instruction2v2.style.display = "flex";
 	}
-	else if (mode == '3') {
+	else if (mode === 3) {
 		try
 		{
 			const dataRequestResponse = await fetch('/profile/grab2', { //GET request by default without the "request" parameter
@@ -1155,8 +1149,8 @@ window.handlePongModeDisplay = async function (mode) {
 		} 
 		catch (err)
 		{
-			if (await fetchErrcodeHandler(err) == 0)
-				return (window.handlePongModeDisplay());
+			if (await fetchErrcodeHandler(err as Error) == 0)
+				return window.handlePongModeDisplay(mode);
 			console.error('Profile info grab failed !\n => ', err);
 			return ;
 		}

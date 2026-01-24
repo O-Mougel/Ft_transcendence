@@ -1,5 +1,5 @@
 import ViewTemplate from "./ViewTemplate.js";
-import { CONTEXT } from "../../game/context.js";
+import { CONTEXT } from "../gameTS/context";
 import type { GameMode } from '../types/game.types';
 
 export default class PongView extends ViewTemplate {
@@ -130,11 +130,11 @@ export default class PongView extends ViewTemplate {
 
 	async init(): Promise<void> {
 		const mode: GameMode = (location.pathname === '/pongAI') ? 0 : (location.pathname === '/pongRanked') ? 3 : (location.pathname === '/pong2') ? 2 : 1;
-		const module = await import("/game/pong.js");
+		const module = await import("../gameTS/pong");
 
 		if (typeof module.initPong === "function")
 			module.initPong({ mode, gameId: CONTEXT.gameId });
 
-		handlePongModeDisplay(mode);
+		window.handlePongModeDisplay(mode);
 	}
 }
