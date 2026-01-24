@@ -1,5 +1,5 @@
-import { fetchErrcodeHandler, alertBoxMsg, displayCorrectErrMsg } from "./userLog";
-import { startTournament } from "./clickTournamentSelectPlayers";
+import { fetchErrcodeHandler, alertBoxMsg, displayCorrectErrMsg } from "./userLog.js";
+import { startTournament } from "./clickTournamentSelectPlayers.js";
 import type { FileUploadResponse, ProfileEditData } from "../types/api.types";
 
 document.addEventListener("DOMContentLoaded", (): void => {

@@ -1,5 +1,5 @@
-// import { io } from "https://cdn.socket.io/4.7.2/socket.io.esm.min.js";
-import { io } from "socket.io-client";
+import { io } from "https://cdn.socket.io/4.7.2/socket.io.esm.min.js";
+// import { io } from "socket.io-client";
 import { CONTEXT } from "./context.js";
 import { handleGameOver, handleGameStopped } from "./API.js";
 import { updateGameScene } from "./pong.js";
