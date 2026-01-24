@@ -22,7 +22,10 @@
   },
 
   "include": [
-    "src/ts/types/**/*"
+    "src/ts/types/**/*",
+    "src/ts/eventTS/**/*",
+    "src/ts/gameTS/**/*",
+    "src/ts/viewTS/**/*"
   ],
   "exclude": [
     "node_modules",

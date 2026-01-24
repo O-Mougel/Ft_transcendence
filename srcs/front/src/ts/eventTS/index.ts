@@ -1,26 +1,26 @@
-import versusAI from "../viewTS/versusAI";
-import playerBattle from "../viewTS/playerBattle";
-import startingFile from "../viewTS/startingFile";
-import aboutFile from "../viewTS/aboutFile";
-import customizeProfile from "../viewTS/customizeProfile";
-import profileStats from "../viewTS/profileStats";
-import setup2FA from "../viewTS/setup2FA";
-import tournamentSize from "../viewTS/tournamentSize";
-import newUserRegistration from "../viewTS/newUserRegistration";
-import pong from "../viewTS/pong";
-import logUser from "../viewTS/login";
-import tournament from "../viewTS/tournament";
-import page404 from "../viewTS/404page";
-import Login2fa from "../viewTS/2faLogin";
-import changePassword from "../viewTS/changePassword";
-import rankedLogin from "../viewTS/rankedLogin";
-import UserMatchHistory from "../viewTS/UserMatchHistory";
+import versusAI from "../viewTS/versusAI.js";
+import playerBattle from "../viewTS/playerBattle.js";
+import startingFile from "../viewTS/startingFile.js";
+import aboutFile from "../viewTS/aboutFile.js";
+import customizeProfile from "../viewTS/customizeProfile.js";
+import profileStats from "../viewTS/profileStats.js";
+import setup2FA from "../viewTS/setup2FA.js";
+import tournamentSize from "../viewTS/tournamentSize.js";
+import newUserRegistration from "../viewTS/newUserRegistration.js";
+import pong from "../viewTS/pong.js";
+import logUser from "../viewTS/login.js";
+import tournament from "../viewTS/tournament.js";
+import page404 from "../viewTS/404page.js";
+import Login2fa from "../viewTS/2faLogin.js";
+import changePassword from "../viewTS/changePassword.js";
+import rankedLogin from "../viewTS/rankedLogin.js";
+import UserMatchHistory from "../viewTS/UserMatchHistory.js";
 
 // stop pong game when navigating away from /pong
-import { emitStopGame } from "../gameTS/socket";
-import { CONTEXT } from "../gameTS/context";
+import { emitStopGame } from "../gameTS/socket.js";
+import { CONTEXT } from "../gameTS/context.js";
 
-import { displayCorrectErrMsg, isUserAllowedHere, fetchErrcodeHandler, alertBoxMsg } from "./userLog";
+import { displayCorrectErrMsg, isUserAllowedHere, fetchErrcodeHandler, alertBoxMsg } from "./userLog.js";
 import type { Friend, FriendsListResponse, MatchStats, UserProfile, FriendDeleteData, FriendRemoveResponse, RefreshTokenResponse } from "../types/api.types";
 
 interface ViewClass {

@@ -1,8 +1,8 @@
-import Login2fa from "../viewTS/2faLogin";
-import { show2FAStatus } from "./index";
-import { backToDefaultPage, displayCorrectErrMsg, fetchErrcodeHandler, alertBoxMsg } from "./userLog";
-import { adjustNavbar } from "./index";
-import type { QRCodeResponse, TwoFALoginResponse, Player2TwoFAResponse, TwoFACodeData } from "../types/api.types";
+import Login2fa from "../viewTS/2faLogin.js";
+import { show2FAStatus } from "./index.js";
+import { backToDefaultPage, displayCorrectErrMsg, fetchErrcodeHandler, alertBoxMsg } from "./userLog.js";
+import { adjustNavbar } from "./index.js";
+import type { QRCodeResponse, TwoFALoginResponse, Player2TwoFAResponse, TwoFACodeData } from "../types/api.types.js";
 
 window.showQRCode = async function (event: Event): Promise<void> {
 	event.preventDefault();

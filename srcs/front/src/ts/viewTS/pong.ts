@@ -1,5 +1,5 @@
 import ViewTemplate from "./ViewTemplate.js";
-import { CONTEXT } from "../gameTS/context";
+import { CONTEXT } from "../gameTS/context.js";
 import type { GameMode } from '../types/game.types';
 
 export default class PongView extends ViewTemplate {

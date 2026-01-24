@@ -1,5 +1,5 @@
-import { setupSocket, getSocket } from "../gameTS/socket";
-import { alertBoxMsg } from "./userLog";
+import { setupSocket, getSocket } from "../gameTS/socket.js";
+import { alertBoxMsg } from "./userLog.js";
 
 interface TournamentStateEvent {
 	tournamentId: string;
