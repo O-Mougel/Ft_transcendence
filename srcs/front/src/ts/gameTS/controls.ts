@@ -63,7 +63,8 @@ function updateDirections(): void {
   else if (s && !w) leftPaddle.direction = "down";
   else leftPaddle.direction = "none";
 
-  if (state.left !== leftPaddle.direction || state.right !== rightPaddle.direction) updateGameState();
+  //if (state.left !== leftPaddle.direction || state.right !== rightPaddle.direction) updateGameState();
+  updateGameState();
 
 
   if (CONTEXT.gameMode !== 2) return;
@@ -84,5 +85,6 @@ function updateDirections(): void {
   else if (keysPressed.has("3") && !keysPressed.has("6")) rightPaddle.direction = "down";
   else rightPaddle.direction = "none";
 
-  if (state2.left !== leftPaddle2.direction || state2.right !== rightPaddle2.direction) updateGameState();
+  //if (state2.left !== leftPaddle2.direction || state2.right !== rightPaddle2.direction) updateGameState();
+  updateGameState();
 }
