@@ -13,7 +13,7 @@ export default class UserMatchHistoryView extends ViewTemplate {
 					<div class="grid h-[30%] place-items-center">
 						<div id="sidePannelPfp" class="bg-[url(/img/userPfp/)default.png] bg-cover p-4 rounded-[50%] opacity-0 shadow object-cover w-[170px] h-[170px]"></div>
 					</div>
-					<h1 id="playerGrabbedUsername" class="text-black text-bold mx-4 mb-10 text-2xl ">[username]</h1>
+					<h1 id="playerGrabbedUsername" class="text-black text-bold underline mx-4 mb-10 text-2xl "></h1>
 					<a href="/profileStats" class="mx-4 text-2xl mb-5 border p-4 text-[#798490] hover:text-[#98c6f8]" name="profileLink" data-link>View profile</a>
 					<a href="/customizeProfile" class="mx-4 text-2xl mb-5 border p-4 text-[#798490] hover:text-[#98c6f8]" name="profileLink" data-link>Update profile</a>
 					<a id="logoutButton" class="mx-4 text-2xl mb-8 border p-4 cursor-pointer hover:text-[#dee9f4] hover:bg-[#882639] text-[#882639]" onclick=logoutUser() name="logoutButtonName">➜] Log out</a>
@@ -45,60 +45,6 @@ export default class UserMatchHistoryView extends ViewTemplate {
 			<div class="pt-[3%] mt-[3%] relative flex flex-col gap-y-4 pb-10 items-center mx-[3%] px-4 rounded-xl outline-none border border-blue-300 bg-[url(/img/assets/stars.gif)] bg-cover bg-center shadow-[0_0_20px_rgba(158,202,237,0.9)]">
 				<h1 class="pb-4">Match History :</h1>
 				<div id="matchHistoryDiv" class="flex flex-col w-full justify-center items-center gap-4 pb-4">
-
-					<div class="flex flex-col bg-[#4ac03d9f] border border-white rounded-lg w-full gap-2 p-4">
-						<div class="flex flex-col gap-y-2">
-							<div class="flex flex-row justify-between items-center">
-								<div class="flex flex-col items-start">
-									<p>[Date]</p>
-									<p>[Duration]</p>
-								</div>
-								<p>[Scoreboard]</p>
-								<div class="flex flex-col items-end">
-									<p>[Mode]</p>
-									<p>[round]</p>
-								</div>
-							</div>
-							<div class="flex flex-row justify-between items-center">
-								<div class="flex flex-col items-start">
-									<p>[Player1]</p>
-									<p>[Player2]</p>
-								</div>
-								<p>[imgVS]</p>
-								<div class="flex flex-col items-end">
-									<p>[Player3]</p>
-									<p>[Player4]</p>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="flex flex-col bg-[#d42d2d9f] border border-white rounded-lg w-full gap-2 p-4">
-						<div class="flex flex-col gap-y-2">
-							<div class="flex flex-row justify-between items-center">
-								<div class="flex flex-col items-start">
-									<p>[Date]</p>
-									<p>[Duration]</p>
-								</div>
-								<p>[Scoreboard]</p>
-								<div class="flex flex-col items-end">
-									<p>[Mode]</p>
-									<p>[round]</p>
-								</div>
-							</div>
-							<div class="flex flex-row justify-between items-center">
-								<div class="flex flex-col items-start">
-									<p>[Player1]</p>
-									<p>[Player2]</p>
-								</div>
-								<p>[imgVS]</p>
-								<div class="flex flex-col items-end">
-									<p>[Player3]</p>
-									<p>[Player4]</p>
-								</div>
-							</div>
-						</div>
-					</div>
 
 				</div>
 			</div>
