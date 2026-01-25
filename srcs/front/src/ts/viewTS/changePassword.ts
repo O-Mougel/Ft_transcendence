@@ -32,7 +32,7 @@ export default class ChangePasswordView extends ViewTemplate {
 					<div class="w-full mt-3 px-4 flex">
 						<div class="w-[85%] max-w-60">
 							<div class="flex items-center py-2 w-full mt-5">
-								<input id="friendSearchInput" type="text" placeholder="Add friend" maxlength="13" class="h-8 px-2 rounded-l-md border border-white bg-transparent text-white focus:outline-none text-sm" />
+								<input id="friendSearchInput" type="text" placeholder="Add friend" maxlength="13" class="h-8 px-2 rounded-l-md border border-white bg-transparent focus:outline-none text-sm" />
 								<button id="friendSearchButton" class=" h-8 bg-[#98c6f8] text-black rounded-r-md text-sm" onclick=sendNewFriendRequest()>🔍</button>
 							</div>
 							<p id="friendSearchResults" class="mt-4 text-base text-ellipsis"></p>
@@ -40,6 +40,7 @@ export default class ChangePasswordView extends ViewTemplate {
 					</div>
 				</div>
 			</div>
+
 			<div class="pt-[3%] mt-[3%] flex flex-col gap-y-4 items-center mx-[3%] px-4 rounded-xl outline-none border border-blue-300 bg-[url(/img/assets/stars.gif)] bg-cover bg-center shadow-[0_0_20px_rgba(158,202,237,0.9)]">
 				<h1 class="pb-4">Change your password</h1>
 				<form class="flex flex-col items-center">
