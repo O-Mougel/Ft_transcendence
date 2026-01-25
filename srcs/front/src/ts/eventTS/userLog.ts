@@ -26,7 +26,7 @@ const hideAlertBoxMsg = async (): Promise<void> => {
 	if (!alertBox) return;
 
 	alertBox.style.display = 'none';
-	alertBox.innerHTML = "Hey ! I'm supposed to be hidden ! >:(";
+	alertBox.textContent = "Hey ! I'm supposed to be hidden ! >:(";
 }
 
 export const displayCorrectErrMsg = async (error: Error | string): Promise<void> => {
@@ -35,12 +35,17 @@ export const displayCorrectErrMsg = async (error: Error | string): Promise<void>
 	if (index < 0)
 	{
 		//Not from a custom response, zod schema err instead
-		// alertBoxMsg("❌ An error happened but don't worry, it's not your fault");
 		const index2 = error.toString().indexOf("\"message\"");
+		if (index2 < 0)
+		{
+			alertBoxMsg(`❌ An error occured ! Try again !`);
+			console.error("An error was caught with no message parameter : ", error);
+			return ;
+		}
 		let errstrZod = error.toString().substring(index2);	
 		let keyZod = errstrZod.substring(errstrZod.indexOf(":") + 2,errstrZod.indexOf("}") - 1);
-		// alertBoxMsg(errstrZod);
-		console.info("Displayed : ", keyZod);
+		console.info("Error caught : ", keyZod);
+		alertBoxMsg(`❌ ` + keyZod);
 		return;
 	}
 	let errstr = error.toString().substring(index);	
@@ -141,23 +146,29 @@ export const displayCorrectErrMsg = async (error: Error | string): Promise<void>
 		case "uploadNotMultipart":
 			alertBoxMsg(`❌ Request was not in multipart format !`);
 			break;
-		case "uploadEmptyFileField":
+		case "uploadNoFile":
 			alertBoxMsg(`❌ File field cannot be empty !`);
-			break;
-		case "uploadEmptyMimeName":
-			alertBoxMsg(`❌ Mime and filename fields cannot be empty !`);
 			break;
 		case "uploadNameTooShort":
 			alertBoxMsg(`❌ Filename must be at least 1 character !`);
 			break;
 		case "uploadWrongFiletype":
-			alertBoxMsg(`❌ Only images can be uploaded !`);
+			alertBoxMsg(`❌ Only images can be uploaded ! (.png|.jpg|.gif)`);
+			break;
+		case "uploadIncomplete":
+			alertBoxMsg(`❌ File was truncated !`);
+			break;
+		case "uploadTooLarge":
+			alertBoxMsg(`❌ File cannot be bigger than 5MB !`);
+			break;
+		case "uploadInvalidSignature":
+			alertBoxMsg(`❌ File signature is invalid !`);
 			break;
 		case "uploadFailedWrite":
 			alertBoxMsg(`❌ File couldn't be written on server !`);
 			break;
 		default:
-			alertBoxMsg(`⚠️ Server side error ! Try again !`);
+			alertBoxMsg(`⚠️ An error occured ! Try again !`);
 			break;
 	}
 
@@ -168,7 +179,7 @@ export const alertBoxMsg = async (msg: string): Promise<void> => {
 	if (!alertBox) return;
 
 	alertBox.style.display = 'inline';
-	alertBox.innerHTML = msg;
+	alertBox.textContent = msg;
 	setTimeout(hideAlertBoxMsg, 3000);
 }
 
@@ -460,7 +471,7 @@ const checkForFriendRequests = async (): Promise<void> => {
 			if (result.requestOf.length > 0)
 			{
 				requestBlock.style.display = "block";
-				requestLabel.innerHTML = "🔔 Requests(" + result.requestOf.length + ")"
+				requestLabel.textContent = "🔔 Requests(" + result.requestOf.length + ")"
 			}
 			else
 			{
@@ -470,7 +481,7 @@ const checkForFriendRequests = async (): Promise<void> => {
 			requestList.innerHTML = '';
 			for(let i = 0; i < result.requestOf.length; i++) 
 			{
-				var listItem = document.createElement("li");
+				let listItem = document.createElement("li");
 				let	clearName = result.requestOf[i].name + "[42]";
 				let	friendId = result.requestOf[i].id;
 				listItem.className = 'py-2 flex items-center justify-between ml-5';
@@ -518,7 +529,7 @@ const displayUserFriends = async (): Promise<void> => {
 			friendList.innerHTML = '';
 			for(let i = 0; i < result.friends.length; i++) 
 			{
-				var listItem = document.createElement("li");
+				let listItem = document.createElement("li");
 				let	clearName = result.friends[i].name + "[4242]";
 				listItem.className = 'py-2 flex items-center justify-between ml-5';
 				// if (result.friends[i].online)
@@ -559,7 +570,7 @@ window.grabProfileInfo = async function (): Promise<void> {
 		const result = await dataRequestResponse.json();	
 		if (result)
 		{	
-			profileUsername.innerHTML = "<u>" + result.name + "</u>";
+			profileUsername.textContent = result.name;
 			profileUsername.style.color = 'white';
 			profilePicture.style.opacity = "1";
 
@@ -756,6 +767,7 @@ window.handleLoginClick = async function (event: Event): Promise<void> {
 		const result = await loginResponse.json();	
 		if (result)
 		{
+			const userLogName = username.value;
 			username.value = "";
 			password.value = "";
 			
@@ -771,7 +783,7 @@ window.handleLoginClick = async function (event: Event): Promise<void> {
 				window.sessionStorage.setItem('access_token',result.token);
 				
 				console.log('⏳ Logged in !');
-				alertBoxMsg(`Welcome back ${username.value} ! 😉`);
+				alertBoxMsg(`Welcome back ${userLogName} ! 😉`);
 				await backToDefaultPage();
 			}
 		}
@@ -978,7 +990,7 @@ window.buildMatchHistoryPage = async function (): Promise<void> {
 			{
 				for(let i = 0; i < result.match.length; i++) 
 				{
-					var divItem = document.createElement("div");
+					let divItem = document.createElement("div");
 					divItem.className = 'flex flex-col bg-[#4ac03d9f] border border-white rounded-lg w-full gap-2 p-4';
 					divItem.innerHTML = `<div class="flex flex-col gap-y-2">
 							<div class="flex flex-row justify-between items-center">
@@ -1006,6 +1018,13 @@ window.buildMatchHistoryPage = async function (): Promise<void> {
 					matchHistoryDiv.appendChild(divItem);
 				}
 			}
+			else
+			{
+				let soloItem = document.createElement("div");
+				soloItem.textContent = "No recent matches found ! Go play some ;)";
+				matchHistoryDiv.appendChild(soloItem);
+			}
+
 		}
 		
 	} 
@@ -1038,7 +1057,7 @@ window.loadProfileData = async function (): Promise<void> {
 		const result = await dataRequestResponse.json();	
 		if (result)
 		{	
-			Player1Name.innerHTML = result.name;
+			Player1Name.textContent = result.name;
 			player1Pfp.src = result.avatar;
 		}
 	} 
@@ -1071,7 +1090,7 @@ window.loadPlayer2Data = async function (): Promise<void> {
 		const result = await dataRequestResponse.json();	
 		if (result)
 		{	
-			Player2Name.innerHTML = result.name;
+			Player2Name.textContent = result.name;
 			player2Pfp.src = result.avatar;
 		}
 	} 
@@ -1143,7 +1162,7 @@ window.handlePongModeDisplay = async function (mode: number): Promise<void> {
 			const result = await dataRequestResponse.json();	
 			if (result)
 			{	
-				RightPlayer.innerHTML = result.name;
+				RightPlayer.textContent = result.name;
 			}
 		} 
 		catch (err)

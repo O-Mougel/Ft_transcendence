@@ -13,7 +13,7 @@ export default class AboutFileView extends ViewTemplate {
 					<div class="grid h-[30%] place-items-center">
 						<div id="sidePannelPfp" class="bg-[url(/img/userPfp/default.png)] bg-cover p-4 rounded-[50%] opacity-0 shadow object-cover w-[170px] h-[170px]"></div>
 					</div>
-					<h1 id="playerGrabbedUsername" class="text-black text-bold mx-4 mb-10 text-2xl ">[username]</h1>
+					<h1 id="playerGrabbedUsername" class="text-black text-bold underline mx-4 mb-10 text-2xl "></h1>
 					<a href="/profileStats" class="mx-4 text-2xl mb-5 border p-4 text-[#798490] hover:text-[#98c6f8]" name="profileLink" data-link>View profile</a>
 					<a href="/customizeProfile" class="mx-4 text-2xl mb-5 border p-4 text-[#798490] hover:text-[#98c6f8]" name="profileLink" data-link>Update profile</a>
 					<a id="logoutButton" class="mx-4 text-2xl mb-8 border p-4 cursor-pointer hover:text-[#dee9f4] hover:bg-[#882639] text-[#882639]" onclick=logoutUser() name="logoutButtonName">➜] Log out</a>
@@ -42,12 +42,20 @@ export default class AboutFileView extends ViewTemplate {
 			</div>
 			<div class="py-[3%] px-[2%] ">
 				<h1 class="flex items-start text-amber-50">✦ Who made this website ?</h1>
-				<div class="flex items-start w-full py-5">
-					<h2 class="flex items-start pl-6 text-[#44494f]">This project was made by lchapard, omougel, vdomasch, and bhumeau.</h2>
+				<div class="flex items-start w-full py-5 mb-4">
+					<h2 id="aboutMembers" class="text-left w-full wrap-break-words pl-12 text-[#44494f]" onclick="sneakyClick()" >This project was made by lchapard, omougel, vdomasch, and bhumeau.</h2>
 				</div>
 				<h1 class="flex items-start text-amber-50">✦ Why the space theme ?</h1>
-				<div class="flex items-start w-full py-5">
-					<h2 class="flex items-start text-[#44494f] pl-6">Because the blackhole was near, makes sense if you ask me</h2>
+				<div class="flex items-start w-full py-5 mb-4">
+					<h2 class="text-left w-full wrap-break-words text-[#44494f] pl-12">Because the blackhole was near, makes sense if you ask me</h2>
+				</div>
+				<h1 class="flex items-start text-amber-50">✦ Which framework was used ?</h1>
+				<div class="flex items-start w-full py-5 mb-4">
+					<h2 class="text-left w-full wrap-break-words text-[#44494f] pl-12">For the backend, we used Fastify and NodeJS for the framework</h2>
+				</div>
+				<h1 class="flex items-start text-amber-50">✦ What about the database ?</h1>
+				<div class="flex items-start w-full py-5 mb-4">
+					<h2 class="text-left w-full wrap-break-words text-[#44494f] pl-12">We used SQlite for our database, and Prisma to perform operations on it</h2>
 				</div>
 			</div>`;
 	}

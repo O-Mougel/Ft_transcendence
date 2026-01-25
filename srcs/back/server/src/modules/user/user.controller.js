@@ -13,8 +13,8 @@ import { generateAccessToken, generateRefreshToken, generate2faToken, generateMa
 import { generateSecret, verify2fa } from "../../utils/twofa.js"
 import { generate2faMatchToken } from "../../utils/token.js";
 
-const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 Mo
-const ALLOWED_MIME_TYPES = ["image/png", "image/jpg", "image/jpeg"];
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 Mo
+const ALLOWED_MIME_TYPES = ["image/png", "image/jpg", "image/gif", "image/jpeg"];
 
 export async function registerUserHandler(request, reply) {
 
@@ -566,7 +566,7 @@ export async function checkLogStatus(request, reply) {
 
 export async function uploadProfilePicHandler(request, reply) {
 
-	if (!request.isMultipart || !request.isMultipart()) // we check if it exists first
+	if (!request.isMultipart || !request.isMultipart())
 		return reply.code(400).send({ 
 			message: 'Expected multipart/form-data',
 			errRef:"uploadNotMultipart"
@@ -580,10 +580,17 @@ export async function uploadProfilePicHandler(request, reply) {
 		});
 	}
 
+	if (!uploadedPic.filename || uploadedPic.filename.trim() === "") {
+		return reply.code(400).send({
+			message: "Filename cannot be empty !",
+			errRef: "uploadNameTooShort",
+		});
+	}
+
 	if (uploadedPic.file.truncated) {
-		return reply.code(413).send({
-			message: "File too large",
-			errRef: "uploadTooLarge",
+		return reply.code(400).send({
+			message: "File is truncated",
+			errRef: "uploadIncomplete",
 		});
 	}
 
@@ -596,21 +603,29 @@ export async function uploadProfilePicHandler(request, reply) {
 	}
 
 	const type = await fileTypeFromBuffer(buffer);
-	if (!type || !ALLOWED_MIME_TYPES.includes(type.mime)) {
+	if (!type || !type.mime) {
 		return reply.code(400).send({
 			message: "Invalid image format",
 			errRef: "uploadInvalidSignature",
 		});
 	}
+	if (!ALLOWED_MIME_TYPES.includes(type.mime)) {
+		return reply.code(415).send({
+			message: "Unauthorized file format",
+			errRef: "uploadWrongFiletype",
+		});
+	}
 
+	
 	const ext = path.extname(uploadedPic.filename);
 	const savedFilename = `${Date.now()}-${crypto.randomBytes(6).toString('hex')}${ext}`;
-
-	const uploadDir = path.resolve(process.cwd(), 'front', 'src', 'img', 'userPfp');
-	await fs.promises.mkdir(uploadDir, { recursive: true });
-
-	const filePath = path.join(uploadDir, savedFilename);
+	
 	try {
+		const uploadDir = path.resolve(process.cwd(), 'front', 'src', 'img', 'userPfp');
+		await fs.promises.mkdir(uploadDir, { recursive: true });
+	
+		const filePath = path.join(uploadDir, savedFilename);
+	
 		await fs.promises.writeFile(filePath, buffer);
 	} catch (err) {
 		return reply.code(403).send({
