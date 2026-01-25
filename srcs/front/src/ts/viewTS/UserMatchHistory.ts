@@ -46,7 +46,7 @@ export default class UserMatchHistoryView extends ViewTemplate {
 				<h1 class="pb-4">Match History :</h1>
 				<div id="matchHistoryDiv" class="flex flex-col w-full justify-center items-center gap-4 pb-4">
 
-					<div class="flex flex-col bg-[#4ac03d9f] border border-white rounded-lg w-full gap-2 p-4">
+					<!--<div class="flex flex-col bg-[#4ac03d9f] border border-white rounded-lg w-full gap-2 p-4">
 						<div class="flex flex-col gap-y-2">
 							<div class="flex flex-row justify-between items-center">
 								<div class="flex flex-col items-start">
@@ -71,7 +71,7 @@ export default class UserMatchHistoryView extends ViewTemplate {
 								</div>
 							</div>
 						</div>
-					</div>
+					</div>-->
 
 					<div class="flex flex-col bg-[#d42d2d9f] border border-white rounded-lg w-full gap-2 p-4">
 						<div class="flex flex-col gap-y-2">
