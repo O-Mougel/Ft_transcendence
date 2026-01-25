@@ -22,15 +22,15 @@ function collectPlayerNames(expectedCount: number): string[] {
 function validateNames(names: string[], expectedCount: number): string | null {
 	if (names.length !== expectedCount) return `Expected ${expectedCount} players.`;
 
-	if (names.some(n => n.length === 0)) return "All player names must be filled.";
+	if (names.some(n => n.length === 0)) return "All player names must be filled !";
 
 	// avoid duplicates (case-insensitive)
-	const lowered = names.map(n => n.toLowerCase());
+	const lowered = names.map(n => n.toUpperCase());
 	const set = new Set(lowered);
-	if (set.size !== lowered.length) return "Player names must be unique.";
+	if (set.size !== lowered.length) return "Player names must be unique !";
 
 	// optional: length constraints
-	if (names.some(n => n.length > 20)) return "Player names must be <= 20 characters.";
+	if (names.some(n => n.length > 13)) return "Player names must be 13 characters max !";
 
 	return null;
 }
