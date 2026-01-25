@@ -42,6 +42,7 @@ export default class PongView extends ViewTemplate {
 					</div>
 				</div>
 			</div>
+			
 			<div class="h-full flex w-full justify-center">
 				<div class="pt-5 flex flex-col gap-4 items-center">
 					<canvas id="canvas" class="border-4 rounded-[2%] border-[#98c6f8] w-[64dvw] aspect-16/10"></canvas>

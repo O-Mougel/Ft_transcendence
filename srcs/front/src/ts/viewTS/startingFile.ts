@@ -32,7 +32,7 @@ export default class StartingFileView extends ViewTemplate {
 					<div class="w-full mt-3 px-4 flex">
 						<div class="w-[85%] max-w-60">
 							<div class="flex items-center py-2 w-full mt-5">
-								<input id="friendSearchInput" type="text" placeholder="Add friend" maxlength="13" class="h-8 px-2 rounded-l-md border border-white bg-transparent text-white focus:outline-none text-sm" />
+								<input id="friendSearchInput" type="text" placeholder="Add friend" maxlength="13" class="h-8 px-2 rounded-l-md border border-white bg-transparent focus:outline-none text-sm" />
 								<button id="friendSearchButton" class=" h-8 bg-[#98c6f8] text-black rounded-r-md text-sm" onclick=sendNewFriendRequest()>🔍</button>
 							</div>
 							<p id="friendSearchResults" class="mt-4 text-base text-ellipsis"></p>
@@ -40,6 +40,7 @@ export default class StartingFileView extends ViewTemplate {
 					</div>
 				</div>
 			</div>
+
 			<div class="pt-[5vw] h-full w-full">
 				<h1 id="bigMainTitle" class="text-center mx-auto text-[5vw] sm:text-[5vw] 2xl:text-[4vw] w-[80%] my-6 animate-wiggle">FT_Transcendence</h1>
 				<div class=" w-full h-[25%] my-15 content-center m-auto">

@@ -21,7 +21,7 @@ export default class RankedLoginView extends ViewTemplate {
 			<div id="profilePanel" class="hidden absolute animate-slide-in-left right-0 top-0 h-full min-w-80 w-[20%] bg-[url(/img/assets/stars.gif)] z-50 shadow-[0_0_20px_rgba(158,202,237,0.9)] border border-[#98c6f8] overflow-auto">
 				<div class="flex flex-col text-center w-full h-full">
 					<div class="grid h-[30%] place-items-center">
-						<div id="sidePannelPfp" class="bg-[url(/img/userPfp/default.png)] bg-cover p-4 rounded-[50%] opacity-0 shadow object-cover w-[170px] h-[170px]"></div>
+						<div id="sidePannelPfp" class="bg-[url('/img/userPfp/default.png')] bg-cover p-4 rounded-[50%] opacity-0 shadow object-cover w-[170px] h-[170px]"></div>
 					</div>
 					<h1 id="playerGrabbedUsername" class="text-black text-bold mx-4 mb-10 text-2xl ">[username]</h1>
 					<a href="/profileStats" class="mx-4 text-2xl mb-5 border p-4 text-[#798490] hover:text-[#98c6f8]" name="profileLink" data-link>View profile</a>
@@ -42,7 +42,7 @@ export default class RankedLoginView extends ViewTemplate {
 					<div class="w-full mt-3 px-4 flex">
 						<div class="w-[85%] max-w-60">
 							<div class="flex items-center py-2 w-full mt-5">
-								<input id="friendSearchInput" type="text" placeholder="Add friend" maxlength="13" class="h-8 px-2 rounded-l-md border border-white bg-transparent text-white focus:outline-none text-sm" />
+								<input id="friendSearchInput" type="text" placeholder="Add friend" maxlength="13" class="h-8 px-2 rounded-l-md border border-white bg-transparent focus:outline-none text-sm" />
 								<button id="friendSearchButton" class=" h-8 bg-[#98c6f8] text-black rounded-r-md text-sm" onclick=sendNewFriendRequest()>🔍</button>
 							</div>
 							<p id="friendSearchResults" class="mt-4 text-base text-ellipsis"></p>
@@ -50,7 +50,6 @@ export default class RankedLoginView extends ViewTemplate {
 					</div>
 				</div>
 			</div>
-
 
 			<div class="pt-[3%] mt-[3%] pb-4 mx-[3%] gap-y-4 flex flex-col rounded-xl outline-none border border-blue-300 bg-[url(/img/assets/stars.gif)] bg-cover bg-center shadow-[0_0_20px_rgba(158,202,237,0.9)]">
 				<div class="flex flex-col sm:flex-row items-start px-4">
