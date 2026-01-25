@@ -34,7 +34,7 @@ export default class TournamentView extends ViewTemplate {
 	}
 
 	async init(): Promise<void> {
-		const module = await import("../gameTS/tournament");
+		const module = await import("../gameTS/tournament.js");
 		if (typeof module.initTournament === "function") {
 			module.initTournament();
 		}
