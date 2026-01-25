@@ -131,6 +131,7 @@ export async function loginHandler(request, reply) {
 
 export async function loginMatchHandler(request, reply) {
 	const body = request.body;
+	body.name = body.name.toUpperCase()
 
 	const user = await findUserByName(body.name);
 
