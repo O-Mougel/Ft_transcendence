@@ -50,6 +50,7 @@ declare global {
 
     // Misc
     spinMeAround: () => void;
+    sneakyClick: () => void;
   }
 }
 

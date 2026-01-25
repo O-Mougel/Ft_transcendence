@@ -13,7 +13,7 @@ export default class ProfileStatsView extends ViewTemplate {
 					<div class="grid h-[30%] place-items-center">
 						<div id="sidePannelPfp" class="bg-[url('/img/userPfp/default.png')] bg-cover p-4 rounded-[50%] opacity-0 shadow object-cover w-[170px] h-[170px]"></div>
 					</div>
-					<h1 id="playerGrabbedUsername" class="text-black text-bold mx-4 mb-10 text-2xl ">[username]</h1>
+					<h1 id="playerGrabbedUsername" class="text-black text-bold underline mx-4 mb-10 text-2xl "></h1>
 					<a href="/profileStats" class="mx-4 text-2xl mb-5 border p-4 text-[#798490] hover:text-[#98c6f8]" name="profileLink" data-link>View profile</a>
 					<a href="/customizeProfile" class="mx-4 text-2xl mb-5 border p-4 text-[#798490] hover:text-[#98c6f8]" name="profileLink" data-link>Update profile</a>
 					<a id="logoutButton" class="mx-4 text-2xl mb-8 border p-4 cursor-pointer hover:text-[#dee9f4] hover:bg-[#882639] text-[#882639]" onclick=logoutUser() name="logoutButtonName">➜] Log out</a>
@@ -46,8 +46,8 @@ export default class ProfileStatsView extends ViewTemplate {
 			<h1 class="m-0">Statistics :</h1>
 			<div class="flex flex-col sm:flex-row w-full justify-around items-center gap-4">
 				<div class="flex flex-col items-center">
-						<h2 id="playerUsernameProfile" class="text-center pr-2"><u>[username]</u></h2>
-						<img id="userPfpProfile" src="./img/userPfp/default.png" alt="userPfpImg" class="pl-2 pt-4 w-20 h-20 sm:w-[120px] sm:h-[120px] object-cover shrink-0 select-none" draggable="false" />
+						<h2 id="playerUsernameProfile" class="hidden text-center pr-2 underline"></h2>
+						<img id="userPfpProfile" src="./img/userPfp/default.png" alt="userPfpImg" class="hidden pl-2 pt-4 w-20 h-20 sm:w-[120px] sm:h-[120px] object-cover shrink-0 select-none" draggable="false" />
 					</div>
 					<a class="uppercase px-5 py-1 z-20 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg" name="gotoMatchHistory" href="/UserMatchHistory" data-link>View match history</a>
 				</div>
@@ -97,12 +97,14 @@ export default class ProfileStatsView extends ViewTemplate {
 							<p id="biggestStreakCpt2">--</p>
 						</div>
 					</div>
-					<h3 class="py-2 overflow-hidden">Remove a friend :</h3>
-					<div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-						<select id="selectBoxFriendRemover" class="h-full border bg-black hover:cursor-pointer sm:mb-2">
-							<option value="dummyvalue">--Select a friend--</option>
-						</select>
-						<a class="uppercase p-4 focus:outline-none bg-red-500 text-ellipsis border rounded-lg hover:cursor-pointer hover:bg-[#d41626]" onclick="confirmFriendRemoval()" name="confirmFriendRemoval" >Remove</a>
+					<div id="removeFriendBoxDiv">
+						<h3 class="py-2 overflow-hidden">Remove a friend :</h3>
+						<div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+							<select id="selectBoxFriendRemover" class="h-full border bg-black hover:cursor-pointer sm:mb-2">
+								<option value="dummyvalue">--Select a friend--</option>
+							</select>
+							<a class="uppercase p-4 focus:outline-none bg-red-500 text-ellipsis border rounded-lg hover:cursor-pointer hover:bg-[#d41626]" onclick="confirmFriendRemoval()" name="confirmFriendRemoval" >Remove</a>
+						</div>
 					</div>
 					<div class="pb-2 sm:pt-10">
 					</div>

@@ -100,7 +100,7 @@ window.fillFriendRemovalBox = async (friendArray: Friend[]): Promise<void> => {
 	friendRemover2000.innerHTML = '';
 
 	const dummyItem = document.createElement("option");
-	dummyItem.innerHTML = '--Select a friend--';
+	dummyItem.textContent = '--Select a friend--';
 	dummyItem.setAttribute('name', "dummyValueFriendDelete");
 	dummyItem.setAttribute('value', 'dummyvalue');
 	friendRemover2000.appendChild(dummyItem);
@@ -108,7 +108,7 @@ window.fillFriendRemovalBox = async (friendArray: Friend[]): Promise<void> => {
 	for (let i = 0; i < friendArray.length; i++) {
 		const listItem = document.createElement("option");
 		const clearName = friendArray[i].name + "[deleteBox]";
-		listItem.innerHTML = `${friendArray[i].name}`;
+		listItem.textContent = `${friendArray[i].name}`;
 		listItem.setAttribute('name', clearName);
 		listItem.setAttribute('value', String(friendArray[i].id));
 		friendRemover2000.appendChild(listItem);
@@ -123,10 +123,10 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 
 	if (!nbOfMatchCpt || !winRatioPercent || !longestMatchCpt || !biggestStreakCpt) return;
 
-	nbOfMatchCpt.innerHTML = "--";
-	winRatioPercent.innerHTML = "--";
-	longestMatchCpt.innerHTML = "--";
-	biggestStreakCpt.innerHTML = "--";
+	nbOfMatchCpt.textContent = "--";
+	winRatioPercent.textContent = "--";
+	longestMatchCpt.textContent = "--";
+	biggestStreakCpt.textContent = "--";
 
 	try {
 		const loggedUserStatsRequestResponse = await fetch('/match/self', {
@@ -141,15 +141,15 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 		const result: MatchStats = await loggedUserStatsRequestResponse.json();
 		if (result) {
 			if (result.matchsnb === 0) {
-				nbOfMatchCpt.innerHTML = "0";
-				winRatioPercent.innerHTML = "--";
-				longestMatchCpt.innerHTML = "--";
-				biggestStreakCpt.innerHTML = "--";
+				nbOfMatchCpt.textContent = "0";
+				winRatioPercent.textContent = "--";
+				longestMatchCpt.textContent = "--";
+				biggestStreakCpt.textContent = "--";
 			} else {
-				nbOfMatchCpt.innerHTML = String(result.matchsnb);
-				winRatioPercent.innerHTML = result.winrate + " %";
-				longestMatchCpt.innerHTML = result.longestMatch + " sec";
-				biggestStreakCpt.innerHTML = String(result.biggest_streak);
+				nbOfMatchCpt.textContent = String(result.matchsnb);
+				winRatioPercent.textContent = result.winrate + " %";
+				longestMatchCpt.textContent = result.longestMatch + " sec";
+				biggestStreakCpt.textContent = String(result.biggest_streak);
 			}
 		}
 	} catch (err) {
@@ -169,12 +169,12 @@ window.fetchPlayerStats = async (playerId: string, playerUsername: string): Prom
 
 	if (!playerId || !nbOfMatchCpt2 || !winRatioPercent2 || !longestMatchCpt2 || !biggestStreakCpt2 || !friendStatDisplayBox || !selectedPlayerUsernameHeader) return;
 
-	nbOfMatchCpt2.innerHTML = "--";
-	winRatioPercent2.innerHTML = "--";
-	longestMatchCpt2.innerHTML = "--";
-	biggestStreakCpt2.innerHTML = "--";
+	nbOfMatchCpt2.textContent = "--";
+	winRatioPercent2.textContent = "--";
+	longestMatchCpt2.textContent = "--";
+	biggestStreakCpt2.textContent = "--";
 
-	selectedPlayerUsernameHeader.innerHTML = playerUsername + " 's stats :";
+	selectedPlayerUsernameHeader.textContent = playerUsername + " 's stats :";
 
 	try {
 		const userStatsRequestResponse = await fetch(`/match/${playerId}`, {
@@ -189,15 +189,15 @@ window.fetchPlayerStats = async (playerId: string, playerUsername: string): Prom
 		const result: MatchStats = await userStatsRequestResponse.json();
 		if (result) {
 			if (result.matchsnb === 0) {
-				nbOfMatchCpt2.innerHTML = "0";
-				winRatioPercent2.innerHTML = "--";
-				longestMatchCpt2.innerHTML = "--";
-				biggestStreakCpt2.innerHTML = "--";
+				nbOfMatchCpt2.textContent = "0";
+				winRatioPercent2.textContent = "--";
+				longestMatchCpt2.textContent = "--";
+				biggestStreakCpt2.textContent = "--";
 			} else {
-				nbOfMatchCpt2.innerHTML = String(result.matchsnb);
-				winRatioPercent2.innerHTML = result.winrate + " %";
-				longestMatchCpt2.innerHTML = result.longestMatch + " sec";
-				biggestStreakCpt2.innerHTML = String(result.biggest_streak);
+				nbOfMatchCpt2.textContent = String(result.matchsnb);
+				winRatioPercent2.textContent = result.winrate + " %";
+				longestMatchCpt2.textContent = result.longestMatch + " sec";
+				biggestStreakCpt2.textContent = String(result.biggest_streak);
 			}
 			friendStatDisplayBox.style.display = "flex";
 			selectedPlayerUsernameHeader.style.display = "block";
@@ -276,7 +276,7 @@ const createFriendsStatLink = async (): Promise<void> => {
 					const listItem = document.createElement("li");
 					const clearName = result.friends[i].name + "[userFriend]";
 					listItem.className = 'w-[45%] sm:w-[30%] flex items-center justify-center border border-white rounded-lg focus:border-[#98c6f8] hover:text-[#98c6f8] hover:border-[#98c6f8]';
-					listItem.innerHTML = `${result.friends[i].name}`;
+					listItem.textContent = `${result.friends[i].name}`;
 					listItem.setAttribute('name', clearName);
 					listItem.setAttribute('onclick', `fetchPlayerStats("${result.friends[i].id}", "${result.friends[i].name}")`);
 					friendlistProfileParent.appendChild(listItem);
@@ -284,7 +284,10 @@ const createFriendsStatLink = async (): Promise<void> => {
 			} else {
 				const listItem = document.createElement("li");
 				listItem.className = 'w-[60%] sm:w-[30%] flex items-center justify-center';
-				listItem.innerHTML = 'No friends to display ! Try adding some !';
+				listItem.textContent = 'No friends to display !';
+				const friendRemoverBoxDiv = document.getElementById("removeFriendBoxDiv") as HTMLSelectElement | null;
+				if (friendRemoverBoxDiv)
+					friendRemoverBoxDiv.style.display = "none";
 				friendlistProfileParent.appendChild(listItem);
 			}
 			window.grabLoggedUserStats();
@@ -326,7 +329,9 @@ const grabUserStatsAndInfo = async (): Promise<void> => {
 				userPfpProfile.src = defaultAvatar;
 			};
 			userPfpProfile.src = result?.avatar || defaultAvatar;
-			playerUsernameProfile.innerHTML = "<u>" + result.name + "</u>";
+			userPfpProfile.style.display = "block";
+			playerUsernameProfile.textContent = result.name;
+			playerUsernameProfile.style.display = "inline";
 		}
 	} catch (err) {
 		if (await fetchErrcodeHandler(err as Error) === 0)
