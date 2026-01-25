@@ -143,7 +143,7 @@ export async function loginMatchHandler(request, reply) {
 	};
 
 	if (user.id == request.user.id)
-		return reply.status(401).send({ //not sure about the error code
+		return reply.status(409).send({
 			message: "Player 1 already logged. Login with another player!",
 			errRef:"loginMatchUserNotP1"
 		});
@@ -163,12 +163,12 @@ export async function loginMatchHandler(request, reply) {
 	if (user.auth2fa) {
 
 		const tempToken = generate2faMatchToken(request.server, user)
-		return reply.code(201).send({ require2fa: true, token: tempToken });
+		return reply.code(200).send({ require2fa: true, token: tempToken });
 	}
 
 	const matchToken = generateMatchToken(request.server, user);
 
-	return reply.code(201).send({ require2fa: false, token: matchToken });
+	return reply.code(200).send({ require2fa: false, token: matchToken });
 
 }
 
@@ -333,7 +333,7 @@ export async function logoutHandler(request, reply) {
 		if (token)
 			await deleteRefreshToken(token)
 		reply.clearCookie("refresh_token");
-		return reply.status(201).send({ message: "Logged out..." });
+		return reply.status(200).send({ message: "Logged out..." });
 
 	} catch (err) {
 		return reply.status(403).send({
@@ -418,7 +418,7 @@ export async function friendRequestHandler(request, reply) {
 
 	await requestfriend(request.user.id, newfriend.id) // can fail ?????? try catch
 
-	return reply.status(200).send({
+	return reply.status(201).send({
 		message: "Request sent!"
 	});
 }
@@ -522,7 +522,7 @@ export async function friendRejectHandler(request, reply) {
 
 	await rejectfriend(request.user.id, friend.id) // can fail ?????? try catch
 
-	return reply.status(201).send({
+	return reply.status(200).send({
 		message: "Request rejected !"
 	}); 
 }
