@@ -40,14 +40,19 @@ export default class AboutFileView extends ViewTemplate {
 					</div>
 				</div>
 			</div>
+
 			<div class="py-[3%] px-[2%] ">
 				<h1 class="flex items-start text-amber-50">✦ Who made this website ?</h1>
-				<div class="flex items-start w-full py-5">
+				<div class="flex justify-start items-start w-full py-5">
 					<h2 class="flex items-start pl-6 text-[#44494f]">This project was made by lchapard, omougel, vdomasch, and bhumeau.</h2>
 				</div>
 				<h1 class="flex items-start text-amber-50">✦ Why the space theme ?</h1>
-				<div class="flex items-start w-full py-5">
+				<div class="flex justify-start items-start w-full py-5">
 					<h2 class="flex items-start text-[#44494f] pl-6">Because the blackhole was near, makes sense if you ask me</h2>
+				</div>
+				<h1 class="flex items-start text-amber-50">✦ What is our stack ?</h1>
+				<div class="flex justify-start items-start w-full py-5">
+					<h2 class="flex items-start text-[#44494f] pl-6">The stack includes for front-end: TypeScript and Tailwind CSS. For back-end: Fastify and Node.js. The Database runs on SQLite via Prisma.</h2>
 				</div>
 			</div>`;
 	}
