@@ -120,9 +120,14 @@ async function uploadFileToServer(fileObj: File): Promise<string | null> {
 	} catch (err) {
 		if (await fetchErrcodeHandler(err as Error) === 0)
 			return await uploadFileToServer(fileObj);
-		console.error('File upload failed !\n => ', err);
+		if ((err as Error).toString().indexOf("Request Entity Too Large") != -1)
+		{
+			alertBoxMsg("❌ Cannot upload file bigger than 5MB !");
+			console.error("❌ Cannot upload file bigger than 5MB !");
+		}
+		else
+			displayCorrectErrMsg(err as Error);
 		filenameStr.innerText = "❌ File upload failed";
-		displayCorrectErrMsg(err as Error);
 		return null;
 	}
 	return null;
@@ -190,6 +195,13 @@ window.spinMeAround = function (): void {
 		deathStarImg.classList.add("animate-spin");
 };
 
+window.sneakyClick = function (): void {
+	const aboutText = document.getElementById('aboutMembers') as HTMLElement | null;
+
+	if (!aboutText) return;
+	aboutText.textContent = "Just kidding, lchapard did everything (what a great guy)";
+};
+
 window.saveProfileInfo = async function (): Promise<void> {
 	const username = document.getElementById('newUsername') as HTMLInputElement | null;
 	const confirmText = document.getElementById('confirmChangeResults') as HTMLElement | null;
@@ -235,7 +247,6 @@ window.saveProfileInfo = async function (): Promise<void> {
 			username.value = "";
 			fileInput.value = "";
 			selectedFileName.textContent = '';
-			alertBoxMsg(`❌ File could not be uploaded !`);
 			return;
 		}
 	}
