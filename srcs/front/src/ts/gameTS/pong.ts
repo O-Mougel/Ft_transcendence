@@ -13,7 +13,6 @@ export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 	}
 	CONTEXT.gameMode = mode.mode as GameMode;
 	console.log("Setting up Pong..., mode:", mode.mode);
-	console.log("Game ID from initPong:", mode.gameId);
 
 	if (mode.gameId) {
 		CONTEXT.gameId = mode.gameId;
@@ -72,7 +71,6 @@ export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 	window.addEventListener("resize", resizeCanvasToElement);
 
 	console.log("Tournament ID:", CONTEXT.tournamentId);
-	console.log("Game ID:", CONTEXT.gameId);
 
 	createGameElements();
 	setupSocket();

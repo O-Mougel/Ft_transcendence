@@ -3,7 +3,6 @@ import { AI_REACTION_TIME, TICK_RATE } from "./config.js";
 import { createMatch } from "../../src/modules/match/match.service.js"
 import { findUserByName } from "../../src/modules/user/user.service.js"
 import { verifyPlayerToken } from "./server.js";
-import { getMatchRound } from "./tournamentManager.js";
 
 
 export class GameManager {
@@ -58,6 +57,12 @@ export class GameManager {
     const entry = this.games.get(gameId);
     entry.game.reset();
 
+    if (data.mode === 2 || data.persistMatch === false)
+      entry.game.persistMatch = false;
+
+    if (data.mainPlayer)
+      entry.game.mainTournamentPlayer = data.mainPlayer;
+
     try {
       if (data.mode === 3) {
         var verifiedPlayer2 = verifyPlayerToken(data.player2Token);
@@ -68,11 +73,11 @@ export class GameManager {
         entry.game.player2 = verifiedPlayer2;
       }
       else {
-        entry.game.player2 = { username: "Guest", id: 0 };
+        const username = data.player2 || "Guest";
+        entry.game.player2 = { username: username, id: 0 };
       }
-      // entry.meta = data.tournament ? { ...data.tournament } : null;
 
-      // console.log("Starting game:", gameId, "with mode:", data.mode, "and meta:", entry.meta);
+      if (data.player1) entry.game.player1.username = data.player1
 
       entry.game.start?.(data);
       if (typeof entry.game.mode === "number" && typeof data.mode === "number") {
@@ -129,21 +134,14 @@ export class GameManager {
 
         // console.log("Tournament: ", entry.meta?.tournamentId);
 
-        if (game.mode !== 2) {
+        if (entry.game.persistMatch) {
           persistMatch(entry.game).catch((err) => {
             console.error("Error persisting match:", err);
           });
         }
 
-        // console.log("this.onGameOver:", !!this.onGameOver);
-        // console.log("Emitted game:over for gameId:", gameId);
-        // console.log("Final state:", state);
-        // console.log("Meta data:", entry.meta);
-        // console.log("Game mode:", game.mode);
-
         if (this.onGameOver) {
           try {
-            // this.onGameOver({ gameId, state, meta: entry.meta });
           } catch (e) {
             console.error("onGameOver error:", e);
           }
@@ -193,7 +191,20 @@ async function persistMatch(game) {
 
   const type = game.mode === 0 ? "AI" : game.mode === 3 ? "ranked" : game.tournamentId ? "tournament" : "1v1";
 
-  const player2name = type === "AI" ? "COMPUTER" : "1v1" ? " Guest" : "tournament" ? null : null;
+  const player2name = type === "AI" ? "COMPUTER" : "1v1" ? "Guest" : game.player2.username;
+
+  console.log("Match type determined as:", type);
+  console.log("Main tournament player:", game.mainTournamentPlayer);
+
+  if (type == "tournament" && (game.mainTournamentPlayer === game.player2.username || game.mainTournamentPlayer === game.player1.username)) {
+    if (game.mainTournamentPlayer === game.player2.username) {
+      console.log("");
+      const tempScore = state.score.left;
+      state.score.left = state.score.right;
+      state.score.right = tempScore;
+      console.log("Swapped scores for main tournament player:", game.mainTournamentPlayer);
+    }
+  }
 
   const matchInfos = {
     player1Id: game.player1.id,
@@ -205,7 +216,8 @@ async function persistMatch(game) {
     duration: game.getDuration(),
     type: type,
     round: game.tournamentRound,
-	player2name,
+	  player2name,
   };
+
   createMatch(matchInfos).catch(console.error);
 }
