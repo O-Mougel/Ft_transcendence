@@ -33,7 +33,7 @@ function handleKeyUp(e: KeyboardEvent): void {
   const key = e.key;
 
   // ESC stops the game
-  if (key === "Escape" && !CONTEXT.tournamentId) handleEscapeKey();
+  if (key === "Escape" && !window.location.href.includes("/pongTournament")) handleEscapeKey();
   CONTEXT.keysPressed.delete(key);
   updateDirections();
 }

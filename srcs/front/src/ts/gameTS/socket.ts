@@ -178,7 +178,7 @@ export function handleEscapeKey(): void {
 		console.log("Cannot stop game: Not connected to server");
 		return;
 	}
-	if (!CONTEXT.isGameStarted || CONTEXT.tournamentId) return;
+	if (!CONTEXT.isGameStarted || window.location.href.includes("/pongTournament")) return;
 		socket.emit("game:stop");
 }
 
