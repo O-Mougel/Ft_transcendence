@@ -1,6 +1,8 @@
 services:
   nginx:
-    build: docker/nginx/.
+    build:
+      context: ./
+      dockerfile: ./docker/nginx/Dockerfile
     container_name: nginx
     depends_on:
      - front
@@ -29,6 +31,8 @@ services:
       context: ./back/server/.
       dockerfile: ../../docker/back/Dockerfile
     container_name: back 
+    environment:
+      - JWT_SECRET=supersecret_here 
     volumes:
       - db:/home/prisma
       - ./back/server/src:/home/src #remove when in production
