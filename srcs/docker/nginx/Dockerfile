@@ -10,6 +10,7 @@ RUN openssl req -x509 -nodes \
     --subj="/C=FR/ST=IDF/L=Lyon/O=42/OU=42/CN=zigotos.42.fr/UID=zigoto"
 
 COPY conf/default.conf /etc/nginx/conf.d/default.conf
+# copier le fichier html depuis un autre dossier
 COPY files/index.html /var/www/html/index.html
 
 # COPY conf/default.conf /etc/nginx/sites-available/
