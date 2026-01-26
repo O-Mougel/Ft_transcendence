@@ -417,6 +417,8 @@ export async function friendRequestHandler(request, reply) {
 	});
 
 	await requestfriend(request.user.id, newfriend.id) // can fail ?????? try catch
+	
+	await syncRequestFriend(newfriend.id)
 
 	return reply.status(201).send({
 		message: "Request sent!"
@@ -465,6 +467,19 @@ async function syncPresenceOnFriendAdd(a, b) {
 			isOnline:false
 		});
 	}
+}
+
+async function syncRequestFriend(userId) {
+	sendToUser(userId, {
+		type: "request:update"
+	});
+}
+
+async function syncDeleteFriend(a, b) {
+	sendToUser(b, {
+		type: "delete:update",
+		userId: a,
+	});
 }
 
 export async function friendAcceptHandler(request, reply) {
@@ -546,6 +561,8 @@ export async function friendDeleteHandler(request, reply) {
 
 	await deletefriend(request.user.id, friend.id) // can fail ?????? try catch
 
+	await syncDeleteFriend(request.user.id, friend.id);
+
 	return reply.status(200).send({ message: "Friend deleted !", removedName: friend.name });
 } 
 
@@ -558,8 +575,6 @@ export async function getFriendRequestHandler(request, reply) {
 export async function getFriendsHandler(request, reply) 
 {
     const friendsArray = await findfriends(request.user.id)
-	console.log("Friendsssss\n\n\n\n",friendsArray);
-	console.log("Friend freiwnds\n\n\n\n",friendsArray.friends);
     const friends = friendsArray.friends.map(friend => ({
         ...friend,
 		online: presenceCount.get(friend.id) > 0
