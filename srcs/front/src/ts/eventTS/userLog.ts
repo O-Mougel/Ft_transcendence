@@ -1,4 +1,5 @@
 import startingFile from "../viewTS/startingFile.js";
+import { setupSocketCommunication, closeSocketCommunication }  from "./userSocket.js";
 import { goTo2faLogin } from "./2FAEvent.js";
 import { adjustNavbar } from "./index.js";
 import type {
@@ -447,7 +448,7 @@ window.rejectFriend = async (friendId: number): Promise<void> => {
 	}
 }
 
-const checkForFriendRequests = async (): Promise<void> => {
+export	const checkForFriendRequests = async (): Promise<void> => {
 	const requestList = document.getElementById('requestList') as HTMLElement | null;
 	const requestLabel = document.getElementById('requestCheckLabel') as HTMLElement | null;
 	const requestBlock = document.getElementById('pendingRequestBlock') as HTMLElement | null;
@@ -509,7 +510,7 @@ const checkForFriendRequests = async (): Promise<void> => {
 
 }
 
-const displayUserFriends = async (): Promise<void> => {
+export const displayUserFriends = async (): Promise<void> => {
 	const friendList = document.getElementById('friendlist') as HTMLElement | null;
 	if (!friendList) return;
 	try 
@@ -532,9 +533,9 @@ const displayUserFriends = async (): Promise<void> => {
 				let listItem = document.createElement("li");
 				let	clearName = result.friends[i].name + "[4242]";
 				listItem.className = 'py-2 flex items-center justify-between ml-5';
-				// if (result.friends[i].online)
-				// 	listItem.innerHTML = `<span class="text-sm border w-full p-2 mb-2" name="${clearName}">🟢 ${result.friends[i].name}</span>`; 
-				// else
+				if (result.friends[i].online)
+					listItem.innerHTML = `<span class="text-sm border w-full p-2 mb-2" name="${clearName}">🟢 ${result.friends[i].name}</span>`; 
+				else
 					listItem.innerHTML = `<span class="text-sm border w-full p-2 mb-2" name="${clearName}">🔴 ${result.friends[i].name}</span>`;// false now
 					
 				friendList.appendChild(listItem);
@@ -658,6 +659,7 @@ export async function logoutUser(): Promise<void> {
 			alertBoxMsg("✅ You are now logged out");
 			window.sessionStorage.setItem('logStatus', 'loggedOut');
 			window.sessionStorage.setItem('access_token', 'userSelfLogoutToken');
+			closeSocketCommunication(); // to check for error
 			backToDefaultPage();
 		}
 	} 
@@ -776,6 +778,9 @@ window.handleLoginClick = async function (event: Event): Promise<void> {
 				window.sessionStorage.setItem('temp_token',result.token);
 				console.log('⏳ 2FA required, redirecting ...');
 				await goTo2faLogin();
+				if (!setupSocketCommunication())
+					console.log("should delog");
+
 			}
 			else
 			{
@@ -785,6 +790,8 @@ window.handleLoginClick = async function (event: Event): Promise<void> {
 				console.log('⏳ Logged in !');
 				alertBoxMsg(`Welcome back ${userLogName} ! 😉`);
 				await backToDefaultPage();
+				if (!setupSocketCommunication())
+					console.log("should delog");
 			}
 		}
 	} 
@@ -795,6 +802,7 @@ window.handleLoginClick = async function (event: Event): Promise<void> {
 		username.value = "";
 		password.value = "";
 		console.error('Login error !\n => ', err);
+		username.focus();
 		displayCorrectErrMsg(err as Error);
 	}
 };

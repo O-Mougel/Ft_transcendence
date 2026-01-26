@@ -93,15 +93,6 @@ export const friendDeleteSchema = z.object({
 	friendDeleteId: z.number().min(1, "Cannot delete friend with an empty ID !")
 })
 
-export const friendItemSchema = z.object({
-	id: z.number(),
-	name: z.string().min(1),
-});
-
-export const friendsArrayResponseSchema = z.object({
-	friends: z.array(friendItemSchema)
-});
-
 export const friendRequestItemSchema = z.object({
 	id: z.number(),
 	name: z.string().min(1),
@@ -109,6 +100,16 @@ export const friendRequestItemSchema = z.object({
 
 export const friendRequestResponseSchema = z.object({
 	requestOf: z.array(friendRequestItemSchema)
+});
+
+export const friendItemSchema = z.object({
+	id: z.number(),
+	name: z.string().min(1),
+	online: z.boolean()
+});
+
+export const friendsArrayResponseSchema = z.object({
+	friends: z.array(friendItemSchema)
 });
 
 export const fileUploadResponseSchema = z.object({
