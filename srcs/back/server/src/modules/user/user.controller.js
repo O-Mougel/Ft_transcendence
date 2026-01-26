@@ -555,10 +555,16 @@ export async function getFriendRequestHandler(request, reply) {
 	return reply.status(200).send(requestsList);
 }
 
-export async function getFriendsHandler(request, reply) {
-	const friendsArray = await findfriends(request.user.id)
-
-	return reply.status(200).send(friendsArray);
+export async function getFriendsHandler(request, reply) 
+{
+    const friendsArray = await findfriends(request.user.id)
+	console.log("Friendsssss\n\n\n\n",friendsArray);
+	console.log("Friend freiwnds\n\n\n\n",friendsArray.friends);
+    const friends = friendsArray.friends.map(friend => ({
+        ...friend,
+		online: presenceCount.get(friend.id) > 0
+	}))
+    return reply.status(200).send({ friends: friends });
 }
 
 export async function checkLogStatus(request, reply) {
@@ -638,30 +644,30 @@ export async function uploadProfilePicHandler(request, reply) {
 }
 
 async function getFriends(userId) {
-  const friends = await findfriends(userId)
+	const friends = await findfriends(userId)
 
-  const ids = friends.friends.map(f => f.id);
-  friendsCache.set(userId, ids);
-  return ids;
+	const ids = friends.friends.map(f => f.id);
+	friendsCache.set(userId, ids);
+	return ids;
 }
 
 async function notifyFriends(userId, online) {
-  const friends = await getFriends(userId);
+	const friends = await getFriends(userId);
 
-  const payload = JSON.stringify({ //use zod
-    type: "friend_presence",
-    userId,
-    online,
-  });
+	const payload = JSON.stringify({ //use zod
+		type: "friend_presence",
+		userId,
+		online,
+	});
 
-  for (const friendId of friends) {
-    const sockets = userSockets.get(friendId);
-    if (!sockets) continue;
+	for (const friendId of friends) {
+		const sockets = userSockets.get(friendId);
+		if (!sockets) continue;
 
-    for (const ws of sockets) {
-      ws.send(payload);
-    }
-  }
+		for (const ws of sockets) {
+			ws.send(payload);
+		}
+	}
 }
 
 async function onlineFriend(userId, socket) {
@@ -684,8 +690,12 @@ const presenceCount = new Map(); // userId -> number
 const friendsCache = new Map(); // userId -> number[]
 
 export async function webSocketHandler(connection, request) {
+	
 	const socket = connection.socket;
-	const token = request.query.token;
+	const proto = request.headers['x-forwarded-proto'] ?? (request.raw.socket && request.raw.socket.encrypted ? 'https' : 'http'); //check nginx protocol first else use request.raw
+	const base = `${proto}://${request.headers.host}`;
+	const parsedUrl = new URL(request.raw.url, base);
+	const token = parsedUrl.searchParams.get('token');
 
 	if (!token) {
 		socket.close(1008, 'Missing token');
@@ -693,6 +703,7 @@ export async function webSocketHandler(connection, request) {
 	}
 
 	let user;
+
 	try {
 		const decoded = request.server.jwt.verify(token);
 		if (decoded.type != "access"){
@@ -707,7 +718,9 @@ export async function webSocketHandler(connection, request) {
 
 	const userId = user.id;
 
-	// 🔹 envoyer l’état actuel des amis à l’utilisateur qui vient de se connecter
+	console.info("Created socket for user ", user.name); //
+
+	//grab friend log info for used that just logged in
 	await onlineFriend(userId, socket)
 
 
@@ -727,7 +740,7 @@ export async function webSocketHandler(connection, request) {
 
 	socket.on('close', async () => {
 		userSockets.get(userId)?.delete(socket);
-
+		console.info("Closed socket for user ", user.name);
 		const count = presenceCount.get(userId) - 1;
 		if (count == 0) {
 			presenceCount.delete(userId);
