@@ -9,7 +9,6 @@ import {
   BASE_PADDLE_SPEED,
   STEP,
   MAX_BALL_SPEED,
-
 } from './config.js';
 
 import { AIPlayer } from './AI.js';
@@ -28,6 +27,24 @@ function getTournamentRound(tournament) {
   const rounds = roundsMap[size];
   if (!rounds || round < 0 || round >= rounds.length) return null;
   return rounds[round];
+}
+
+class Paddle {
+  constructor(x, y, width, height) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.direction = "none";
+  }
+
+  moveUp() {
+    if (this.y > 0) this.y -= BASE_PADDLE_SPEED;
+  }
+
+  moveDown() {
+    if (this.y + this.height < HEIGHT) this.y += BASE_PADDLE_SPEED;
+  }
 }
 
 export class Game {
@@ -51,46 +68,51 @@ export class Game {
     this.id = null; // game unique id, set by GameManager
     
     // --- PADDLES ---
-    this.leftPaddle = {
-      height: PADDLE_HEIGHT,
-      width: PADDLE_WIDTH,
-      y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
-      x: 10,
-      direction: "none",
-      moveUp() { if (this.y > 0) this.y -= BASE_PADDLE_SPEED; },
-      moveDown() { if (this.y + this.height < HEIGHT) this.y += BASE_PADDLE_SPEED; },
-    };
+    // this.leftPaddle = {
+    //   height: PADDLE_HEIGHT,
+    //   width: PADDLE_WIDTH,
+    //   y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
+    //   x: 10,
+    //   direction: "none",
+    //   moveUp() { if (this.y > 0) this.y -= BASE_PADDLE_SPEED; },
+    //   moveDown() { if (this.y + this.height < HEIGHT) this.y += BASE_PADDLE_SPEED; },
+    // };
+    this.leftPaddle = new Paddle(10, HEIGHT / 2 - PADDLE_HEIGHT / 2, PADDLE_WIDTH, PADDLE_HEIGHT);
 
-    this.rightPaddle = {
-      height: PADDLE_HEIGHT,
-      width: PADDLE_WIDTH,
-      y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
-      x: WIDTH - (10 + PADDLE_WIDTH),
-      direction: "none",
-      moveUp() { if (this.y > 0) this.y -= BASE_PADDLE_SPEED; },
-      moveDown() { if (this.y + this.height < HEIGHT) this.y += BASE_PADDLE_SPEED; },
-    };
+    // this.rightPaddle = {
+    //   height: PADDLE_HEIGHT,
+    //   width: PADDLE_WIDTH,
+    //   y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
+    //   x: WIDTH - (10 + PADDLE_WIDTH),
+    //   direction: "none",
+    //   moveUp() { if (this.y > 0) this.y -= BASE_PADDLE_SPEED; },
+    //   moveDown() { if (this.y + this.height < HEIGHT) this.y += BASE_PADDLE_SPEED; },
+    // };
+    this.rightPaddle = new Paddle(WIDTH - (10 + PADDLE_WIDTH), HEIGHT / 2 - PADDLE_HEIGHT / 2, PADDLE_WIDTH, PADDLE_HEIGHT);
 
     // Extra paddles for mode === 2
-    this.leftPaddle2 = {
-      height: PADDLE_HEIGHT,
-      width: PADDLE_WIDTH,
-      y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
-      x: WIDTH / 4 - PADDLE_WIDTH,
-      direction: "none",
-      moveUp() { if (this.y > 0) this.y -= BASE_PADDLE_SPEED; },
-      moveDown() { if (this.y + this.height < HEIGHT) this.y += BASE_PADDLE_SPEED; },
-    };
+    // this.leftPaddle2 = {
+    //   height: PADDLE_HEIGHT,
+    //   width: PADDLE_WIDTH,
+    //   y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
+    //   x: WIDTH / 4 - PADDLE_WIDTH,
+    //   direction: "none",
+    //   moveUp() { if (this.y > 0) this.y -= BASE_PADDLE_SPEED; },
+    //   moveDown() { if (this.y + this.height < HEIGHT) this.y += BASE_PADDLE_SPEED; },
+    // };
+    this.leftPaddle2 = new Paddle(WIDTH / 4 - PADDLE_WIDTH, HEIGHT / 2 - PADDLE_HEIGHT / 2, PADDLE_WIDTH, PADDLE_HEIGHT);
 
-    this.rightPaddle2 = {
-      height: PADDLE_HEIGHT,
-      width: PADDLE_WIDTH,
-      y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
-      x: WIDTH * 3 / 4,
-      direction: "none",
-      moveUp() { if (this.y > 0) this.y -= BASE_PADDLE_SPEED; },
-      moveDown() { if (this.y + this.height < HEIGHT) this.y += BASE_PADDLE_SPEED; },
-    };
+    // this.rightPaddle2 = {
+    //   height: PADDLE_HEIGHT,
+    //   width: PADDLE_WIDTH,
+    //   y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
+    //   x: WIDTH * 3 / 4,
+    //   direction: "none",
+    //   moveUp() { if (this.y > 0) this.y -= BASE_PADDLE_SPEED; },
+    //   moveDown() { if (this.y + this.height < HEIGHT) this.y += BASE_PADDLE_SPEED; },
+    // };
+
+    this.rightPaddle2 = new Paddle(WIDTH * 3 / 4, HEIGHT / 2 - PADDLE_HEIGHT / 2, PADDLE_WIDTH, PADDLE_HEIGHT);
 
     this.ball = {
       x: WIDTH / 2,
@@ -284,6 +306,10 @@ export class Game {
     const minY = paddle.y - r;
     const maxX = paddle.x + paddle.width + r;
     const maxY = paddle.y + paddle.height + r;
+
+    // if ball already inside paddle bounds, skip collision
+    if (x0 >= minX && x0 <= maxX && y0 >= minY && y0 <= maxY)
+      return false;
   
     const hit = this.sweepSphereAABB(x0, y0, vx, vy, minX, minY, maxX, maxY);
     if (!hit) return false;
