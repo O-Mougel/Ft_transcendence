@@ -56,6 +56,9 @@ export function initTournament(): void {
 		socket.on("tournament:state", (data: unknown): void => {
 			const stateData = data as TournamentStateData;
 			if (stateData.tournamentId !== tournamentId) return;
+			if (stateData.tournament.status === "finished") {
+				nextMatchBtn!.style.display = "none";
+			}
 			renderTournament(stateData.tournament);
 		});
 
@@ -77,9 +80,6 @@ export function initTournament(): void {
 			const endData = data as TournamentEndedData;
 			if (endData.tournamentId !== tournamentId) return;
 			console.log("Tournament ended, winner:", endData.winner);
-			console.log("nextMatchBtn:", nextMatchBtn);
-			if (nextMatchBtn) nextMatchBtn.style.display = "hidden";
-			CONTEXT.tournamentId = null;
 		});
 
 		socket.emit("tournament:getState", { tournamentId });

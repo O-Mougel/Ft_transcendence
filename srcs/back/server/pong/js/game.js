@@ -59,6 +59,8 @@ export class Game {
     this.AIPlayer = null;
     this.tournamentId = null;
     this.tournamentRound = null;
+    this.persistMatch = true;
+    this.mainTournamentPlayer = null;
 
     this.player1 = null;
     this.player2 = null;

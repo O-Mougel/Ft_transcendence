@@ -130,12 +130,20 @@ export function registerSocketHandlers(io, manager, tournamentManager) {
       
         socket.data.gameId = info.gameId;
         manager.joinGame(info.gameId, socket);
+
+        // set persistMatch to false for tournament games if is not main player
+        const tournament = tournamentManager.getTournament(tournamentId);
+
+        info.startData.mainPlayer = tournament.mainPlayer;
+
+        if (tournament.mainPlayer !== info.player1 && tournament.mainPlayer !== info.player2) {
+          info.startData.persistMatch = false;
+        }
       
-        manager.startGame(info.gameId, info.startData); // auto-start the match game
+        manager.startGame(info.gameId, info.startData);
         
         socket.emit("match:started", info);
         
-        const tournament = tournamentManager.getTournament(tournamentId);
         socket.emit("tournament:state", { tournamentId, tournament });
       } catch (e) {
         socket.emit("tournament:error", { message: e.message || "nextMatch failed" });
