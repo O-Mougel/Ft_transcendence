@@ -78,7 +78,7 @@ export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 	setupSocket();
 	bindControls();
 
-	if (CONTEXT.tournamentId) {
+	if (CONTEXT.tournamentId && window.location.href.includes("/pongTournament")) {
 		if (CONTEXT.startButton) CONTEXT.startButton.style.display = "none";
 		joinExistingGame(CONTEXT.gameId);
 		resetState();
@@ -102,10 +102,8 @@ export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 		}
 	}
 
-	const url = window.location.href;
-	console.log("Current URL:", url);
-
-	if (CONTEXT.tournamentId && url.includes("/pongTournament") && CONTEXT.backButton) {
+	if (CONTEXT.tournamentId && window.location.href.includes("/pongTournament") && CONTEXT.backButton) {
+		console.log("Showing back to tournament button");
 		CONTEXT.backButton.classList.remove("hidden");
 		CONTEXT.backButton.onclick = (): void => {
 			window.history.pushState({}, "", `/tournamentSize`);

@@ -74,7 +74,7 @@ export function resetState(): void {
 	if (gameOverDiv)
 		gameOverDiv.style.display = "none";
 
-	if (startButton && !CONTEXT.isGameStarted && !CONTEXT.tournamentId)
+	if (startButton && !CONTEXT.isGameStarted && !window.location.href.includes("/pongTournament"))
 		startButton.style.display = "block";
 }
 
