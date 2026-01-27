@@ -61,7 +61,7 @@ export const displayCorrectErrMsg = async (error: Error | string): Promise<void>
 			alertBoxMsg(`⚠️ JWT token expired or is invalid !`);
 			break;
 		case "malformedJWT":
-			alertBoxMsg(`⚠️ Unable to refresh token ! Log in again !`);
+			alertBoxMsg(`⚠️ Malformed JWT Token ! Log in again !"`);
 			break;
 		case "tokenNoRefresh":
 			alertBoxMsg(`⚠️ Token could not be refreshed, you need to log-in again before performing another action.`);
@@ -168,6 +168,9 @@ export const displayCorrectErrMsg = async (error: Error | string): Promise<void>
 		case "uploadFailedWrite":
 			alertBoxMsg(`❌ File couldn't be written on server !`);
 			break;
+		case "socketCreationFailed":
+			alertBoxMsg(`❌ User websocket could not be created !`);
+			break;
 		default:
 			alertBoxMsg(`⚠️ An error occured ! Try again !`);
 			break;
@@ -192,18 +195,11 @@ export const fetchErrcodeHandler = async (error: Error | string): Promise<number
 	const isMalformed = error.toString().search("\"errRef\":\"malformedJWT\"") != -1;
 	const isSelfLogout = error.toString().search("\"errRef\":\"userSelfLogout\"") != -1;
 	const tokenNoRefresh = error.toString().search("\"errRef\":\"tokenNoRefresh\"") != -1;
+	const InvalidSocket = error.toString().search("\"errRef\":\"socketCreationFailed\"") != -1;
 
-	if(isNotAuth || isMalformed || isSelfLogout || tokenNoRefresh)
+	if(isNotAuth || isMalformed || isSelfLogout || tokenNoRefresh || InvalidSocket)
 	{
 		window.sessionStorage.setItem('logStatus', 'loggedOut');
-		if (isSelfLogout)
-			alertBoxMsg("⚠️ You need to be logged in to perform this action !");
-		else if (isNotAuth)
-			alertBoxMsg("⚠️ Missing bearer token in the request ! Log in again !");
-		else if (tokenNoRefresh)
-			alertBoxMsg(`⚠️ Token could not be refreshed, you need to log-in again before performing another action.`);
-		else
-			alertBoxMsg("⚠️ Malformed JWT Token ! Log in again !");
 		backToDefaultPage();
 		return (-1);
 	}
@@ -350,6 +346,33 @@ export async function isUserAllowedHere(): Promise<number> {
 		return (0); //no valid credentials
 	}
 	return(0);
+}
+
+export async function attemptSocketConnection(): Promise<boolean> {
+	try {
+		const logUserCheckResponse = await fetch('/login/loggedUserCheck', {
+				credentials: 'include',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
+		});
+	
+		if (!logUserCheckResponse.ok) {
+				const text = await logUserCheckResponse.text().catch(() => logUserCheckResponse.statusText);
+				throw new Error(`Request failed: ${logUserCheckResponse.status} ${text}`);
+		}
+		const result = await logUserCheckResponse.json();	
+		if (result) 
+		{
+			if (!setupSocketCommunication())
+				throw new Error(`Request failed: 401 ${JSON.stringify({ message: "Socket creation failed", errRef: "socketCreationFailed" })}`);
+		}
+	} 
+	catch (err)
+	{
+		console.error("\n❌Could not connect to socket on reload!\n");
+		console.error(err);
+		return (false);
+	}
+	return(true);
 }
 
 window.acceptFriend = async (friendId: number): Promise<void> => {
@@ -779,7 +802,7 @@ window.handleLoginClick = async function (event: Event): Promise<void> {
 				console.log('⏳ 2FA required, redirecting ...');
 				await goTo2faLogin();
 				if (!setupSocketCommunication())
-					console.log("should delog");
+					throw new Error(`Request failed: 401 ${JSON.stringify({ message: "Socket creation failed", errRef: "socketCreationFailed" })}`);
 
 			}
 			else
@@ -791,7 +814,7 @@ window.handleLoginClick = async function (event: Event): Promise<void> {
 				alertBoxMsg(`Welcome back ${userLogName} ! 😉`);
 				await backToDefaultPage();
 				if (!setupSocketCommunication())
-					console.log("should delog");
+					throw new Error(`Request failed: 401 ${JSON.stringify({ message: "Socket creation failed", errRef: "socketCreationFailed" })}`);
 			}
 		}
 	} 
