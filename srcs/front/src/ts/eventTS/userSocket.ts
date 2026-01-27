@@ -1,19 +1,34 @@
-import { displayUserFriends } from "./userLog.js";
-// import type { FileUploadResponse, ProfileEditData } from "../types/api.types.js";
-
+import { displayUserFriends, checkForFriendRequests } from "./userLog.js";
 
 let UserSocket: WebSocket | null = null;
 
 const interpretSocketMsg = async (socketMsgType: string): Promise<void> => {
 
+	console.log("Interpret : ", socketMsgType);
 	switch (socketMsgType) {
 		case "friend_presence":
-			console.log("A friend updated their log status, reloading..")
+			console.log("A friend updated their log status, reloading..");
 			displayUserFriends();
-	// checkForFriendRequests();
 			break;
-	
+		case "friend:update":
+			console.log("A friend was added to the list, reloading..");
+			displayUserFriends();
+			break;
+		case "delete:update":
+			console.log("A friend was deleted, reloading..");
+			displayUserFriends();
+			break;
+		case "request:update":
+			console.log("You got a new friend request !");
+			checkForFriendRequests();
+			break;
+		case "reject:update":
+			console.log("Request rejected.");
+			checkForFriendRequests();
+			break;
 		default:
+			displayUserFriends();
+			checkForFriendRequests();
 			break;
 	}
 }
@@ -31,7 +46,6 @@ export const setupSocketCommunication = async (): Promise<boolean> => {
 	const userToken = window.sessionStorage.getItem('access_token'); //JSON.stringify
 	if (!userToken) // no token
 		return false;
-
 
 	//close open socket if any
 	if (UserSocket && UserSocket.readyState == WebSocket.OPEN) {
