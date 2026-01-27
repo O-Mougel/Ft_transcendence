@@ -20,7 +20,7 @@ import UserMatchHistory from "../viewTS/UserMatchHistory.js";
 import { emitStopGame } from "../gameTS/socket.js";
 import { CONTEXT } from "../gameTS/context.js";
 
-import { displayCorrectErrMsg, isUserAllowedHere, fetchErrcodeHandler, alertBoxMsg } from "./userLog.js";
+import { displayCorrectErrMsg, isUserAllowedHere, fetchErrcodeHandler, alertBoxMsg, backToDefaultPage, attemptSocketConnection } from "./userLog.js";
 import type { Friend, FriendsListResponse, MatchStats, UserProfile, FriendDeleteData, FriendRemoveResponse, RefreshTokenResponse } from "../types/api.types";
 
 interface ViewClass {
@@ -509,6 +509,17 @@ export const adjustNavbar = async (path: string): Promise<void> => {
 const attemptAutolog = async (): Promise<void> => {
 	if (sessionStorage.getItem('pagehide') !== 'pageshouldreload')
 		await newtabRelogFetch();
+	else
+	{
+		if (sessionStorage.getItem('logStatus') == "loggedOut")
+			return (await router());
+		if (await attemptSocketConnection() == false)
+		{
+			alertBoxMsg("❌ Connection to socket could not be established !");
+			backToDefaultPage();
+			return ;
+		}
+	}
 	await router();
 };
 
@@ -593,9 +604,11 @@ document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
 	});
 	console.group("Page loaded !");
 
+	if (!sessionStorage.getItem("f5WasPressed"))
+		sessionStorage.setItem('f5WasPressed', 'false');
 	if (!sessionStorage.getItem("logStatus")) {
-		console.log("NULL O_O ! Setting to logged out");
 		sessionStorage.setItem('logStatus', 'loggedOut');
+		console.log("logStatus unknown ! Now set to \"loggedOut\"");
 	} else {
 		console.log("Grabbed status ! Current :", sessionStorage.getItem("logStatus"));
 	}

@@ -434,51 +434,42 @@ function sendToUser(userId, payload) {
 	}
 }
 
-async function syncPresenceOnFriendAdd(a, b) {
+async function syncPresenceOnFriendAdd(a, b) { //b is new friend, a is the one that requests
 
-	// A reçoit le statut de B
-	if (presenceCount.get(b) > 0) {
-		sendToUser(a, {
-			type: "presence:update",
-			userId: b,
-			isOnline: true
-		});
-	}
-	else {
-		sendToUser(a, {
-			type: "presence:update",
-			userId: b,
-			isOnline: false
-		});
-	}
+	sendToUser(a, {
+		type: "friend:update",
+		userId: b,
+	});
 
-	// B reçoit le statut de A
-	if (presenceCount.get(a) > 0) {
-		sendToUser(b, {
-			type: "presence:update",
-			userId: a,
-			isOnline:true
-		});
-	}
-	else {
-		sendToUser(b, {
-			type: "presence:update",
-			userId: a,
-			isOnline:false
-		});
-	}
+	sendToUser(b, {
+		type: "friend:update",
+		userId: a,
+	});
 }
 
 async function syncRequestFriend(userId) {
 	sendToUser(userId, {
-		type: "request:update"
+		type: "request:update",
+		userId: userId,
 	});
 }
 
 async function syncDeleteFriend(a, b) {
+	//sent to both in case other tabs are open
 	sendToUser(b, {
 		type: "delete:update",
 		userId: a,
+	});
+	sendToUser(a, {
+		type: "delete:update",
+		userId: b,
+	});
+}
+
+async function syncReject(a, b) {
+	sendToUser(a, {
+		type: "reject:update",
+		userId: b,
 	});
 }
 
@@ -536,6 +527,8 @@ export async function friendRejectHandler(request, reply) {
 	});
 
 	await rejectfriend(request.user.id, friend.id) // can fail ?????? try catch
+
+	await syncReject(request.user.id, friend.id);
 
 	return reply.status(200).send({
 		message: "Request rejected !"
@@ -685,20 +678,20 @@ async function notifyFriends(userId, online) {
 	}
 }
 
-async function onlineFriend(userId, socket) {
+// async function onlineFriend(userId, socket) {
 	
-	const friendIds = await getFriends(userId);
+// 	const friendIds = await getFriends(userId);
 
-	const onlineFriends = friendIds.filter(fid =>
-		presenceCount.get(fid) > 0
-	);
+// 	const onlineFriends = friendIds.filter(fid =>
+// 		presenceCount.get(fid) > 0
+// 	);
 
-	socket.send(JSON.stringify({
-		type: "presence:snapshot",
-		onlineFriends
-	}));
+// 	socket.send(JSON.stringify({
+// 		type: "presence:snapshot",
+// 		onlineFriends
+// 	}));
 
-}
+// }
 
 const userSockets = new Map(); // userId -> Set<ws>
 const presenceCount = new Map(); // userId -> number
@@ -736,7 +729,7 @@ export async function webSocketHandler(connection, request) {
 	console.info("Created socket for user ", user.name); //
 
 	//grab friend log info for used that just logged in
-	await onlineFriend(userId, socket)
+	// await onlineFriend(userId, socket)
 
 
 	// sockets

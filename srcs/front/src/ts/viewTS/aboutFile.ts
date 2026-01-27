@@ -52,15 +52,15 @@ export default class AboutFileView extends ViewTemplate {
 				</div>
 				<h1 class="flex items-start text-amber-50">✦ Which framework was used ?</h1>
 				<div class="flex items-start w-full py-5 mb-4">
-					<h2 class="text-left w-full wrap-break-words text-[#44494f] pl-12">For the backend, we used Fastify and NodeJS for the framework</h2>
+					<h2 class="text-left w-full wrap-break-words text-[#44494f] pl-12">For the backend, we used Fastify and NodeJS for the framework.</h2>
 				</div>
 				<h1 class="flex items-start text-amber-50">✦ What about the database ?</h1>
 				<div class="flex items-start w-full py-5 mb-4">
-					<h2 class="text-left w-full wrap-break-words text-[#44494f] pl-12">We used SQlite for our database, and Prisma to perform operations on it</h2>
+					<h2 class="text-left w-full wrap-break-words text-[#44494f] pl-12">We used SQlite for our database, and Prisma to perform operations on it.</h2>
 				</div>
-				<h1 class="flex items-start text-amber-50">✦ What is our stack ?</h1>
-				<div class="flex justify-start items-start w-full py-5">
-					<h2 class="flex items-start text-[#44494f] pl-6">The stack includes for front-end: TypeScript and Tailwind CSS. For back-end: Fastify and Node.js. The Database runs on SQLite via Prisma.</h2>
+				<h1 class="flex items-start text-amber-50">✦ And the front ?</h1>
+				<div class="flex items-start w-full py-5 mb-4">
+					<h2 class="text-left w-full wrap-break-words text-[#44494f] pl-12">TypeScript and Tailwind CSS where both used for the design of this site.</h2>
 				</div>
 			</div>`;
 	}
