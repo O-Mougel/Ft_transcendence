@@ -513,7 +513,7 @@ const attemptAutolog = async (): Promise<void> => {
 	{
 		if (sessionStorage.getItem('logStatus') == "loggedOut")
 			return (await router());
-		if (await attemptSocketConnection() == false)
+		if (await attemptSocketConnection() == false) //if log and relog page, must reconnect
 		{
 			alertBoxMsg("❌ Connection to socket could not be established !");
 			backToDefaultPage();
