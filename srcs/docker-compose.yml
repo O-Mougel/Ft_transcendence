@@ -1,8 +1,6 @@
 services:
   nginx:
-    build:
-      context: ./
-      dockerfile: ./docker/nginx/Dockerfile
+    build: ./docker/nginx
     container_name: nginx
     depends_on:
      - front
@@ -11,6 +9,8 @@ services:
      - "4430:443"
     networks:
      - transcendence
+    volumes:
+     - front:/var/www/html
     restart: on-failure
 
   front:
@@ -20,10 +20,17 @@ services:
     container_name: front
     depends_on:
      - back
-    ports: 
-     - "8080:3001"
+    # ports: 
+    #  - "8080:3001"
+    # expose:
+    #   - "3001" #or 8080 idk maybe some changes in nginx needed 
+    # WTF??? WHERE IS THIS USED ?? (USELESS?)
     networks:
      - transcendence
+    volumes:
+      - front:/usr/src/app
+      - profilepics:/usr/src/app/src/img/userPfp
+      - ./front/src/ts:/usr/src/app/src/ts #remove when in production
     restart: on-failure
 
   back:
@@ -32,19 +39,18 @@ services:
       dockerfile: ../../docker/back/Dockerfile
     container_name: back 
     environment:
-      - JWT_SECRET=supersecret_here 
+      - JWT_SECRET=supersecret_here #changer avant de rendre
     volumes:
       - db:/home/prisma
       - ./back/server/src:/home/src #remove when in production
-      - ./back/server/pong/js:/home/pong/js #remove when in production
-      - ./front/src/img:/home/front/src/img #used for profile pic upload by user
+      - profilepics:/home/front/src/img/userPfp #used for profile pic upload by user
     networks:
       - transcendence
     restart: on-failure
-    ports:
-      - "3000:3000" #ne pas oublier d'enlever au moment de rendre le projet
+    # ports:
+    #   - "3000:3000" #ne pas oublier d'enlever au moment de rendre le projet
     expose: 
-      - "3002"
+      - "3000" #don't forget to change cause 3002 is for pong
     command: npm run dev #remove when in production
 
 networks:
@@ -58,3 +64,6 @@ volumes:
       type: 'none'
       o: 'bind'
       device: 'back/volume'
+  front:
+  profilepics:
+
