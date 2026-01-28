@@ -13,6 +13,7 @@ const interpretSocketMsg = async (socketMsgType: string): Promise<void> => {
 		case "friend:update":
 			console.log("A friend was added to the list, reloading..");
 			displayUserFriends();
+			checkForFriendRequests();
 			break;
 		case "delete:update":
 			console.log("A friend was deleted, reloading..");
