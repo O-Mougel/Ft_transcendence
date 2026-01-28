@@ -1,11 +1,22 @@
+import { startSchema, movementSchema, tournamentCreateSchema, tournamentGetStateSchema, tournamentNextMatchSchema, tournamentLeaveSchema } from "./js/schema.js";
+
+const DISCONNECT_GRACE_PERIOD = 10000; // 100 seconds for reconnect delay (adjust as needed)
+
 function generateGameId() {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
 export function registerSocketHandlers(io, manager, tournamentManager, messageRateLimits) {
   io.on("connection", (socket) => {
+    if (socket.recovered) {
+      console.log(`Socket reconnected: ${socket.id}`);
+      return;
+    }
     console.log("New socket connection established");
     console.log("User connected, socket id: ", socket.id);
+
+    let disconnectTimer = null; // To track the reconnection grace period
+    let disconnectedAt = null; // To track when the user disconnected
 
     const limiter = messageRateLimits.get(socket.id); // Keeping this ??
 
@@ -24,7 +35,48 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
       next();
     });
 
-    // SIMPLE MATCH
+    // Handle disconnect with grace period
+    socket.on("disconnect", () => {
+      console.log("User disconnected, socket id: ", socket.id);
+      // Store the time of disconnection
+      disconnectedAt = Date.now();
+
+      // Start a timer to clean up if the user doesn't reconnect
+      disconnectTimer = setTimeout(() => {
+        const gameId = socket.data.gameId;
+        if (gameId) {
+          manager.leaveGame(gameId, socket);
+          socket.data.gameId = null;
+        }
+        const tournamentId = socket.data.tournamentId;
+        if (tournamentId) {
+          tournamentManager.deleteTournament(tournamentId, socket);
+          socket.data.tournamentId = null;
+        }
+        messageRateLimits.delete(socket.id);
+        console.log(`User disconnected and cleanup completed: ${socket.id}`);
+      }, DISCONNECT_GRACE_PERIOD);
+    });
+
+    // Handle reconnection
+    socket.on("reconnect", () => {
+      console.log("User reconnected, socket id: ", socket.id);
+      // If the user reconnects within the grace period, clear the cleanup timer
+      if (disconnectTimer) {
+        clearTimeout(disconnectTimer);
+        disconnectTimer = null;
+        console.log(`User reconnected before grace period expired: ${socket.id}`);
+      }
+
+      // Optionally, you can re-join the game or tournament if they were previously in one
+      const gameId = socket.data.gameId;
+      if (gameId) {
+        manager.joinGame(gameId, socket);
+        socket.emit("game:joined", { gameId });
+      }
+    });
+
+    // Handle simple match start
     socket.on("game:start", (data = {}) => {
       const gameId = generateGameId();
 
@@ -36,29 +88,6 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
       // Return the gameId to the client
       socket.emit("game:started", { gameId, ...info });
     });
-
-    // Join an existing game (multiplayer)
-    // Client sends: { gameId }
-    // socket.on("game:join", (data = {}) => {
-    //   const gameId = data.gameId;
-    //   if (!gameId) {
-    //     socket.emit("error", { message: "Missing gameId" });
-    //     return;
-    //   }
-
-    //   const entry = manager.games.get(gameId);
-    //   if (!entry) {
-    //     socket.emit("error", { message: "Game not found" });
-    //     return;
-    //   }
-
-    //   socket.data.gameId = gameId;
-    //   manager.joinGame(gameId, socket);
-
-    //   socket.emit("game:joined", { gameId });
-    //   // Optionally push current state immediately
-    //   socket.emit("game:state", entry.game.getState());
-    // });
 
     socket.on("game:join", (data = {}) => {
     const gameId = data.gameId;
@@ -98,7 +127,7 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
       manager.updatePaddle(gameId, data.Paddle, data.Direction);
     });
 
-    // TOURNAMENT
+    // Handle tournament creation
     socket.on("tournament:create", (data = {}) => {
       try {
         const size = Number(data.size);
@@ -129,12 +158,15 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
     });
 
     socket.on("tournament:getState", (data = {}) => {
+      console.log("tournament:getState called with data:", data);
       const tournamentId = data.tournamentId || socket.data.tournamentId;
       const tournament = tournamentManager.getTournament(tournamentId);
+      console.log("Fetched tournament for tournamentId:", tournamentId, tournament);
       if (!tournament) {
         socket.emit("tournament:error", { message: "Tournament not found" });
         return;
       }
+      console.log("Sending tournament state for tournamentId:", tournamentId, tournament);
       socket.emit("tournament:state", { tournamentId, tournament });
     });
 
@@ -175,21 +207,6 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         socket.data.tournamentId = null;
         console.log("Tournament deleted: ", tournamentId);
       }
-    });
-
-    socket.on("disconnect", () => {
-      const gameId = socket.data.gameId;
-      if (gameId) {
-        manager.leaveGame(gameId, socket);
-        socket.data.gameId = null;
-      }
-      const tournamentId = socket.data.tournamentId;
-      if (tournamentId) {
-        tournamentManager.deleteTournament(tournamentId, socket);
-        socket.data.tournamentId = null;
-      }
-      messageRateLimits.delete(socket.id);
-      console.log("User disconnected", socket.id);
     });
   });
 }

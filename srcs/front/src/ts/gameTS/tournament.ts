@@ -2,6 +2,23 @@ import { CONTEXT } from "./context.js";
 import { setupSocket, getSocket } from "./socket.js";
 // import type { Socket } from '../types/socket.types';
 import type { Tournament, TournamentStateData, MatchStartedData, TournamentEndedData } from '../types/socket.types';
+import { isPageReload } from "../eventTS/clickEvents.js";
+import { closeSocketCommunication } from "../eventTS/userSocket.js";
+
+window.addEventListener("pagehide", (): void => {
+	if (!(sessionStorage.getItem('f5WasPressed'))) {
+		sessionStorage.setItem('f5WasPressed', 'false');
+	}
+
+	const checkKeyReload = sessionStorage.getItem('f5WasPressed') === 'true';
+	const reloadTypeResult = isPageReload();
+
+	if (checkKeyReload || reloadTypeResult) {
+		window.sessionStorage.setItem('pagehide', 'pageshouldreload');
+		closeSocketCommunication();
+		return;
+	}
+});
 
 export function initTournament(): void {
 	// ensure socket exists
@@ -17,7 +34,6 @@ export function initTournament(): void {
 		window.dispatchEvent(new PopStateEvent("popstate"));
 		return;
 	}
-
 
 	const nextMatchBtn = document.getElementById("nextMatchBtn") as HTMLButtonElement | null;
 	const quitBtn = document.getElementById("quitButton") as HTMLButtonElement | null;
@@ -54,6 +70,7 @@ export function initTournament(): void {
 	if (socket) {
 		socket.off("tournament:state");
 		socket.on("tournament:state", (data: unknown): void => {
+			console.log("Received tournament state update:", data);
 			const stateData = data as TournamentStateData;
 			if (stateData.tournamentId !== tournamentId) return;
 			if (stateData.tournament.status === "finished") {
