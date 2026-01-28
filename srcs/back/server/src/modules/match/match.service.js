@@ -31,10 +31,10 @@ export async function showstats(id) {
 			winnerId: id,
 		},
 	})
-	const calc = win / matchsnb * 100; //divide by zero ?
+	const calc = winmatchnb / matchsnb * 100; //divide by zero ?
 	const winrate = calc.toFixed(2);
 
-	const lastmatchs = await db.matchfindMany({
+	const lastmatchs = await db.match.findMany({
 		where: {
 			OR: [
 				{ player1Id: id },
@@ -57,7 +57,7 @@ export async function showstats(id) {
 
 	const last10matchs = lastmatchs.map(match => ({
 		...match,
-		diffScore: match.player1Id == request.user.id ? match.player1Score - match.player2Score : match.player2Score - match.player1Score,
+		diffScore: match.player1Id == id ? match.player1Score - match.player2Score : match.player2Score - match.player1Score,
 	}));
 
 	return { matchsnb, winmatchnb, winrate, last10matchs } 
