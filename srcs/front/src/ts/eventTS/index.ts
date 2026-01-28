@@ -123,15 +123,11 @@ window.fillFriendRemovalBox = async (friendArray: Friend[]): Promise<void> => {
 };
 
 window.grabLoggedUserStats = async (): Promise<void> => {
-	const longestMatchCpt = document.getElementById("longestMatchCpt") as HTMLElement | null;
-	const biggestStreakCpt = document.getElementById("biggestStreakCpt") as HTMLElement | null;
 	const winLossDoughnutChart = document.getElementById("winLossDoughnutChart") as HTMLCanvasElement | null;
 	const winRatioBar = document.getElementById("winRatioBar") as HTMLCanvasElement | null;
+	const multiChart = document.getElementById("multiChart") as HTMLCanvasElement | null;
 
-	if (!longestMatchCpt || !biggestStreakCpt || !winLossDoughnutChart || !winRatioBar) return;
-
-	longestMatchCpt.textContent = "--";
-	biggestStreakCpt.textContent = "--";
+	if (!winLossDoughnutChart || !winRatioBar || !multiChart) return;
 
 	try {
 		const loggedUserStatsRequestResponse = await fetch('/match/self', {
@@ -146,11 +142,7 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 		const result: MatchStats = await loggedUserStatsRequestResponse.json();
 		if (result) {
 			if (result.matchsnb === 0) {
-				longestMatchCpt.textContent = "--";
-				biggestStreakCpt.textContent = "--";
 			} else {
-				longestMatchCpt.textContent = result.longestMatch + " sec";
-				biggestStreakCpt.textContent = String(result.biggest_streak);
 				new Chart(winLossDoughnutChart, {
 					type: 'doughnut',
 					data: {
@@ -167,6 +159,7 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 						
 					},
 				});
+
 				new Chart(winRatioBar, {
 					type: 'bar',
 					data: {
@@ -180,6 +173,7 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 					},
 					options: {
 						borderColor: 'none',
+						indexAxis: 'y',
 						scales: {
 							y: {
 								beginAtZero: true,
@@ -187,6 +181,35 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 								max: 100,
 							}
 						},
+					},
+				});
+			
+				new Chart(multiChart, {
+					type: 'line',
+					data: {
+						labels: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+						datasets: [{
+							label: "J",
+							data: [2, 3, 5, 6, 4, 7, 8, 9, 6, 5, 4, 3],
+							backgroundColor: ['#4ac03d9f', '#c03d3d9f'],
+							hoverBackgroundColor: ['#4ac03d9f', '#c03d3d9f']
+						},
+						{
+							label: "F",
+							data: [1, 4, 2, 5, 7, 3, 6, 4, 5, 7, 8, 6],
+							backgroundColor: ['#4ac03d9f', '#c03d3d9f'],
+							hoverBackgroundColor: ['#4ac03d9f', '#c03d3d9f']
+						},
+						{
+							label: "F",
+							data: [1, 1, 1, 1, 5, 8, 10, 6, 4, 3, 2, 1],
+							backgroundColor: ['#4ac03d9f', '#c03d3d9f'],
+							hoverBackgroundColor: ['#4ac03d9f', '#c03d3d9f']
+						}
+						]
+					},
+					options: {
+						borderColor: 'white',
 					},
 				});
 			}

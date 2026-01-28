@@ -60,7 +60,7 @@ export default class AboutFileView extends ViewTemplate {
 				</div>
 				<h1 class="flex items-start text-amber-50">✦ And the front ?</h1>
 				<div class="flex items-start w-full py-5 mb-4">
-					<h2 class="text-left w-full wrap-break-words text-[#44494f] pl-12">TypeScript and Tailwind CSS where both used for the design of this site.</h2>
+					<h2 class="text-left w-full wrap-break-words text-[#44494f] pl-12">TypeScript and Tailwind CSS were both used for the design of this site.</h2>
 				</div>
 			</div>`;
 	}
