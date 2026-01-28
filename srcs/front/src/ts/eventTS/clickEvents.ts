@@ -1,4 +1,5 @@
 import { fetchErrcodeHandler, alertBoxMsg, displayCorrectErrMsg } from "./userLog.js";
+import { closeSocketCommunication } from "./userSocket.js";
 import { startTournament } from "./clickTournamentSelectPlayers.js";
 import type { FileUploadResponse, ProfileEditData } from "../types/api.types";
 
@@ -45,7 +46,6 @@ window.addEventListener('keydown', (e: KeyboardEvent): void => {
 window.addEventListener("pagehide", (): void => {
 	if (!(sessionStorage.getItem('f5WasPressed'))) {
 		sessionStorage.setItem('f5WasPressed', 'false');
-		sessionStorage.setItem('f5VarNotSet', 'true');
 	}
 
 	const checkKeyReload = sessionStorage.getItem('f5WasPressed') === 'true';
@@ -53,21 +53,22 @@ window.addEventListener("pagehide", (): void => {
 
 	if (checkKeyReload || reloadTypeResult) {
 		window.sessionStorage.setItem('pagehide', 'pageshouldreload');
+		closeSocketCommunication();
 		return;
 	}
-	window.sessionStorage.setItem('pagehide', 'logout_fetch_sent');
-	try {
-		fetch('/logout', {
-			method: 'POST',
-			credentials: 'include',
-			headers: { Authorization: `Bearer ${sessionStorage.getItem("access_token")}` },
-			keepalive: true,
-		});
-		window.sessionStorage.setItem('logStatus', 'loggedOut');
-		window.sessionStorage.setItem('access_token', 'userSelfLogoutToken');
-	} catch (err) {
-		// ignore for now
-	}
+	// window.sessionStorage.setItem('pagehide', 'logout_fetch_sent');
+	// try {
+	// 	fetch('/logout', {
+	// 		method: 'POST',
+	// 		credentials: 'include',
+	// 		headers: { Authorization: `Bearer ${sessionStorage.getItem("access_token")}` },
+	// 		keepalive: true,
+	// 	});
+	// 	window.sessionStorage.setItem('logStatus', 'loggedOut');
+	// 	window.sessionStorage.setItem('access_token', 'userSelfLogoutToken');
+	// } catch (err) {
+	// 	// ignore for now
+	// }
 });
 
 window.onFileSelected = function (inputFileSelector: HTMLInputElement): void {
