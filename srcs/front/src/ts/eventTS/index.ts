@@ -126,8 +126,9 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 	const winLossDoughnutChart = document.getElementById("winLossDoughnutChart") as HTMLCanvasElement | null;
 	const winRatioBar = document.getElementById("winRatioBar") as HTMLCanvasElement | null;
 	const multiChart = document.getElementById("multiChart") as HTMLCanvasElement | null;
+	const noMatchesMessage = document.getElementById("noMatchesMessage") as HTMLElement | null;
 
-	if (!winLossDoughnutChart || !winRatioBar || !multiChart) return;
+	if (!winLossDoughnutChart || !winRatioBar || !multiChart || !noMatchesMessage) return;
 
 	try {
 		const loggedUserStatsRequestResponse = await fetch('/match/self', {
@@ -142,6 +143,7 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 		const result: MatchStats = await loggedUserStatsRequestResponse.json();
 		if (result) {
 			if (result.matchsnb === 0) {
+				noMatchesMessage.style.display = "block";
 			} else {
 				new Chart(winLossDoughnutChart, {
 					type: 'doughnut',
@@ -149,7 +151,7 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 						labels: ['Win', 'Loss'],
 						datasets: [{
 							label: ' ',
-							data: [2, 3],
+							data: [result.winmatchnb, result.matchsnb - result.winmatchnb],
 							backgroundColor: ['#4ac03d9f', '#c03d3d9f'],
 							hoverBackgroundColor: ['#4ac03d9f', '#c03d3d9f']
 						}]
@@ -183,7 +185,7 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 						},
 					},
 				});
-			
+
 				new Chart(multiChart, {
 					type: 'line',
 					data: {
@@ -212,6 +214,11 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 						borderColor: 'white',
 					},
 				});
+				winLossDoughnutChart.hidden = false;
+				winRatioBar.style.display = "flex";
+				multiChart.style.display = "flex";
+				noMatchesMessage.style.display = "none";
+
 			}
 		}
 	} catch (err) {

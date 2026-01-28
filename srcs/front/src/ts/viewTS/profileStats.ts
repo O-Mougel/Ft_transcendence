@@ -52,21 +52,21 @@ export default class ProfileStatsView extends ViewTemplate {
 				</div>
 				<div class="flex border border-blue-300 shadow-[0_0_20px_rgba(158,202,237,0.9)] rounded-lg  p-4 gap-4 flex-wrap justify-between w-[90%] mb-2">
 					<div class="flex flex-col flex-wrap w-[30%] min-w-30 min-h-30">
-						
 						<div class="w-full h-full aspect-square">
-							<canvas id="winLossDoughnutChart" ></canvas>
+							<canvas id="winLossDoughnutChart" class="hidden" ></canvas>
 						</div>
 					</div>
 					<div class="flex flex-col flex-wrap w-[30%] min-w-30 min-h-30">
 						<div class="w-full h-full aspect-square">
-							<canvas id="winRatioBar" class="min-w-30 min-h-30" ></canvas>
+							<canvas id="winRatioBar" class="hidden" class="min-w-30 min-h-30" ></canvas>
 						</div>
 					</div>
 					<div class="flex flex-col flex-wrap w-[30%] min-w-30 min-h-30">
 						<div class="w-full h-full aspect-square">
-							<canvas id="multiChart" ></canvas>
+							<canvas id="multiChart" class="hidden" ></canvas>
 						</div>
 					</div>
+					<p id="noMatchesMessage" class="w-full text-center hidden">There is no match statistics to display</p>
 				</div>
 
 				<div class="w-[90%] my-2 rounded-xl outline-none border border-blue-300 shadow-[0_0_20px_rgba(158,202,237,0.9)]" >
