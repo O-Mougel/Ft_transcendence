@@ -43,26 +43,40 @@ export default class PongView extends ViewTemplate {
 				</div>
 			</div>
 			
+			
 			<div class="h-full flex w-full justify-center">
 				<div class="pt-5 flex flex-col gap-4 items-center">
-					<canvas id="canvas" class="border-4 rounded-[2%] border-[#98c6f8] w-[64dvw] aspect-16/10"></canvas>
-					<div id="GameOver" class="hidden absolute border-4 rounded-[10%] border-[#98c6f8] justify-center items-center p-4 mt-4">
-						<div class="flex items-center">
-							<span>Game Over</span>
+			  		<div class="relative flex items-center w-full">
+						<div class="flex-1 text-left flex flex-col text-blue-300">
+							<span id="LeftPlayer" class="inline-block"> </span>
 						</div>
-						<div class="flex justify-center items-center">
-							<span id="GameOverScore">0 - 0</span>
+
+						<div id="Scores" class="absolute left-1/2 transform -translate-x-1/2 flex items-center font-bold hidden">
+							<div class="flex items-center">
+								<h3 class="px-4" id="LeftScore" value="0">0</h3>
+								<span>-</span>
+								<h3 class="px-4" id="RightScore" value="0">0</h3>
+							</div>
+						</div>
+
+						<div class="flex-1 text-right flex flex-col text-red-300">
+							<span id="RightPlayer" class="inline-block"> </span>
 						</div>
 					</div>
-					<div class="flex justify-between w-full">
-						<div class="flex flex-col items-start justify-start text-blue-300">
-							<span id="LeftPlayer"> </span>
-						</div>
-						<div class="flex flex-col items-end justify-end text-red-300">
-							<span id="RightPlayer"> </span>
+					
+					<div class="relative">
+						<canvas id="canvas" class="border-4 rounded-[2%] border-[#98c6f8] w-[64dvw] aspect-16/10"></canvas>
+						<button id="startButton" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 px-4 py-2 bg-[#5b90c9] font-bold rounded-lg hover:bg-[#7aaedc] z-20">Start Game</button>
+						<div id="GameOver" class="hidden absolute top-4 left-1/2 transform -translate-x-1/2 border rounded-[5%] border-dashed justify-center items-center p-4 z-30">
+							<div class="flex items-center">
+								<span id=winnerGameSpan></span>
+							</div>
+							<div class="flex justify-center items-center">
+								<span id="GameOverScore">0 - 0</span>
+							</div>
 						</div>
 					</div>
-					<button id="startButton" class="px-6 py-3 bg-[#98c6f8] font-bold rounded-lg hover:bg-[#7aaedc]">Start Game</button>
+					
 
 					<div id="instruction1v1" class="flex flex-col justify-center w-full border border-dashed border-white rounded-lg p-4 pb-8">
 						<span class="pb-4">Controls</span>
@@ -114,17 +128,6 @@ export default class PongView extends ViewTemplate {
 
 					<a id="backToTournament" class="hidden px-6 py-3 bg-transparent border border-[#98c6f8] font-bold rounded-lg hover:bg-white/10 cursor-pointer">Back to tournament</a>
 					<!-- Score row under the canvas -->
-					<div id="Scores" class="justify-center items-center font-bold hidden">
-						<div class="flex items-center">
-							<span>Left</span>
-							<h3 class="p-4" id="LeftScore" value="0">0</h3>
-						</div>
-						<span></span>
-						<div class="flex items-center">
-							<h3 class="p-4" id="RightScore" value="0">0</h3>
-							<span>Right</span>
-						</div>
-					</div>
 				</div>
 			</div>`;
 	}

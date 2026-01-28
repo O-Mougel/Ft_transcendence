@@ -43,6 +43,7 @@ services:
     volumes:
       - db:/home/prisma
       - ./back/server/src:/home/src #remove when in production
+      - ./back/server/pong:/home/pong #remove when in production
       - profilepics:/home/front/src/img/userPfp #used for profile pic upload by user
     networks:
       - transcendence
