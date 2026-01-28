@@ -88,6 +88,7 @@ export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 		if (CONTEXT.startButton) {
 			CONTEXT.startButton.style.display = "block";
 			CONTEXT.startButton.onclick = (): void => {
+
 				if (CONTEXT.startButton) CONTEXT.startButton.style.display = "none";
 				emitNextMatch(CONTEXT.tournamentId);
 				if (CONTEXT.backButton) CONTEXT.backButton.classList.add("hidden");
@@ -156,7 +157,12 @@ function startGame(): void {
 	waitStartGame();
 	resetState();
 
-	if (CONTEXT.startButton) CONTEXT.startButton.style.display = "none";
+	if (CONTEXT.startButton) {
+		// scroll back to top + disable scroll
+		window.scrollTo(0, 0);
+		document.body.style.overflow = "hidden";
+		CONTEXT.startButton.style.display = "none";
+	}
 	if (CONTEXT.score) CONTEXT.score.style.display = "flex";
 	CONTEXT.isGameStarted = true;
 	gameInit();
