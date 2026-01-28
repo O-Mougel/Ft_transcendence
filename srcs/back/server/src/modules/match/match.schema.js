@@ -3,11 +3,18 @@
 import * as z from "zod";
 import { buildJsonSchemas } from 'fastify-zod';
 
+const statsMatchItemSchema = z.object({
+	diffScore: z.number(),
+	longestStreak: z.number(),
+	duration: z.number(),
+	createdAt: z.date()
+});
+
 const getMatchResponseSchema = z.object({
   matchsnb: z.number(),
+  winmatchnb: z.number(),
   winrate: z.number(),
-  biggest_streak: z.number(),
-  longestMatch: z.number()
+  last10matchs: z.array(statsMatchItemSchema)
 });
 
 const matchItemSchema = z.object({
