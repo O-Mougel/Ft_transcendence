@@ -26,7 +26,7 @@ export async function showstats(id) {
 		return { matchsnb:0, winrate:0, biggest_streak:0, longestMatch:0 } // we need numbers for zod schema
 	}
 	
-	const win = await db.match.count({
+	const winmatchnb = await db.match.count({
 		where: {
 			winnerId: id,
 		},
@@ -34,32 +34,67 @@ export async function showstats(id) {
 	const calc = win / matchsnb * 100; //divide by zero ?
 	const winrate = calc.toFixed(2);
 
-	const result = await db.match.aggregate({
+	const lastmatchs = await db.matchfindMany({
 		where: {
 			OR: [
 				{ player1Id: id },
 				{ player2Id: id },
 			],
 		},
-		_max: {
-			longestStreak: true,
+		select: {
+			id: true,
+			player1: {
+				select: {
+					name: true,
+				},
+			},
+			player2: {
+				select: {
+					id: true,
+					name: true,
+				},
+			},
+			player1Score: true,
+			player2Score: true,
+			winnerId: true,
+			type: true,
+			player2name: true,
+			round: true,
 			duration: true,
-		}
-	});
+			createdAt: true,
+		},
+		orderBy: {
+			createdAt: 'desc',
+		},
+		take: 10
+	})
 
-	let biggest_streak;
-	let longestMatch;
-	if (result)
-	{
-		biggest_streak = result._max.longestStreak ?? 0;
-		longestMatch = result._max.duration ?? 0;
-	}
-	else
-	{
-		biggest_streak = 0;
-		longestMatch = 0;
-	}
-	return { matchsnb, winrate, biggest_streak, longestMatch } 
+	// const result = await db.match.aggregate({
+	// 	where: {
+	// 		OR: [
+	// 			{ player1Id: id },
+	// 			{ player2Id: id },
+	// 		],
+	// 	},
+	// 	_max: {
+	// 		longestStreak: true,
+	// 		duration: true,
+	// 	}
+	// });
+	//
+	// let biggest_streak;
+	// let longestMatch;
+	// if (result)
+	// {
+	// 	const biggest_streak = result._max.longestStreak ?? 0;
+	// 	const longestMatch = result._max.duration ?? 0;
+	// }
+	// else
+	// {
+	// 	biggest_streak = 0;
+	// 	longestMatch = 0;
+	// }
+	return { matchsnb, winmatchnb, winrate, last10matchs } 
 
 }
 
