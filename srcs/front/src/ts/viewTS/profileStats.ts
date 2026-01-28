@@ -51,19 +51,23 @@ export default class ProfileStatsView extends ViewTemplate {
 					<a class="uppercase px-5 py-1 z-20 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg" name="gotoMatchHistory" href="/UserMatchHistory" data-link>View match history</a>
 				</div>
 				<div class="flex border border-white rounded-lg  p-4 gap-4 flex-wrap justify-between animate-fade-in-scale w-[90%] mb-2">
-					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
-						<p>Match played</p>
-						<p id="nbOfMatchCpt">0</p>
+					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[20%]">
+						
+						<div class="w-full aspect-square">
+							<canvas id="winLossDoughnutChart" ></canvas>
+						</div>
 					</div>
-					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
-						<p>Win ratio</p>
-						<p id="winRatioPercent" >0%</p>
+					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[20%]">
+						
+						<div class="w-full aspect-square">
+							<canvas id="winRatioBar" ></canvas>
+						</div>
 					</div>
-					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
+					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[20%]">
 						<p>Longest match</p>
 						<p id="longestMatchCpt" >0</p>
 					</div>
-					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
+					<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[20%]">
 						<p>Biggest streak</p>
 						<p id="biggestStreakCpt">0</p>
 					</div>
