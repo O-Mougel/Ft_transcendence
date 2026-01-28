@@ -57,7 +57,9 @@ export function initTournament(): void {
 			const stateData = data as TournamentStateData;
 			if (stateData.tournamentId !== tournamentId) return;
 			if (stateData.tournament.status === "finished") {
-				nextMatchBtn!.style.display = "none";
+				if (nextMatchBtn)
+					nextMatchBtn.style.display = "none";
+				nextMatchBtn?.remove();
 			}
 			renderTournament(stateData.tournament);
 		});
@@ -99,25 +101,30 @@ function renderTournament(tournament: Tournament): void {
 	if (statusElement === null || currentMatchElement === null || bracketElement === null) return;
 
 	statusElement.textContent = `${tournament.status}${tournament.winner ? ` (winner: ${tournament.winner})` : ""}`;
-
+	if (tournament.winner)
+		statusElement.className = "text-green-500";
+	else
+		statusElement.className = "text-white";
+		
 	// Current match
 	if (tournament.current) {
 			const { r, m } = tournament.current;
 			currentMatchElement.textContent = `Current match: Round ${r + 1}, Match ${m + 1}`;
 	} else {
-			currentMatchElement.textContent = "No match running.";
+			currentMatchElement.textContent = "";
 	}
 
 	// Bracket rendering
 	bracketElement.innerHTML = "";
 	// Display each round as a column-like card
 	tournament.bracket.forEach((round, r) => {
-			const roundBox = document.createElement("div");
-			roundBox.className = "border border-[#98c6f8] rounded-lg p-3 bg-black/20";
+
+		const roundBox = document.createElement("div");
+		roundBox.className = "border border-[#98c6f8] rounded-lg p-3 bg-black/20";
 
 		const title = document.createElement("div");
-			title.className = "font-bold text-[#98c6f8] mb-2";
-			title.textContent = `Round ${r + 1}`;
+		title.className = "font-bold text-[#98c6f8] mb-2";
+		title.textContent = `Round ${r + 1}`;
 		roundBox.appendChild(title);
 
 		round.forEach((match, m) => {
@@ -127,18 +134,18 @@ function renderTournament(tournament: Tournament): void {
 			const p1 = match.player1 ?? "?";
 			const p2 = match.player2 ?? "?";
 
-			// const winnerSpan = document.createElement("span");
-			// winnerSpan.className = "text-green-500";
-			// if (match.winner)
-			// 	winnerSpan.textContent = match.winner;
-			// else
-			// 	winnerSpan.textContent= "";
-			const w = match.winner ? ` — Winner: ${match.winner}` : "";
-
-			if (p1 == "?")
-				line.textContent = `⏳ ${match.status}${w}`;
+			const desc = document.createElement("div");
+			desc.className = "block";
+			if (p1 === "?")
+				desc.textContent = `⏳ ${match.status}`;
 			else
-				line.textContent = `#${m + 1}: ${p1} vs ${p2} (${match.status})${w}`;
+				desc.textContent = `#${m + 1}: ${p1} vs ${p2} (${match.status})`;
+
+			const winnerSpan = document.createElement("span");
+			winnerSpan.className = "text-green-500 block mt-1";
+			winnerSpan.textContent = match.winner ? `Winner : ${match.winner}` : "";
+			line.appendChild(desc);
+			line.appendChild(winnerSpan);
 			roundBox.appendChild(line);
 		});
 

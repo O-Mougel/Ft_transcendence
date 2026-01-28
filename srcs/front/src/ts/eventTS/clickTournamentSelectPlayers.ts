@@ -1,5 +1,5 @@
 import { setupSocket, getSocket } from "../gameTS/socket.js";
-import { alertBoxMsg } from "./userLog.js";
+import { alertBoxMsg, backToDefaultPage } from "./userLog.js";
 
 interface TournamentStateEvent {
 	tournamentId: string;
@@ -68,5 +68,6 @@ export async function startTournament(expectedCount: number, event: Event): Prom
 	socket.once("tournament:error", (data: unknown) => {
 		const e = data as TournamentErrorEvent;
 		alertBoxMsg("❌ " + (e?.message || "Failed to create tournament"));
+		backToDefaultPage(); // back to menu on error
 	});
 }
