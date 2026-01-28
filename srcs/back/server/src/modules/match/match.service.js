@@ -23,7 +23,7 @@ export async function showstats(id) {
 
 	if(matchsnb == 0) // if never played before
 	{
-		return { matchsnb:0, winrate:0, biggest_streak:0, longestMatch:0 } // we need numbers for zod schema
+		return { matchsnb:0, winmatchnb:0, winrate: 0, last10matchs: []} // we need numbers for zod schema
 	}
 	
 	const winmatchnb = await db.match.count({
