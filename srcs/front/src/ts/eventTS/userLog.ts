@@ -1,4 +1,5 @@
 import startingFile from "../viewTS/startingFile.js";
+import { setupSocketCommunication, closeSocketCommunication }  from "./userSocket.js";
 import { goTo2faLogin } from "./2FAEvent.js";
 import { adjustNavbar } from "./index.js";
 import type {
@@ -60,7 +61,7 @@ export const displayCorrectErrMsg = async (error: Error | string): Promise<void>
 			alertBoxMsg(`⚠️ JWT token expired or is invalid !`);
 			break;
 		case "malformedJWT":
-			alertBoxMsg(`⚠️ Unable to refresh token ! Log in again !`);
+			alertBoxMsg(`⚠️ Malformed JWT Token ! Log in again !"`);
 			break;
 		case "tokenNoRefresh":
 			alertBoxMsg(`⚠️ Token could not be refreshed, you need to log-in again before performing another action.`);
@@ -167,6 +168,9 @@ export const displayCorrectErrMsg = async (error: Error | string): Promise<void>
 		case "uploadFailedWrite":
 			alertBoxMsg(`❌ File couldn't be written on server !`);
 			break;
+		case "socketCreationFailed":
+			alertBoxMsg(`❌ User websocket could not be created !`);
+			break;
 		default:
 			alertBoxMsg(`⚠️ An error occured ! Try again !`);
 			break;
@@ -191,18 +195,11 @@ export const fetchErrcodeHandler = async (error: Error | string): Promise<number
 	const isMalformed = error.toString().search("\"errRef\":\"malformedJWT\"") != -1;
 	const isSelfLogout = error.toString().search("\"errRef\":\"userSelfLogout\"") != -1;
 	const tokenNoRefresh = error.toString().search("\"errRef\":\"tokenNoRefresh\"") != -1;
+	const InvalidSocket = error.toString().search("\"errRef\":\"socketCreationFailed\"") != -1;
 
-	if(isNotAuth || isMalformed || isSelfLogout || tokenNoRefresh)
+	if(isNotAuth || isMalformed || isSelfLogout || tokenNoRefresh || InvalidSocket)
 	{
 		window.sessionStorage.setItem('logStatus', 'loggedOut');
-		if (isSelfLogout)
-			alertBoxMsg("⚠️ You need to be logged in to perform this action !");
-		else if (isNotAuth)
-			alertBoxMsg("⚠️ Missing bearer token in the request ! Log in again !");
-		else if (tokenNoRefresh)
-			alertBoxMsg(`⚠️ Token could not be refreshed, you need to log-in again before performing another action.`);
-		else
-			alertBoxMsg("⚠️ Malformed JWT Token ! Log in again !");
 		backToDefaultPage();
 		return (-1);
 	}
@@ -351,6 +348,33 @@ export async function isUserAllowedHere(): Promise<number> {
 	return(0);
 }
 
+export async function attemptSocketConnection(): Promise<boolean> {
+	try {
+		const logUserCheckResponse = await fetch('/login/loggedUserCheck', {
+				credentials: 'include',
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
+		});
+	
+		if (!logUserCheckResponse.ok) {
+				const text = await logUserCheckResponse.text().catch(() => logUserCheckResponse.statusText);
+				throw new Error(`Request failed: ${logUserCheckResponse.status} ${text}`);
+		}
+		const result = await logUserCheckResponse.json();	
+		if (result) 
+		{
+			if (!setupSocketCommunication())
+				throw new Error(`Request failed: 401 ${JSON.stringify({ message: "Socket creation failed", errRef: "socketCreationFailed" })}`);
+		}
+	} 
+	catch (err)
+	{
+		console.error("\n❌Could not connect to socket on reload!\n");
+		console.error(err);
+		return (false);
+	}
+	return(true);
+}
+
 window.acceptFriend = async (friendId: number): Promise<void> => {
 	const requestList = document.getElementById('requestList') as HTMLElement | null;
 	if (!requestList || !friendId) return;
@@ -447,7 +471,7 @@ window.rejectFriend = async (friendId: number): Promise<void> => {
 	}
 }
 
-const checkForFriendRequests = async (): Promise<void> => {
+export	const checkForFriendRequests = async (): Promise<void> => {
 	const requestList = document.getElementById('requestList') as HTMLElement | null;
 	const requestLabel = document.getElementById('requestCheckLabel') as HTMLElement | null;
 	const requestBlock = document.getElementById('pendingRequestBlock') as HTMLElement | null;
@@ -509,7 +533,7 @@ const checkForFriendRequests = async (): Promise<void> => {
 
 }
 
-const displayUserFriends = async (): Promise<void> => {
+export const displayUserFriends = async (): Promise<void> => {
 	const friendList = document.getElementById('friendlist') as HTMLElement | null;
 	if (!friendList) return;
 	try 
@@ -532,9 +556,9 @@ const displayUserFriends = async (): Promise<void> => {
 				let listItem = document.createElement("li");
 				let	clearName = result.friends[i].name + "[4242]";
 				listItem.className = 'py-2 flex items-center justify-between ml-5';
-				// if (result.friends[i].online)
-				// 	listItem.innerHTML = `<span class="text-sm border w-full p-2 mb-2" name="${clearName}">🟢 ${result.friends[i].name}</span>`; 
-				// else
+				if (result.friends[i].online)
+					listItem.innerHTML = `<span class="text-sm border w-full p-2 mb-2" name="${clearName}">🟢 ${result.friends[i].name}</span>`; 
+				else
 					listItem.innerHTML = `<span class="text-sm border w-full p-2 mb-2" name="${clearName}">🔴 ${result.friends[i].name}</span>`;// false now
 					
 				friendList.appendChild(listItem);
@@ -658,6 +682,7 @@ export async function logoutUser(): Promise<void> {
 			alertBoxMsg("✅ You are now logged out");
 			window.sessionStorage.setItem('logStatus', 'loggedOut');
 			window.sessionStorage.setItem('access_token', 'userSelfLogoutToken');
+			closeSocketCommunication(); // to check for error
 			backToDefaultPage();
 		}
 	} 
@@ -776,6 +801,9 @@ window.handleLoginClick = async function (event: Event): Promise<void> {
 				window.sessionStorage.setItem('temp_token',result.token);
 				console.log('⏳ 2FA required, redirecting ...');
 				await goTo2faLogin();
+				if (!setupSocketCommunication())
+					throw new Error(`Request failed: 401 ${JSON.stringify({ message: "Socket creation failed", errRef: "socketCreationFailed" })}`);
+
 			}
 			else
 			{
@@ -785,6 +813,8 @@ window.handleLoginClick = async function (event: Event): Promise<void> {
 				console.log('⏳ Logged in !');
 				alertBoxMsg(`Welcome back ${userLogName} ! 😉`);
 				await backToDefaultPage();
+				if (!setupSocketCommunication())
+					throw new Error(`Request failed: 401 ${JSON.stringify({ message: "Socket creation failed", errRef: "socketCreationFailed" })}`);
 			}
 		}
 	} 
@@ -795,6 +825,7 @@ window.handleLoginClick = async function (event: Event): Promise<void> {
 		username.value = "";
 		password.value = "";
 		console.error('Login error !\n => ', err);
+		username.focus();
 		displayCorrectErrMsg(err as Error);
 	}
 };

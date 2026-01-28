@@ -417,6 +417,8 @@ export async function friendRequestHandler(request, reply) {
 	});
 
 	await requestfriend(request.user.id, newfriend.id) // can fail ?????? try catch
+	
+	await syncRequestFriend(newfriend.id)
 
 	return reply.status(201).send({
 		message: "Request sent!"
@@ -432,39 +434,43 @@ function sendToUser(userId, payload) {
 	}
 }
 
-async function syncPresenceOnFriendAdd(a, b) {
+async function syncPresenceOnFriendAdd(a, b) { //b is new friend, a is the one that requests
 
-	// A reçoit le statut de B
-	if (presenceCount.get(b) > 0) {
-		sendToUser(a, {
-			type: "presence:update",
-			userId: b,
-			isOnline: true
-		});
-	}
-	else {
-		sendToUser(a, {
-			type: "presence:update",
-			userId: b,
-			isOnline: false
-		});
-	}
+	sendToUser(a, {
+		type: "friend:update",
+		userId: b,
+	});
 
-	// B reçoit le statut de A
-	if (presenceCount.get(a) > 0) {
-		sendToUser(b, {
-			type: "presence:update",
-			userId: a,
-			isOnline:true
-		});
-	}
-	else {
-		sendToUser(b, {
-			type: "presence:update",
-			userId: a,
-			isOnline:false
-		});
-	}
+	sendToUser(b, {
+		type: "friend:update",
+		userId: a,
+	});
+}
+
+async function syncRequestFriend(userId) {
+	sendToUser(userId, {
+		type: "request:update",
+		userId: userId,
+	});
+}
+
+async function syncDeleteFriend(a, b) {
+	//sent to both in case other tabs are open
+	sendToUser(b, {
+		type: "delete:update",
+		userId: a,
+	});
+	sendToUser(a, {
+		type: "delete:update",
+		userId: b,
+	});
+}
+
+async function syncReject(a, b) {
+	sendToUser(a, {
+		type: "reject:update",
+		userId: b,
+	});
 }
 
 export async function friendAcceptHandler(request, reply) {
@@ -522,6 +528,8 @@ export async function friendRejectHandler(request, reply) {
 
 	await rejectfriend(request.user.id, friend.id) // can fail ?????? try catch
 
+	await syncReject(request.user.id, friend.id);
+
 	return reply.status(200).send({
 		message: "Request rejected !"
 	}); 
@@ -546,6 +554,8 @@ export async function friendDeleteHandler(request, reply) {
 
 	await deletefriend(request.user.id, friend.id) // can fail ?????? try catch
 
+	await syncDeleteFriend(request.user.id, friend.id);
+
 	return reply.status(200).send({ message: "Friend deleted !", removedName: friend.name });
 } 
 
@@ -555,10 +565,14 @@ export async function getFriendRequestHandler(request, reply) {
 	return reply.status(200).send(requestsList);
 }
 
-export async function getFriendsHandler(request, reply) {
-	const friendsArray = await findfriends(request.user.id)
-
-	return reply.status(200).send(friendsArray);
+export async function getFriendsHandler(request, reply) 
+{
+    const friendsArray = await findfriends(request.user.id)
+    const friends = friendsArray.friends.map(friend => ({
+        ...friend,
+		online: presenceCount.get(friend.id) > 0
+	}))
+    return reply.status(200).send({ friends: friends });
 }
 
 export async function checkLogStatus(request, reply) {
@@ -638,81 +652,94 @@ export async function uploadProfilePicHandler(request, reply) {
 }
 
 async function getFriends(userId) {
-  const friends = await findfriends(userId)
+	const friends = await findfriends(userId)
 
-  const ids = friends.friends.map(f => f.id);
-  friendsCache.set(userId, ids);
-  return ids;
+	const ids = friends.friends.map(f => f.id);
+	friendsCache.set(userId, ids);
+	return ids;
 }
 
 async function notifyFriends(userId, online) {
-  const friends = await getFriends(userId);
+	const friends = await getFriends(userId);
 
-  const payload = JSON.stringify({ //use zod
-    type: "friend_presence",
-    userId,
-    online,
-  });
+	const payload = JSON.stringify({ //use zod
+		type: "friend_presence",
+		userId,
+		online,
+	});
 
-  for (const friendId of friends) {
-    const sockets = userSockets.get(friendId);
-    if (!sockets) continue;
+	for (const friendId of friends) {
+		const sockets = userSockets.get(friendId);
+		if (!sockets) continue;
 
-    for (const ws of sockets) {
-      ws.send(payload);
-    }
-  }
+		for (const ws of sockets) {
+			ws.send(payload);
+		}
+	}
 }
 
-async function onlineFriend(userId, socket) {
+// async function onlineFriend(userId, socket) {
 	
-	const friendIds = await getFriends(userId);
+// 	const friendIds = await getFriends(userId);
 
-	const onlineFriends = friendIds.filter(fid =>
-		presenceCount.get(fid) > 0
-	);
+// 	const onlineFriends = friendIds.filter(fid =>
+// 		presenceCount.get(fid) > 0
+// 	);
 
-	socket.send(JSON.stringify({
-		type: "presence:snapshot",
-		onlineFriends
-	}));
+// 	socket.send(JSON.stringify({
+// 		type: "presence:snapshot",
+// 		onlineFriends
+// 	}));
 
-}
+// }
 
 const userSockets = new Map(); // userId -> Set<ws>
 const presenceCount = new Map(); // userId -> number
 const friendsCache = new Map(); // userId -> number[]
 
 export async function webSocketHandler(connection, request) {
+	
 	const socket = connection.socket;
-	const token = request.query.token;
+	const proto = request.headers['x-forwarded-proto'] ?? (request.raw.socket && request.raw.socket.encrypted ? 'https' : 'http'); //check nginx protocol first else use request.raw
+	const base = `${proto}://${request.headers.host}`;
+	const parsedUrl = new URL(request.raw.url, base);
+	const token = parsedUrl.searchParams.get('token');
 
 	if (!token) {
+		console.log("Token is missing, leaving function..")
 		socket.close(1008, 'Missing token');
 		return;
 	}
 
 	let user;
+
 	try {
 		const decoded = request.server.jwt.verify(token);
-		if (decoded.type != "access"){
-		socket.close(1008, 'Invalid token');
-		return;
+		if (decoded.type != "access")
+		{
+			console.log("Wrong token type, leaving function..");
+			socket.close(1008, 'Invalid token');
+			return;
 		}
 		user = decoded;
 	} catch {
+		console.log("Could not verify token..");
 		socket.close(1008, 'Invalid token');
 		return;
 	}
 
 	const userId = user.id;
 
-	// 🔹 envoyer l’état actuel des amis à l’utilisateur qui vient de se connecter
-	await onlineFriend(userId, socket)
+	console.info("Created socket for user ", user.name); //
+
+	//grab friend log info for used that just logged in
+	// await onlineFriend(userId, socket)
 
 
 	// sockets
 	if (!userSockets.has(userId)){
+
+		console.log(user.name, " not part of userSocket, adding it");
 		userSockets.set(userId, new Set());
 	}
 	userSockets.get(userId).add(socket);
@@ -722,17 +749,20 @@ export async function webSocketHandler(connection, request) {
 
 	// broadcastPresence
 	if (presenceCount.get(userId) == 1) {
+		console.log(user.name, " connected for the first time, notifying friends");
 		await notifyFriends(userId, true);
 	}
 
 	socket.on('close', async () => {
 		userSockets.get(userId)?.delete(socket);
-
+		console.info("Closed socket for user ", user.name);
 		const count = presenceCount.get(userId) - 1;
 		if (count == 0) {
+			console.log("No session open for", user.name, ", notifying friends");
 			presenceCount.delete(userId);
 			await notifyFriends(userId, false);
 		} else {
+			console.log("user ", user.name, "still has ", count, "session left open");
 			presenceCount.set(userId, count);
 		}
 	});
