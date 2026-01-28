@@ -5,6 +5,27 @@ import { bindControls } from "./controls.js";
 import type { GameInitOptions, GameMode } from '../types/game.types';
 import type { GameStateData } from '../types/socket.types';
 
+
+window.addEventListener("contextmenu", (e: MouseEvent) => {
+	console.log("Context menu event:", e.button);
+	if (CONTEXT.isGameStarted)
+  		e.preventDefault(); // Prevent right-click from opening the context menu
+});
+
+// window.addEventListener("mousedown", (e) => {
+// 	console.log("Mouse down event:", e.button);
+//   if (e.button === 0 || e.button === 2) {
+// 	e.preventDefault(); // Disable left-click (button 0) and right-click (button 2)
+//   }
+// });
+
+// window.addEventListener("mouseup", (e) => {
+// 	console.log("Mouse up event:", e.button);
+//   if (e.button === 0 || e.button === 2) {
+// 	e.preventDefault(); // Disable left-click (button 0) and right-click (button 2)
+//   }
+// });
+
 export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 	if (mode.mode === 3 && !sessionStorage.getItem("player2_token")) {
 		window.history.pushState({}, "", `/ranked`);
@@ -90,6 +111,7 @@ export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 			CONTEXT.startButton.onclick = (): void => {
 				window.scrollTo(0, 0);
 				document.body.style.overflow = "hidden";
+				canvas.style.cursor = "none";
 				if (CONTEXT.startButton) CONTEXT.startButton.style.display = "none";
 				emitNextMatch(CONTEXT.tournamentId);
 				if (CONTEXT.backButton) CONTEXT.backButton.classList.add("hidden");
@@ -97,6 +119,7 @@ export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 		}
 	} else {
 		if (CONTEXT.startButton) {
+
 			CONTEXT.startButton.style.display = "block";
 			CONTEXT.startButton.onclick = startGame;
 		}
@@ -159,7 +182,7 @@ function startGame(): void {
 	resetState();
 
 	if (CONTEXT.startButton) {
-		// scroll back to top + disable scroll
+		CONTEXT.canvas!.style.cursor = "none";
 		window.scrollTo(0, 0);
 		document.body.style.overflow = "hidden";
 		CONTEXT.startButton.style.display = "none";
