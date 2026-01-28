@@ -22,6 +22,7 @@ import { CONTEXT } from "../gameTS/context.js";
 
 import { displayCorrectErrMsg, isUserAllowedHere, fetchErrcodeHandler, alertBoxMsg, backToDefaultPage, attemptSocketConnection } from "./userLog.js";
 import type { Friend, FriendsListResponse, MatchStats, UserProfile, FriendDeleteData, FriendRemoveResponse, RefreshTokenResponse } from "../types/api.types";
+import { scales, Title } from "chart.js";
 
 interface ViewClass {
 	new(): ViewInstance;
@@ -40,6 +41,12 @@ interface Route {
 interface RouteMatch {
 	mapElement: Route;
 	isMatch: boolean;
+}
+
+export {};
+declare global {
+  // allow using the global Chart (UMD) from CDN without TS errors
+  var Chart: any;
 }
 
 // let profileRefresh: ReturnType<typeof setInterval> | undefined;
@@ -116,15 +123,13 @@ window.fillFriendRemovalBox = async (friendArray: Friend[]): Promise<void> => {
 };
 
 window.grabLoggedUserStats = async (): Promise<void> => {
-	const nbOfMatchCpt = document.getElementById("nbOfMatchCpt") as HTMLElement | null;
-	const winRatioPercent = document.getElementById("winRatioPercent") as HTMLElement | null;
 	const longestMatchCpt = document.getElementById("longestMatchCpt") as HTMLElement | null;
 	const biggestStreakCpt = document.getElementById("biggestStreakCpt") as HTMLElement | null;
+	const winLossDoughnutChart = document.getElementById("winLossDoughnutChart") as HTMLCanvasElement | null;
+	const winRatioBar = document.getElementById("winRatioBar") as HTMLCanvasElement | null;
 
-	if (!nbOfMatchCpt || !winRatioPercent || !longestMatchCpt || !biggestStreakCpt) return;
+	if (!longestMatchCpt || !biggestStreakCpt || !winLossDoughnutChart || !winRatioBar) return;
 
-	nbOfMatchCpt.textContent = "--";
-	winRatioPercent.textContent = "--";
 	longestMatchCpt.textContent = "--";
 	biggestStreakCpt.textContent = "--";
 
@@ -141,15 +146,49 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 		const result: MatchStats = await loggedUserStatsRequestResponse.json();
 		if (result) {
 			if (result.matchsnb === 0) {
-				nbOfMatchCpt.textContent = "0";
-				winRatioPercent.textContent = "--";
 				longestMatchCpt.textContent = "--";
 				biggestStreakCpt.textContent = "--";
 			} else {
-				nbOfMatchCpt.textContent = String(result.matchsnb);
-				winRatioPercent.textContent = result.winrate + " %";
 				longestMatchCpt.textContent = result.longestMatch + " sec";
 				biggestStreakCpt.textContent = String(result.biggest_streak);
+				new Chart(winLossDoughnutChart, {
+					type: 'doughnut',
+					data: {
+						labels: ['Win', 'Loss'],
+						datasets: [{
+							label: ' ',
+							data: [2, 3],
+							backgroundColor: ['#4ac03d9f', '#c03d3d9f'],
+							hoverBackgroundColor: ['#4ac03d9f', '#c03d3d9f']
+						}]
+					},
+					options: {
+						borderColor: 'none',
+						
+					},
+				});
+				new Chart(winRatioBar, {
+					type: 'bar',
+					data: {
+						labels: ['Win Ratio'],
+						datasets: [{
+							label: 'Win Ratio %',
+							data: [result.winrate],
+							backgroundColor: '#4ac03d9f',
+							hoverBackgroundColor: '#4ac03d9f'
+						}]
+					},
+					options: {
+						borderColor: 'none',
+						scales: {
+							y: {
+								beginAtZero: true,
+								min: 0,
+								max: 100,
+							}
+						},
+					},
+				});
 			}
 		}
 	} catch (err) {
@@ -158,7 +197,7 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 		console.error('⚠️ Couldn\'t fetch logged user stats !\n => ', err);
 	}
 };
-
+	
 window.fetchPlayerStats = async (playerId: string, playerUsername: string): Promise<void> => {
 	const nbOfMatchCpt2 = document.getElementById("nbOfMatchCpt2") as HTMLElement | null;
 	const winRatioPercent2 = document.getElementById("winRatioPercent2") as HTMLElement | null;
