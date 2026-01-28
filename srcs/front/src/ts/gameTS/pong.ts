@@ -77,18 +77,17 @@ export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 	bindControls();
 
 	if (CONTEXT.tournamentId && window.location.href.includes("/pongTournament")) {
-		if (CONTEXT.startButton) CONTEXT.startButton.style.display = "none";
+		// if (CONTEXT.startButton) CONTEXT.startButton.style.display = "none";
 		joinExistingGame(CONTEXT.gameId);
 		resetState();
 
-		if (CONTEXT.startButton) CONTEXT.startButton.style.display = "none";
 		if (CONTEXT.score) CONTEXT.score.style.display = "flex";
 		CONTEXT.isGameStarted = true;
 		gameInit();
 		if (CONTEXT.startButton) {
 			CONTEXT.startButton.style.display = "block";
 			CONTEXT.startButton.onclick = (): void => {
-				if (CONTEXT.startButton) CONTEXT.startButton.style.display = "none";
+				if (CONTEXT.startButton) document.getElementById("startButton")?.remove();
 				emitNextMatch(CONTEXT.tournamentId);
 				if (CONTEXT.backButton) CONTEXT.backButton.classList.add("hidden");
 			};

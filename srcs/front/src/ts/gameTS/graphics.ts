@@ -87,24 +87,31 @@ export function printGameOver(data: GameOverData): void {
 	const winnerSpan = document.getElementById("winnerGameSpan");
 	const LeftPlayer = document.getElementById("LeftPlayer");
 	const RightPlayer = document.getElementById("RightPlayer");
-	if (!winner && RightPlayer && LeftPlayer)
+	
+	let winnerName: string | null = null;
+	if(!winner)
+		winnerName = "";
+	else
+		winnerName = winner;
+
+	if (!winnerName && RightPlayer && LeftPlayer)
 	{
 		if (left > right)
-			winner = LeftPlayer.textContent;
+			winnerName = LeftPlayer.textContent;
 		else if (right > left)
 		{
 			if (RightPlayer.textContent == "[AI]")
-				winner = "IA 🤖";
+				winnerName = "IA 🤖";
 			else
-				winner = RightPlayer.textContent;
+				winnerName = RightPlayer.textContent;
 		}
 		else
-			winner = "Draw ! (How ?!)";
+			winnerName = "Draw ! (How ?!)";
 	}
 	if (gameOverDiv && gameOverScore && winnerSpan) {
 		gameOverScore.textContent = `${left} - ${right}`;
 		gameOverDiv.style.display = "block";
-		winnerSpan.textContent = `WINNER : ${winner}`
+		winnerSpan.textContent = `WINNER : ${winnerName}`
 		// winnerSpan.textContent = `GAME OVER`
 	}
 }

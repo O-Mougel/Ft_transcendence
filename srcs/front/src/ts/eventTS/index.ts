@@ -509,24 +509,23 @@ export const adjustNavbar = async (path: string): Promise<void> => {
 const attemptAutolog = async (): Promise<void> => {
 	if (sessionStorage.getItem('pagehide') !== 'pageshouldreload')
 		await newtabRelogFetch();
-	else
+	
+	if (sessionStorage.getItem('logStatus') == "loggedOut")
+		return (await router());
+	
+	try {
+		await attemptSocketConnection()
+	} 
+	catch (err) 
 	{
-		if (sessionStorage.getItem('logStatus') == "loggedOut")
-			return (await router());
-		try {
-			await attemptSocketConnection()
-		} 
-		catch (err) 
+		if (await fetchErrcodeHandler(err as Error) === 0)
 		{
-			if (await fetchErrcodeHandler(err as Error) === 0)
-			{
-				await attemptAutolog();
-			}
-			else
-			{
-				alertBoxMsg("❌ Connection to socket could not be established !");
-				return backToDefaultPage();
-			}
+			await attemptAutolog();
+		}
+		else
+		{
+			alertBoxMsg("❌ Connection to socket could not be established !");
+			return backToDefaultPage();
 		}
 	}
 	await router();
@@ -581,11 +580,15 @@ const router = async (): Promise<void> => {
 
 	if (match && match.mapElement.path === "/tournamentSize" && CONTEXT.tournamentId) {
 		const tournamentRoute = routes.find(r => r.path === "/tournament");
-		if (tournamentRoute) match.mapElement = tournamentRoute;
+		if (tournamentRoute)
+		{
+			match.mapElement = tournamentRoute;
+			history.pushState(null, "", "/tournament");
+		}
 	}
 
 	const view = new match.mapElement.view();
-
+	
 	if (sessionStorage.getItem('pagehide') && sessionStorage.getItem('pagehide') === 'pageshouldreload') {
 		sessionStorage.setItem('pagehide', 'pagehasreloaded');
 	}
