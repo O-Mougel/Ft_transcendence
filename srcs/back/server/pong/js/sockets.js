@@ -2,9 +2,26 @@ function generateGameId() {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
-export function registerSocketHandlers(io, manager, tournamentManager) {
+export function registerSocketHandlers(io, manager, tournamentManager, messageRateLimits) {
   io.on("connection", (socket) => {
     console.log("User connected, socket id: ", socket.id);
+
+    const limiter = messageRateLimits.get(socket.id); // Keeping this ??
+
+    socket.use((packet, next) => {
+      if (!limiter) return next();
+      const now = Date.now();
+      if (now > limiter.resetAt) {
+        limiter.count = 0;
+        limiter.resetAt = now + 1000;
+      }
+      if (++limiter.count > 10) {
+        console.warn(`Rate limit exceeded for ${socket.id}`);
+        socket.disconnect();
+        return;
+      }
+      next();
+    });
 
     // SIMPLE MATCH
     socket.on("game:start", (data = {}) => {
@@ -170,6 +187,7 @@ export function registerSocketHandlers(io, manager, tournamentManager) {
         tournamentManager.deleteTournament(tournamentId, socket);
         socket.data.tournamentId = null;
       }
+      messageRateLimits.delete(socket.id);
       console.log("User disconnected", socket.id);
     });
   });
