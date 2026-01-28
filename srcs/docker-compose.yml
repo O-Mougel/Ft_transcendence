@@ -1,7 +1,6 @@
 services:
   nginx:
-    build: docker/nginx/.
-    env_file: ../.env
+    build: ./docker/nginx
     container_name: nginx
     depends_on:
      - front
@@ -11,42 +10,47 @@ services:
     networks:
      - transcendence
     volumes:
-     - nginx:/var/www/html
+     - front:/var/www/html
     restart: on-failure
 
   front:
     build:
-      context: .
-      dockerfile: docker/front/Dockerfile
-    env_file: ../.env
+      context: ./front/
+      dockerfile: ../docker/front/Dockerfile
     container_name: front
     depends_on:
      - back
-    ports: 
-     - "8080:3001"
-    volumes:
-     - front:/usr/src/app
+    # ports: 
+    #  - "8080:3001"
+    # expose:
+    #   - "3001" #or 8080 idk maybe some changes in nginx needed 
+    # WTF??? WHERE IS THIS USED ?? (USELESS?)
     networks:
      - transcendence
+    volumes:
+      - front:/usr/src/app
+      - profilepics:/usr/src/app/src/img/userPfp
+      - ./front/src/ts:/usr/src/app/src/ts #remove when in production
     restart: on-failure
 
   back:
     build: 
       context: ./back/server/.
       dockerfile: ../../docker/back/Dockerfile
-    env_file: ../.env
     container_name: back 
+    environment:
+      - JWT_SECRET=supersecret_here #changer avant de rendre
     volumes:
       - db:/home/prisma
       - ./back/server/src:/home/src #remove when in production
-      - ./back/server/pong/js:/home/pong/js #remove when in production
-      - ./front/src/img:/home/front/src/img #used for profile pic upload by user
+      - profilepics:/home/front/src/img/userPfp #used for profile pic upload by user
     networks:
       - transcendence
     restart: on-failure
-    ports:
-      - "3000:3000" #ne pas oublier d'enlever au moment de rendre le projet
+    # ports:
+    #   - "3000:3000" #ne pas oublier d'enlever au moment de rendre le projet
     expose: 
+      - "3000"
       - "3002"
     command: npm run dev #remove when in production
 
@@ -61,17 +65,6 @@ volumes:
       type: 'none'
       o: 'bind'
       device: 'back/volume'
-
   front:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: 'front'
-  
-  nginx:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: 'front'
+  profilepics:
+

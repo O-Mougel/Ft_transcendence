@@ -1,12 +1,25 @@
 {
-  "name": "fastify_api",
+  "name": "transcendence",
   "version": "1.0.0",
   "type": "module",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node src/app.js",
-    "dev": "nodemon src/app.js"
+    "watch:pong": "nodemon pong/server.js",
+    "watch:back": "nodemon src/server.js",
+    "build:pong": "node pong/server.js",
+    "build:back": "node src/server.js",
+
+    "dev": "concurrently \"npm:watch:pong\" \"npm:watch:back\"",
+    "start": "concurrently \"npm:build:pong\" \"npm:build:back\""
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/O-Mougel/Ft_transcendence.git"
+  },
+  "bugs": {
+    "url": "https://github.com/O-Mougel/Ft_transcendence/issues"
+  },
+  "homepage": "https://github.com/O-Mougel/Ft_transcendence#readme",
   "dependencies": {
     "@fastify/cookie": "9.3.1",
     "@fastify/jwt": "8.0.0",
@@ -18,9 +31,13 @@
 	"file-type": "21.3.0",
     "prisma": "5.13.0",
 	"qrcode": "1.5.4",
+    "socket.io": "4.8.1",
     "speakeasy": "2.0.0",
     "zod": "3.23.8",
-    "zod-to-json-schema": "3.23.0"
+    "zod-to-json-schema": "3.23.0",
+    "cors": "2.8.5",
+    "@fastify/static": "8.3.0",
+    "concurrently": "7.6.0"
   },
   "devDependencies": {
     "nodemon": "3.1.11"

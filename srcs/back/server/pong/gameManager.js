@@ -1,7 +1,7 @@
 import { createGame } from "./game.js";
 import { AI_REACTION_TIME, TICK_RATE } from "./config.js";
-import { createMatch } from "../../src/modules/match/match.service.js"
-import { findUserByName } from "../../src/modules/user/user.service.js"
+import { createMatch } from "../src/modules/match/match.service.js"
+import { findUserByName } from "../src/modules/user/user.service.js"
 import { verifyPlayerToken } from "./server.js";
 
 
