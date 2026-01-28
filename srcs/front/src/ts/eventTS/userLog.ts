@@ -593,7 +593,7 @@ window.grabProfileInfo = async function (): Promise<void> {
 		}
 		const result = await dataRequestResponse.json();	
 		if (result)
-		{	
+		{
 			profileUsername.textContent = result.name;
 			profileUsername.style.color = 'white';
 			profilePicture.style.opacity = "1";
