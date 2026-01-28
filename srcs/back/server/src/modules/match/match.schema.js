@@ -6,8 +6,7 @@ import { buildJsonSchemas } from 'fastify-zod';
 const statsMatchItemSchema = z.object({
 	diffScore: z.number(),
 	longestStreak: z.number(),
-	duration: z.number(),
-	createdAt: z.date()
+	duration: z.number()
 });
 
 const getMatchResponseSchema = z.object({
