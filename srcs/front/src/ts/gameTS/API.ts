@@ -7,6 +7,7 @@ export function handleGameStopped(): void {
 	CONTEXT.isGameStarted = false;
 	CONTEXT.gameId = null;
 	document.body.style.overflow = "auto";
+	CONTEXT.canvas!.style.cursor = "default";
 	resetState();
 	draw();
 }
@@ -15,6 +16,7 @@ export function handleGameOver(data: GameOverData): void {
 	CONTEXT.isGameStarted = false;
 	CONTEXT.gameId = null;
 	document.body.style.overflow = "auto";
+	CONTEXT.canvas!.style.cursor = "default";
 	resetState();
 	printGameOver(data);
 	if (CONTEXT.tournamentId && CONTEXT.backButton && window.location.href.includes("/pongTournament")) {

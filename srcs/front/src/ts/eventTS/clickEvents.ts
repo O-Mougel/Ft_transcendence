@@ -83,7 +83,7 @@ window.onFileSelected = function (inputFileSelector: HTMLInputElement): void {
 	}
 };
 
-function isPageReload(): boolean {
+export function isPageReload(): boolean {
 	try {
 		const entries = performance.getEntriesByType && performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
 		if (entries && entries.length && entries[0].type === 'reload') {
