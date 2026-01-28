@@ -1,4 +1,4 @@
-import { displayUserFriends, checkForFriendRequests } from "./userLog.js";
+import { displayUserFriends, checkForFriendRequests, backToDefaultPage } from "./userLog.js";
 
 let UserSocket: WebSocket | null = null;
 
@@ -44,8 +44,8 @@ export const closeSocketCommunication = async (): Promise<void> => {
 
 export const setupSocketCommunication = async (): Promise<boolean> => {
 
-	console.info("Socket creation function created.");
-	console.trace("Tracing call time.");
+	console.info("Socket creation function called.");
+	// console.trace("Tracing call time.");
 	const userToken = window.sessionStorage.getItem('access_token'); //JSON.stringify
 	if (!userToken) // no token
 		return false;
@@ -60,6 +60,15 @@ export const setupSocketCommunication = async (): Promise<boolean> => {
 	const WebSocketUrlWithToken = `${Usedprotocol}//${location.host}/ws/presence?token=${encodeURIComponent(userToken)}`;
 	UserSocket = new WebSocket(WebSocketUrlWithToken);
 
+	UserSocket.addEventListener("error", (event) =>  //socket closes on error event , no need to close it 
+	{
+		console.error(`Error while using websocket : ${event.type} , closing it..`);
+		window.sessionStorage.setItem('socket_failed', 'true');
+		window.sessionStorage.setItem('logStatus', 'loggedOut');
+		window.sessionStorage.setItem('access_token', 'userSelfLogoutToken');
+		backToDefaultPage();
+	});
+
 	UserSocket.addEventListener('message', (event) => {
 		console.log(`Received message: ${event.data}`);
 		const index = event.data.toString().indexOf("\"type\"");
@@ -71,6 +80,11 @@ export const setupSocketCommunication = async (): Promise<boolean> => {
 		}
 	});
 
+	if(sessionStorage.getItem('socket_failed') && sessionStorage.getItem('socket_failed') == 'true')
+	{
+		sessionStorage.removeItemItem('socket_failed');
+		return false;
+	}
 	return true;
 };
 

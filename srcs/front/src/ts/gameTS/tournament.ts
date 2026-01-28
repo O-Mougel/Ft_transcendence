@@ -124,11 +124,21 @@ function renderTournament(tournament: Tournament): void {
 			const line = document.createElement("div");
 			line.className = "p-2 border border-white/10 rounded mb-2";
 
-			const p1 = match.player1 ?? "TBD";
-			const p2 = match.player2 ?? "TBD";
+			const p1 = match.player1 ?? "?";
+			const p2 = match.player2 ?? "?";
+
+			// const winnerSpan = document.createElement("span");
+			// winnerSpan.className = "text-green-500";
+			// if (match.winner)
+			// 	winnerSpan.textContent = match.winner;
+			// else
+			// 	winnerSpan.textContent= "";
 			const w = match.winner ? ` — Winner: ${match.winner}` : "";
 
-			line.textContent = `#${m + 1}: ${p1} vs ${p2} (${match.status})${w}`;
+			if (p1 == "?")
+				line.textContent = `⏳ ${match.status}${w}`;
+			else
+				line.textContent = `#${m + 1}: ${p1} vs ${p2} (${match.status})${w}`;
 			roundBox.appendChild(line);
 		});
 

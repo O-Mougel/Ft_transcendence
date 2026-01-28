@@ -348,7 +348,7 @@ export async function isUserAllowedHere(): Promise<number> {
 	return(0);
 }
 
-export async function attemptSocketConnection(): Promise<boolean> {
+export async function attemptSocketConnection(): Promise<void> {
 	try {
 		const logUserCheckResponse = await fetch('/login/loggedUserCheck', {
 				credentials: 'include',
@@ -364,15 +364,15 @@ export async function attemptSocketConnection(): Promise<boolean> {
 		{
 			if (!setupSocketCommunication())
 				throw new Error(`Request failed: 401 ${JSON.stringify({ message: "Socket creation failed", errRef: "socketCreationFailed" })}`);
+			else
+				console.info("Connected to new Websocket.")
 		}
 	} 
 	catch (err)
 	{
-		console.error("\n❌Could not connect to socket on reload!\n");
-		console.error(err);
-		return (false);
+		console.error("\n❌Could not connect to socket on reload! Retrying\n");
+		throw err;
 	}
-	return(true);
 }
 
 window.acceptFriend = async (friendId: number): Promise<void> => {
@@ -1168,13 +1168,17 @@ window.handlePongModeDisplay = async function (mode: number): Promise<void> {
 	}
 
 	if (mode === 0) {
-		RightPlayer.textContent = "COMPUTER";
+		RightPlayer.textContent = "[AI]";
 	}
 	else if (mode === 1) {
-		RightPlayer.textContent = "PLAYER 2";
+		RightPlayer.textContent = "Player2";
 	}
 	else if (mode === 2) {
-		RightPlayer.textContent = "PLAYER 2";
+		if (LeftPlayer.textContent)
+		{
+			LeftPlayer.textContent = "TEAM " + LeftPlayer.textContent;
+		}
+		RightPlayer.textContent = "TEAM RED";
 		instruction1v1.style.display = "none";
 		instruction2v2.style.display = "flex";
 	}

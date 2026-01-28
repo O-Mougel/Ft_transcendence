@@ -513,12 +513,20 @@ const attemptAutolog = async (): Promise<void> => {
 	{
 		if (sessionStorage.getItem('logStatus') == "loggedOut")
 			return (await router());
-		if (await attemptSocketConnection() == false)
+		try {
+			await attemptSocketConnection()
+		} 
+		catch (err) 
 		{
-			alertBoxMsg("❌ Connection to socket could not be established !");
-			backToDefaultPage();
-			//refresh token and retry
-			return ;
+			if (await fetchErrcodeHandler(err as Error) === 0)
+			{
+				await attemptAutolog();
+			}
+			else
+			{
+				alertBoxMsg("❌ Connection to socket could not be established !");
+				return backToDefaultPage();
+			}
 		}
 	}
 	await router();
