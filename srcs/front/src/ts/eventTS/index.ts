@@ -517,6 +517,7 @@ const attemptAutolog = async (): Promise<void> => {
 		{
 			alertBoxMsg("❌ Connection to socket could not be established !");
 			backToDefaultPage();
+			//refresh token and retry
 			return ;
 		}
 	}
