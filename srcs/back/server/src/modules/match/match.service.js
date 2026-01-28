@@ -42,60 +42,25 @@ export async function showstats(id) {
 			],
 		},
 		select: {
-			id: true,
-			player1: {
-				select: {
-					name: true,
-				},
-			},
-			player2: {
-				select: {
-					id: true,
-					name: true,
-				},
-			},
+			player1Id: true,
+			player2Id: true,
 			player1Score: true,
 			player2Score: true,
-			winnerId: true,
-			type: true,
-			player2name: true,
-			round: true,
+			longestStreak: true,
 			duration: true,
-			createdAt: true,
 		},
 		orderBy: {
 			createdAt: 'desc',
 		},
-		take: 10
+		take: 10,
 	})
 
-	// const result = await db.match.aggregate({
-	// 	where: {
-	// 		OR: [
-	// 			{ player1Id: id },
-	// 			{ player2Id: id },
-	// 		],
-	// 	},
-	// 	_max: {
-	// 		longestStreak: true,
-	// 		duration: true,
-	// 	}
-	// });
-	//
-	// let biggest_streak;
-	// let longestMatch;
-	// if (result)
-	// {
-	// 	const biggest_streak = result._max.longestStreak ?? 0;
-	// 	const longestMatch = result._max.duration ?? 0;
-	// }
-	// else
-	// {
-	// 	biggest_streak = 0;
-	// 	longestMatch = 0;
-	// }
-	return { matchsnb, winmatchnb, winrate, last10matchs } 
+	const last10matchs = lastmatchs.map(match => ({
+		...match,
+		diffScore: match.player1Id == request.user.id ? match.player1Score - match.player2Score : match.player2Score - match.player1Score,
+	}));
 
+	return { matchsnb, winmatchnb, winrate, last10matchs } 
 }
 
 export async function getMatchs(id) {
