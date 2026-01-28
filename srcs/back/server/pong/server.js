@@ -18,11 +18,11 @@ const io = new Server(fastify.server, {
   cors: { origin: "*", methods: ["GET", "POST"] },
   transports: ["websocket"],
   secure: true,
-  pingTimeout: 10000,
-  pingInterval: 20000,
-  connectionTimeout: 45000,
-  maxHttpBufferSize: 1e6,
-  serveClient: false,
+  // pingTimeout: 10000,
+  // pingInterval: 20000,
+  // connectionTimeout: 45000,
+  // maxHttpBufferSize: 1e6,
+  // serveClient: false,
 });
 
 const messageRateLimits = new Map();
