@@ -17,7 +17,15 @@ const io = new Server(fastify.server, {
   path: "/pong/socket.io",
   cors: { origin: "*", methods: ["GET", "POST"] },
   transports: ["websocket"],
+  secure: true,
+  pingTimeout: 10000,
+  pingInterval: 20000,
+  connectionTimeout: 45000,
+  maxHttpBufferSize: 1e6,
+  serveClient: false,
 });
+
+const messageRateLimits = new Map();
 
 io.use((socket, next) => {
   try {
@@ -29,6 +37,9 @@ io.use((socket, next) => {
 
     const payload = fastify.jwt.verify(token);
     socket.data.user = payload;
+
+    messageRateLimits.set(socket.id, { messageCount: 0, resetTime: Date.now() + 60000 });
+
     return next();
   } catch (e) {
     console.error("Socket auth error:", e);
@@ -52,8 +63,7 @@ manager.setOnGameOver(({ gameId, state }) => {
   else io.emit("match:ended", res);
 });
 
-registerSocketHandlers(io, manager, tournamentManager);
-
+registerSocketHandlers(io, manager, tournamentManager, messageRateLimits);
 
 // REST API (CLI)
 
