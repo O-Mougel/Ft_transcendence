@@ -43,6 +43,8 @@ export const closeSocketCommunication = async (): Promise<void> => {
 
 export const setupSocketCommunication = async (): Promise<boolean> => {
 
+	console.info("Socket creation function created.");
+	console.trace("Tracing call time.");
 	const userToken = window.sessionStorage.getItem('access_token'); //JSON.stringify
 	if (!userToken) // no token
 		return false;

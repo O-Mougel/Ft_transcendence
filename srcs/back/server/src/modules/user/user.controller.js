@@ -706,6 +706,7 @@ export async function webSocketHandler(connection, request) {
 	const token = parsedUrl.searchParams.get('token');
 
 	if (!token) {
+		console.log("Token is missing, leaving function..")
 		socket.close(1008, 'Missing token');
 		return;
 	}
@@ -714,12 +715,15 @@ export async function webSocketHandler(connection, request) {
 
 	try {
 		const decoded = request.server.jwt.verify(token);
-		if (decoded.type != "access"){
-		socket.close(1008, 'Invalid token');
-		return;
+		if (decoded.type != "access")
+		{
+			console.log("Wrong token type, leaving function..");
+			socket.close(1008, 'Invalid token');
+			return;
 		}
 		user = decoded;
 	} catch {
+		console.log("Could not verify token..");
 		socket.close(1008, 'Invalid token');
 		return;
 	}
@@ -734,6 +738,8 @@ export async function webSocketHandler(connection, request) {
 
 	// sockets
 	if (!userSockets.has(userId)){
+
+		console.log(user.name, " not part of userSocket, adding it");
 		userSockets.set(userId, new Set());
 	}
 	userSockets.get(userId).add(socket);
@@ -743,6 +749,7 @@ export async function webSocketHandler(connection, request) {
 
 	// broadcastPresence
 	if (presenceCount.get(userId) == 1) {
+		console.log(user.name, " connected for the first time, notifying friends");
 		await notifyFriends(userId, true);
 	}
 
@@ -751,9 +758,11 @@ export async function webSocketHandler(connection, request) {
 		console.info("Closed socket for user ", user.name);
 		const count = presenceCount.get(userId) - 1;
 		if (count == 0) {
+			console.log("No session open for", user.name, ", notifying friends");
 			presenceCount.delete(userId);
 			await notifyFriends(userId, false);
 		} else {
+			console.log("user ", user.name, "still has ", count, "session left open");
 			presenceCount.set(userId, count);
 		}
 	});

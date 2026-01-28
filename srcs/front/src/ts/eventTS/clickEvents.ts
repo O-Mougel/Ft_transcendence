@@ -56,19 +56,19 @@ window.addEventListener("pagehide", (): void => {
 		closeSocketCommunication();
 		return;
 	}
-	window.sessionStorage.setItem('pagehide', 'logout_fetch_sent');
-	try {
-		fetch('/logout', {
-			method: 'POST',
-			credentials: 'include',
-			headers: { Authorization: `Bearer ${sessionStorage.getItem("access_token")}` },
-			keepalive: true,
-		});
-		window.sessionStorage.setItem('logStatus', 'loggedOut');
-		window.sessionStorage.setItem('access_token', 'userSelfLogoutToken');
-	} catch (err) {
-		// ignore for now
-	}
+	// window.sessionStorage.setItem('pagehide', 'logout_fetch_sent');
+	// try {
+	// 	fetch('/logout', {
+	// 		method: 'POST',
+	// 		credentials: 'include',
+	// 		headers: { Authorization: `Bearer ${sessionStorage.getItem("access_token")}` },
+	// 		keepalive: true,
+	// 	});
+	// 	window.sessionStorage.setItem('logStatus', 'loggedOut');
+	// 	window.sessionStorage.setItem('access_token', 'userSelfLogoutToken');
+	// } catch (err) {
+	// 	// ignore for now
+	// }
 });
 
 window.onFileSelected = function (inputFileSelector: HTMLInputElement): void {
