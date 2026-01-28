@@ -81,10 +81,30 @@ export function resetState(): void {
 export function printGameOver(data: GameOverData): void {
 	console.log("printGameOver called with data:", data);
 	const { left, right } = data;
+	let { winner } = data;
 	const gameOverDiv = document.getElementById("GameOver");
 	const gameOverScore = document.getElementById("GameOverScore");
-	if (gameOverDiv && gameOverScore) {
+	const winnerSpan = document.getElementById("winnerGameSpan");
+	const LeftPlayer = document.getElementById("LeftPlayer");
+	const RightPlayer = document.getElementById("RightPlayer");
+	if (!winner && RightPlayer && LeftPlayer)
+	{
+		if (left > right)
+			winner = LeftPlayer.textContent;
+		else if (right > left)
+		{
+			if (RightPlayer.textContent == "[AI]")
+				winner = "IA 🤖";
+			else
+				winner = RightPlayer.textContent;
+		}
+		else
+			winner = "Draw ! (How ?!)";
+	}
+	if (gameOverDiv && gameOverScore && winnerSpan) {
 		gameOverScore.textContent = `${left} - ${right}`;
 		gameOverDiv.style.display = "block";
+		winnerSpan.textContent = `WINNER : ${winner}`
+		// winnerSpan.textContent = `GAME OVER`
 	}
 }
