@@ -31,8 +31,8 @@ export interface GameStartPayload {
 }
 
 export interface GameMovePayload {
-  Paddle: 'left' | 'right' | 'left2' | 'right2';
-  Direction: PaddleDirection;
+  paddle: 'left' | 'right' | 'left2' | 'right2';
+  direction: PaddleDirection;
 }
 
 export interface GameJoinPayload {

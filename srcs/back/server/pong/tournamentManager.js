@@ -1,3 +1,5 @@
+import { time } from "console";
+import { TOURNAMENT_TIMEOUT } from "./config.js";
 
 function generateTournamentId() {
   return `t_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
@@ -94,6 +96,10 @@ export class TournamentManager {
     const mainPlayerName = cleanedArray[0];
     const players = randomizeNames(cleanedArray);
 
+    setTimeout(() => {
+      this.deleteTournament(tournamentId);
+    }, TOURNAMENT_TIMEOUT);
+
     const tournament = {
       id: tournamentId,
       size,
@@ -106,6 +112,7 @@ export class TournamentManager {
     };
 
     this.tournaments.set(tournamentId, tournament);
+
     return tournamentId;
   }
 
@@ -149,10 +156,6 @@ export class TournamentManager {
 
   }
   
-  // matchAborted(match, state) {
-  //   match.status = "aborted";
-  //   match.winner = chooseWinner(match, state.score);
-  // }
   onGameStopped(gameId) {
     const mapping = this.gameToMatch.get(gameId);
     if (!mapping) return;

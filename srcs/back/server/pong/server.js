@@ -18,11 +18,6 @@ const io = new Server(fastify.server, {
   cors: { origin: "*", methods: ["GET", "POST"] },
   transports: ["websocket"],
   secure: true,
-  // pingTimeout: 10000,
-  // pingInterval: 20000,
-  // connectionTimeout: 45000,
-  // maxHttpBufferSize: 1e6,
-  // serveClient: false,
 });
 
 const messageRateLimits = new Map();
@@ -57,7 +52,9 @@ manager.setOnGameOver(({ gameId, state }) => {
   if (!res) return;
 
   const t = tournamentManager.getTournament(res.tournamentId);
-  io.emit("tournament:state", { tournamentId: res.tournamentId, tournament: t });
+  if (t) {
+    io.emit("tournament:state", { tournamentId: res.tournamentId, tournament: t });
+  }
 
   if (res.type === "tournamentEnded") io.emit("tournament:ended", res);
   else io.emit("match:ended", res);
