@@ -1,6 +1,5 @@
-import { startSchema, movementSchema, tournamentCreateSchema, tournamentGetStateSchema, tournamentNextMatchSchema, tournamentLeaveSchema } from "./js/schema.js";
-
-const DISCONNECT_GRACE_PERIOD = 10000; // 100 seconds for reconnect delay (adjust as needed)
+import { startSchema, movementSchema, tournamentCreateSchema, tournamentGetStateSchema, tournamentNextMatchSchema, tournamentLeaveSchema, sessionRetrieveSchema } from "./js/schema.js";
+import { DISCONNECT_GRACE_PERIOD } from "./config.js";
 
 function generateGameId() {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
@@ -48,11 +47,6 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
           manager.leaveGame(gameId, socket);
           socket.data.gameId = null;
         }
-        const tournamentId = socket.data.tournamentId;
-        if (tournamentId) {
-          tournamentManager.deleteTournament(tournamentId, socket);
-          socket.data.tournamentId = null;
-        }
         messageRateLimits.delete(socket.id);
         console.log(`User disconnected and cleanup completed: ${socket.id}`);
       }, DISCONNECT_GRACE_PERIOD);
@@ -78,36 +72,44 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
 
     // Handle simple match start
     socket.on("game:start", (data = {}) => {
-      const gameId = generateGameId();
-
-      socket.data.gameId = gameId;
-      manager.joinGame(gameId, socket);
-
-      const info = manager.startGame(gameId, data);
-
-      // Return the gameId to the client
-      socket.emit("game:started", { gameId, ...info });
+      try {
+        const parsed = startSchema.parse(data);
+        const gameId = generateGameId();
+  
+        socket.data.gameId = gameId;
+        manager.joinGame(gameId, socket);
+  
+        const info = manager.startGame(gameId, parsed);
+  
+        // Return the gameId to the client
+        socket.emit("game:started", { gameId, ...info });
+      }
+      catch (e) {
+        console.error("game:start error:", e);
+        socket.emit("game:error", { message: e.message || "Invalid start data" });
+      }
     });
 
     socket.on("game:join", (data = {}) => {
-    const gameId = data.gameId;
-    if (!gameId) {
-      socket.emit("error", { message: "Missing gameId" });
-      return;
-    }
-  
-    const entry = manager.games.get(gameId);
-    if (!entry) {
-      socket.emit("error", { message: "Game not found" });
-      return;
-    }
-  
-    socket.data.gameId = gameId;
-    manager.joinGame(gameId, socket);
-  
-    socket.emit("game:joined", { gameId });
-    socket.emit("game:state", entry.game.getCurrentGameState());
-  });
+      console.log("game:join called with data:", data);
+        const gameId = data.gameId;
+        if (!gameId) {
+          socket.emit("game:error", { message: "Missing gameId" });
+          return;
+        }
+      
+        const entry = manager.games.get(gameId);
+        if (!entry) {
+          socket.emit("game:error", { message: "Game not found" });
+          return;
+        }
+      
+        socket.data.gameId = gameId;
+        manager.joinGame(gameId, socket);
+      
+        socket.emit("game:joined", { gameId });
+        socket.emit("game:state", entry.game.getCurrentGameState());
+    });
 
     socket.on("game:stop", () => {
       const gameId = socket.data.gameId;
@@ -121,17 +123,25 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
 
     // Client sends: { Paddle: "...", Direction: "..." }
     socket.on("game:move", (data) => {
-      const gameId = socket.data.gameId;
-      if (!gameId || !data) return;
-
-      manager.updatePaddle(gameId, data.Paddle, data.Direction);
+      try {
+        const result = movementSchema.parse(data);
+        const gameId = socket.data.gameId;
+        if (!gameId || !result) return;
+  
+        manager.updatePaddle(gameId, result.paddle, result.direction);
+      }
+      catch (e) {
+        console.error("game:move error:", e);
+      }
     });
 
     // Handle tournament creation
     socket.on("tournament:create", (data = {}) => {
       try {
-        const size = Number(data.size);
-        const names = data.names;
+        const result = tournamentCreateSchema.parse(data);
+
+        const size = Number(result.size);
+        const names = result.names;
 
         const tournamentId = tournamentManager.createTournament(size, names);
         if (!tournamentId) {
@@ -151,6 +161,7 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         socket.data.tournamentId = tournamentId;
 
         const tournament = tournamentManager.getTournament(tournamentId);
+        if (!tournament) throw new Error("Tournament not found after creation");
         socket.emit("tournament:state", { tournamentId, tournament });
       } catch (e) {
         socket.emit("tournament:error", { message: e.message || "create failed" });
@@ -158,21 +169,27 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
     });
 
     socket.on("tournament:getState", (data = {}) => {
-      console.log("tournament:getState called with data:", data);
-      const tournamentId = data.tournamentId || socket.data.tournamentId;
-      const tournament = tournamentManager.getTournament(tournamentId);
-      console.log("Fetched tournament for tournamentId:", tournamentId, tournament);
-      if (!tournament) {
-        socket.emit("tournament:error", { message: "Tournament not found" });
-        return;
+      try {
+        const result = tournamentGetStateSchema.parse(data);
+        const tournamentId = result.tournamentId || socket.data.tournamentId;
+        const tournament = tournamentManager.getTournament(tournamentId);
+        if (!tournament) {
+          socket.emit("tournament:error", { message: "Tournament not found" });
+          return;
+        }
+        // tournamentManager.resetTimer(tournamentId);
+        socket.emit("tournament:state", { tournamentId, tournament });
       }
-      console.log("Sending tournament state for tournamentId:", tournamentId, tournament);
-      socket.emit("tournament:state", { tournamentId, tournament });
+      catch (e) {
+        socket.emit("tournament:error", { message: e.message || "getState failed" });
+      }
     });
 
     socket.on("tournament:nextMatch", (data = {}) => {
       try {
-        const tournamentId = data.tournamentId || socket.data.tournamentId;
+        const result = tournamentNextMatchSchema.parse(data);
+
+        const tournamentId = result.tournamentId || socket.data.tournamentId;
       
         if (socket.data.gameId) manager.leaveGame(socket.data.gameId, socket);
       
@@ -183,7 +200,7 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
 
         // set persistMatch to false for tournament games if is not main player
         const tournament = tournamentManager.getTournament(tournamentId);
-
+        if (!tournament) throw new Error("Tournament not found");
         info.startData.mainPlayer = tournament.mainPlayer;
 
         if (tournament.mainPlayer !== info.player1 && tournament.mainPlayer !== info.player2) {
@@ -201,13 +218,19 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
     });
 
     socket.on("tournament:leave", (data = {}) => {
-      const tournamentId = data.tournamentId || socket.data.tournamentId;
-      if (tournamentId) {
+      try {
+        console.log("tournament:leave called with data:", data);
+        const result = tournamentLeaveSchema.parse(data);
+
+        const tournamentId = result.tournamentId || socket.data.tournamentId;
         tournamentManager.deleteTournament(tournamentId, socket);
         socket.data.tournamentId = null;
         console.log("Tournament deleted: ", tournamentId);
       }
-    });
+      catch (e) {
+        socket.emit("tournament:error", { message: e.message || "leave failed" });
+      }
+    });    
   });
 }
 
