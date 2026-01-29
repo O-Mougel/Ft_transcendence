@@ -6,8 +6,6 @@ RUN apk add --no-cache bash sqlite openssl
 
 ENV DATABASE_URL="file:./dev.db"
 
-RUN export JWT_SECRET=$(openssl rand -hex 32)
-
 COPY package.json ./
 
 RUN npm install

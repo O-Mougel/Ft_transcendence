@@ -37,9 +37,9 @@ services:
     build: 
       context: ./back/server/.
       dockerfile: ../../docker/back/Dockerfile
-    container_name: back 
     environment:
-      - JWT_SECRET=supersecret_here #changer avant de rendre
+      JWT_SECRET: ${JWT_SECRET:-$(openssl rand -hex 32)}
+    container_name: back 
     volumes:
       - db:/home/prisma
       - ./back/server/src:/home/src #remove when in production
