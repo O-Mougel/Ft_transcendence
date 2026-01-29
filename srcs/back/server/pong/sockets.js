@@ -1,4 +1,4 @@
-import { startSchema, movementSchema, tournamentCreateSchema, tournamentGetStateSchema, tournamentNextMatchSchema, tournamentLeaveSchema, sessionRetrieveSchema } from "./js/schema.js";
+import { startSchema, movementSchema, tournamentCreateSchema, tournamentGetStateSchema, tournamentNextMatchSchema, tournamentLeaveSchema, sessionRetrieveSchema } from "./schema.js";
 import { DISCONNECT_GRACE_PERIOD } from "./config.js";
 
 function generateGameId() {
