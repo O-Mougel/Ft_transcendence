@@ -90,8 +90,8 @@ export default class PongView extends ViewTemplate {
 								<span>move down</span>
 							</div>
 							<div class="flex flex-col items-center justify-start w-[25%] text-red-300">
-								<span>🢁</span>
-								<span>🢃</span>
+								<span id="hideUpVsAi">🢁</span>
+								<span id="hideDownVsAi">🢃</span>
 							</div>
 						</div>
 					</div>
