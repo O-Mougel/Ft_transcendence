@@ -5,6 +5,7 @@ import { updateGameScene } from "./pong.js";
 import { fetchErrcodeHandler } from "../eventTS/userLog.js";
 import type { GameStateData, GameStartedData, Socket as SocketType } from '../types/socket.types';
 import type { GameOverData } from '../types/game.types';
+// import Paddle from "./paddle.js";
 
 let socket: SocketType | null = null;
 
@@ -23,13 +24,19 @@ export function setupSocket(): SocketType | null {
 		transports: ["websocket"],
 		secure: true,
 		auth: { token },
-		// reconnection: true,
-		// reconnectionAttempts: 5,
-  		// reconnectionDelay: 1000,
-		// timeout: 10000,
 	}) as SocketType;
 
-	socket.on("connect", () => { console.log("Connected to WebSocket server"); });
+	socket.on("connect", () => {
+		console.log("Connected to WebSocket server");
+		// retrieve tournamentId if possible
+		const tournamentId = sessionStorage.getItem("currentTournamentId");
+		if (tournamentId)
+			CONTEXT.tournamentId = tournamentId;
+	});
+
+	socket.on("disconnect", (reason: unknown) => {
+		console.log("WebSocket disconnected:", reason);
+	});
 
 	socket.on("connect_error",	(err: unknown) => {
 	console.error("WebSocket connection error:", err);
@@ -59,6 +66,11 @@ export function setupSocket(): SocketType | null {
 			(handleGameOver as (d: GameOverData) => void)(data);
 			});
 	}
+
+	socket.off("game:error");
+	socket.on("game:error", (err: unknown) => {
+		console.error("WebSocket error:", err);
+	});
 
 	return socket;
 }
@@ -168,14 +180,20 @@ export function emitNextMatch(tournamentId: string | null): void {
 export function updateGameState(): void {
 	const { isGameStarted, leftPaddle, rightPaddle, leftPaddle2, rightPaddle2 } = CONTEXT;
 	if (!isGameStarted || !socket) return;
+	// print value and their types
 
-	if (leftPaddle) socket.emit("game:move", { Paddle: "left", Direction: leftPaddle.direction });
-	if (rightPaddle) socket.emit("game:move", { Paddle: "right",	Direction: rightPaddle.direction });
+	const directionLeft = leftPaddle?.direction || "none";
+	const directionRight = rightPaddle?.direction || "none";
+	const directionLeft2 = leftPaddle2?.direction || "none";
+	const directionRight2 = rightPaddle2?.direction || "none";
+
+	if (leftPaddle && leftPaddle.direction) socket.emit("game:move", { paddle: "left", direction: directionLeft });
+	if (rightPaddle&& rightPaddle.direction) socket.emit("game:move", { paddle: "right", direction: directionRight });
 
 	if (CONTEXT.gameMode !== 2) return;
 
-	if (leftPaddle2) socket.emit("game:move", { Paddle: "left2", Direction: leftPaddle2.direction });
-	if (rightPaddle2) socket.emit("game:move", { Paddle: "right2", Direction: rightPaddle2.direction });
+	if (leftPaddle2 && leftPaddle2.direction) socket.emit("game:move", { paddle: "left2", direction: directionLeft2 });
+	if (rightPaddle2 && rightPaddle2.direction) socket.emit("game:move", { paddle: "right2", direction: directionRight2 });
 }
 
 export function handleEscapeKey(): void {

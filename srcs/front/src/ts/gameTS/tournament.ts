@@ -29,11 +29,11 @@ export function initTournament(): void {
 	if (!tournamentId) {
 		const statusEl = document.getElementById("tournamentStatus");
 		if (statusEl) statusEl.textContent = "Missing tournament id.";
-		CONTEXT.tournamentId = null;
 		window.history.pushState({}, "", "/tournamentSize");
 		window.dispatchEvent(new PopStateEvent("popstate"));
 		return;
 	}
+
 
 	const nextMatchBtn = document.getElementById("nextMatchBtn") as HTMLButtonElement | null;
 	const quitBtn = document.getElementById("quitButton") as HTMLButtonElement | null;
@@ -99,6 +99,15 @@ export function initTournament(): void {
 			console.log("Tournament ended, winner:", endData.winner);
 		});
 
+		socket.off("tournament:error");
+		socket.on("tournament:error", (data: unknown): void => {
+			const errorData = data as { message: string };
+			console.error("Tournament error:", errorData.message);
+			const statusEl = document.getElementById("tournamentStatus");
+			if (statusEl) statusEl.textContent = `Error: ${errorData.message}`;
+		});
+
+		// Initial state request
 		socket.emit("tournament:getState", { tournamentId });
 	}
 }
