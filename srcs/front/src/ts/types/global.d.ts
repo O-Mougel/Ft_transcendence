@@ -9,7 +9,7 @@ declare global {
     grabLoggedUserStats: () => Promise<void>;
     fetchPlayerStats: (playerId: string, playerUsername: string) => Promise<void>;
     grabProfileInfo: () => Promise<void>;
-    sendNewFriendRequest: () => Promise<void>;
+    sendNewFriendRequest: (event: Event) => Promise<void>;
     acceptFriend: (friendId: number) => Promise<void>;
     rejectFriend: (friendId: number) => Promise<void>;
 
