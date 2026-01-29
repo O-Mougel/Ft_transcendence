@@ -33,8 +33,6 @@ export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 		return;
 	}
 	CONTEXT.gameMode = mode.mode as GameMode;
-	console.log("Setting up Pong..., mode:", mode.mode);
-
 	if (mode.gameId) {
 		CONTEXT.gameId = mode.gameId;
 	}
@@ -91,12 +89,14 @@ export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 	resizeCanvasToElement();
 	window.addEventListener("resize", resizeCanvasToElement);
 
-	console.log("Tournament ID:", CONTEXT.tournamentId);
-
+	
 	createGameElements();
 	setupSocket();
 	bindControls();
 
+	if (!CONTEXT.tournamentId)
+		CONTEXT.tournamentId = sessionStorage.getItem("currentTournamentId");
+	
 	if (CONTEXT.tournamentId && window.location.href.includes("/pongTournament")) {
 		if (CONTEXT.startButton) CONTEXT.startButton.style.display = "none";
 		joinExistingGame(CONTEXT.gameId);
