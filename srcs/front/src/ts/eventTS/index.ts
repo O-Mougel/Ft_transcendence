@@ -22,7 +22,7 @@ import { CONTEXT } from "../gameTS/context.js";
 
 import { displayCorrectErrMsg, isUserAllowedHere, fetchErrcodeHandler, alertBoxMsg, backToDefaultPage, attemptSocketConnection } from "./userLog.js";
 import type { Friend, FriendsListResponse, MatchStats, UserProfile, FriendDeleteData, FriendRemoveResponse, RefreshTokenResponse } from "../types/api.types";
-import { scales, Title } from "chart.js";
+// import { scales, Title } from "chart.js";
 
 interface ViewClass {
 	new(): ViewInstance;
@@ -265,8 +265,8 @@ window.fetchPlayerStats = async (playerId: string, playerUsername: string): Prom
 			} else {
 				nbOfMatchCpt2.textContent = String(result.matchsnb);
 				winRatioPercent2.textContent = result.winrate + " %";
-				longestMatchCpt2.textContent = result.longestMatch + " sec";
-				biggestStreakCpt2.textContent = String(result.biggest_streak);
+				// longestMatchCpt2.textContent = result.longestMatch + " sec";
+				// biggestStreakCpt2.textContent = String(result.biggest_streak);
 			}
 			friendStatDisplayBox.style.display = "flex";
 			selectedPlayerUsernameHeader.style.display = "block";
