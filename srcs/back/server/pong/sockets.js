@@ -4,6 +4,7 @@ function generateGameId() {
 
 export function registerSocketHandlers(io, manager, tournamentManager, messageRateLimits) {
   io.on("connection", (socket) => {
+    console.log("New socket connection established");
     console.log("User connected, socket id: ", socket.id);
 
     const limiter = messageRateLimits.get(socket.id); // Keeping this ??

@@ -11,6 +11,7 @@ services:
      - transcendence
     volumes:
      - front:/var/www/html
+     - images:/var/www/html/src/img/userPfp
     restart: on-failure
 
   front:
@@ -29,7 +30,6 @@ services:
      - transcendence
     volumes:
       - front:/usr/src/app
-      - profilepics:/usr/src/app/src/img/userPfp
       - ./front/src/ts:/usr/src/app/src/ts #remove when in production
     restart: on-failure
 
@@ -44,7 +44,7 @@ services:
       - db:/home/prisma
       - ./back/server/src:/home/src #remove when in production
       - ./back/server/pong:/home/pong #remove when in production
-      - profilepics:/home/front/src/img/userPfp #used for profile pic upload by user
+      - images:/home/front/src/img/userPfp #used for profile pic upload by user
     networks:
       - transcendence
     restart: on-failure
@@ -67,5 +67,10 @@ volumes:
       o: 'bind'
       device: 'back/volume'
   front:
-  profilepics:
+  images:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: 'front/src/img/userPfp'
 
