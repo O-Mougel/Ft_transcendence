@@ -682,6 +682,8 @@ export async function logoutUser(): Promise<void> {
 			alertBoxMsg("✅ You are now logged out");
 			window.sessionStorage.setItem('logStatus', 'loggedOut');
 			window.sessionStorage.setItem('access_token', 'userSelfLogoutToken');
+			window.localStorage.setItem('allowAutolog','false');
+			window.localStorage.setItem('delogAllOthers','true');
 			closeSocketCommunication(); // to check for error
 			backToDefaultPage();
 		}
@@ -808,6 +810,7 @@ window.handleLoginClick = async function (event: Event): Promise<void> {
 			else
 			{
 				window.sessionStorage.setItem('logStatus','loggedIn');
+				window.localStorage.setItem('allowAutolog','true');
 				window.sessionStorage.setItem('access_token',result.token);
 				
 				console.log('⏳ Logged in !');

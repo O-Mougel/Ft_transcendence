@@ -285,6 +285,9 @@ export async function alterUserHandler(request, reply) {
 			message: "Error ! Couln't modify user !", errRef:"alterInnerFail"
 		});
 	};
+
+	await notifyFriendsAlter(userId);
+
 	return reply.status(200).send(updatedUser);
 }
 
@@ -657,6 +660,24 @@ async function getFriends(userId) {
 	const ids = friends.friends.map(f => f.id);
 	friendsCache.set(userId, ids);
 	return ids;
+}
+
+async function notifyFriendsAlter(userId) {
+	const friends = await getFriends(userId);
+
+	const payload = JSON.stringify({
+		type: "user:alter",
+		userId,
+	});
+
+	for (const friendId of friends) {
+		const sockets = userSockets.get(friendId);
+		if (!sockets) continue;
+
+		for (const ws of sockets) {
+			ws.send(payload);
+		}
+	}
 }
 
 async function notifyFriends(userId, online) {

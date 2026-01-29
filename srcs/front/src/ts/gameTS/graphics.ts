@@ -88,11 +88,7 @@ export function printGameOver(data: GameOverData): void {
 	const LeftPlayer = document.getElementById("LeftPlayer");
 	const RightPlayer = document.getElementById("RightPlayer");
 	
-	let winnerName: string | null = null;
-	if(!winner)
-		winnerName = "";
-	else
-		winnerName = winner;
+	let winnerName: string | null = winner ? winner : "";
 
 	if (!winnerName && RightPlayer && LeftPlayer)
 	{
@@ -105,6 +101,15 @@ export function printGameOver(data: GameOverData): void {
 			else
 				winnerName = RightPlayer.textContent;
 		}
+		else
+			winnerName = "Draw ! (How ?!)";
+	}
+	else if (!RightPlayer || !LeftPlayer)
+	{
+		if (left > right)
+			winnerName = "Blue team";
+		else if (right > left)
+			winnerName = "Red team";
 		else
 			winnerName = "Draw ! (How ?!)";
 	}
