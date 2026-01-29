@@ -177,7 +177,7 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 						borderColor: 'none',
 						indexAxis: 'y',
 						scales: {
-							y: {
+							x: {
 								beginAtZero: true,
 								min: 0,
 								max: 100,
@@ -189,24 +189,24 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 				new Chart(multiChart, {
 					type: 'line',
 					data: {
-						labels: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+						labels: ['match 1', 'match 2', 'match 3', 'match 4', 'match 5', 'match 6', 'match 7', 'match 8', 'match 9', 'match 10'],
 						datasets: [{
-							label: "J",
-							data: [2, 3, 5, 6, 4, 7, 8, 9, 6, 5, 4, 3],
-							backgroundColor: ['#4ac03d9f', '#c03d3d9f'],
-							hoverBackgroundColor: ['#4ac03d9f', '#c03d3d9f']
+							label: "Win",
+							data: [2, 3, 5, 6, 4, 7, 8, 9, 6, 5],
+							backgroundColor: '#4ac03d9f',
+							borderColor: '#4ac03d9f',
 						},
 						{
-							label: "F",
-							data: [1, 4, 2, 5, 7, 3, 6, 4, 5, 7, 8, 6],
-							backgroundColor: ['#4ac03d9f', '#c03d3d9f'],
-							hoverBackgroundColor: ['#4ac03d9f', '#c03d3d9f']
+							label: "Score difference",
+							data: [1, 4, 2, 5, 7, 3, 6, 4, 5, 7],
+							backgroundColor: '#c03d3d9f',
+							borderColor: '#c03d3d9f'
 						},
 						{
-							label: "F",
-							data: [1, 1, 1, 1, 5, 8, 10, 6, 4, 3, 2, 1],
-							backgroundColor: ['#4ac03d9f', '#c03d3d9f'],
-							hoverBackgroundColor: ['#4ac03d9f', '#c03d3d9f']
+							label: "",
+							data: [1, 1, 1, 1, 5, 8, 10, 6, 4, 3],
+							backgroundColor: '#98c6f8',
+							borderColor: '#98c6f8'
 						}
 						]
 					},
