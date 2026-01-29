@@ -61,7 +61,7 @@ export async function startTournament(expectedCount: number, event: Event): Prom
 		const { tournamentId } = data as TournamentStateEvent;
 		console.log("Tournament created with ID:", tournamentId);
 		sessionStorage.setItem("currentTournamentId", tournamentId);
-		window.history.pushState({}, "", `/tournament`);
+		window.history.pushState(null, "", `/tournament`);
 		window.dispatchEvent(new PopStateEvent("popstate"));
 	});
 

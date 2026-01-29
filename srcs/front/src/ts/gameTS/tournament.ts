@@ -29,7 +29,7 @@ export function initTournament(): void {
 	if (!tournamentId) {
 		const statusEl = document.getElementById("tournamentStatus");
 		if (statusEl) statusEl.textContent = "Missing tournament id.";
-		window.history.pushState({}, "", "/tournamentSize");
+		window.history.pushState(null, "", "/tournamentSize");
 		window.dispatchEvent(new PopStateEvent("popstate"));
 		return;
 	}
@@ -44,7 +44,7 @@ export function initTournament(): void {
 			console.log("Leaving tournament:", tournamentId);
 			sessionStorage.removeItem("currentTournamentId");
 			CONTEXT.tournamentId = null;
-			window.history.pushState({}, "", "/tournamentSize");
+			window.history.pushState(null, "", "/tournamentSize");
 			window.dispatchEvent(new PopStateEvent("popstate"));
 			socket.emit("tournament:leave", { tournamentId });
 		};
@@ -54,14 +54,14 @@ export function initTournament(): void {
 		if (CONTEXT.gameId) {
 			nextMatchBtn.textContent = "Back to Match";
 			nextMatchBtn.onclick = (): void => {
-				window.history.pushState({}, "", "/pong");
+				window.history.pushState(null, "", "/pong");
 				window.dispatchEvent(new PopStateEvent("popstate"));
 			};
 		} else {
 			CONTEXT.tournamentId = tournamentId;
 			nextMatchBtn.onclick = (): void => {
 				console.log("Starting next match in tournament:", tournamentId);
-				window.history.pushState({}, "", "/pongTournament");
+				window.history.pushState(null, "", "/pongTournament");
 				window.dispatchEvent(new PopStateEvent("popstate"));
 			};
 		}
