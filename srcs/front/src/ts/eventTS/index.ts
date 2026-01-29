@@ -576,7 +576,9 @@ export const adjustNavbar = async (path: string): Promise<void> => {
 };
 
 const attemptAutolog = async (): Promise<void> => {
-	if (sessionStorage.getItem('pagehide') !== 'pageshouldreload')
+
+	// console.info("Should i autolog ? ", localStorage.getItem("allowAutolog"));
+	if (sessionStorage.getItem('pagehide') !== 'pageshouldreload' && localStorage.getItem("allowAutolog") == "true")
 		await newtabRelogFetch();
 	
 	if (sessionStorage.getItem('logStatus') == "loggedOut")
@@ -593,7 +595,8 @@ const attemptAutolog = async (): Promise<void> => {
 		}
 		else
 		{
-			alertBoxMsg("❌ Connection to socket could not be established !");
+			alertBoxMsg("❌ Please log-in again.");
+			console.error("Connection to socket could not be established ! Please log-in again !")
 			return backToDefaultPage();
 		}
 	}
@@ -685,8 +688,11 @@ document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
 	});
 	console.group("Page loaded !");
 
-	if (!sessionStorage.getItem("f5WasPressed"))
-		sessionStorage.setItem('f5WasPressed', 'false');
+	sessionStorage.setItem('f5WasPressed', 'false');
+	if (!localStorage.getItem('allowAutolog'))
+		localStorage.setItem('allowAutolog','false');
+	localStorage.setItem('delogAllOthers','false');
+	
 	if (!sessionStorage.getItem("logStatus")) {
 		sessionStorage.setItem('logStatus', 'loggedOut');
 		console.log("logStatus unknown ! Now set to \"loggedOut\"");

@@ -1,4 +1,4 @@
-import { fetchErrcodeHandler, alertBoxMsg, displayCorrectErrMsg } from "./userLog.js";
+import { fetchErrcodeHandler, alertBoxMsg, displayCorrectErrMsg, backToDefaultPage } from "./userLog.js";
 import { closeSocketCommunication } from "./userSocket.js";
 import { startTournament } from "./clickTournamentSelectPlayers.js";
 import type { FileUploadResponse, ProfileEditData } from "../types/api.types";
@@ -26,6 +26,21 @@ function reportWindowSize(): void {
 		return;
 	panel.style.display = 'none';
 }
+
+window.addEventListener('storage', async (event) => {
+	console.info(`Key changed: ${event.key}, [OLD] = ${event.oldValue} | [NEW] = ${event.newValue} `);
+	if (event.key == "delogAllOthers")
+	{
+		if (event.newValue == "true")
+		{
+			window.sessionStorage.setItem('logStatus', 'loggedOut');
+			window.sessionStorage.setItem('access_token', 'userSelfLogoutToken');
+			window.localStorage.setItem('allowAutolog','false');
+			console.info("You logged out in another tab !");
+			backToDefaultPage();
+		}
+	}
+});
 
 window.addEventListener("resize", reportWindowSize);
 
