@@ -22,6 +22,7 @@ import { CONTEXT } from "../gameTS/context.js";
 
 import { displayCorrectErrMsg, isUserAllowedHere, fetchErrcodeHandler, alertBoxMsg, backToDefaultPage, attemptSocketConnection } from "./userLog.js";
 import type { Friend, FriendsListResponse, MatchStats, UserProfile, FriendDeleteData, FriendRemoveResponse, RefreshTokenResponse } from "../types/api.types";
+import { scales, Title } from "chart.js";
 
 interface ViewClass {
 	new(): ViewInstance;
@@ -40,6 +41,12 @@ interface Route {
 interface RouteMatch {
 	mapElement: Route;
 	isMatch: boolean;
+}
+
+export {};
+declare global {
+  // allow using the global Chart (UMD) from CDN without TS errors
+  var Chart: any;
 }
 
 // let profileRefresh: ReturnType<typeof setInterval> | undefined;
@@ -116,17 +123,12 @@ window.fillFriendRemovalBox = async (friendArray: Friend[]): Promise<void> => {
 };
 
 window.grabLoggedUserStats = async (): Promise<void> => {
-	const nbOfMatchCpt = document.getElementById("nbOfMatchCpt") as HTMLElement | null;
-	const winRatioPercent = document.getElementById("winRatioPercent") as HTMLElement | null;
-	const longestMatchCpt = document.getElementById("longestMatchCpt") as HTMLElement | null;
-	const biggestStreakCpt = document.getElementById("biggestStreakCpt") as HTMLElement | null;
+	const winLossDoughnutChart = document.getElementById("winLossDoughnutChart") as HTMLCanvasElement | null;
+	const winRatioBar = document.getElementById("winRatioBar") as HTMLCanvasElement | null;
+	const multiChart = document.getElementById("multiChart") as HTMLCanvasElement | null;
+	const noMatchesMessage = document.getElementById("noMatchesMessage") as HTMLElement | null;
 
-	if (!nbOfMatchCpt || !winRatioPercent || !longestMatchCpt || !biggestStreakCpt) return;
-
-	nbOfMatchCpt.textContent = "--";
-	winRatioPercent.textContent = "--";
-	longestMatchCpt.textContent = "--";
-	biggestStreakCpt.textContent = "--";
+	if (!winLossDoughnutChart || !winRatioBar || !multiChart || !noMatchesMessage) return;
 
 	try {
 		const loggedUserStatsRequestResponse = await fetch('/match/self', {
@@ -141,15 +143,82 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 		const result: MatchStats = await loggedUserStatsRequestResponse.json();
 		if (result) {
 			if (result.matchsnb === 0) {
-				nbOfMatchCpt.textContent = "0";
-				winRatioPercent.textContent = "--";
-				longestMatchCpt.textContent = "--";
-				biggestStreakCpt.textContent = "--";
+				noMatchesMessage.style.display = "block";
 			} else {
-				nbOfMatchCpt.textContent = String(result.matchsnb);
-				winRatioPercent.textContent = result.winrate + " %";
-				longestMatchCpt.textContent = result.longestMatch + " sec";
-				biggestStreakCpt.textContent = String(result.biggest_streak);
+				new Chart(winLossDoughnutChart, {
+					type: 'doughnut',
+					data: {
+						labels: ['Win', 'Loss'],
+						datasets: [{
+							label: ' ',
+							data: [result.winmatchnb, result.matchsnb - result.winmatchnb],
+							backgroundColor: ['#4ac03d9f', '#c03d3d9f'],
+							hoverBackgroundColor: ['#4ac03d9f', '#c03d3d9f']
+						}]
+					},
+					options: {
+						borderColor: 'none',
+						
+					},
+				});
+
+				new Chart(winRatioBar, {
+					type: 'bar',
+					data: {
+						labels: ['Win Ratio'],
+						datasets: [{
+							label: 'Win Ratio %',
+							data: [result.winrate],
+							backgroundColor: '#4ac03d9f',
+							hoverBackgroundColor: '#4ac03d9f'
+						}]
+					},
+					options: {
+						borderColor: 'none',
+						indexAxis: 'y',
+						scales: {
+							y: {
+								beginAtZero: true,
+								min: 0,
+								max: 100,
+							}
+						},
+					},
+				});
+
+				new Chart(multiChart, {
+					type: 'line',
+					data: {
+						labels: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+						datasets: [{
+							label: "J",
+							data: [2, 3, 5, 6, 4, 7, 8, 9, 6, 5, 4, 3],
+							backgroundColor: ['#4ac03d9f', '#c03d3d9f'],
+							hoverBackgroundColor: ['#4ac03d9f', '#c03d3d9f']
+						},
+						{
+							label: "F",
+							data: [1, 4, 2, 5, 7, 3, 6, 4, 5, 7, 8, 6],
+							backgroundColor: ['#4ac03d9f', '#c03d3d9f'],
+							hoverBackgroundColor: ['#4ac03d9f', '#c03d3d9f']
+						},
+						{
+							label: "F",
+							data: [1, 1, 1, 1, 5, 8, 10, 6, 4, 3, 2, 1],
+							backgroundColor: ['#4ac03d9f', '#c03d3d9f'],
+							hoverBackgroundColor: ['#4ac03d9f', '#c03d3d9f']
+						}
+						]
+					},
+					options: {
+						borderColor: 'white',
+					},
+				});
+				winLossDoughnutChart.hidden = false;
+				winRatioBar.style.display = "flex";
+				multiChart.style.display = "flex";
+				noMatchesMessage.style.display = "none";
+
 			}
 		}
 	} catch (err) {
@@ -158,7 +227,7 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 		console.error('⚠️ Couldn\'t fetch logged user stats !\n => ', err);
 	}
 };
-
+	
 window.fetchPlayerStats = async (playerId: string, playerUsername: string): Promise<void> => {
 	const nbOfMatchCpt2 = document.getElementById("nbOfMatchCpt2") as HTMLElement | null;
 	const winRatioPercent2 = document.getElementById("winRatioPercent2") as HTMLElement | null;
