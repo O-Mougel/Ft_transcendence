@@ -150,7 +150,7 @@ async function uploadFileToServer(fileObj: File): Promise<string | null> {
 }
 
 window.backToTournamentPage = function (): void {
-	window.history.pushState({}, "", "/tournament");
+	window.history.pushState(null, "", "/tournament");
 	window.dispatchEvent(new PopStateEvent("popstate"));
 };
 
