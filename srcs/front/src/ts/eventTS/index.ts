@@ -551,11 +551,13 @@ export const adjustNavbar = async (path: string): Promise<void> => {
 		hideProfileButtons();
 		grabCustomizationPageInfo();
 	} else if (path === "/profileStats") {
-		hideProfileButtons();
+		// hideProfileButtons();
 		grabUserStatsAndInfo();
 	} else if (path === "/setup2FA") {
 		hideProfileButtons();
 		show2FAStatus();
+	} else if (path === "/changePassword") {
+		hideProfileButtons
 	} else {
 		const profileBtn2 = document.getElementById('profileButton2') as HTMLElement | null;
 		const profileBtn = document.getElementById('profileButton') as HTMLElement | null;
