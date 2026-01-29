@@ -65,7 +65,7 @@ export default class PongView extends ViewTemplate {
 					</div>
 					
 					<div class="relative">
-						<canvas id="canvas" class="border-4 rounded-[2%] border-[#98c6f8] w-[64dvw] aspect-16/10"></canvas>
+						<canvas id="canvas" class="bg-black border-4 rounded-[2%] border-[#98c6f8] w-[64dvw] aspect-16/10"></canvas>
 						<button id="startButton" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 px-4 py-2 bg-[#5b90c9] font-bold rounded-lg hover:bg-[#7aaedc] z-20">Start Game</button>
 						<div id="GameOver" class="hidden absolute top-4 left-1/2 transform -translate-x-1/2 border rounded-[5%] border-dashed justify-center items-center p-4 z-30">
 							<div class="flex items-center">

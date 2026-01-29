@@ -69,52 +69,13 @@ export class Game {
 
     this.id = null; // game unique id, set by GameManager
     
-    // --- PADDLES ---
-    // this.leftPaddle = {
-    //   height: PADDLE_HEIGHT,
-    //   width: PADDLE_WIDTH,
-    //   y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
-    //   x: 10,
-    //   direction: "none",
-    //   moveUp() { if (this.y > 0) this.y -= BASE_PADDLE_SPEED; },
-    //   moveDown() { if (this.y + this.height < HEIGHT) this.y += BASE_PADDLE_SPEED; },
-    // };
-    this.leftPaddle = new Paddle(10, HEIGHT / 2 - PADDLE_HEIGHT / 2, PADDLE_WIDTH, PADDLE_HEIGHT);
 
-    // this.rightPaddle = {
-    //   height: PADDLE_HEIGHT,
-    //   width: PADDLE_WIDTH,
-    //   y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
-    //   x: WIDTH - (10 + PADDLE_WIDTH),
-    //   direction: "none",
-    //   moveUp() { if (this.y > 0) this.y -= BASE_PADDLE_SPEED; },
-    //   moveDown() { if (this.y + this.height < HEIGHT) this.y += BASE_PADDLE_SPEED; },
-    // };
+    this.leftPaddle = new Paddle(10, HEIGHT / 2 - PADDLE_HEIGHT / 2, PADDLE_WIDTH, PADDLE_HEIGHT);
     this.rightPaddle = new Paddle(WIDTH - (10 + PADDLE_WIDTH), HEIGHT / 2 - PADDLE_HEIGHT / 2, PADDLE_WIDTH, PADDLE_HEIGHT);
 
     // Extra paddles for mode === 2
-    // this.leftPaddle2 = {
-    //   height: PADDLE_HEIGHT,
-    //   width: PADDLE_WIDTH,
-    //   y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
-    //   x: WIDTH / 4 - PADDLE_WIDTH,
-    //   direction: "none",
-    //   moveUp() { if (this.y > 0) this.y -= BASE_PADDLE_SPEED; },
-    //   moveDown() { if (this.y + this.height < HEIGHT) this.y += BASE_PADDLE_SPEED; },
-    // };
     this.leftPaddle2 = new Paddle(WIDTH / 4 - PADDLE_WIDTH, HEIGHT / 2 - PADDLE_HEIGHT / 2, PADDLE_WIDTH, PADDLE_HEIGHT);
-
-    // this.rightPaddle2 = {
-    //   height: PADDLE_HEIGHT,
-    //   width: PADDLE_WIDTH,
-    //   y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
-    //   x: WIDTH * 3 / 4,
-    //   direction: "none",
-    //   moveUp() { if (this.y > 0) this.y -= BASE_PADDLE_SPEED; },
-    //   moveDown() { if (this.y + this.height < HEIGHT) this.y += BASE_PADDLE_SPEED; },
-    // };
-
-    this.rightPaddle2 = new Paddle(WIDTH * 3 / 4, HEIGHT / 2 - PADDLE_HEIGHT / 2, PADDLE_WIDTH, PADDLE_HEIGHT);
+     this.rightPaddle2 = new Paddle(WIDTH * 3 / 4, HEIGHT / 2 - PADDLE_HEIGHT / 2, PADDLE_WIDTH, PADDLE_HEIGHT);
 
     this.ball = {
       x: WIDTH / 2,
@@ -173,7 +134,7 @@ export class Game {
 
   incrementBallSpeed(side) {
     console.log('Ball speed: ', this.ball.speed);
-    if (side !== this.ball.lastSidePossession) {
+    if (side !== this.ball.lastSidePossession) { // only increase speed if the ball bounces on the opposite side paddle
       if (this.ball.speed < MAX_BALL_SPEED) {
         this.incrementNbExchanges();
         this.ball.speed += STEP;
@@ -302,69 +263,71 @@ export class Game {
   }
 
   handleBallPaddleCollision(paddle, side, x0, y0, vx, vy) {
-    const r = this.ball.radius;
+  const r = this.ball.radius;
   
-    const minX = paddle.x - r;
-    const minY = paddle.y - r;
-    const maxX = paddle.x + paddle.width + r;
-    const maxY = paddle.y + paddle.height + r;
+  // Define the bounding box of the paddle
+  const minX = paddle.x - r;
+  const minY = paddle.y - r;
+  const maxX = paddle.x + paddle.width + r;
+  const maxY = paddle.y + paddle.height + r;
 
-    // if ball already inside paddle bounds, skip collision
-    if (x0 >= minX && x0 <= maxX && y0 >= minY && y0 <= maxY)
-      return false;
-  
-    const hit = this.sweepSphereAABB(x0, y0, vx, vy, minX, minY, maxX, maxY);
-    if (!hit) return false;
-  
-    // Move to impact point
-    const impactX = x0 + vx * hit.t;
-    const impactY = y0 + vy * hit.t;
-    this.ball.x = impactX;
-    this.ball.y = impactY;
-  
-    // Reflect across normal
-    const dot = vx * hit.nx + vy * hit.ny; // dot product
-    this.ball.vx = vx - 2 * dot * hit.nx;
-    this.ball.vy = vy - 2 * dot * hit.ny;
-  
-    // after reflection, before normalize
-    if (Math.abs(hit.nx) > 0.5) {
-      // hit left/right face -> control vy from hit position
-      const halfHeight = paddle.height / 2;
-      let u = (impactY - (paddle.y + halfHeight)) / halfHeight; // [-1, 1]
-      u = Math.max(-1, Math.min(1, u)); // clamp
-    
-      const p = 2; // exponent for curve control; higher = more curve near edges
-      const curve = Math.sign(u) * Math.pow(Math.abs(u), p); // curved value in [-1, 1]
-      this.ball.vy = curve * 4; // scale factor for vertical speed; higher = more vertical
-    } else if (Math.abs(hit.ny) > 0.5) {
-      // hit top/bottom face -> optionally control vx instead
-      const halfWidth = paddle.width / 2;
-      let u = (impactX - (paddle.x + halfWidth)) / halfWidth;
-      u = Math.max(-1, Math.min(1, u));
-    
-      const p = 2.5;
-      const curve = Math.sign(u) * Math.pow(Math.abs(u), p);
-      this.ball.vx = curve * 3;
-    }
-  
-    this.normalizeBallVelocity();
-  
-    // Continue remaining time
-    const remaining = 1 - hit.t;
-    this.ball.x += this.ball.vx * remaining;
-    this.ball.y += this.ball.vy * remaining;
 
-    // Clamp to bounds
-    if (this.ball.x < 0) this.ball.x = 5 + BALL_RADIUS;
-    if (this.ball.x > WIDTH) this.ball.x = WIDTH - BALL_RADIUS;
-    if (this.ball.y < 0) this.ball.y = BALL_RADIUS;
-    if (this.ball.y > HEIGHT) this.ball.y = HEIGHT - BALL_RADIUS;
-  
-    if (Math.abs(hit.nx) > 0.5) // only increment speed on left/right face hits
-      this.incrementBallSpeed(side);
-    return true;
+  if (x0 >= minX && x0 <= maxX && y0 >= minY && y0 <= maxY) return false; // if ball starts inside paddle, ignore collision
+
+  const hit = this.sweepSphereAABB(x0, y0, vx, vy, minX, minY, maxX, maxY);
+  if (!hit) return false;
+
+  // Move the ball impact point
+  const impactX = x0 + vx * hit.t;
+  const impactY = y0 + vy * hit.t;
+  this.ball.x = impactX;
+  this.ball.y = impactY;
+
+  // Reflect
+  const dot = vx * hit.nx + vy * hit.ny; // Dot product to get the angle of reflection
+  this.ball.vx = vx - 2 * dot * hit.nx;
+  this.ball.vy = vy - 2 * dot * hit.ny;
+
+  // After reflection, handle the curve based on the paddle's edge
+  if (Math.abs(hit.nx) > 0.5) { // Horizontal bounce (left/right face)
+    const halfHeight = paddle.height / 2;
+    let u = (impactY - (paddle.y + halfHeight)) / halfHeight; // [-1, 1]
+    u = Math.max(-1, Math.min(1, u)); // clamp
+
+    const p = 2; // Exponent for curve control (higher = more curve near edges)
+    const curve = Math.sign(u) * Math.pow(Math.abs(u), p); // curve factor
+    this.ball.vy = curve * 4; // Adjust the vertical speed (higher = more vertical)
+  } else if (Math.abs(hit.ny) > 0.5) { // Vertical bounce (top/bottom face)
+    // Handle horizontal paddle curve effect (influencing the bounce angle)
+    const halfWidth = paddle.width / 2;
+    let u = (impactX - (paddle.x + halfWidth)) / halfWidth;
+    u = Math.max(-1, Math.min(1, u));
+
+    const p = 2.5; // Exponent for curve control
+    const curve = Math.sign(u) * Math.pow(Math.abs(u), p);
+    this.ball.vx = curve * 3; // Adjust the horizontal speed
   }
+
+  // Normalize the velocity of the ball after the reflection
+  this.normalizeBallVelocity();
+
+  // Continue ball movement during remaining time
+  const remaining = 1 - hit.t;
+  this.ball.x += this.ball.vx * remaining;
+  this.ball.y += this.ball.vy * remaining;
+
+  // Clamp the ball within the bounds
+  if (this.ball.x < 0) this.ball.x = 5 + BALL_RADIUS;
+  if (this.ball.x > WIDTH) this.ball.x = WIDTH - BALL_RADIUS;
+  if (this.ball.y < 0) this.ball.y = BALL_RADIUS;
+  if (this.ball.y > HEIGHT) this.ball.y = HEIGHT - BALL_RADIUS;
+
+  // Increase ball speed after a successful bounce
+  if (Math.abs(hit.nx) > 0.5) this.incrementBallSpeed(side);
+
+  return true;
+}
+
 
   movePaddles() {
     // Left paddle
@@ -403,19 +366,7 @@ export class Game {
     console.log('Game started', gameMode[data.mode]);
     if (this.mode === 0) {
       this.AIPlayer = new AIPlayer(this.rightPaddle, this.leftPaddle, this);
-    } //else if (this.mode === 1 || this.mode === 3) {
-    //   if (data) {
-    //     this.leftPaddle.name = data.player1;
-    //     this.rightPaddle.name = data.player2;
-    //   }
-    // } else {
-    //   if (data) {
-    //     this.leftPaddle.name = data.player1;
-    //     this.rightPaddle.name = data.player2;
-    //     this.leftPaddle2.name = data.player3;
-    //     this.rightPaddle2.name = data.player4;
-    //   }
-    // }
+    }
     this.startTime = Date.now() / 1000;
     this.normalizeBallVelocity();
   }

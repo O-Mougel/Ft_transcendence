@@ -67,7 +67,7 @@ export class GameManager {
       if (data.mode === 3) {
         var verifiedPlayer2 = verifyPlayerToken(data.player2Token);
         if (!verifiedPlayer2) {
-          socket.emit("error", { message: "Invalid player 2 token" });
+          socket.emit("game:error", { message: "Invalid player 2 token" });
           return;
         }
         entry.game.player2 = verifiedPlayer2;
