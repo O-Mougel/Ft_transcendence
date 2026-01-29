@@ -101,7 +101,7 @@ export function printGameOver(data: GameOverData): void {
 		else if (right > left)
 		{
 			if (RightPlayer.textContent == "[AI]")
-				winnerName = "IA 🤖";
+				winnerName = "AI 🤖";
 			else
 				winnerName = RightPlayer.textContent;
 		}
