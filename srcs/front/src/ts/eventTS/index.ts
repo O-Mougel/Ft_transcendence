@@ -191,22 +191,22 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 					data: {
 						labels: ['match 1', 'match 2', 'match 3', 'match 4', 'match 5', 'match 6', 'match 7', 'match 8', 'match 9', 'match 10'],
 						datasets: [{
-							label: "Win",
-							data: [2, 3, 5, 6, 4, 7, 8, 9, 6, 5],
-							backgroundColor: '#4ac03d9f',
-							borderColor: '#4ac03d9f',
+							label: "Score Difference",
+							data: [result.last10matchs[0].diffScore, result.last10matchs[1]?.diffScore, result.last10matchs[2]?.diffScore, result.last10matchs[3]?.diffScore, result.last10matchs[4]?.diffScore, result.last10matchs[5]?.diffScore, result.last10matchs[6]?.diffScore, result.last10matchs[7]?.diffScore, result.last10matchs[8]?.diffScore, result.last10matchs[9]?.diffScore],
+							backgroundColor: 'white',
+							borderColor: 'white',
 						},
 						{
-							label: "Score difference",
-							data: [1, 4, 2, 5, 7, 3, 6, 4, 5, 7],
-							backgroundColor: '#c03d3d9f',
-							borderColor: '#c03d3d9f'
+							label: "duration",
+							data: [result.last10matchs[0].duration, result.last10matchs[1]?.duration, result.last10matchs[2]?.duration, result.last10matchs[3]?.duration, result.last10matchs[4]?.duration, result.last10matchs[5]?.duration, result.last10matchs[6]?.duration, result.last10matchs[7]?.duration, result.last10matchs[8]?.duration, result.last10matchs[9]?.duration],
+							backgroundColor: '#1e90ff',
+							borderColor: '#1e90ff'
 						},
 						{
-							label: "",
-							data: [1, 1, 1, 1, 5, 8, 10, 6, 4, 3],
-							backgroundColor: '#98c6f8',
-							borderColor: '#98c6f8'
+							label: "Longest streak",
+							data: [result.last10matchs[0].longestStreak, result.last10matchs[1]?.longestStreak, result.last10matchs[2]?.longestStreak, result.last10matchs[3]?.longestStreak, result.last10matchs[4]?.longestStreak, result.last10matchs[5]?.longestStreak, result.last10matchs[6]?.longestStreak, result.last10matchs[7]?.longestStreak, result.last10matchs[8]?.longestStreak, result.last10matchs[9]?.longestStreak],
+							backgroundColor: '#ff0000',
+							borderColor: '#ff0000'
 						}
 						]
 					},
