@@ -653,7 +653,7 @@ const router = async (): Promise<void> => {
 		emitStopGame();
 	}
 
-	if (match && match.mapElement.path === "/tournamentSize" && CONTEXT.tournamentId) {
+	if (match && match.mapElement.path === "/tournamentSize" && CONTEXT.tournamentId ) {
 		const tournamentRoute = routes.find(r => r.path === "/tournament");
 		if (tournamentRoute)
 		{

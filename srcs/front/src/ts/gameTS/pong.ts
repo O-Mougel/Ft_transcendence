@@ -28,7 +28,7 @@ window.addEventListener("contextmenu", (e: MouseEvent) => {
 
 export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 	if (mode.mode === 3 && !sessionStorage.getItem("player2_token")) {
-		window.history.pushState({}, "", `/ranked`);
+		window.history.pushState(null, "", `/ranked`);
 		window.dispatchEvent(new PopStateEvent("popstate"));
 		return;
 	}
@@ -128,7 +128,7 @@ export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 		console.log("Showing back to tournament button");
 		CONTEXT.backButton.classList.remove("hidden");
 		CONTEXT.backButton.onclick = (): void => {
-			window.history.pushState({}, "", `/tournamentSize`);
+			window.history.pushState(null, "", `/tournamentSize`);
 			window.dispatchEvent(new PopStateEvent("popstate"));
 		};
 	}
