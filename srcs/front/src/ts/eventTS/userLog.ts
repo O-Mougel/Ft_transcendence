@@ -1153,8 +1153,10 @@ window.handlePongModeDisplay = async function (mode: number): Promise<void> {
 	const RightPlayer = document.getElementById('RightPlayer') as HTMLElement | null;
 	const instruction1v1 = document.getElementById('instruction1v1') as HTMLElement | null;
 	const instruction2v2 = document.getElementById('instruction2v2') as HTMLElement | null;
+	const hideUpVsAi = document.getElementById('hideUpVsAi') as HTMLElement | null;
+	const hideDownVsAi = document.getElementById('hideDownVsAi') as HTMLElement | null;
 
-	if (!LeftPlayer || !RightPlayer || !instruction1v1 || !instruction2v2) return;
+	if (!LeftPlayer || !RightPlayer || !instruction1v1 || !instruction2v2 || !hideUpVsAi || !hideDownVsAi) return;
 
 	try 
 	{
@@ -1183,6 +1185,8 @@ window.handlePongModeDisplay = async function (mode: number): Promise<void> {
 
 	if (mode === 0) {
 		RightPlayer.textContent = "[AI]";
+		hideUpVsAi.style.display = "none";
+		hideDownVsAi.style.display = "none";
 	}
 	else if (mode === 1) {
 		RightPlayer.textContent = "Player2";
