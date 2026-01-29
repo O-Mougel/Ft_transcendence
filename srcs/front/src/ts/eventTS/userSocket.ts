@@ -87,7 +87,7 @@ export const setupSocketCommunication = async (): Promise<boolean> => {
 
 	if(sessionStorage.getItem('socket_failed') && sessionStorage.getItem('socket_failed') == 'true')
 	{
-		sessionStorage.removeItemItem('socket_failed');
+		sessionStorage.removeItem('socket_failed');
 		return false;
 	}
 	return true;
