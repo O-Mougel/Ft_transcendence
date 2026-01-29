@@ -7,24 +7,29 @@ const interpretSocketMsg = async (socketMsgType: string): Promise<void> => {
 	console.log("Interpret : ", socketMsgType);
 	switch (socketMsgType) {
 		case "friend_presence":
-			console.log("A friend updated their log status, reloading..");
+			console.info("A friend updated their log status, reloading..");
 			displayUserFriends();
 			break;
 		case "friend:update":
-			console.log("A friend was added to the list, reloading..");
+			console.info("A friend was added to the list, reloading..");
 			displayUserFriends();
 			checkForFriendRequests();
 			break;
 		case "delete:update":
-			console.log("A friend was deleted, reloading..");
+			console.info("A friend was deleted, reloading..");
 			displayUserFriends();
 			break;
 		case "request:update":
-			console.log("You got a new friend request !");
+			console.info("You got a new friend request !");
 			checkForFriendRequests();
 			break;
 		case "reject:update":
-			console.log("Request rejected.");
+			console.info("Request rejected.");
+			checkForFriendRequests();
+			break;
+		case "user:alter":
+			console.info("A friend update his profile");
+			displayUserFriends();
 			checkForFriendRequests();
 			break;
 		default:
