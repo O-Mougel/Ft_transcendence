@@ -596,7 +596,10 @@ const attemptAutolog = async (): Promise<void> => {
 		else
 		{
 			alertBoxMsg("❌ Please log-in again.");
-			console.error("Connection to socket could not be established ! Please log-in again !")
+			console.error("Connection to socket could not be established ! Please log-in again !");
+			window.sessionStorage.setItem('logStatus', 'loggedOut');
+			window.sessionStorage.setItem('access_token', 'userSelfLogoutToken');
+			window.localStorage.setItem('allowAutolog','false');
 			return backToDefaultPage();
 		}
 	}
