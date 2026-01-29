@@ -6,6 +6,7 @@ export function handleGameStopped(): void {
 	console.log("Game Stopped by server");
 	CONTEXT.isGameStarted = false;
 	CONTEXT.gameId = null;
+	document.body.style.overflow = "auto";
 	resetState();
 	draw();
 }
@@ -13,6 +14,7 @@ export function handleGameStopped(): void {
 export function handleGameOver(data: GameOverData): void {
 	CONTEXT.isGameStarted = false;
 	CONTEXT.gameId = null;
+	document.body.style.overflow = "auto";
 	resetState();
 	printGameOver(data);
 	if (CONTEXT.tournamentId && CONTEXT.backButton && window.location.href.includes("/pongTournament")) {

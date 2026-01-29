@@ -23,10 +23,10 @@ export function setupSocket(): SocketType | null {
 		transports: ["websocket"],
 		secure: true,
 		auth: { token },
-		reconnection: true,
-		reconnectionAttempts: 5,
-  		reconnectionDelay: 1000,
-		timeout: 10000,
+		// reconnection: true,
+		// reconnectionAttempts: 5,
+  		// reconnectionDelay: 1000,
+		// timeout: 10000,
 	}) as SocketType;
 
 	socket.on("connect", () => { console.log("Connected to WebSocket server"); });

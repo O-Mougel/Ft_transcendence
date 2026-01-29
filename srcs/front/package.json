@@ -3,16 +3,13 @@
   "version": "1.0",
   "description": "very cool project",
   "scripts": {
-	"build:ts": "tsc -p tsconfig.json",
-	"build:css": "tailwindcss -i ./src/css/input.css -o ./src/css/output.css",
-	"build": "npm run build:ts && npm run build:css",
-
-	"watch:ts": "tsc -p tsconfig.json --watch",
-	"watch:css": "tailwindcss -i ./src/css/input.css -o ./src/css/output.css --watch",
-
-	"dev": "concurrently \"npm:watch:ts\" \"npm:watch:css\"",
-
-	"start": "npm run dev"
+    "build:ts": "tsc -p tsconfig.json",
+    "build:css": "tailwindcss -i ./src/css/input.css -o ./src/css/output.css",
+    "build": "npm run build:ts && npm run build:css",
+    "watch:ts": "tsc -p tsconfig.json --watch",
+    "watch:css": "tailwindcss -i ./src/css/input.css -o ./src/css/output.css --watch",
+    "dev": "concurrently \"npm:watch:ts\" \"npm:watch:css\"",
+    "start": "npm run dev"
   },
   "devDependencies": {
 	"@tailwindcss/cli": "4.1.16",
@@ -28,6 +25,7 @@
 	"concurrently": "7.6.0"
 },
 	"dependencies": {
-	"@fastify/static": "8.3.0"
+	"@fastify/static": "8.3.0",
+	"chart.js": "4.5.1"
   }
 }
