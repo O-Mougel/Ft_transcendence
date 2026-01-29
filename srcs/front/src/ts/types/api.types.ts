@@ -6,11 +6,17 @@ export interface UserProfile {
   twofastatus?: boolean;
 }
 
+export interface MatchStatsItem {
+  diffScore: number;
+  longestStreak: number;
+  duration: number;
+}
+
 export interface MatchStats {
   matchsnb: number;
   winrate: number;
-  longestMatch: number;
-  biggest_streak: number;
+  winmatchnb: number;
+  last10matchs: MatchStatsItem[];
 }
 
 export interface Friend {
