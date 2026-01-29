@@ -50,22 +50,10 @@ export default class ProfileStatsView extends ViewTemplate {
 					</div>
 					<a class="uppercase px-5 py-1 z-20 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg" name="gotoMatchHistory" href="/UserMatchHistory" data-link>View match history</a>
 				</div>
-				<div class="flex border border-blue-300 shadow-[0_0_20px_rgba(158,202,237,0.9)] rounded-lg  p-4 gap-4 flex-wrap justify-between w-[90%] mb-2">
-					<div class="flex flex-col flex-wrap w-[30%] min-w-30 min-h-30">
-						<div class="w-full h-full aspect-square">
-							<canvas id="winLossDoughnutChart" class="hidden" ></canvas>
-						</div>
-					</div>
-					<div class="flex flex-col flex-wrap w-[30%] min-w-30 min-h-30">
-						<div class="w-full h-full aspect-square">
-							<canvas id="winRatioBar" class="hidden" class="min-w-30 min-h-30" ></canvas>
-						</div>
-					</div>
-					<div class="flex flex-col flex-wrap w-[30%] min-w-30 min-h-30">
-						<div class="w-full h-full aspect-square">
-							<canvas id="multiChart" class="hidden" ></canvas>
-						</div>
-					</div>
+				<div class="flex border border-blue-300 shadow-[0_0_20px_rgba(158,202,237,0.9)] rounded-lg  p-4 gap-4 flex-wrap justify-around w-[90%] mb-2">		
+							<canvas id="winLossDoughnutChart" class="hidden aspect-square w-full max-w-60 max-h-60 min-w-20" ></canvas>
+							<canvas id="winRatioBar" class="hidden aspect-square w-full max-w-60 max-h-60 min-w-20" ></canvas>
+							<canvas id="multiChart" class="hidden aspect-square w-full max-w-60 max-h-60 min-w-20" ></canvas>
 					<p id="noMatchesMessage" class="w-full text-center hidden">There is no match statistics to display</p>
 				</div>
 
