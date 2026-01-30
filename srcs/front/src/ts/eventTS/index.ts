@@ -23,7 +23,6 @@ import { CONTEXT } from "../gameTS/context.js";
 
 import { displayCorrectErrMsg, isUserAllowedHere, fetchErrcodeHandler, alertBoxMsg, backToDefaultPage, attemptSocketConnection } from "./userLog.js";
 import type { Friend, FriendsListResponse, MatchStats, UserProfile, FriendDeleteData, FriendRemoveResponse, RefreshTokenResponse } from "../types/api.types";
-// import { scales, Title } from "chart.js";
 
 interface ViewClass {
 	new(): ViewInstance;

@@ -98,7 +98,7 @@ export interface TournamentErrorData {
   message?: string;
 }
 
-//sock.io def
+//sock.io deftsc -p tsconfig.json
 export interface Socket {
   connected: boolean;
   emit(event: string, data?: unknown): void;
