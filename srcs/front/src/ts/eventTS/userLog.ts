@@ -1148,7 +1148,7 @@ window.loadPlayer2Data = async function (): Promise<void> {
 	}
 }
 
-window.handlePongModeDisplay = async function (mode: number): Promise<void> {
+window.handlePongModeDisplay = async function (mode: number, leftName: string | undefined, rightName: string | undefined): Promise<void> {
 	const LeftPlayer = document.getElementById('LeftPlayer') as HTMLElement | null;
 	const RightPlayer = document.getElementById('RightPlayer') as HTMLElement | null;
 	const instruction1v1 = document.getElementById('instruction1v1') as HTMLElement | null;
@@ -1178,7 +1178,7 @@ window.handlePongModeDisplay = async function (mode: number): Promise<void> {
 	catch (err)
 	{
 		if (await fetchErrcodeHandler(err as Error) == 0)
-			return window.handlePongModeDisplay(mode);
+			return window.handlePongModeDisplay(mode, leftName, rightName);
 		console.error('Profile info grab failed !\n => ', err);
 		return ;
 	}
@@ -1189,7 +1189,14 @@ window.handlePongModeDisplay = async function (mode: number): Promise<void> {
 		hideDownVsAi.style.display = "none";
 	}
 	else if (mode === 1) {
-		RightPlayer.textContent = "Player2";
+		if (window.location.href.includes("/pongTournament")) {
+			if (leftName)
+				LeftPlayer.textContent = leftName;
+			if (rightName)
+				RightPlayer.textContent = rightName;
+		}
+		else
+			RightPlayer.textContent = "Player2";
 	}
 	else if (mode === 2) {
 		if (LeftPlayer.textContent)
@@ -1221,7 +1228,7 @@ window.handlePongModeDisplay = async function (mode: number): Promise<void> {
 		catch (err)
 		{
 			if (await fetchErrcodeHandler(err as Error) == 0)
-				return window.handlePongModeDisplay(mode);
+				return window.handlePongModeDisplay(mode, leftName, rightName);
 			console.error('Profile info grab failed !\n => ', err);
 			return ;
 		}

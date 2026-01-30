@@ -81,6 +81,11 @@ export function initTournament(): void {
 					nextMatchBtn?.remove();
 				}
 				renderTournament(result.tournament);
+				const nextMatch = findNextReadyMatch(result.tournament);
+				if (nextMatch) {
+					CONTEXT.leftName = nextMatch.player1;
+					CONTEXT.rightName = nextMatch.player2;
+				}
 			}
 			catch (err) {
 				console.error("Invalid tournament state data received:", err, data);
@@ -204,4 +209,16 @@ function renderTournament(tournament: Tournament): void {
 		if (nextMatchBtn) nextMatchBtn.style.display = "none";
 		sessionStorage.removeItem("currentTournamentId");
 	}
+}
+
+function findNextReadyMatch(tournament: Tournament): { player1: string | undefined; player2: string | undefined; status: string; winner: string | null } | null {
+	for (let r = 0; r < tournament.bracket.length; r++) {
+	  for (let m = 0; m < tournament.bracket[r].length; m++) {
+		const match = tournament.bracket[r][m];
+		if (match.status === "ready") {
+			return { player1: match.player1 || undefined, player2: match.player2 || undefined, status: match.status, winner: match.winner || null};
+		}
+	  }
+	}
+	return null;
 }
