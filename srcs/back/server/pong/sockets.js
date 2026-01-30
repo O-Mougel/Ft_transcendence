@@ -1,4 +1,4 @@
-import { startSchema, movementSchema, tournamentCreateSchema, tournamentGetStateSchema, tournamentNextMatchSchema, tournamentLeaveSchema, sessionRetrieveSchema } from "./schema.js";
+import { startSchema, movementSchema, tournamentCreateSchema, tournamentGetStateSchema, tournamentNextMatchSchema, tournamentLeaveSchema, sessionRetrieveSchema } from "./schemaZod.js";
 import { DISCONNECT_GRACE_PERIOD } from "./config.js";
 
 function generateGameId() {
@@ -143,6 +143,11 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         const size = Number(result.size);
         const names = result.names;
 
+        // If a tournament is already ongoing for this socket, reject
+        if (socket.data.tournamentId) {
+          socket.emit("tournament:error", { error: "Already in a tournament" });
+          return;
+        }
         const tournamentId = tournamentManager.createTournament(size, names);
         if (!tournamentId) {
           socket.emit("tournament:error", { error: "create failed" });
@@ -162,8 +167,7 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
 
         const tournament = tournamentManager.getTournament(tournamentId);
         if (!tournament) throw new Error("Tournament not found after creation");
-        // socket.emit("tournament:state", { tournamentId, tournament });
-        socket.emit("tournament:error", { error: e.message || "nextMatch failed" });
+        socket.emit("tournament:state", { tournamentId, tournament });
       } catch (e) {
         socket.emit("tournament:error", { error: e.message || "create failed" });
       }

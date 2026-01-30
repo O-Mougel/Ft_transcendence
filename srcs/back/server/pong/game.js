@@ -428,10 +428,10 @@ export class Game {
       return { gameOver: false };
     }
 
-    this.moveBall();
     if (this.mode === 0)
       this.AIPlayer.updateDirection(); // AI updates its paddle direction; should only be called once per frame?
     this.movePaddles();
+    this.moveBall();
     const gameOver = this.checkScore();
 
     return { gameOver };

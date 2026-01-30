@@ -118,9 +118,10 @@ export function initTournament(): void {
 		});
 
 		socket.off("tournament:error");
-		socket.on("tournament:error", (err: unknown) => {
+		socket.on("tournament:error", (error: unknown) => {
 			try {
-				const result = errorSchema.validateSync({ error: (err as Error).message });
+				console.log("Tournament error received:", error);
+				const result = errorSchema.validateSync({ error: (error as Error).message });
 				console.error("Tournament error:", result);
 				const statusEl = document.getElementById("tournamentStatus");
 				if (statusEl) statusEl.textContent = `Error: ${result}`;
