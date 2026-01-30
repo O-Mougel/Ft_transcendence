@@ -50,10 +50,10 @@ export default class ProfileStatsView extends ViewTemplate {
 					</div>
 					<a class="uppercase px-5 py-1 z-20 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg" name="gotoMatchHistory" href="/UserMatchHistory" data-link>View match history</a>
 				</div>
-				<div class="flex border border-blue-300 shadow-[0_0_20px_rgba(158,202,237,0.9)] rounded-lg  p-4 gap-4 flex-wrap justify-around w-[90%] mb-2">		
-					<canvas id="winLossDoughnutChart" class="hidden aspect-square w-full max-w-100 max-h-100 min-w-20" ></canvas>
-					<canvas id="winRatioBar" class="hidden aspect-square w-full max-w-100 max-h-100 min-w-20" ></canvas>
-					<canvas id="multiChart" class="hidden aspect-square w-full max-w-100 max-h-100 min-w-20" ></canvas>
+				<div class="flex border border-blue-300 shadow-[0_0_20px_rgba(158,202,237,0.9)] rounded-lg  p-4 gap-4 flex-wrap justify-around w-full sm:w-[90%] mb-2">		
+					<canvas id="winLossDoughnutChart" class="hidden aspect-square  max-w-100 max-h-100" ></canvas>
+					<canvas id="winRatioBar" class="hidden aspect-square  max-w-100 max-h-100" ></canvas>
+					<canvas id="multiChart" class="hidden aspect-square  max-w-100 max-h-100" ></canvas>
 					<p id="noMatchesMessage" class="hidden w-full text-center">There is no match statistics to display</p>
 				</div>
 
