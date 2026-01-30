@@ -2,6 +2,7 @@
 
 import { showstats, getMatchs } from "./match.service.js";
 import { findUserById, alreadyfriend } from "../user/user.service.js";
+import { addHours } from "date-fns";
 
 export async function getMatchsHandler(request, reply) {
     const stats = await showstats(request.user.id)
@@ -53,7 +54,7 @@ export async function getMatchHistoryHandler(request, reply){
 		win: match.winnerId == request.user.id,
 		player2name: match.player2.id == 0 ? match.player2name : match.player2.name,
 		player1name: match.player1.name,
-		createdAt: new Date(match.createdAt).toLocaleString("fr-FR", {day: "2-digit",
+		createdAt: addHours(new Date(match.createdAt), 1).toLocaleString("fr-FR", {day: "2-digit",
 			month: "2-digit",
 			year: "numeric",
 			hour: "2-digit",
