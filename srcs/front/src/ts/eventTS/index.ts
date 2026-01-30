@@ -22,7 +22,6 @@ import { CONTEXT } from "../gameTS/context.js";
 
 import { displayCorrectErrMsg, isUserAllowedHere, fetchErrcodeHandler, alertBoxMsg, backToDefaultPage, attemptSocketConnection } from "./userLog.js";
 import type { Friend, FriendsListResponse, MatchStats, UserProfile, FriendDeleteData, FriendRemoveResponse, RefreshTokenResponse } from "../types/api.types";
-// import { scales, Title } from "chart.js";
 
 interface ViewClass {
 	new(): ViewInstance;
@@ -43,11 +42,10 @@ interface RouteMatch {
 	isMatch: boolean;
 }
 
-export {};
-declare global {
-  // allow using the global Chart (UMD) from CDN without TS errors
-  var Chart: any;
-}
+// export {};
+// declare global {
+//   var Chart: any;
+// }
 
 // let profileRefresh: ReturnType<typeof setInterval> | undefined;
 
