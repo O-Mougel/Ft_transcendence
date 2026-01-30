@@ -41,7 +41,7 @@ export default class ProfileStatsView extends ViewTemplate {
 				</div>
 			</div>
 			
-			<div class="pt-[3%] mt-[3%] relative flex flex-col gap-y-4 items-center mx-[3%] px-4 rounded-xl outline-none border border-blue-300 bg-[url(/img/assets/stars.gif)] bg-cover bg-center shadow-[0_0_20px_rgba(158,202,237,0.9)]">
+			<div class="pt-[2%] mt-[3%] relative flex flex-col gap-y-4 items-center mx-[3%] px-4 rounded-xl outline-none border border-blue-300 bg-[url(/img/assets/stars.gif)] bg-cover bg-center shadow-[0_0_20px_rgba(158,202,237,0.9)]">
 			<h1 class="m-0">Statistics :</h1>
 			<div class="flex flex-col sm:flex-row w-full justify-around items-center gap-4">
 				<div class="flex flex-col items-center">
@@ -51,9 +51,9 @@ export default class ProfileStatsView extends ViewTemplate {
 					<a class="uppercase px-5 py-1 z-20 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg" name="gotoMatchHistory" href="/UserMatchHistory" data-link>View match history</a>
 				</div>
 				<div class="flex border border-blue-300 shadow-[0_0_20px_rgba(158,202,237,0.9)] rounded-lg  p-4 gap-4 flex-wrap justify-around w-[90%] mb-2">		
-					<canvas id="winLossDoughnutChart" class="hidden aspect-square w-full max-w-60 max-h-60 min-w-20" ></canvas>
-					<canvas id="winRatioBar" class="hidden aspect-square w-full max-w-60 max-h-60 min-w-20" ></canvas>
-					<canvas id="multiChart" class="hidden aspect-square w-full max-w-60 max-h-60 min-w-20" ></canvas>
+					<canvas id="winLossDoughnutChart" class="hidden aspect-square w-full max-w-100 max-h-100 min-w-20" ></canvas>
+					<canvas id="winRatioBar" class="hidden aspect-square w-full max-w-100 max-h-100 min-w-20" ></canvas>
+					<canvas id="multiChart" class="hidden aspect-square w-full max-w-100 max-h-100 min-w-20" ></canvas>
 					<p id="noMatchesMessage" class="hidden w-full text-center">There is no match statistics to display</p>
 				</div>
 
@@ -68,9 +68,9 @@ export default class ProfileStatsView extends ViewTemplate {
 					<h2 id="selectedPlayerUsernameHeader" class="hidden overflow-hidden text-center pr-2 py-2 text-blue-900 mt-3">[--]</h2>
 					
 					<div id="friendStatDisplayBox" class="hidden m-auto border border-blue-300 shadow-[0_0_20px_rgba(158,202,237,0.9)] rounded-lg  p-4 gap-4 flex-wrap justify-around w-[90%] mb-2">
-						<canvas id="winLossDoughnutChartFriend" class="hidden aspect-square w-full max-w-60 max-h-60 min-w-20" ></canvas>
-						<canvas id="winRatioBarFriend" class="hidden aspect-square w-full max-w-60 max-h-60 min-w-20" ></canvas>
-						<canvas id="multiChartFriend" class="hidden aspect-square w-full max-w-60 max-h-60 min-w-20" ></canvas>
+						<canvas id="winLossDoughnutChartFriend" class="hidden aspect-square w-full max-w-100 max-h-100 min-w-20" ></canvas>
+						<canvas id="winRatioBarFriend" class="hidden aspect-square w-full max-w-100 max-h-100 min-w-20" ></canvas>
+						<canvas id="multiChartFriend" class="hidden aspect-square w-full max-w-100 max-h-100 min-w-20" ></canvas>
 						<p id="noMatchesMessageFriend" class="hidden w-full text-center">There is no match statistics to display</p>
 					</div>
 					<div id="removeFriendBoxDiv">
