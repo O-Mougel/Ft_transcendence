@@ -34,6 +34,10 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
       next();
     });
 
+    socket.onAny((event, ...args) => {
+      console.log(`Socket event received: ${event} with args: `, args);
+    });
+
     // Handle disconnect with grace period
     socket.on("disconnect", () => {
       console.log("User disconnected, socket id: ", socket.id);
@@ -146,7 +150,7 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         // If a tournament is already ongoing for this socket, reject
         if (socket.data.tournamentId) {
           console.log("User already in a tournament:", socket.data.tournamentId);
-          socket.emit("tournament:error", { message: "Already in a tournament" });
+          socket.emit("tournament:duplicate", { message: "Already in a tournament" });
           return;
         }
         const tournamentId = tournamentManager.createTournament(size, names);
