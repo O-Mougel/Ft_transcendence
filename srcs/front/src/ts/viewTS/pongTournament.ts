@@ -5,7 +5,7 @@ import type { GameMode } from '../types/game.types';
 export default class PongView extends ViewTemplate {
 	constructor() {
 		super();
-		this.setTitle("Pong!");
+		this.setTitle("Tournament Match");
 	}
 
 	async getHTML(): Promise<string> {
@@ -126,6 +126,7 @@ export default class PongView extends ViewTemplate {
 						</div>
 					</div>
 
+					<a id="backToTournament" href="/tournament" class="hidden px-6 py-3 bg-transparent border border-[#98c6f8] font-bold rounded-lg hover:bg-white/10 cursor-pointer" data-link>Back to tournament</a>
 				</div>
 			</div>`;
 	}

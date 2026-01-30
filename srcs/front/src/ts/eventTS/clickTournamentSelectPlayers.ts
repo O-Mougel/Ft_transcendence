@@ -1,5 +1,6 @@
 import { setupSocket, getSocket } from "../gameTS/socket.js";
 import { alertBoxMsg, backToDefaultPage } from "./userLog.js";
+import { router } from "./index.js";
 import { errorSchema } from "../gameTS/schemaYup.js";
 
 interface TournamentStateEvent {
@@ -63,7 +64,7 @@ export async function startTournament(expectedCount: number, event: Event): Prom
 		console.log("Tournament created with ID:", tournamentId);
 		sessionStorage.setItem("currentTournamentId", tournamentId);
 		window.history.pushState(null, "", `/tournament`);
-		window.dispatchEvent(new PopStateEvent("popstate"));
+		router();
 	});
 
 	socket.once("tournament:error", (error: unknown) => {
