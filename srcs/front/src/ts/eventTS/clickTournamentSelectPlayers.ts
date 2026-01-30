@@ -1,5 +1,6 @@
 import { setupSocket, getSocket } from "../gameTS/socket.js";
 import { alertBoxMsg, backToDefaultPage } from "./userLog.js";
+import { errorSchema } from "../gameTS/schemaYup.js";
 
 interface TournamentStateEvent {
 	tournamentId: string;
@@ -65,9 +66,16 @@ export async function startTournament(expectedCount: number, event: Event): Prom
 		window.dispatchEvent(new PopStateEvent("popstate"));
 	});
 
-	socket.once("tournament:error", (data: unknown) => {
-		const e = data as TournamentErrorEvent;
-		alertBoxMsg("❌ " + (e?.message || "Failed to create tournament"));
-		backToDefaultPage(); // back to menu on error
+	socket.once("tournament:error", (error: unknown) => {
+		try {
+			const e = errorSchema.validate(error) as TournamentErrorEvent;
+			alertBoxMsg("❌ " + (e?.message || "Failed to create tournament"));
+			backToDefaultPage(); // back to menu on error
+		}
+		catch (err) {
+			console.error("Invalid tournament error data received:", err);
+			alertBoxMsg("❌ Unknown tournament creation error occurred");
+			backToDefaultPage(); // back to menu on error
+		}
 	});
 }
