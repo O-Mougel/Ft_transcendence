@@ -6,6 +6,7 @@ import { fetchErrcodeHandler } from "../eventTS/userLog.js";
 import type { GameStateData, GameStartedData, Socket as SocketType } from '../types/socket.types';
 import type { GameOverData } from '../types/game.types';
 // import Paddle from "./paddle.js";
+import { gameStateSchema, gameOverSchema, gameStartedSchema, reasonSchema, errorSchema } from "./schemaYup.js";
 
 let socket: SocketType | null = null;
 
@@ -35,21 +36,38 @@ export function setupSocket(): SocketType | null {
 	});
 
 	socket.on("disconnect", (reason: unknown) => {
-		console.log("WebSocket disconnected:", reason);
+		try {
+			const result = reasonSchema.validateSync({ reason });
+			console.log("WebSocket disconnected:", result);
+		}
+		catch (err) {
+			console.error("Error parsing disconnect reason:", err);
+		}
 	});
 
 	socket.on("connect_error",	(err: unknown) => {
-	console.error("WebSocket connection error:", err);
-		return null;
+		try {
+			const result = errorSchema.validateSync({ error: (err as Error).message });
+			console.error("WebSocket connection error:", result);
+		}
+		catch (err) {
+			console.error("Error parsing connection error:", err);
+		}
 	});
 
 	if (typeof updateGameScene === "function") 
 	{
 		socket.off("game:state");
 		socket.on("game:state", (...args: unknown[]) => {
-			const data = args[0] as GameStateData;
-			updateGameScene(data);
-			});
+			try {
+				const result = gameStateSchema.validateSync(args[0]) as GameStateData;
+				updateGameScene(result);
+
+			}
+			catch (err) {
+				console.error("Error handling game state:", err);
+			}
+		});
 	}
 
 	if (typeof handleGameStopped === "function") 
@@ -62,14 +80,25 @@ export function setupSocket(): SocketType | null {
 	{
 		socket.off("game:over");
 		socket.on("game:over", (...args: unknown[]) => {
-			const data = args[0] as GameOverData;
-			(handleGameOver as (d: GameOverData) => void)(data);
-			});
+			try {
+				const result = gameOverSchema.validateSync(args[0]);
+				(handleGameOver as (d: GameOverData) => void)(result);
+			}
+			catch (err) {
+				console.error("Error handling game over:", err);
+			}
+		});
 	}
 
 	socket.off("game:error");
 	socket.on("game:error", (err: unknown) => {
-		console.error("WebSocket error:", err);
+		try {
+			const result = errorSchema.validateSync({ error: (err as Error).message });
+			console.error("Game error received:", result);
+		}
+		catch (err) {
+			console.error("Error parsing game error:", err);
+		}
 	});
 
 	return socket;
@@ -132,17 +161,19 @@ export async function waitStartGame(): Promise<void> {
 		else {
 			socket.emit("game:start", {
 				mode: 2,
-				player1: "Player 1",
-				player2: "Player 2",
-				player3: "Player 3",
-				player4: "Player 4",
+				player1Token: tokenP1,
 			});
 		}
 
 		socket.once("game:started", (...args: unknown[]) => {
-		const data = args[0] as GameStartedData;
-		console.log("Game started with data:", data);
-	});
+			try {
+				const result = gameStartedSchema.validateSync(args[0]) as GameStartedData;
+				console.log("Game started with data:", result);
+			}
+			catch (err) {
+				console.error("Error handling game started:", err);
+			}
+		});
 	} catch (err) {
 		if (await fetchErrcodeHandler(err as Error) === 0)
 					return waitStartGame();
