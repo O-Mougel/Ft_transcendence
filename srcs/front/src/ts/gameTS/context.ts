@@ -25,13 +25,16 @@ export const CONTEXT: GameContext = {
 	controlsBound: false,
 	gameMode: 0 as GameMode,
 	tournamentId: null,
-
+	
 	// Dimensions
 	PADDLE_WIDTH: 10,
 	PADDLE_HEIGHT: 80,
 	BALL_RADIUS: 10,
 	GAME_WIDTH: 800,
 	GAME_HEIGHT: 500,
+
+	leftName: "",
+	rightName: "",
 };
 
 export function createGameElements(): void {

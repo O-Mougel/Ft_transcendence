@@ -139,6 +139,6 @@ export default class PongView extends ViewTemplate {
 		if (typeof module.initPong === "function")
 			module.initPong({ mode, gameId: CONTEXT.gameId });
 
-		window.handlePongModeDisplay(mode);
+		window.handlePongModeDisplay(mode, CONTEXT.leftName, CONTEXT.rightName);
 	}
 }
