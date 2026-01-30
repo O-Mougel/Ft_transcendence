@@ -4,7 +4,8 @@ import { setupSocket, getSocket } from "./socket.js";
 import type { Tournament, TournamentStateData, MatchStartedData, TournamentEndedData } from '../types/socket.types';
 import { isPageReload } from "../eventTS/clickEvents.js";
 import { closeSocketCommunication } from "../eventTS/userSocket.js";
-import { tournamentStateSchema, matchStartedSchema, tournamentEndedSchema, errorSchema } from "./schemaYup.js";
+import { tournamentStateSchema, matchStartedSchema, tournamentEndedSchema, messageSchema } from "./schemaYup.js";
+import { alertBoxMsg, backToDefaultPage } from "../eventTS/userLog.js";
 
 window.addEventListener("pagehide", (): void => {
 	if (!(sessionStorage.getItem('f5WasPressed'))) {
@@ -89,6 +90,8 @@ export function initTournament(): void {
 			}
 			catch (err) {
 				console.error("Invalid tournament state data received:", err, data);
+				alertBoxMsg("❌ Tournament state error occurred");
+				backToDefaultPage();
 			}
 		});
 
@@ -106,6 +109,7 @@ export function initTournament(): void {
 			}
 			catch (err) {
 				console.error("Invalid match started data received:", err, data);
+				alertBoxMsg("❌ Match start error");
 			}
 		});
 
@@ -119,20 +123,22 @@ export function initTournament(): void {
 			}
 			catch (err) {
 				console.error("Invalid tournament ended data received:", err, data);
+				alertBoxMsg("❌ Tournament end error occurred");
 			}
 		});
 
 		socket.off("tournament:error");
-		socket.on("tournament:error", (error: unknown) => {
+		socket.on("tournament:error", (message: unknown) => {
 			try {
-				console.log("Tournament error received:", error);
-				const result = errorSchema.validateSync({ error: (error as Error).message });
-				console.error("Tournament error:", result);
+				const result = messageSchema.validateSync(message);
 				const statusEl = document.getElementById("tournamentStatus");
 				if (statusEl) statusEl.textContent = `Error: ${result}`;
+				console.error("Tournament error:", result);
+				alertBoxMsg("❌ " + (result.message || "Tournament error occurred"));
 			}
 			catch (err) {
 				console.error("Invalid tournament error data received:", err);
+				alertBoxMsg("❌ Tournament creation error occurred");
 			}
 		});
 
