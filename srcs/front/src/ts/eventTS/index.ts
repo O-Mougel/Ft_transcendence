@@ -534,6 +534,7 @@ const forceUserRelog = async (): Promise<void> => {
 		await view.init();
 	}
 	history.pushState(null, "", "/logUser");
+	router();
 };
 
 export const adjustNavbar = async (path: string): Promise<void> => {
@@ -584,7 +585,7 @@ const attemptAutolog = async (): Promise<void> => {
 	if (sessionStorage.getItem('pagehide') !== 'pageshouldreload' && localStorage.getItem("allowAutolog") == "true")
 		await newtabRelogFetch();
 	
-	if (sessionStorage.getItem('logStatus') == "loggedOut")
+	if (sessionStorage.getItem('logStatus') && sessionStorage.getItem('logStatus') == "loggedOut")
 		return (await router());
 	
 	try {

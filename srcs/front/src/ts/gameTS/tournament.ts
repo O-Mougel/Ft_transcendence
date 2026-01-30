@@ -45,6 +45,7 @@ export function initTournament(): void {
 		quitBtn.onclick = (): void => {
 			console.log("Leaving tournament:", tournamentId);
 			sessionStorage.removeItem("currentTournamentId");
+			window.sessionStorage.setItem("tournamentEnded", "true");
 			CONTEXT.tournamentId = null;
 			window.history.pushState(null, "", "/tournamentSize");
 			router();
@@ -73,6 +74,7 @@ export function initTournament(): void {
 		socket.off("tournament:state");
 		socket.on("tournament:state", (data: unknown): void => {
 			try {
+				window.sessionStorage.setItem("tournamentEnded", "false");
 				const stateData = data as TournamentStateData;
 				const result = tournamentStateSchema.validateSync(stateData) as TournamentStateData;
 				if (result.tournamentId !== tournamentId) return;
@@ -80,6 +82,8 @@ export function initTournament(): void {
 					if (nextMatchBtn)
 						nextMatchBtn.style.display = "none";
 					nextMatchBtn?.remove();
+					window.sessionStorage.setItem("tournamentEnded", "true");
+					// 	window.sessionStorage.removeItem("currentTournamentId");
 				}
 				renderTournament(result.tournament);
 				const nextMatch = findNextReadyMatch(result.tournament);
@@ -131,6 +135,9 @@ export function initTournament(): void {
 				console.error("Tournament error:", result);
 				const statusEl = document.getElementById("tournamentStatus");
 				if (statusEl) statusEl.textContent = `Error: ${result}`;
+				window.sessionStorage.setItem("tournamentEnded", "true");
+				if (window.sessionStorage.getItem("currentTournamentId"))
+						window.sessionStorage.removeItem("currentTournamentId"); // if error in back, tournament deleted, so we remove it
 			}
 			catch (err) {
 				console.error("Invalid tournament error data received:", err);

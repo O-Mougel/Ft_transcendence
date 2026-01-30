@@ -32,6 +32,20 @@ function reportWindowSize(): void {
 	}
 }
 
+export const alterTournamentSelectPage = async (): Promise<void> => {
+	const tournamentBuiltBlock = document.getElementById('tournamentBuiltBlock') as HTMLElement | null;
+	const tournamentNbPlayerSelect = document.getElementById('tournamentNbPlayerSelect') as HTMLElement | null;
+	const baseTournamentDiv = document.getElementById('baseTournamentDiv') as HTMLElement | null;
+	if (!tournamentBuiltBlock || !tournamentNbPlayerSelect || !baseTournamentDiv)
+		return ;
+
+	baseTournamentDiv.innerHTML = "";
+	let ongoingTournamentDiv = document.createElement("div");
+	ongoingTournamentDiv.className = 'flex flex-col justify-around items-center border border-white rounded-lg w-[30%] gap-2 p-4 mx-auto';
+	ongoingTournamentDiv.innerHTML = "<div class=\"text-center text-white text-lg mb-2\">Tournament in progress</div> <a id=\"backToTournament\" href=\"/tournament\" class=\"px-6 py-3 w-full bg-transparent border border-[#98c6f8] font-bold rounded-lg hover:bg-white/10 cursor-pointer\" data-link>Back to tournament</a>";
+    baseTournamentDiv.appendChild(ongoingTournamentDiv);
+}
+
 export function resizeCanvasToElement(): void {
 
 	const canvas = document.getElementById("canvas") as HTMLCanvasElement | null;
@@ -46,7 +60,6 @@ export function resizeCanvasToElement(): void {
 	}
 	const scale = window.devicePixelRatio || 1;
 	const rect = canvas.getBoundingClientRect();
-	console.log(rect);
 	const cssW = Math.max(1, Math.floor(rect.width));
 	const cssH = Math.max(1, Math.floor(rect.height));
 
@@ -155,7 +168,7 @@ export function isPageReload(): boolean {
 
 async function uploadFileToServer(fileObj: File): Promise<string | null> {
 	const fileInput = document.getElementById('myfileSelector') as HTMLInputElement | null;
-	const filenameStr = document.getElementById('selectedFileName') as HTMLElement | null;
+	const filenameStr = document.getElementById('selectedFileName') as HTMLElement | null; 
 	if (!fileInput || !filenameStr) return null;
 	const formData = new FormData();
 	formData.append("myfileSelector", fileObj);
