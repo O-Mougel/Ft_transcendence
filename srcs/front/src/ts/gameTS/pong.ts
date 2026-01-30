@@ -1,35 +1,32 @@
 import { waitStartGame, isSocketConnected, setupSocket, emitNextMatch, joinExistingGame } from "./socket.js";
 import { CONTEXT, createGameElements } from "./context.js";
 import { draw, drawScore, resetState } from "./graphics.js";
+import { router} from "../eventTS/index.js";
+import { resizeCanvasToElement} from "../eventTS/clickEvents.js";
 import { bindControls } from "./controls.js";
 import type { GameInitOptions, GameMode } from '../types/game.types';
 import type { GameStateData } from '../types/socket.types';
 
 
-// window.addEventListener("contextmenu", (e: MouseEvent) => {
-// 	console.log("Context menu event:", e.button);
-// 	if (CONTEXT.isGameStarted)
-//   		e.preventDefault(); // Prevent right-click from opening the context menu
-// });
-
 export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 	if (mode.mode === 3 && !sessionStorage.getItem("player2_token")) {
 		window.history.pushState(null, "", `/ranked`);
-		window.dispatchEvent(new PopStateEvent("popstate"));
+		router();
 		return;
 	}
 	CONTEXT.gameMode = mode.mode as GameMode;
 	if (mode.gameId) {
 		CONTEXT.gameId = mode.gameId;
 	}
-
 	CONTEXT.canvas = document.getElementById("canvas") as HTMLCanvasElement | null;
 	CONTEXT.startButton = document.getElementById("startButton") as HTMLButtonElement | null;
 	CONTEXT.backButton = document.getElementById("backToTournament") as HTMLButtonElement | null;
 	CONTEXT.score = document.getElementById("Scores");
 
-	if (!CONTEXT.canvas || !CONTEXT.startButton || !CONTEXT.score || !CONTEXT.backButton) {
+	if (!CONTEXT.canvas || !CONTEXT.score || !CONTEXT.startButton) {
 		console.error("Pong: canvas or startButton not found in DOM.");
+		if (CONTEXT.gameId && !CONTEXT.backButton)
+			console.error("backButton is missing on the page !");
 		return;
 	}
 
@@ -44,37 +41,9 @@ export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 	const scale = window.devicePixelRatio || 1;
 	CONTEXT.scale = scale;
 
-	// Resize canvas drawing buffer to match displayed CSS size (and DPR)
-	const resizeCanvasToElement = (): void => {
-		const rect = canvas.getBoundingClientRect();
-		const cssW = Math.max(1, Math.floor(rect.width));
-		const cssH = Math.max(1, Math.floor(rect.height));
-
-		// keep logical drawing coordinates in CSS pixels so game math uses those values
-		CONTEXT.GAME_WIDTH = cssW;
-		CONTEXT.GAME_HEIGHT = cssH;
-
-		// set backing buffer in device pixels
-		const backingW = Math.floor(cssW * scale);
-		const backingH = Math.floor(cssH * scale);
-		if (canvas.width !== backingW || canvas.height !== backingH) {
-			canvas.width = backingW;
-			canvas.height = backingH;
-		}
-
-		// ensure CSS width/height match the element rect (some frameworks may change these)
-		canvas.style.width = cssW + "px";
-		canvas.style.height = cssH + "px";
-
-		// reset transform and apply DPR scaling so drawing uses CSS pixel coordinates
-		ctx.setTransform(1, 0, 0, 1, 0, 0);
-		ctx.scale(scale, scale);
-	};
-
 	// initial size and keep responsive on resize
 	resizeCanvasToElement();
-	window.addEventListener("resize", resizeCanvasToElement);
-
+	// window.addEventListener("resize", resizeCanvasToElement);
 	
 	createGameElements();
 	setupSocket();
@@ -111,12 +80,12 @@ export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 	}
 
 	if (CONTEXT.tournamentId && window.location.href.includes("/pongTournament") && CONTEXT.backButton) {
-		console.log("Showing back to tournament button");
+		// console.log("Showing back to tournament button");
 		CONTEXT.backButton.classList.remove("hidden");
-		CONTEXT.backButton.onclick = (): void => {
-			window.history.pushState(null, "", `/tournamentSize`);
-			window.dispatchEvent(new PopStateEvent("popstate"));
-		};
+		// CONTEXT.backButton.onclick = (): void => {
+		// 	window.history.pushState(null, "", `/tournament`);
+		// 	router();
+		// };
 	}
 
 	draw();

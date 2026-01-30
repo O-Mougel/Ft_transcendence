@@ -15,6 +15,7 @@ import Login2fa from "../viewTS/2faLogin.js";
 import changePassword from "../viewTS/changePassword.js";
 import rankedLogin from "../viewTS/rankedLogin.js";
 import UserMatchHistory from "../viewTS/UserMatchHistory.js";
+import pongTournament from "../viewTS/pongTournament.js";
 
 // stop pong game when navigating away from /pong
 import { emitStopGame } from "../gameTS/socket.js";
@@ -608,7 +609,7 @@ const attemptAutolog = async (): Promise<void> => {
 	await router();
 };
 
-const router = async (): Promise<void> => {
+export const router = async (): Promise<void> => {
 	const routes: Route[] = [
 		{ path: "/", view: startingFile },
 		{ path: "/404", view: page404 },
@@ -624,7 +625,7 @@ const router = async (): Promise<void> => {
 		{ path: "/pong", view: pong },
 		{ path: "/pong2", view: pong },
 		{ path: "/pongRanked", view: pong },
-		{ path: "/pongTournament", view: pong },
+		{ path: "/pongTournament", view: pongTournament },
 		{ path: "/logUser", view: logUser },
 		{ path: "/tournament", view: tournament },
 		{ path: "/2faLogin", view: Login2fa },
@@ -655,14 +656,14 @@ const router = async (): Promise<void> => {
 		emitStopGame();
 	}
 
-	if (match && match.mapElement.path === "/tournamentSize" && CONTEXT.tournamentId ) {
-		const tournamentRoute = routes.find(r => r.path === "/tournament");
-		if (tournamentRoute)
-		{
-			match.mapElement = tournamentRoute;
-			history.pushState(null, "", "/tournament");
-		}
-	}
+	// if (match && match.mapElement.path === "/tournamentSize" && CONTEXT.tournamentId ) {
+	// 	const tournamentRoute = routes.find(r => r.path === "/tournament");
+	// 	if (tournamentRoute)
+	// 	{
+	// 		match.mapElement = tournamentRoute;
+	// 		history.pushState(null, "", "/tournament");
+	// 	}
+	// }
 
 	const view = new match.mapElement.view();
 	

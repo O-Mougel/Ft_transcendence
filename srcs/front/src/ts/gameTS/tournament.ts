@@ -4,6 +4,7 @@ import { setupSocket, getSocket } from "./socket.js";
 import type { Tournament, TournamentStateData, MatchStartedData, TournamentEndedData } from '../types/socket.types';
 import { isPageReload } from "../eventTS/clickEvents.js";
 import { closeSocketCommunication } from "../eventTS/userSocket.js";
+import { router } from "../eventTS/index.js";
 import { tournamentStateSchema, matchStartedSchema, tournamentEndedSchema, errorSchema } from "./schemaYup.js";
 
 window.addEventListener("pagehide", (): void => {
@@ -31,7 +32,7 @@ export function initTournament(): void {
 		const statusEl = document.getElementById("tournamentStatus");
 		if (statusEl) statusEl.textContent = "Missing tournament id.";
 		window.history.pushState(null, "", "/tournamentSize");
-		window.dispatchEvent(new PopStateEvent("popstate"));
+		router();
 		return;
 	}
 
@@ -46,7 +47,7 @@ export function initTournament(): void {
 			sessionStorage.removeItem("currentTournamentId");
 			CONTEXT.tournamentId = null;
 			window.history.pushState(null, "", "/tournamentSize");
-			window.dispatchEvent(new PopStateEvent("popstate"));
+			router();
 			socket.emit("tournament:leave", { tournamentId });
 		};
 	}
@@ -56,14 +57,14 @@ export function initTournament(): void {
 			nextMatchBtn.textContent = "Back to Match";
 			nextMatchBtn.onclick = (): void => {
 				window.history.pushState(null, "", "/pong");
-				window.dispatchEvent(new PopStateEvent("popstate"));
+				router();
 			};
 		} else {
 			CONTEXT.tournamentId = tournamentId;
 			nextMatchBtn.onclick = (): void => {
 				console.log("Presenting next match in tournament:", tournamentId);
 				window.history.pushState(null, "", "/pongTournament");
-				window.dispatchEvent(new PopStateEvent("popstate"));
+				router();
 			};
 		}
 	}

@@ -1,7 +1,9 @@
 import { fetchErrcodeHandler, alertBoxMsg, displayCorrectErrMsg, backToDefaultPage } from "./userLog.js";
 import { closeSocketCommunication } from "./userSocket.js";
+import { router } from "./index.js";
 import { startTournament } from "./clickTournamentSelectPlayers.js";
 import type { FileUploadResponse, ProfileEditData } from "../types/api.types";
+import { CONTEXT } from "../gameTS/context.js";
 
 document.addEventListener("DOMContentLoaded", (): void => {
 	document.addEventListener("click", (element: MouseEvent): void => {
@@ -19,13 +21,55 @@ document.addEventListener("DOMContentLoaded", (): void => {
 });
 
 function reportWindowSize(): void {
+
 	const panel = document.getElementById('profilePanel') as HTMLElement | null;
-	if (!panel) return;
-	const style = window.getComputedStyle(panel);
-	if (style.display === 'none')
-		return;
-	panel.style.display = 'none';
+	if (panel)
+	{
+		const style = window.getComputedStyle(panel);
+		if (style.display === 'none')
+			return;
+		panel.style.display = 'none';
+	}
 }
+
+export function resizeCanvasToElement(): void {
+
+	const canvas = document.getElementById("canvas") as HTMLCanvasElement | null;
+	if (!canvas)
+	{
+		return ;
+	}
+	let ctx = canvas.getContext("2d");
+	if (!ctx)
+	{
+		return ;
+	}
+	const scale = window.devicePixelRatio || 1;
+	const rect = canvas.getBoundingClientRect();
+	console.log(rect);
+	const cssW = Math.max(1, Math.floor(rect.width));
+	const cssH = Math.max(1, Math.floor(rect.height));
+
+	// keep logical drawing coordinates in CSS pixels so game math uses those values
+	CONTEXT.GAME_WIDTH = cssW;
+	CONTEXT.GAME_HEIGHT = cssH;
+
+	// set backing buffer in device pixels
+	const backingW = Math.floor(cssW * scale);
+	const backingH = Math.floor(cssH * scale);
+	if (canvas.width !== backingW || canvas.height !== backingH) {
+		canvas.width = backingW;
+		canvas.height = backingH;
+	}
+
+	// ensure CSS width/height match the element rect (some frameworks may change these)
+	canvas.style.width = cssW + "px";
+	canvas.style.height = cssH + "px";
+
+	// reset transform and apply DPR scaling so drawing uses CSS pixel coordinates
+	ctx.setTransform(1, 0, 0, 1, 0, 0);
+	ctx.scale(scale, scale);
+};
 
 window.addEventListener('storage', async (event) => {
 	console.info(`Key changed: ${event.key}, [OLD] = ${event.oldValue} | [NEW] = ${event.newValue} `);
@@ -151,7 +195,7 @@ async function uploadFileToServer(fileObj: File): Promise<string | null> {
 
 window.backToTournamentPage = function (): void {
 	window.history.pushState(null, "", "/tournament");
-	window.dispatchEvent(new PopStateEvent("popstate"));
+	router();
 };
 
 window.validatePlayerNameFields = function (nbPlayers: number, event: Event): void {

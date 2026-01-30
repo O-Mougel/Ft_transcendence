@@ -48,7 +48,7 @@ const matchSchema = yup.object({
   player1: yup.string().nullable().defined(),
   player2: yup.string().nullable().defined(),
   winner: yup.string().nullable().defined(),
-  status: yup.string().oneOf(["playing", "ready", "pending", "played"]).required(),
+  status: yup.string().oneOf(["playing", "ready", "pending", "played", "aborted"]).required(),
 });
 
 const currentSchema = yup.object({
