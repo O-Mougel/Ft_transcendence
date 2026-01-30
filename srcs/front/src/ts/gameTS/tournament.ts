@@ -6,6 +6,9 @@ import { isPageReload } from "../eventTS/clickEvents.js";
 import { closeSocketCommunication } from "../eventTS/userSocket.js";
 import { tournamentStateSchema, matchStartedSchema, tournamentEndedSchema, messageSchema } from "./schemaYup.js";
 import { alertBoxMsg, backToDefaultPage } from "../eventTS/userLog.js";
+import { adjustNavbar } from "../eventTS/index.js";
+import tournament from "../viewTS/tournament.js";
+// import { router } from "../eventTS/index.js";
 
 window.addEventListener("pagehide", (): void => {
 	if (!(sessionStorage.getItem('f5WasPressed'))) {
@@ -135,10 +138,28 @@ export function initTournament(): void {
 				if (statusEl) statusEl.textContent = `Error: ${result}`;
 				console.error("Tournament error:", result);
 				alertBoxMsg("❌ " + (result.message || "Tournament error occurred"));
+				console.log("back tot tournament page");
+				backToTournamentPage();
 			}
 			catch (err) {
 				console.error("Invalid tournament error data received:", err);
 				alertBoxMsg("❌ Tournament creation error occurred");
+			}
+		});
+
+		socket.off("tournament:duplicate");
+		socket.on("tournament:duplicate", (data) => {
+			try {
+				const result = messageSchema.validateSync(data);
+				console.error("Tournament duplicate error:", result);
+				alertBoxMsg("❌ " + (result.message || "There is already a tournament ongoing."));
+				history.pushState(null, "", "/tournament");
+				// router();
+			}
+			catch (err) {
+				console.error("Invalid tournament duplicate data received:", err, data);
+				alertBoxMsg("❌ Duplicate tournament join attempt.");
+				backToDefaultPage();
 			}
 		});
 
@@ -227,4 +248,17 @@ function findNextReadyMatch(tournament: Tournament): { player1: string | undefin
 	  }
 	}
 	return null;
+}
+
+const backToTournamentPage = async (): Promise<void> => {
+	const view = new tournament();
+	const appElement = document.querySelector("#app") as HTMLElement | null;
+	if (appElement) {
+		appElement.innerHTML = await view.getHTML();
+	}
+	adjustNavbar("/tournament");
+	if (typeof view.init === "function") {
+		await view.init();
+	}
+	history.pushState(null, "", "/tournament");
 }
