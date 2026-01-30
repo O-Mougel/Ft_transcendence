@@ -229,19 +229,14 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 };
 	
 window.fetchPlayerStats = async (playerId: string, playerUsername: string): Promise<void> => {
-	const nbOfMatchCpt2 = document.getElementById("nbOfMatchCpt2") as HTMLElement | null;
-	const winRatioPercent2 = document.getElementById("winRatioPercent2") as HTMLElement | null;
-	const longestMatchCpt2 = document.getElementById("longestMatchCpt2") as HTMLElement | null;
-	const biggestStreakCpt2 = document.getElementById("biggestStreakCpt2") as HTMLElement | null;
 	const friendStatDisplayBox = document.getElementById("friendStatDisplayBox") as HTMLElement | null;
 	const selectedPlayerUsernameHeader = document.getElementById("selectedPlayerUsernameHeader") as HTMLElement | null;
+	const noMatchesMessageFriend = document.getElementById("noMatchesMessageFriend") as HTMLElement | null;
+	const winLossDoughnutChartFriend = document.getElementById("winLossDoughnutChartFriend") as HTMLCanvasElement | null;
+	const winRatioBarFriend = document.getElementById("winRatioBarFriend") as HTMLCanvasElement | null;
+	const multiChartFriend = document.getElementById("multiChartFriend") as HTMLCanvasElement | null;
 
-	if (!playerId || !nbOfMatchCpt2 || !winRatioPercent2 || !longestMatchCpt2 || !biggestStreakCpt2 || !friendStatDisplayBox || !selectedPlayerUsernameHeader) return;
-
-	nbOfMatchCpt2.textContent = "--";
-	winRatioPercent2.textContent = "--";
-	longestMatchCpt2.textContent = "--";
-	biggestStreakCpt2.textContent = "--";
+	if (!playerId || !friendStatDisplayBox || !selectedPlayerUsernameHeader || !noMatchesMessageFriend || !winLossDoughnutChartFriend || !winRatioBarFriend || !multiChartFriend) return;
 
 	selectedPlayerUsernameHeader.textContent = playerUsername + " 's stats :";
 
@@ -258,15 +253,82 @@ window.fetchPlayerStats = async (playerId: string, playerUsername: string): Prom
 		const result: MatchStats = await userStatsRequestResponse.json();
 		if (result) {
 			if (result.matchsnb === 0) {
-				nbOfMatchCpt2.textContent = "0";
-				winRatioPercent2.textContent = "--";
-				longestMatchCpt2.textContent = "--";
-				biggestStreakCpt2.textContent = "--";
+				noMatchesMessageFriend.style.display = "block";
+				winLossDoughnutChartFriend.style.display = "none";
+				winRatioBarFriend.style.display = "none";
+				multiChartFriend.style.display = "none";
 			} else {
-				nbOfMatchCpt2.textContent = String(result.matchsnb);
-				winRatioPercent2.textContent = result.winrate + " %";
-				// longestMatchCpt2.textContent = result.longestMatch + " sec";
-				// biggestStreakCpt2.textContent = String(result.biggest_streak);
+				noMatchesMessageFriend.style.display = "none";
+
+				new Chart(winLossDoughnutChartFriend, {
+					type: 'doughnut',
+					data: {
+						labels: ['Win', 'Loss'],
+						datasets: [{
+							label: ' ',
+							data: [result.winmatchnb, result.matchsnb - result.winmatchnb],
+							backgroundColor: ['#4ac03d9f', '#c03d3d9f'],
+							hoverBackgroundColor: ['#4ac03d9f', '#c03d3d9f']
+						}]
+					},
+					options: {
+						borderColor: 'none',
+						
+					},
+				});
+
+				new Chart(winRatioBarFriend, {
+					type: 'bar',
+					data: {
+						labels: ['Win Ratio'],
+						datasets: [{
+							label: 'Win Ratio %',
+							data: [result.winrate],
+							backgroundColor: '#4ac03d9f',
+							hoverBackgroundColor: '#4ac03d9f'
+						}]
+					},
+					options: {
+						borderColor: 'none',
+						indexAxis: 'y',
+						scales: {
+							x: {
+								beginAtZero: true,
+								min: 0,
+								max: 100,
+							}
+						},
+					},
+				});
+
+				new Chart(multiChartFriend, {
+					type: 'line',
+					data: {
+						labels: ['match 1', 'match 2', 'match 3', 'match 4', 'match 5', 'match 6', 'match 7', 'match 8', 'match 9', 'match 10'],
+						datasets: [{
+							label: "Score Difference",
+							data: [result.last10matchs[0].diffScore, result.last10matchs[1]?.diffScore, result.last10matchs[2]?.diffScore, result.last10matchs[3]?.diffScore, result.last10matchs[4]?.diffScore, result.last10matchs[5]?.diffScore, result.last10matchs[6]?.diffScore, result.last10matchs[7]?.diffScore, result.last10matchs[8]?.diffScore, result.last10matchs[9]?.diffScore],
+							backgroundColor: 'white',
+							borderColor: 'white',
+						},
+						{
+							label: "duration",
+							data: [result.last10matchs[0].duration, result.last10matchs[1]?.duration, result.last10matchs[2]?.duration, result.last10matchs[3]?.duration, result.last10matchs[4]?.duration, result.last10matchs[5]?.duration, result.last10matchs[6]?.duration, result.last10matchs[7]?.duration, result.last10matchs[8]?.duration, result.last10matchs[9]?.duration],
+							backgroundColor: '#1e90ff',
+							borderColor: '#1e90ff'
+						},
+						{
+							label: "Longest streak",
+							data: [result.last10matchs[0].longestStreak, result.last10matchs[1]?.longestStreak, result.last10matchs[2]?.longestStreak, result.last10matchs[3]?.longestStreak, result.last10matchs[4]?.longestStreak, result.last10matchs[5]?.longestStreak, result.last10matchs[6]?.longestStreak, result.last10matchs[7]?.longestStreak, result.last10matchs[8]?.longestStreak, result.last10matchs[9]?.longestStreak],
+							backgroundColor: '#ff0000',
+							borderColor: '#ff0000'
+						}
+						]
+					},
+					options: {
+						borderColor: 'white',
+					},
+				});
 			}
 			friendStatDisplayBox.style.display = "flex";
 			selectedPlayerUsernameHeader.style.display = "block";

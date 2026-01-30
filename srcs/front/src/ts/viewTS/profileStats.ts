@@ -51,10 +51,10 @@ export default class ProfileStatsView extends ViewTemplate {
 					<a class="uppercase px-5 py-1 z-20 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg" name="gotoMatchHistory" href="/UserMatchHistory" data-link>View match history</a>
 				</div>
 				<div class="flex border border-blue-300 shadow-[0_0_20px_rgba(158,202,237,0.9)] rounded-lg  p-4 gap-4 flex-wrap justify-around w-[90%] mb-2">		
-							<canvas id="winLossDoughnutChart" class="hidden aspect-square w-full max-w-60 max-h-60 min-w-20" ></canvas>
-							<canvas id="winRatioBar" class="hidden aspect-square w-full max-w-60 max-h-60 min-w-20" ></canvas>
-							<canvas id="multiChart" class="hidden aspect-square w-full max-w-60 max-h-60 min-w-20" ></canvas>
-					<p id="noMatchesMessage" class="w-full text-center hidden">There is no match statistics to display</p>
+					<canvas id="winLossDoughnutChart" class="hidden aspect-square w-full max-w-60 max-h-60 min-w-20" ></canvas>
+					<canvas id="winRatioBar" class="hidden aspect-square w-full max-w-60 max-h-60 min-w-20" ></canvas>
+					<canvas id="multiChart" class="hidden aspect-square w-full max-w-60 max-h-60 min-w-20" ></canvas>
+					<p id="noMatchesMessage" class="hidden w-full text-center">There is no match statistics to display</p>
 				</div>
 
 				<div class="w-[90%] my-2 rounded-xl outline-none border border-blue-300 shadow-[0_0_20px_rgba(158,202,237,0.9)]" >
@@ -66,23 +66,12 @@ export default class ProfileStatsView extends ViewTemplate {
 						</div>
 					</div>
 					<h2 id="selectedPlayerUsernameHeader" class="hidden overflow-hidden text-center pr-2 py-2 text-blue-900 mt-3">[--]</h2>
-					<div id="friendStatDisplayBox" class="hidden border border-white rounded-lg w-full p-4 gap-4 flex-wrap justify-between animate-fade-in-scale">
-						<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
-							<p>Match played</p>
-							<p id="nbOfMatchCpt2">--</p>
-						</div>
-						<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
-							<p>Win ratio</p>
-							<p id="winRatioPercent2" >--</p>
-						</div>
-						<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
-							<p>Longest match</p>
-							<p id="longestMatchCpt2" >--</p>
-						</div>
-						<div class="flex flex-col flex-wrap w-[45%] sm:w-[22%] 2xl:w-[15%]">
-							<p>Biggest streak</p>
-							<p id="biggestStreakCpt2">--</p>
-						</div>
+					
+					<div id="friendStatDisplayBox" class="hidden m-auto border border-blue-300 shadow-[0_0_20px_rgba(158,202,237,0.9)] rounded-lg  p-4 gap-4 flex-wrap justify-around w-[90%] mb-2">
+						<canvas id="winLossDoughnutChartFriend" class="hidden aspect-square w-full max-w-60 max-h-60 min-w-20" ></canvas>
+						<canvas id="winRatioBarFriend" class="hidden aspect-square w-full max-w-60 max-h-60 min-w-20" ></canvas>
+						<canvas id="multiChartFriend" class="hidden aspect-square w-full max-w-60 max-h-60 min-w-20" ></canvas>
+						<p id="noMatchesMessageFriend" class="hidden w-full text-center">There is no match statistics to display</p>
 					</div>
 					<div id="removeFriendBoxDiv">
 						<h3 class="py-2 overflow-hidden">Remove a friend :</h3>
