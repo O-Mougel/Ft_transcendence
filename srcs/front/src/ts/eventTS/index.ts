@@ -42,10 +42,14 @@ interface RouteMatch {
 	isMatch: boolean;
 }
 
-// export {};
-// declare global {
-//   var Chart: any;
-// }
+export {};
+declare global {
+  let Chart: any;
+}
+
+let friendWinLossChart: any = null;
+let friendWinRatioChart: any = null;
+let friendMultiChart: any = null;
 
 // let profileRefresh: ReturnType<typeof setInterval> | undefined;
 
@@ -216,7 +220,6 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 				winRatioBar.style.display = "flex";
 				multiChart.style.display = "flex";
 				noMatchesMessage.style.display = "none";
-
 			}
 		}
 	} catch (err) {
@@ -225,10 +228,6 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 		console.error('⚠️ Couldn\'t fetch logged user stats !\n => ', err);
 	}
 };
-
-let friendWinLossChart: any = null;
-let friendWinRatioChart: any = null;
-let friendMultiChart: any = null;
 
 window.fetchPlayerStats = async (playerId: string, playerUsername: string): Promise<void> => {
 	const friendStatDisplayBox = document.getElementById("friendStatDisplayBox") as HTMLElement | null;
