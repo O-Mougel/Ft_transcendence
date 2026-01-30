@@ -6,7 +6,7 @@ import { fetchErrcodeHandler } from "../eventTS/userLog.js";
 import type { GameStateData, GameStartedData, Socket as SocketType } from '../types/socket.types';
 import type { GameOverData } from '../types/game.types';
 // import Paddle from "./paddle.js";
-import { gameStateSchema, gameOverSchema, gameStartedSchema, reasonSchema, errorSchema } from "./schemaYup.js";
+import { gameStateSchema, gameOverSchema, gameStartedSchema, reasonSchema, errorSchema, messageSchema } from "./schemaYup.js";
 
 let socket: SocketType | null = null;
 
@@ -91,9 +91,9 @@ export function setupSocket(): SocketType | null {
 	}
 
 	socket.off("game:error");
-	socket.on("game:error", (err: unknown) => {
+	socket.on("game:error", (message: unknown) => {
 		try {
-			const result = errorSchema.validateSync({ error: (err as Error).message });
+			const result = messageSchema.validateSync({ message: message });
 			console.error("Game error received:", result);
 		}
 		catch (err) {

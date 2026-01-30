@@ -30,7 +30,7 @@ export const gameStartedSchema = yup.object({
 	gameId: yup.string().required(),
 }).required();
 
-export const standardSchema = yup.object({
+export const messageSchema = yup.object({
 	message: yup.string().required(),
 }).required();
 
@@ -48,7 +48,7 @@ const matchSchema = yup.object({
   player1: yup.string().nullable().defined(),
   player2: yup.string().nullable().defined(),
   winner: yup.string().nullable().defined(),
-  status: yup.string().oneOf(["playing", "ready", "pending", "played"]).required(),
+  status: yup.string().oneOf(["playing", "ready", "pending", "played", "aborted"]).required(),
 });
 
 const currentSchema = yup.object({
