@@ -275,6 +275,26 @@ window.sneakyClick = function (): void {
 	aboutText.textContent = "Just kidding, lchapard did everything (what a great guy)";
 };
 
+window.ft_bh = function (): void {
+	const bigMainTitle = document.getElementById('bigMainTitle') as HTMLElement | null;
+
+	if (!bigMainTitle)
+		return;
+	if (!sessionStorage.getItem("secretfeature"))
+		sessionStorage.setItem("secretfeature", "1");
+	else
+	{
+		const nbClick = parseInt(window.sessionStorage.getItem('secretfeature') || '0');
+			if (nbClick == 4)
+			{
+				bigMainTitle.textContent= "FT_BLACKHOLE";
+				sessionStorage.setItem("secretfeature", "0");
+				return ;
+			}
+			window.sessionStorage.setItem('secretfeature', String(nbClick + 1));
+	}
+};
+
 window.saveProfileInfo = async function (): Promise<void> {
 	const username = document.getElementById('newUsername') as HTMLInputElement | null;
 	const confirmText = document.getElementById('confirmChangeResults') as HTMLElement | null;

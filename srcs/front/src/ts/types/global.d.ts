@@ -51,6 +51,7 @@ declare global {
     //Others
     spinMeAround: () => void;
     sneakyClick: () => void;
+    ft_bh: () => void;
 
   }
 }
