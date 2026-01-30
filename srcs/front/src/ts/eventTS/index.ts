@@ -227,7 +227,11 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 		console.error('⚠️ Couldn\'t fetch logged user stats !\n => ', err);
 	}
 };
-	
+
+let friendWinLossChart: any = null;
+let friendWinRatioChart: any = null;
+let friendMultiChart: any = null;
+
 window.fetchPlayerStats = async (playerId: string, playerUsername: string): Promise<void> => {
 	const friendStatDisplayBox = document.getElementById("friendStatDisplayBox") as HTMLElement | null;
 	const selectedPlayerUsernameHeader = document.getElementById("selectedPlayerUsernameHeader") as HTMLElement | null;
@@ -239,6 +243,9 @@ window.fetchPlayerStats = async (playerId: string, playerUsername: string): Prom
 	if (!playerId || !friendStatDisplayBox || !selectedPlayerUsernameHeader || !noMatchesMessageFriend || !winLossDoughnutChartFriend || !winRatioBarFriend || !multiChartFriend) return;
 
 	selectedPlayerUsernameHeader.textContent = playerUsername + " 's stats :";
+	if (friendWinLossChart) { try {	friendWinLossChart.destroy(); } catch(_) {} friendWinLossChart = null;}
+	if (friendWinRatioChart) { try { friendWinRatioChart.destroy(); } catch(_) {} friendWinRatioChart = null; }
+	if (friendMultiChart) { try { friendMultiChart.destroy(); } catch(_) {} friendMultiChart = null; }
 
 	try {
 		const userStatsRequestResponse = await fetch(`/match/${playerId}`, {
@@ -259,8 +266,11 @@ window.fetchPlayerStats = async (playerId: string, playerUsername: string): Prom
 				multiChartFriend.style.display = "none";
 			} else {
 				noMatchesMessageFriend.style.display = "none";
+				winLossDoughnutChartFriend.style.display = "flex";
+				winRatioBarFriend.style.display = "flex";
+				multiChartFriend.style.display = "flex";
 
-				new Chart(winLossDoughnutChartFriend, {
+				friendWinLossChart = new Chart(winLossDoughnutChartFriend, {
 					type: 'doughnut',
 					data: {
 						labels: ['Win', 'Loss'],
@@ -277,7 +287,7 @@ window.fetchPlayerStats = async (playerId: string, playerUsername: string): Prom
 					},
 				});
 
-				new Chart(winRatioBarFriend, {
+				friendWinRatioChart = new Chart(winRatioBarFriend, {
 					type: 'bar',
 					data: {
 						labels: ['Win Ratio'],
@@ -301,7 +311,7 @@ window.fetchPlayerStats = async (playerId: string, playerUsername: string): Prom
 					},
 				});
 
-				new Chart(multiChartFriend, {
+				friendMultiChart = new Chart(multiChartFriend, {
 					type: 'line',
 					data: {
 						labels: ['match 1', 'match 2', 'match 3', 'match 4', 'match 5', 'match 6', 'match 7', 'match 8', 'match 9', 'match 10'],
