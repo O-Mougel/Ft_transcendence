@@ -80,7 +80,4 @@ export function createGameElements(): void {
 		PADDLE_HEIGHT * height_ratio,
 		"red"
 	);
-
-	console.log("Paddles clients positions:", CONTEXT.leftPaddle.x, CONTEXT.leftPaddle2.x, CONTEXT.rightPaddle.x, CONTEXT.rightPaddle2.x);
-
 }

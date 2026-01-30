@@ -196,7 +196,7 @@ export class TournamentManager {
     const winnerName = chooseWinner(match, state.score);
 
     match.winner = winnerName;
-    match.status = "Played";
+    match.status = "played";
 
     advanceWinner(tournament, r, m, winnerName);
 

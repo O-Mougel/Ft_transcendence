@@ -6,24 +6,10 @@ import type { GameInitOptions, GameMode } from '../types/game.types';
 import type { GameStateData } from '../types/socket.types';
 
 
-window.addEventListener("contextmenu", (e: MouseEvent) => {
-	console.log("Context menu event:", e.button);
-	if (CONTEXT.isGameStarted)
-  		e.preventDefault(); // Prevent right-click from opening the context menu
-});
-
-// window.addEventListener("mousedown", (e) => {
-// 	console.log("Mouse down event:", e.button);
-//   if (e.button === 0 || e.button === 2) {
-// 	e.preventDefault(); // Disable left-click (button 0) and right-click (button 2)
-//   }
-// });
-
-// window.addEventListener("mouseup", (e) => {
-// 	console.log("Mouse up event:", e.button);
-//   if (e.button === 0 || e.button === 2) {
-// 	e.preventDefault(); // Disable left-click (button 0) and right-click (button 2)
-//   }
+// window.addEventListener("contextmenu", (e: MouseEvent) => {
+// 	console.log("Context menu event:", e.button);
+// 	if (CONTEXT.isGameStarted)
+//   		e.preventDefault(); // Prevent right-click from opening the context menu
 // });
 
 export function initPong(mode: GameInitOptions = { mode: 0 }): void {

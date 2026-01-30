@@ -4,6 +4,7 @@ import { setupSocket, getSocket } from "./socket.js";
 import type { Tournament, TournamentStateData, MatchStartedData, TournamentEndedData } from '../types/socket.types';
 import { isPageReload } from "../eventTS/clickEvents.js";
 import { closeSocketCommunication } from "../eventTS/userSocket.js";
+import { tournamentStateSchema, matchStartedSchema, tournamentEndedSchema, errorSchema } from "./schemaYup.js";
 
 window.addEventListener("pagehide", (): void => {
 	if (!(sessionStorage.getItem('f5WasPressed'))) {
@@ -60,7 +61,7 @@ export function initTournament(): void {
 		} else {
 			CONTEXT.tournamentId = tournamentId;
 			nextMatchBtn.onclick = (): void => {
-				console.log("Starting next match in tournament:", tournamentId);
+				console.log("Presenting next match in tournament:", tournamentId);
 				window.history.pushState(null, "", "/pongTournament");
 				window.dispatchEvent(new PopStateEvent("popstate"));
 			};
@@ -70,43 +71,63 @@ export function initTournament(): void {
 	if (socket) {
 		socket.off("tournament:state");
 		socket.on("tournament:state", (data: unknown): void => {
-			console.log("Received tournament state update:", data);
-			const stateData = data as TournamentStateData;
-			if (stateData.tournamentId !== tournamentId) return;
-			if (stateData.tournament.status === "finished") {
-				if (nextMatchBtn)
-					nextMatchBtn.style.display = "none";
-				nextMatchBtn?.remove();
+			try {
+				const stateData = data as TournamentStateData;
+				const result = tournamentStateSchema.validateSync(stateData) as TournamentStateData;
+				if (result.tournamentId !== tournamentId) return;
+				if (result.tournament.status === "finished") {
+					if (nextMatchBtn)
+						nextMatchBtn.style.display = "none";
+					nextMatchBtn?.remove();
+				}
+				renderTournament(result.tournament);
 			}
-			renderTournament(stateData.tournament);
+			catch (err) {
+				console.error("Invalid tournament state data received:", err, data);
+			}
 		});
 
 		socket.off("match:started");
 		socket.on("match:started", (data: unknown): void => {
-			const info = data as MatchStartedData;
-			if (info.tournamentId && info.tournamentId !== tournamentId) return;
-
-			CONTEXT.gameId = info.gameId;
-			CONTEXT.leftName = info.player1;
-			CONTEXT.rightName = info.player2;
-			CONTEXT.gameMode = 1;
-			CONTEXT.tournamentId = tournamentId;
+			try {
+				const info = matchStartedSchema.validateSync(data) as MatchStartedData;
+				if (info.tournamentId && info.tournamentId !== tournamentId) return;
+	
+				CONTEXT.gameId = info.gameId;
+				CONTEXT.leftName = info.player1;
+				CONTEXT.rightName = info.player2;
+				CONTEXT.gameMode = 1;
+				CONTEXT.tournamentId = tournamentId;
+			}
+			catch (err) {
+				console.error("Invalid match started data received:", err, data);
+			}
 		});
 
 		// Tournament ended
 		socket.off("tournament:ended");
 		socket.on("tournament:ended", (data: unknown): void => {
-			const endData = data as TournamentEndedData;
-			if (endData.tournamentId !== tournamentId) return;
-			console.log("Tournament ended, winner:", endData.winner);
+			try {
+				const endData = tournamentEndedSchema.validateSync(data) as TournamentEndedData;
+				if (endData.tournamentId !== tournamentId) return;
+				console.log("Tournament ended, winner:", endData.winner);
+			}
+			catch (err) {
+				console.error("Invalid tournament ended data received:", err, data);
+			}
 		});
 
 		socket.off("tournament:error");
-		socket.on("tournament:error", (data: unknown): void => {
-			const errorData = data as { message: string };
-			console.error("Tournament error:", errorData.message);
-			const statusEl = document.getElementById("tournamentStatus");
-			if (statusEl) statusEl.textContent = `Error: ${errorData.message}`;
+		socket.on("tournament:error", (err: unknown) => {
+			try {
+				const result = errorSchema.validateSync({ error: (err as Error).message });
+				console.error("Tournament error:", result);
+				const statusEl = document.getElementById("tournamentStatus");
+				if (statusEl) statusEl.textContent = `Error: ${result}`;
+			}
+			catch (err) {
+				console.error("Invalid tournament error data received:", err);
+			}
 		});
 
 		// Initial state request
