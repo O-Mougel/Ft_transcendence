@@ -1,3 +1,4 @@
+import { alterTournamentSelectPage } from "../eventTS/clickEvents.js";
 import ViewTemplate from "./ViewTemplate.js";
 
 export default class TournamentSizeView extends ViewTemplate {
@@ -42,7 +43,7 @@ export default class TournamentSizeView extends ViewTemplate {
 			</div>
 
 			<div class="h-full w-full flex flex-col">
-				<div class="h-[93%] w-full pt-[5%] text-center ml-auto mr-auto">
+				<div id="baseTournamentDiv" class="h-[93%] w-full pt-[5%] text-center ml-auto mr-auto">
 					<div id="tournamentNbPlayerSelect">
 						<h1 class="">Select the number of players in the tournament</h1>
 						<div class=" text-[4vw] flex gap-5 px-[40%] justify-around mt-8 mx-auto flex-col sm:flex-row sm:px-[5%] sm:text-[5vw]">
@@ -57,12 +58,20 @@ export default class TournamentSizeView extends ViewTemplate {
 							</div>
 						</div>
 					</div>
-					<!-- Tournament creation form -->
 					<div id="tournamentBuiltBlock" class="hidden w-[80%] mx-auto">
 						<form id="tournamentForm" class="mt-[5vw]">
 						</form>
 					</div>
 				</div>
 			</div>`;
+	}
+	
+	async init(): Promise<void> {
+		// const module = await import("../gameTS/context.js");
+		if (window.sessionStorage.getItem("currentTournamentId"))
+		{
+			console.info("Tournament going on !", window.sessionStorage.getItem("currentTournamentId"));
+			alterTournamentSelectPage();
+		}
 	}
 }

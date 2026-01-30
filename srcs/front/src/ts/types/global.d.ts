@@ -1,9 +1,9 @@
-// Global type declarations for window functions
 import type { Friend } from './api.types';
 
 declare global {
   interface Window {
-    // Profile and friends
+
+    //Profile, friends
     confirmFriendRemoval: () => Promise<void>;
     fillFriendRemovalBox: (friendArray: Friend[]) => Promise<void>;
     grabLoggedUserStats: () => Promise<void>;
@@ -13,42 +13,42 @@ declare global {
     acceptFriend: (friendId: number) => Promise<void>;
     rejectFriend: (friendId: number) => Promise<void>;
 
-    // Authentication
+    //Authentication
     logoutUser: () => Promise<void>;
     handleNewUserCreate: (event: Event) => Promise<void>;
     handleLoginClick: (event: Event) => Promise<void>;
 
-    // Password
+    //Password
     updateUserPassword: (event: Event) => Promise<void>;
 
-    // Player 2 (ranked)
+    //Player 2 (ranked)
     loginPlayer2: (event: Event) => Promise<void>;
     loadProfileData: () => Promise<void>;
     loadPlayer2Data: () => Promise<void>;
 
-    // Match history
+    //Match history
     buildMatchHistoryPage: () => Promise<void>;
 
-    // Game
+    //Game
     handlePongModeDisplay: (mode: number, leftPlayer: string | undefined, rightplayer: string | undefined) => Promise<void>;
 
-    // 2FA
+    //2FA
     showQRCode: (event: Event) => Promise<void>;
     disable2FA: () => Promise<void>;
     validate2FACode: (event: Event) => Promise<void>;
     loginWith2FACode: (event: Event) => Promise<void>;
     player2TwoFAValidation: (event: Event) => Promise<void>;
 
-    // Profile customization
+    //Profile custom
     onFileSelected: (inputFileSelector: HTMLInputElement) => void;
     saveProfileInfo: () => Promise<void>;
 
-    // Tournament
+    //Tournament
     backToTournamentPage: () => void;
     validatePlayerNameFields: (nbPlayers: number, event: Event) => void;
     createCustomTournamentPage: (nbPlayers: number) => void;
 
-    // Misc
+    //Others
     spinMeAround: () => void;
     sneakyClick: () => void;
 
