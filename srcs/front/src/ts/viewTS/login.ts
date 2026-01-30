@@ -1,4 +1,4 @@
-import { backToDefaultPage } from "../eventTS/userLog.js";
+import { backToDefaultPage, alertBoxMsg } from "../eventTS/userLog.js";
 import ViewTemplate from "./ViewTemplate.js";
 
 export default class LoginView extends ViewTemplate {
@@ -61,6 +61,12 @@ export default class LoginView extends ViewTemplate {
 	}
 
 	async init(): Promise<void> {
+
+		if (sessionStorage.getItem('logStatus') && sessionStorage.getItem('logStatus') == "loggedIn")
+		{
+			alertBoxMsg("🔑 You are already logged in !");
+			return backToDefaultPage();
+		}
 		const usernameInput = document.getElementById('clientUsername');
 		if (usernameInput)
 			usernameInput.focus();
