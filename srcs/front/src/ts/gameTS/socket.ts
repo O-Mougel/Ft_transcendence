@@ -39,9 +39,11 @@ export function setupSocket(): SocketType | null {
 		try {
 			const result = reasonSchema.validateSync({ reason });
 			console.log("WebSocket disconnected:", result);
+			backToDefaultPage();
 		}
 		catch (err) {
 			console.error("Error parsing disconnect reason:", err);
+			backToDefaultPage();
 		}
 	});
 
