@@ -205,7 +205,7 @@ async function main() {
         
     } catch (error) {
         console.error(error);
-        process.exit(1);    // exit as failure
+        process.exit(1);
     }
 }
 
