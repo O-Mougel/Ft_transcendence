@@ -25,7 +25,6 @@ services:
      - transcendence
     volumes:
       - front:/usr/src/app
-      - ./front/src/ts:/usr/src/app/src/ts #remove when in production
     restart: on-failure
 
   back:
@@ -37,16 +36,13 @@ services:
     container_name: back 
     volumes:
       - db:/home/prisma
-      - ./back/server/src:/home/src #remove when in production
-      - ./back/server/pong:/home/pong #remove when in production
-      - images:/home/front/src/img/userPfp #used for profile pic upload by user
+      - images:/home/front/src/img/userPfp
     networks:
       - transcendence
     restart: on-failure
     expose: 
       - "3000"
       - "3002"
-    command: npm run dev #remove when in production
 
 networks:
   transcendence:
