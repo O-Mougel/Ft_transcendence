@@ -4,7 +4,6 @@ let UserSocket: WebSocket | null = null;
 
 const interpretSocketMsg = async (socketMsgType: string): Promise<void> => {
 
-	console.log("Interpret : ", socketMsgType);
 	switch (socketMsgType) {
 		case "friend_presence":
 			console.info("A friend updated their log status, reloading..");
@@ -50,7 +49,6 @@ export const closeSocketCommunication = async (): Promise<void> => {
 export const setupSocketCommunication = async (): Promise<boolean> => {
 
 	console.info("Socket creation function called.");
-	// console.trace("Tracing call time.");
 	const userToken = window.sessionStorage.getItem('access_token'); //JSON.stringify
 	if (!userToken) // no token
 		return false;
@@ -65,6 +63,10 @@ export const setupSocketCommunication = async (): Promise<boolean> => {
 	const WebSocketUrlWithToken = `${Usedprotocol}//${location.host}/ws/presence?token=${encodeURIComponent(userToken)}`;
 	UserSocket = new WebSocket(WebSocketUrlWithToken);
 
+	UserSocket.addEventListener("open", () => {
+		console.info("WebSocket opened");
+	});
+
 	UserSocket.addEventListener("error", (event) =>  //socket closes on error event , no need to close it 
 	{
 		console.error(`Error while using websocket : ${event.type} , closing it..`);
@@ -75,7 +77,6 @@ export const setupSocketCommunication = async (): Promise<boolean> => {
 	});
 
 	UserSocket.addEventListener('message', (event) => {
-		console.log(`Received message: ${event.data}`);
 		const index = event.data.toString().indexOf("\"type\"");
 		if (index)
 		{

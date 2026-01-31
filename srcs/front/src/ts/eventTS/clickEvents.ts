@@ -81,7 +81,6 @@ export function resizeCanvasToElement(): void {
 };
 
 window.addEventListener('storage', async (event) => {
-	console.info(`Key changed: ${event.key}, [OLD] = ${event.oldValue} | [NEW] = ${event.newValue} `);
 	if (event.key == "delogAllOthers")
 	{
 		if (event.newValue == "true")
