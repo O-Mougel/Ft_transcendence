@@ -26,7 +26,6 @@ window.addEventListener("pagehide", (): void => {
 });
 
 export function initTournament(): void {
-	// ensure socket exists
 	setupSocket();
 	const socket = getSocket();
 
@@ -43,7 +42,6 @@ export function initTournament(): void {
 	const nextMatchBtn = document.getElementById("nextMatchBtn") as HTMLButtonElement | null;
 	const quitBtn = document.getElementById("quitButton") as HTMLButtonElement | null;
 
-	// Buttons
 	if (quitBtn && socket) {
 		quitBtn.onclick = (): void => {
 			console.log("Leaving tournament:", tournamentId);
@@ -172,7 +170,6 @@ export function initTournament(): void {
 			}
 		});
 
-		// Initial state request
 		socket.emit("tournament:getState", { tournamentId });
 	}
 }
@@ -205,7 +202,7 @@ function renderTournament(tournament: Tournament): void {
 
 	// Bracket rendering
 	bracketElement.innerHTML = "";
-	// Display each round as a column-like card
+	// Display each round
 	tournament.bracket.forEach((round, r) => {
 
 		const roundBox = document.createElement("div");

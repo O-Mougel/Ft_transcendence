@@ -63,11 +63,9 @@ export function resizeCanvasToElement(): void {
 	const cssW = Math.max(1, Math.floor(rect.width));
 	const cssH = Math.max(1, Math.floor(rect.height));
 
-	// keep logical drawing coordinates in CSS pixels so game math uses those values
 	CONTEXT.GAME_WIDTH = cssW;
 	CONTEXT.GAME_HEIGHT = cssH;
 
-	// set backing buffer in device pixels
 	const backingW = Math.floor(cssW * scale);
 	const backingH = Math.floor(cssH * scale);
 	if (canvas.width !== backingW || canvas.height !== backingH) {
@@ -75,11 +73,9 @@ export function resizeCanvasToElement(): void {
 		canvas.height = backingH;
 	}
 
-	// ensure CSS width/height match the element rect (some frameworks may change these)
 	canvas.style.width = cssW + "px";
 	canvas.style.height = cssH + "px";
 
-	// reset transform and apply DPR scaling so drawing uses CSS pixel coordinates
 	ctx.setTransform(1, 0, 0, 1, 0, 0);
 	ctx.scale(scale, scale);
 };
