@@ -203,7 +203,7 @@ window.player2TwoFAValidation = async function (event: Event): Promise<void> {
 		const logWith2FACode = await fetch('/login/player2/2fa', {
 			credentials: 'include',
 			method: 'POST',
-			headers: { Authorization: `Bearer ${sessionStorage.getItem("temp_token")}`, 'Content-Type': 'application/json' },
+			headers: { Authorization: `Bearer ${sessionStorage.getItem("match_token")}`, 'Content-Type': 'application/json' },
 			body: JSON.stringify(data),
 		});
 
@@ -215,7 +215,7 @@ window.player2TwoFAValidation = async function (event: Event): Promise<void> {
 		const result: Player2TwoFAResponse = await logWith2FACode.json();
 		if (result) {
 			window.sessionStorage.setItem('player2_token', result.matchToken);
-			sessionStorage.removeItem('temp_token');
+			sessionStorage.removeItem('match_token');
 			await window.loadPlayer2Data();
 			alertBoxMsg('⏳ Player 2 Logged in !');
 			if (divLogin) divLogin.style.display = "none";
