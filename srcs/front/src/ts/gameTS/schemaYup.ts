@@ -27,34 +27,34 @@ export const gameOverSchema = yup.object({
 }).required();
 
 export const gameStartedSchema = yup.object({
-	gameId: yup.string().required(),
+	gameId: yup.string().min(3).max(24).required(),
 }).required();
 
 export const messageSchema = yup.object({
-	message: yup.string().required(),
+	message: yup.string().max(128).required(),
 }).required();
 
 export const reasonSchema = yup.object({
-	reason: yup.string().required(),
+	reason: yup.string().max(128).required(),
 }).required();
 
 export const errorSchema = yup.object({
-	error: yup.string().required(),
+	error: yup.string().max(128).required(),
 }).required();
 
 const matchSchema = yup.object({
-  id: yup.string().required(),
+  id: yup.string().min(1).max(16).required(),
   gameId: yup.string().nullable().defined(),
-  player1: yup.string().nullable().defined(),
-  player2: yup.string().nullable().defined(),
-  winner: yup.string().nullable().defined(),
+  player1: yup.string().min(3).max(14).nullable().defined(),
+  player2: yup.string().min(3).max(14).nullable().defined(),
+  winner: yup.string().min(3).max(14).nullable().defined(),
   status: yup.string().oneOf(["playing", "ready", "pending", "played", "aborted"]).required(),
 });
 
 const currentSchema = yup.object({
     r: yup.number().required(),
     m: yup.number().required(),
-    gameId: yup.string().required(),
+    gameId: yup.string().min(4).max(24).required(),
   }).nullable();
 
 export const tournamentStateSchema = yup.object({
@@ -63,10 +63,10 @@ export const tournamentStateSchema = yup.object({
         id: yup.string().required(),
         size: yup.number().oneOf([4, 8, 16]).required(),
         status: yup.string().oneOf(["running", "finished"]).required(),
-        winner: yup.string().nullable().defined(),
-        players: yup.array().of(yup.string().required()).required(),
+        winner: yup.string().min(3).max(14).nullable().defined(),
+        players: yup.array().of(yup.string().min(3).max(14).required()).required(),
         bracket: yup.array().of(yup.array().of(matchSchema.required()).required()).required(),
-        mainPlayer: yup.string().required(),
+        mainPlayer: yup.string().min(3).max(14).required(),
         current: currentSchema.defined(),
     }).required(),
 }).required();
@@ -76,14 +76,14 @@ export const matchStartedSchema = yup.object({
 	round: yup.number().required(),
 	matchIndex: yup.number().required(),
 	gameId: yup.string().required(),
-	player1: yup.string().required(),
-	player2: yup.string().required(),
+	player1: yup.string().min(3).max(14).required(),
+	player2: yup.string().min(3).max(14).required(),
 	startData: yup.object({
 		mode: yup.number().oneOf([1]).required(),
-		player1: yup.string().required(),
-		player2: yup.string().required(),
+		player1: yup.string().min(3).max(14).required(),
+		player2: yup.string().min(3).max(14).required(),
 		tournament: yup.object({
-			tournamentId: yup.string().required(),
+			tournamentId: yup.string().min(3).max(24).required(),
 			r: yup.number().required(),
 			m: yup.number().required(),
 			size: yup.number().oneOf([4, 8, 16]).required(),
@@ -93,7 +93,7 @@ export const matchStartedSchema = yup.object({
 
 export const tournamentEndedSchema = yup.object({
 	type: yup.string().oneOf(["tournamentEnded"]).required(),
-	tournamentId: yup.string().required(),
+	tournamentId: yup.string().min(3).max(24).required(),
 	winner: yup.string().required(),
 }).required();
 

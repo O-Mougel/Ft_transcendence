@@ -46,7 +46,6 @@ io.use((socket, next) => {
 const manager = new GameManager(io);
 const tournamentManager = new TournamentManager(manager);
 
-// tournament hook
 manager.setOnGameOver(({ gameId, state }) => {
   const res = tournamentManager.onGameOver({ gameId, state });
   if (!res) return;
@@ -62,44 +61,85 @@ manager.setOnGameOver(({ gameId, state }) => {
 
 registerSocketHandlers(io, manager, tournamentManager, messageRateLimits);
 
-// REST API (CLI)
-
 fastify.post("/api/pong/games", async (req, reply) => {
-  const { mode = 0, data = {} } = req.body ?? {};
-  const gameId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
-  console.log("SERVER.JS: Creating new game with id:", gameId);
+  try {
+    const auth = req.headers.authorization;
+    if (!auth || !auth.startsWith("Bearer "))
+      return reply.code(401).send({ error: "Missing or invalid authorization header" });
 
-  // Create + start server-side game without socket
-  manager.ensureGameExist(gameId);
-  manager.startGame(gameId, { ...data, mode });
+    const token = auth.split(" ")[1];
+    const payload = fastify.jwt.verify(token);
+    if (!payload)
+      return reply.code(401).send({ error: "Invalid token" });
 
-  return { gameId };
-});
+    const { mode = 0, data = {} } = req.body ?? {};
+    const gameId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+    console.log("SERVER.JS: Creating new game with id:", gameId);
 
-fastify.post("/api/pong/games/:gameId/join", async (req, reply) => {
-  const { gameId } = req.params;
-  manager.ensureGameExist(gameId);
-  return { ok: true };
+    manager.ensureGameExist(gameId);
+    if (!manager.startGame(gameId, { ...data, mode }))
+      throw new Error("Failed to start game");
+    return { gameId };
+  } catch (e) {
+    console.error("Error in /api/pong/games:", e);
+    const errCode = e.code;
+		if (errCode === "FAST_JWT_EXPIRED")
+			return reply.status(403).send({ message: 'Expired JWT Token !', errRef:"expiredJWT"})
+		else if (errCode === "FAST_JWT_MALFORMED") 
+			return reply.status(403).send({ message: 'Malformed JWT Token !', errRef:"malformedJWT"})
+		else
+			return reply.status(403).send({ message: 'Couldn\'t verify JWT Token !', errRef:"authenticateOtherError"})
+  }
 });
 
 fastify.post("/api/pong/games/:gameId/input", async (req, reply) => {
-  const { gameId } = req.params;
-  const { side, direction } = req.body ?? {};
+  try {
+    const auth = req.headers.authorization;
+    if (!auth || !auth.startsWith("Bearer "))
+      return reply.code(401).send({ error: "Missing or invalid authorization header" });
 
-  if (!side || !direction) return reply.code(400).send({ error: "Missing side or direction" });
+    const token = auth.split(" ")[1];
+    const payload = fastify.jwt.verify(token);
+    if (!payload)
+      return reply.code(401).send({ error: "Invalid token" });
 
-  manager.updatePaddle(gameId, side, direction);
-  return { ok: true };
+
+    const { gameId } = req.params;
+    const { side, direction } = req.body ?? {};
+  
+    if (!side || !direction) return reply.code(400).send({ error: "Missing side or direction" });
+  
+    manager.updatePaddle(gameId, side, direction);
+    return { ok: true };
+  } catch (e) {
+    console.error("Error in /api/pong/games/:gameId/input:", e);
+    const errCode = e.code;
+			if (errCode === "FAST_JWT_EXPIRED")
+				return reply.status(403).send({ message: 'Expired JWT Token !', errRef:"expiredJWT"})
+			else if (errCode === "FAST_JWT_MALFORMED") 
+				return reply.status(403).send({ message: 'Malformed JWT Token !', errRef:"malformedJWT"})
+			else
+				return reply.status(403).send({ message: 'Couldn\'t verify JWT Token !', errRef:"authenticateOtherError"})
+  }
 });
 
-fastify.get("/api/pong/games/:gameId/state", async (req, reply) => {
+fastify.get("/api/pong/games/:gameId/state:", async (req, reply) => {
+  try {
   const { gameId } = req.params;
   const state = manager.getState(gameId);
   if (!state) return reply.code(404).send({ error: "Game not found" });
   return state;
+  } catch (e) {
+    console.error("Error in /api/pong/games/:gamId/state", e);
+    const errCode = e.code;
+			if (errCode === "FAST_JWT_EXPIRED")
+				return reply.status(403).send({ message: 'Expired JWT Token !', errRef:"expiredJWT"})
+			else if (errCode === "FAST_JWT_MALFORMED") 
+				return reply.status(403).send({ message: 'Malformed JWT Token !', errRef:"malformedJWT"})
+			else
+				return reply.status(403).send({ message: 'Couldn\'t verify JWT Token !', errRef:"authenticateOtherError"})
+  }
 });
-
-// Start Server
 
 fastify.listen({ port: 3002, host: "0.0.0.0" }, (err) => {
   if (err) {

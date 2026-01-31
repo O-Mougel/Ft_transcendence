@@ -87,11 +87,11 @@ export class GameManager {
       this.startTickLoop(gameId);
       this.startAiLoop(gameId);
 
-      return { ok: true };
+      return true;
     }
     catch (err) {
       console.error("Error starting game:", err);
-      return { ok: false, error: "Failed to start game" };
+      return false;
     }
   }
 

@@ -67,7 +67,7 @@ export class Game {
 
     this.startTime = null;
 
-    this.id = null; // game unique id, set by GameManager
+    this.id = null;
     
 
     this.leftPaddle = new Paddle(10, HEIGHT / 2 - PADDLE_HEIGHT / 2, PADDLE_WIDTH, PADDLE_HEIGHT);
@@ -82,9 +82,8 @@ export class Game {
       y: HEIGHT / 2,
       radius: BALL_RADIUS,
 
-      // vx/vy store direction * speed (always normalized to 'speed')
       vx: Math.random() > 0.5 ? 1 : -1,
-      vy: (Math.random() - 0.5) * 0.1, // small initial vertical component
+      vy: (Math.random() - 0.5) * 0.1,
 
       speed: BASE_BALL_SPEED,
       lastSidePossession: null,
@@ -93,12 +92,9 @@ export class Game {
     this.normalizeBallVelocity();
   }
 
-  // Single-speed utilities
-
   normalizeBallVelocity() {
     const mag = Math.hypot(this.ball.vx, this.ball.vy);
-    if (mag < 1e-8) {
-      // fallback if ever degenerate
+    if (mag < 1e-8) { // if magnitude is too small, set to default
       this.ball.vx = this.ball.speed;
       this.ball.vy = 0;
       return;
@@ -107,9 +103,6 @@ export class Game {
     this.ball.vx *= s;
     this.ball.vy *= s;
   }
-
-
-  // Game lifecycle
 
   resetBall() {
     this.ball.x = WIDTH / 2;
@@ -147,13 +140,11 @@ export class Game {
   checkScore() {
     let gameOver = false;
 
-    // Right wall -> left scores
     if (this.ball.x > WIDTH) {
       this.leftScore += 1;
       this.resetBall();
     }
 
-    // Left wall -> right scores
     if (this.ball.x < 0) {
       this.rightScore += 1;
       this.resetBall();
@@ -166,20 +157,16 @@ export class Game {
     return gameOver;
   }
 
-  // Core physics tick
-
   moveBall() {
     const x0 = this.ball.x;
     const y0 = this.ball.y;
 
-    // velocities are always (direction * speed)
     const vx = this.ball.vx;
     const vy = this.ball.vy;
 
     const x1 = x0 + vx;
     const y1 = y0 + vy;
 
-    // Move first (then do precise collision reposition like you already do)
     this.ball.x = x1;
     this.ball.y = y1;
 
@@ -187,9 +174,9 @@ export class Game {
     this.boundaryCollision();
 
     // Paddle collisions
-    // Ball moving to the right -> check right paddles sides of rightPaddle, rightPaddle2, leftPaddle2 (bounce-back) 
+    // Ball moving to the right -> check right paddles sides of rightPaddle, rightPaddle2, leftPaddle2
     if (vx > 0) {
-      if (this.handleBallPaddleCollision(this.rightPaddle, 'right', x0, y0, vx, vy)) return; // RIGHT PADDLE (main)
+      if (this.handleBallPaddleCollision(this.rightPaddle, 'right', x0, y0, vx, vy)) return; // RIGHT PADDLE
 
       if (this.mode === 2) { // 4-paddle mode
           if (this.handleBallPaddleCollision(this.rightPaddle2, 'right', x0, y0, vx, vy)) return;  // RIGHT PADDLE 2
@@ -197,9 +184,9 @@ export class Game {
       }
     }
 
-    // Ball moving to the left -> check left paddles sides of leftPaddle, leftPaddle2, rightPaddle2 (bounce-back)
+    // Ball moving to the left -> check left paddles sides of leftPaddle, leftPaddle2, rightPaddle2
     if (vx < 0) {
-      if (this.handleBallPaddleCollision(this.leftPaddle, 'left', x0, y0, vx, vy)) return; // LEFT PADDLE (main)
+      if (this.handleBallPaddleCollision(this.leftPaddle, 'left', x0, y0, vx, vy)) return; // LEFT PADDLE
 
       if (this.mode === 2) { // 4-paddle mode
         if (this.handleBallPaddleCollision(this.leftPaddle2, 'left', x0, y0, vx, vy)) return;  // LEFT PADDLE 2
@@ -214,12 +201,12 @@ export class Game {
 
     if (this.ball.y < top) { // top collision
       const penetrationDelta = top - this.ball.y;
-      this.ball.y = top + penetrationDelta;   // mirror back inside
+      this.ball.y = top + penetrationDelta;
       this.ball.vy = -this.ball.vy;
       this.normalizeBallVelocity();
     } else if (this.ball.y > bottom) { // bottom collision
       const penetrationDelta = this.ball.y - bottom;
-      this.ball.y = bottom - penetrationDelta; // mirror back inside
+      this.ball.y = bottom - penetrationDelta;
       this.ball.vy = -this.ball.vy;
       this.normalizeBallVelocity();
     }
@@ -229,7 +216,7 @@ export class Game {
     const epsilon = 1e-12; // small value to avoid division by zero
 
     let timeEntryX = -Infinity, timeExitX = Infinity;
-    if (Math.abs(vx) < epsilon) { // moving parallel to Y axis
+    if (Math.abs(vx) < epsilon) { // if moving parallel to Y axis
       if (x0 < minX || x0 > maxX) return null;
     } else {
       const tx1 = (minX - x0) / vx;
@@ -253,7 +240,7 @@ export class Game {
 
     if (entry > exit || exit < 0 || entry > 1) return null;
 
-    const t = Math.max(0, entry); // clamp to [0, 1]
+    const t = Math.max(0, entry); // Time of impact limited to [0, 1]
 
     let nx = 0, ny = 0;
     if (timeEntryX > timeEntryY) nx = (vx > 0) ? -1 : 1; // hit left/right face
@@ -263,70 +250,67 @@ export class Game {
   }
 
   handleBallPaddleCollision(paddle, side, x0, y0, vx, vy) {
-  const r = this.ball.radius;
-  
-  // Define the bounding box of the paddle
-  const minX = paddle.x - r;
-  const minY = paddle.y - r;
-  const maxX = paddle.x + paddle.width + r;
-  const maxY = paddle.y + paddle.height + r;
+    const r = this.ball.radius;
+    
+    const minX = paddle.x - r;
+    const minY = paddle.y - r;
+    const maxX = paddle.x + paddle.width + r;
+    const maxY = paddle.y + paddle.height + r;
 
 
-  if (x0 >= minX && x0 <= maxX && y0 >= minY && y0 <= maxY) return false; // if ball starts inside paddle, ignore collision
+    if (x0 >= minX && x0 <= maxX && y0 >= minY && y0 <= maxY) return false; // i=If ball starts inside paddle, ignore collision
 
-  const hit = this.sweepSphereAABB(x0, y0, vx, vy, minX, minY, maxX, maxY);
-  if (!hit) return false;
+    const hit = this.sweepSphereAABB(x0, y0, vx, vy, minX, minY, maxX, maxY);
+    if (!hit) return false;
 
-  // Move the ball impact point
-  const impactX = x0 + vx * hit.t;
-  const impactY = y0 + vy * hit.t;
-  this.ball.x = impactX;
-  this.ball.y = impactY;
+    // Move the ball impact point
+    const impactX = x0 + vx * hit.t;
+    const impactY = y0 + vy * hit.t;
+    this.ball.x = impactX;
+    this.ball.y = impactY;
 
-  // Reflect
-  const dot = vx * hit.nx + vy * hit.ny; // Dot product to get the angle of reflection
-  this.ball.vx = vx - 2 * dot * hit.nx;
-  this.ball.vy = vy - 2 * dot * hit.ny;
+    // Reflect
+    const dot = vx * hit.nx + vy * hit.ny;
+    this.ball.vx = vx - 2 * dot * hit.nx;
+    this.ball.vy = vy - 2 * dot * hit.ny;
 
-  // After reflection, handle the curve based on the paddle's edge
-  if (Math.abs(hit.nx) > 0.5) { // Horizontal bounce (left/right face)
-    const halfHeight = paddle.height / 2;
-    let u = (impactY - (paddle.y + halfHeight)) / halfHeight; // [-1, 1]
-    u = Math.max(-1, Math.min(1, u)); // clamp
+    // After reflection, handle the curve based on the paddle's edge
+    if (Math.abs(hit.nx) > 0.5) { // Horizontal bounce (left/right face)
+      const halfHeight = paddle.height / 2;
+      let offset = (impactY - (paddle.y + halfHeight)) / halfHeight; // offset from paddle center
+      offset = Math.max(-1, Math.min(1, offset));
 
-    const p = 2; // Exponent for curve control (higher = more curve near edges)
-    const curve = Math.sign(u) * Math.pow(Math.abs(u), p); // curve factor
-    this.ball.vy = curve * 4; // Adjust the vertical speed (higher = more vertical)
-  } else if (Math.abs(hit.ny) > 0.5) { // Vertical bounce (top/bottom face)
-    // Handle horizontal paddle curve effect (influencing the bounce angle)
-    const halfWidth = paddle.width / 2;
-    let u = (impactX - (paddle.x + halfWidth)) / halfWidth;
-    u = Math.max(-1, Math.min(1, u));
+      const p = 2; // Exponent for curve control (higher = more curve near edges)
+      const curve = Math.sign(offset) * Math.pow(Math.abs(offset), p); // curve factor
+      this.ball.vy = curve * 4; // Adjust the vertical speed (higher = more vertical)
+    } else if (Math.abs(hit.ny) > 0.5) { // Vertical bounce (top/bottom face)
+      const halfWidth = paddle.width / 2;
+      let offset = (impactX - (paddle.x + halfWidth)) / halfWidth;
+      offset = Math.max(-1, Math.min(1, offset));
 
-    const p = 2.5; // Exponent for curve control
-    const curve = Math.sign(u) * Math.pow(Math.abs(u), p);
-    this.ball.vx = curve * 3; // Adjust the horizontal speed
+      const p = 2.5;
+      const curve = Math.sign(offset) * Math.pow(Math.abs(offset), p);
+      this.ball.vx = curve * 3;
+    }
+
+    this.normalizeBallVelocity();
+
+    // Move the ball for the remaining time after impact
+    const remainingTime = 1 - hit.t;
+    this.ball.x += this.ball.vx * remainingTime;
+    this.ball.y += this.ball.vy * remainingTime;
+
+    // Limit ball position within bounds
+    if (this.ball.x < 0) this.ball.x = 5 + BALL_RADIUS;
+    if (this.ball.x > WIDTH) this.ball.x = WIDTH - BALL_RADIUS;
+    if (this.ball.y < 0) this.ball.y = BALL_RADIUS;
+    if (this.ball.y > HEIGHT) this.ball.y = HEIGHT - BALL_RADIUS;
+
+    // Increase ball speed after a bounce
+    this.incrementBallSpeed(side);
+
+    return true;
   }
-
-  // Normalize the velocity of the ball after the reflection
-  this.normalizeBallVelocity();
-
-  // Continue ball movement during remaining time
-  const remaining = 1 - hit.t;
-  this.ball.x += this.ball.vx * remaining;
-  this.ball.y += this.ball.vy * remaining;
-
-  // Clamp the ball within the bounds
-  if (this.ball.x < 0) this.ball.x = 5 + BALL_RADIUS;
-  if (this.ball.x > WIDTH) this.ball.x = WIDTH - BALL_RADIUS;
-  if (this.ball.y < 0) this.ball.y = BALL_RADIUS;
-  if (this.ball.y > HEIGHT) this.ball.y = HEIGHT - BALL_RADIUS;
-
-  // Increase ball speed after a successful bounce
-  if (Math.abs(hit.nx) > 0.5) this.incrementBallSpeed(side);
-
-  return true;
-}
 
 
   movePaddles() {
@@ -362,7 +346,7 @@ export class Game {
     this.tournamentId = data?.tournament?.tournamentId || null;
     if (this.tournamentId)
       this.tournamentRound = getTournamentRound(data?.tournament);
-    const gameMode = ["AI", "2P", "4P", "RANKED"];
+    const gameMode = ["AI", "2 Players", "4 Players", "Ranked"];
     console.log('Game started', gameMode[data.mode]);
     if (this.mode === 0) {
       this.AIPlayer = new AIPlayer(this.rightPaddle, this.leftPaddle, this);
@@ -375,7 +359,6 @@ export class Game {
     this.isGameStarted = false;
     this.reset();
     this.startTime = null;
-    // delete this.AIPlayer;
   }
 
   reset() {
@@ -421,15 +404,13 @@ export class Game {
     }
   }
 
-  // Main tick
-
   updateGameState() {
     if (!this.isGameStarted) {
       return { gameOver: false };
     }
 
     if (this.mode === 0)
-      this.AIPlayer.updateDirection(); // AI updates its paddle direction; should only be called once per frame?
+      this.AIPlayer.updateDirection();
     this.movePaddles();
     this.moveBall();
     const gameOver = this.checkScore();

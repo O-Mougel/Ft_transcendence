@@ -21,31 +21,29 @@ export class AIPlayer {
 
 	const approaching = ball.vx > 0;
 
-	// When the ball just started approaching, pick a new error (one roll per rally)
+	// When the ball just started approaching, pick a new error
   	if (approaching && !this.lastApproaching) {
   	  	const speed = Math.hypot(ball.vx, ball.vy);
   		const s = (speed - 3) / 12;
-  		const maxErr = 3 + 25 * (s * s); // 3px..28px
-  		this.aimError = (Math.random() * 2 - 1) * maxErr;         // can be +/- ; bigger at high speed
+  		const maxErr = 3 + 25 * (s * s); // max error increases with speed and between 3 and ~28 pixels
+  		this.aimError = (Math.random() * 2 - 1) * maxErr;
   	}
 
 	this.lastApproaching = approaching;
+	// ball is moving away, go to ~center
 	if (!approaching) {
 		let opponentCenterY = this.opponent.y + PADDLE_HEIGHT / 2; 
-		// if (opponentCenterY < HEIGHT / 2) // Ball going away, position paddle based on opponent
-		// 	this.predictedY = HEIGHT * 3 / 8 - PADDLE_HEIGHT / 2; 
-		// else if (opponentCenterY > HEIGHT / 2)
-			this.predictedY = (opponentCenterY - 250) * 0.4 + (HEIGHT - PADDLE_HEIGHT) / 2;
+		this.predictedY = (opponentCenterY - 250) * 0.4 + (HEIGHT - PADDLE_HEIGHT) / 2;
 		return;
 	}
 
 	const targetX = this.paddle.x - BALL_RADIUS;
 	let predictedY = this.ballTrajectoryPrevision(ball, targetX);
-	let opposedAdjustment = (this.opponent.y + PADDLE_HEIGHT / 2 > HEIGHT / 2) ? -25 : (this.opponent.y + PADDLE_HEIGHT / 2 < HEIGHT / 2) ? 25 : 0;
+	let opposedAdjustment = (this.opponent.y + PADDLE_HEIGHT / 2 > HEIGHT / 2) ? -25 : (this.opponent.y + PADDLE_HEIGHT / 2 < HEIGHT / 2) ? 25 : 0; // adjust aim away from opponent center
 	
 	predictedY -= PADDLE_HEIGHT / 2 + opposedAdjustment + this.aimError;
 
-	this.predictedY = Math.max(0, Math.min(HEIGHT - PADDLE_HEIGHT, predictedY)); // clamp within screen
+	this.predictedY = Math.max(0, Math.min(HEIGHT - PADDLE_HEIGHT, predictedY)); // limit within screen, if predicted to high limit to paddle max y, if too low limit to 0
   }
 
   updateDirection() {
@@ -63,15 +61,11 @@ export class AIPlayer {
     const timeToTarget = (targetX - ball.x) / ball.vx;
     if (timeToTarget <= 0) return ball.y;
 
-    // compute straight-line arrival Y
     let predictedY = ball.y + ball.vy * timeToTarget;
 
-    // Use the same bounce limits as the game physics
     const topLimit = 5 + BALL_RADIUS;
     const bottomLimit = HEIGHT - 5 - BALL_RADIUS;
 
-    // reflect predictedY around the actual boundaries until it's inside the playable range
-    // (predictedY can cross multiple times if timeToTarget is large)
     while (predictedY < topLimit || predictedY > bottomLimit) {
       if (predictedY < topLimit)
         predictedY = 2 * topLimit - predictedY;
