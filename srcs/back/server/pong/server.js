@@ -103,7 +103,6 @@ fastify.post("/api/pong/games/:gameId/input", async (req, reply) => {
     if (!payload)
       return reply.code(401).send({ error: "Invalid token" });
 
-
     const { gameId } = req.params;
     const { side, direction } = req.body ?? {};
   
@@ -125,10 +124,19 @@ fastify.post("/api/pong/games/:gameId/input", async (req, reply) => {
 
 fastify.get("/api/pong/games/:gameId/state:", async (req, reply) => {
   try {
-  const { gameId } = req.params;
-  const state = manager.getState(gameId);
-  if (!state) return reply.code(404).send({ error: "Game not found" });
-  return state;
+    const auth = req.headers.authorization;
+    if (!auth || !auth.startsWith("Bearer "))
+      return reply.code(401).send({ error: "Missing or invalid authorization header" });
+
+    const token = auth.split(" ")[1];
+    const payload = fastify.jwt.verify(token);
+    if (!payload)
+      return reply.code(401).send({ error: "Invalid token" });
+
+    const { gameId } = req.params;
+    const state = manager.getState(gameId);
+    if (!state) return reply.code(404).send({ error: "Game not found" });
+    return state;
   } catch (e) {
     console.error("Error in /api/pong/games/:gamId/state", e);
     const errCode = e.code;
