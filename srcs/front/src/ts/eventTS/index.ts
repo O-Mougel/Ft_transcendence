@@ -48,6 +48,10 @@ declare global {
   let Chart: any;
 }
 
+let winLossChart: any = null;
+let winRatioChart: any = null;
+let multiChartObject: any = null;
+
 let friendWinLossChart: any = null;
 let friendWinRatioChart: any = null;
 let friendMultiChart: any = null;
@@ -133,6 +137,11 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 
 	if (!winLossDoughnutChart || !winRatioBar || !multiChart || !noMatchesMessage) return;
 
+	
+	if (Chart.getChart(winLossChart)) { try {	(Chart.getChart(winLossChart)).destroy(); } catch(err) {console.log("Could not destroy !", err)} winLossChart = null;}
+	if (Chart.getChart(winRatioChart)) { try { (Chart.getChart(winRatioChart)).destroy(); } catch(err) {console.log("Could not destroy !", err)} winRatioChart = null; }
+	if (Chart.getChart(multiChartObject)) { try { (Chart.getChart(multiChartObject)).destroy(); } catch(err) {console.log("Could not destroy !", err)} multiChartObject = null; }
+
 	try {
 		const loggedUserStatsRequestResponse = await fetch('/match/self', {
 			credentials: 'include',
@@ -148,7 +157,7 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 			if (result.matchsnb === 0) {
 				noMatchesMessage.style.display = "block";
 			} else {
-				new Chart(winLossDoughnutChart, {
+			winLossChart = new Chart(winLossDoughnutChart, {
 					type: 'doughnut',
 					data: {
 						labels: ['Win', 'Loss'],
@@ -164,8 +173,7 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 						
 					},
 				});
-
-				new Chart(winRatioBar, {
+			winRatioChart = new Chart(winRatioBar, {
 					type: 'bar',
 					data: {
 						labels: ['Win Ratio'],
@@ -189,7 +197,7 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 					},
 				});
 
-				new Chart(multiChart, {
+				multiChartObject = new Chart(multiChart, {
 					type: 'line',
 					data: {
 						labels: ['match 1', 'match 2', 'match 3', 'match 4', 'match 5', 'match 6', 'match 7', 'match 8', 'match 9', 'match 10'],
@@ -241,9 +249,10 @@ window.fetchPlayerStats = async (playerId: string, playerUsername: string): Prom
 	if (!playerId || !friendStatDisplayBox || !selectedPlayerUsernameHeader || !noMatchesMessageFriend || !winLossDoughnutChartFriend || !winRatioBarFriend || !multiChartFriend) return;
 
 	selectedPlayerUsernameHeader.textContent = playerUsername + " 's stats :";
-	if (friendWinLossChart) { try {	friendWinLossChart.destroy(); } catch(_) {} friendWinLossChart = null;}
-	if (friendWinRatioChart) { try { friendWinRatioChart.destroy(); } catch(_) {} friendWinRatioChart = null; }
-	if (friendMultiChart) { try { friendMultiChart.destroy(); } catch(_) {} friendMultiChart = null; }
+
+	if (Chart.getChart(friendWinLossChart)) { try {	(Chart.getChart(friendWinLossChart)).destroy(); } catch(err) {console.log("Could not destroy !", err)} friendWinLossChart = null;}
+	if (Chart.getChart(friendWinRatioChart)) { try { (Chart.getChart(friendWinRatioChart)).destroy(); } catch(err) {console.log("Could not destroy !", err)} friendWinRatioChart = null; }
+	if (Chart.getChart(friendMultiChart)) { try { (Chart.getChart(friendMultiChart)).destroy(); } catch(err) {console.log("Could not destroy !", err)} friendMultiChart = null; }
 
 	try {
 		const userStatsRequestResponse = await fetch(`/match/${playerId}`, {
