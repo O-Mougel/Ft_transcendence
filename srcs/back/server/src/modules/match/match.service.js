@@ -2,7 +2,7 @@
 
 import { db } from "../../utils/prisma.js";
 
-export async function createMatch(input) //player1Id, player2Id(only in ranked), player1Score, player2Score, winnerId (-1 if aborted), longestStreak, duration, finish, type, other value if they are existent 
+export async function createMatch(input)
 {
 	const match = await db.match.create({
         data: input

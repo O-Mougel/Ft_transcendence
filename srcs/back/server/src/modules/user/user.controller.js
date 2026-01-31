@@ -418,7 +418,7 @@ export async function friendRequestHandler(request, reply) {
 		errRef:"requestAlreadyFriend"
 	});
 
-	await requestfriend(request.user.id, newfriend.id)
+	await requestfriend(request.user.id, newfriend.id) 
 	
 	await syncRequestFriend(newfriend.id)
 
@@ -498,7 +498,7 @@ export async function friendAcceptHandler(request, reply) {
 		errRef:"requestAlreadyFriend"
 	});
 
-	await acceptfriend(request.user.id, newfriend.id)
+	await acceptfriend(request.user.id, newfriend.id) 
 
 	await syncPresenceOnFriendAdd(request.user.id, newfriend.id);
 
@@ -528,7 +528,7 @@ export async function friendRejectHandler(request, reply) {
 		errRef:"requestAlreadyFriend"
 	});
 
-	await rejectfriend(request.user.id, friend.id)
+	await rejectfriend(request.user.id, friend.id) 
 
 	await syncReject(request.user.id, friend.id);
 
@@ -554,7 +554,7 @@ export async function friendDeleteHandler(request, reply) {
 		errRef:"deleteNotFriends"
 	});
 
-	await deletefriend(request.user.id, friend.id)
+	await deletefriend(request.user.id, friend.id) 
 
 	await syncDeleteFriend(request.user.id, friend.id);
 
@@ -682,7 +682,7 @@ async function notifyFriendsAlter(userId) {
 async function notifyFriends(userId, online) {
 	const friends = await getFriends(userId);
 
-	const payload = JSON.stringify({ //use zod
+	const payload = JSON.stringify({
 		type: "friend_presence",
 		userId,
 		online,

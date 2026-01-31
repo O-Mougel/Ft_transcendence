@@ -1,7 +1,9 @@
 import { fetchErrcodeHandler, alertBoxMsg, displayCorrectErrMsg, backToDefaultPage } from "./userLog.js";
 import { closeSocketCommunication } from "./userSocket.js";
+import { router } from "./index.js";
 import { startTournament } from "./clickTournamentSelectPlayers.js";
 import type { FileUploadResponse, ProfileEditData } from "../types/api.types";
+import { CONTEXT } from "../gameTS/context.js";
 
 document.addEventListener("DOMContentLoaded", (): void => {
 	document.addEventListener("click", (element: MouseEvent): void => {
@@ -19,13 +21,68 @@ document.addEventListener("DOMContentLoaded", (): void => {
 });
 
 function reportWindowSize(): void {
+
 	const panel = document.getElementById('profilePanel') as HTMLElement | null;
-	if (!panel) return;
-	const style = window.getComputedStyle(panel);
-	if (style.display === 'none')
-		return;
-	panel.style.display = 'none';
+	if (panel)
+	{
+		const style = window.getComputedStyle(panel);
+		if (style.display === 'none')
+			return;
+		panel.style.display = 'none';
+	}
 }
+
+export const alterTournamentSelectPage = async (): Promise<void> => {
+	const tournamentBuiltBlock = document.getElementById('tournamentBuiltBlock') as HTMLElement | null;
+	const tournamentNbPlayerSelect = document.getElementById('tournamentNbPlayerSelect') as HTMLElement | null;
+	const baseTournamentDiv = document.getElementById('baseTournamentDiv') as HTMLElement | null;
+	if (!tournamentBuiltBlock || !tournamentNbPlayerSelect || !baseTournamentDiv)
+		return ;
+
+	baseTournamentDiv.innerHTML = "";
+	let ongoingTournamentDiv = document.createElement("div");
+	ongoingTournamentDiv.className = 'flex flex-col justify-around items-center border border-white rounded-lg w-[30%] gap-2 p-4 mx-auto';
+	ongoingTournamentDiv.innerHTML = "<div class=\"text-center text-white text-lg mb-2\">Tournament in progress</div> <a id=\"backToTournament\" href=\"/tournament\" class=\"px-6 py-3 w-full bg-transparent border border-[#98c6f8] font-bold rounded-lg hover:bg-white/10 cursor-pointer\" data-link>Back to tournament</a>";
+    baseTournamentDiv.appendChild(ongoingTournamentDiv);
+}
+
+export function resizeCanvasToElement(): void {
+
+	const canvas = document.getElementById("canvas") as HTMLCanvasElement | null;
+	if (!canvas)
+	{
+		return ;
+	}
+	let ctx = canvas.getContext("2d");
+	if (!ctx)
+	{
+		return ;
+	}
+	const scale = window.devicePixelRatio || 1;
+	const rect = canvas.getBoundingClientRect();
+	const cssW = Math.max(1, Math.floor(rect.width));
+	const cssH = Math.max(1, Math.floor(rect.height));
+
+	// keep logical drawing coordinates in CSS pixels so game math uses those values
+	CONTEXT.GAME_WIDTH = cssW;
+	CONTEXT.GAME_HEIGHT = cssH;
+
+	// set backing buffer in device pixels
+	const backingW = Math.floor(cssW * scale);
+	const backingH = Math.floor(cssH * scale);
+	if (canvas.width !== backingW || canvas.height !== backingH) {
+		canvas.width = backingW;
+		canvas.height = backingH;
+	}
+
+	// ensure CSS width/height match the element rect (some frameworks may change these)
+	canvas.style.width = cssW + "px";
+	canvas.style.height = cssH + "px";
+
+	// reset transform and apply DPR scaling so drawing uses CSS pixel coordinates
+	ctx.setTransform(1, 0, 0, 1, 0, 0);
+	ctx.scale(scale, scale);
+};
 
 window.addEventListener('storage', async (event) => {
 	console.info(`Key changed: ${event.key}, [OLD] = ${event.oldValue} | [NEW] = ${event.newValue} `);
@@ -111,7 +168,7 @@ export function isPageReload(): boolean {
 
 async function uploadFileToServer(fileObj: File): Promise<string | null> {
 	const fileInput = document.getElementById('myfileSelector') as HTMLInputElement | null;
-	const filenameStr = document.getElementById('selectedFileName') as HTMLElement | null;
+	const filenameStr = document.getElementById('selectedFileName') as HTMLElement | null; 
 	if (!fileInput || !filenameStr) return null;
 	const formData = new FormData();
 	formData.append("myfileSelector", fileObj);
@@ -151,7 +208,7 @@ async function uploadFileToServer(fileObj: File): Promise<string | null> {
 
 window.backToTournamentPage = function (): void {
 	window.history.pushState(null, "", "/tournament");
-	window.dispatchEvent(new PopStateEvent("popstate"));
+	router();
 };
 
 window.validatePlayerNameFields = function (nbPlayers: number, event: Event): void {
@@ -216,6 +273,26 @@ window.sneakyClick = function (): void {
 
 	if (!aboutText) return;
 	aboutText.textContent = "Just kidding, lchapard did everything (what a great guy)";
+};
+
+window.ft_bh = function (): void {
+	const bigMainTitle = document.getElementById('bigMainTitle') as HTMLElement | null;
+
+	if (!bigMainTitle)
+		return;
+	if (!sessionStorage.getItem("secretfeature"))
+		sessionStorage.setItem("secretfeature", "1");
+	else
+	{
+		const nbClick = parseInt(window.sessionStorage.getItem('secretfeature') || '0');
+			if (nbClick == 4)
+			{
+				bigMainTitle.textContent= "FT_BLACKHOLE";
+				sessionStorage.setItem("secretfeature", "0");
+				return ;
+			}
+			window.sessionStorage.setItem('secretfeature', String(nbClick + 1));
+	}
 };
 
 window.saveProfileInfo = async function (): Promise<void> {

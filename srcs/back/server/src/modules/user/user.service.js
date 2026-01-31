@@ -31,16 +31,6 @@ export async function createUser(input) {
 	return user;
 }
 
-export async function checkIfUserExists(name) {
-	const result = await db.user.count({
-		where: {
-			name: name,
-		},
-	});
-
-	return result;
-}	
-
 export async function findUserByName(name) {
 	const user = await db.user.findUnique({
 		where: {
