@@ -8,7 +8,6 @@ DEV_DOCKER_COMPOSE_PATH = ${DOCKER_DIR}/docker-compose.dev.yml
 all: build up
 
 build:
-	mkdir srcs/back/volume -p
 	docker compose -f ${DOCKER_COMPOSE_PATH} build
 
 up:

@@ -50,16 +50,5 @@ networks:
 
 volumes:
   db:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: 'back/volume'
   front:
   images:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: 'front/src/img/userPfp'
-
