@@ -42,7 +42,7 @@ const interpretSocketMsg = async (socketMsgType: string): Promise<void> => {
 export const closeSocketCommunication = async (): Promise<void> => {
 	if (UserSocket)
 	{
-		UserSocket.close();
+		UserSocket.close(1000, 'closing socket..');
 		console.info("Closed socket...");
 	}
 }
@@ -82,6 +82,16 @@ export const setupSocketCommunication = async (): Promise<boolean> => {
 			let socketMsg = event.data.toString()	
 			let socketMsgType = socketMsg.substring(socketMsg.indexOf(":") + 2,socketMsg.indexOf(",") - 1);
 			interpretSocketMsg(socketMsgType)
+		}
+	});
+
+	UserSocket.addEventListener("close", (ev: CloseEvent) => {
+		if (ev.code === 1008) {
+			console.error('Socket closed because of invalid token : ', ev.reason);
+			window.sessionStorage.setItem('socket_failed', 'true');
+			window.sessionStorage.setItem('logStatus', 'loggedOut');
+			window.sessionStorage.setItem('access_token', 'userSelfLogoutToken');
+			backToDefaultPage();
 		}
 	});
 
