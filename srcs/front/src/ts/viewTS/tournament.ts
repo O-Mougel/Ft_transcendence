@@ -3,7 +3,7 @@ import ViewTemplate from "./ViewTemplate.js";
 export default class TournamentView extends ViewTemplate {
 	constructor() {
 		super();
-		this.setTitle("Tournament");
+		this.setTitle("Tournament status");
 	}
 
 	async getHTML(): Promise<string> {
