@@ -14,10 +14,10 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
     console.log("New socket connection established");
     console.log("User connected, socket id: ", socket.id);
 
-    let disconnectTimer = null; // To track the reconnection grace period
-    let disconnectedAt = null; // To track when the user disconnected
+    let disconnectTimer = null;
+    let disconnectedAt = null;
 
-    const limiter = messageRateLimits.get(socket.id); // Keeping this ??
+    const limiter = messageRateLimits.get(socket.id);
 
     socket.use((packet, next) => {
       if (!limiter) return next();
@@ -45,9 +45,8 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         manager.leaveGame(gameId, socket);
         socket.data.gameId = null;
       }
-      // Store the time of disconnection
       disconnectedAt = Date.now();
-      // Start a timer to clean up if the user doesn't reconnect
+
       disconnectTimer = setTimeout(() => {
         tournamentManager.deleteTournament(socket.data.tournamentId, socket);
         socket.data.tournamentId = null;
@@ -67,35 +66,12 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         if (!manager.startGame(gameId, parsed))
           throw new Error("Failed to start game");
   
-        // Return the gameId to the client
         socket.emit("game:started", { gameId } );
       }
       catch (e) {
         console.error("game:start error:", e);
         socket.emit("game:error", { message: e.message || "Invalid start data" });
       }
-    });
-
-    // Is it still even called anywhere?
-    socket.on("game:join", (data = {}) => {
-      console.log("game:join called with data:", data);
-        const gameId = data.gameId;
-        if (!gameId) {
-          socket.emit("game:error", { message: "Missing gameId" });
-          return;
-        }
-      
-        const entry = manager.games.get(gameId);
-        if (!entry) {
-          socket.emit("game:error", { message: "Game not found" });
-          return;
-        }
-      
-        socket.data.gameId = gameId;
-        manager.joinGame(gameId, socket);
-      
-        socket.emit("game:joined", { gameId });
-        socket.emit("game:state", entry.game.getCurrentGameState());
     });
 
     socket.on("game:stop", () => {
@@ -156,7 +132,7 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         socket.emit("tournament:state", { tournamentId, tournament });
       } catch (e) {
         console.error("tournament:create error: ", e.messae);
-        socket.emit("tournament:error", { message: "Tournament create failed" });
+        socket.emit("tournament:error", { message: "Tournament creation error" });
       }
     });
 
@@ -171,7 +147,7 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
       }
       catch (e) {
         console.error("tournament:getState error: ", e.message);
-        socket.emit("tournament:error", { message: "getState failed" });
+        socket.emit("tournament:error", { message: "Can't access tournament" });
       }
     });
 
@@ -204,7 +180,7 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         socket.emit("tournament:state", { tournamentId, tournament });
       } catch (e) {
         console.log("tournament:nextMatch error: ", e.message);
-        socket.emit("tournament:error", { message: e.message || "nextMatch failed" });
+        socket.emit("tournament:error", { message: e.message || "Can't access next match" });
       }
     });
 
@@ -219,7 +195,7 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
       }
       catch (e) {
         console.error("tournament:leave error: ", e.message);
-        socket.emit("tournament:error", { message: "leave failed" });
+        socket.emit("tournament:error", { message: "Leave tournament" });
         if (tournamentManager.deleteTournament(socket.data.tournamentId, socket))
           console.error("Failed to delete tournament on leave");
         socket.data.tournamentId = null;

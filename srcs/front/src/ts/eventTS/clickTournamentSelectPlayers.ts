@@ -2,7 +2,6 @@ import { setupSocket, getSocket } from "../gameTS/socket.js";
 import { alertBoxMsg, backToDefaultPage } from "./userLog.js";
 import { messageSchema } from "../gameTS/schemaYup.js";
 import { router } from "./index.js";
-// import { errorSchema } from "../gameTS/schemaYup.js";
 
 interface TournamentStateEvent {
 	tournamentId: string;
@@ -23,12 +22,10 @@ function validateNames(names: string[], expectedCount: number): string | null {
 
 	if (names.some(n => n.length === 0)) return "All player names must be filled !";
 
-	// avoid duplicates (case-insensitive)
 	const lowered = names.map(n => n.toUpperCase());
 	const set = new Set(lowered);
 	if (set.size !== lowered.length) return "Player names must be unique !";
 
-	// optional: length constraints
 	if (names.some(n => n.length > 13)) return "Player names must be 13 characters max !";
 
 	return null;
