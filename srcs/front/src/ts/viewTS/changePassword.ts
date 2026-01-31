@@ -47,10 +47,10 @@ export default class ChangePasswordView extends ViewTemplate {
 					<label class="mb-2">Current Password :</label>
 					<input autofocus tabindex="1" class="w-full text-center border border-white rounded-lg hover:text-[#98c6f8] hover:border-[#98c6f8]" type="password" id="currentPasswordInput" autocomplete="off" placeholder="Current password" maxlength="32" oninput="this.value = this.value.slice(0,32)">
 
-					<label class="mt-4 mb-2">New Password :</label>
+					<label class="mt-4 mb-2 overflow-hidden">New Password :</label>
 					<input autofocus tabindex="2" class="w-full text-center border border-white rounded-lg hover:text-[#98c6f8] hover:border-[#98c6f8]" type="password" id="newPasswordInput" autocomplete="off" placeholder="New password" maxlength="32" oninput="this.value = this.value.slice(0,32)">
 
-					<label class="mt-4 mb-2">Confirm New Password :</label>
+					<label class="mt-4 mb-2 overflow-hidden">Confirm New Password :</label>
 					<input autofocus tabindex="3" class="w-full text-center border border-white rounded-lg hover:text-[#98c6f8] hover:border-[#98c6f8]" type="password" id="confirmNewPasswordInput" autocomplete="off" placeholder="Confirm new password" maxlength="32" oninput="this.value = this.value.slice(0,32)">
 					<input id="changePasswordButton" class="mt-4 p-4 sm:p-5 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg cursor-pointer" type="submit" value="Change Password" onclick="updateUserPassword(event)">
 				</form>

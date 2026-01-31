@@ -347,7 +347,7 @@ export class Game {
     if (this.tournamentId)
       this.tournamentRound = getTournamentRound(data?.tournament);
     const gameMode = ["AI", "2 Players", "4 Players", "Ranked"];
-    console.log('Game started', gameMode[data.mode]);
+    console.log('Game started', gameMode[data.mode], " id:", this.id);
     if (this.mode === 0) {
       this.AIPlayer = new AIPlayer(this.rightPaddle, this.leftPaddle, this);
     }
