@@ -33,6 +33,7 @@ export const CONTEXT: GameContext = {
 	GAME_WIDTH: 800,
 	GAME_HEIGHT: 500,
 
+	// Player names
 	leftName: "",
 	rightName: "",
 };

@@ -18,7 +18,6 @@ import UserMatchHistory from "../viewTS/UserMatchHistory.js";
 import pongTournament from "../viewTS/pongTournament.js";
 import pongRanked from "../viewTS/pongRanked.js";
 
-// stop pong game when navigating away from /pong
 import { emitStopGame } from "../gameTS/socket.js";
 import { CONTEXT } from "../gameTS/context.js";
 
@@ -726,15 +725,6 @@ export const router = async (): Promise<void> => {
 		CONTEXT.gameId = null;
 		emitStopGame();
 	}
-
-	// if (match && match.mapElement.path === "/tournamentSize" && CONTEXT.tournamentId ) {
-	// 	const tournamentRoute = routes.find(r => r.path === "/tournament");
-	// 	if (tournamentRoute)
-	// 	{
-	// 		match.mapElement = tournamentRoute;
-	// 		history.pushState(null, "", "/tournament");
-	// 	}
-	// }
 
 	const view = new match.mapElement.view();
 	
