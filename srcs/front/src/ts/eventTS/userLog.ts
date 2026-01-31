@@ -667,7 +667,7 @@ window.sendNewFriendRequest = async function (event): Promise<void> {
 		console.error('Could not send friend request !\n => ', err);
 		
 		if (friendSearchResults)
-			friendSearchResults.textContent = "Invalid friend name !";
+			friendSearchResults.textContent = "Invalid friend request !";
 		friendReqInput.value = "";
 		displayCorrectErrMsg(err as Error);
 	}
