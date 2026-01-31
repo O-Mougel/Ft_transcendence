@@ -2,7 +2,7 @@ import { io } from "https://cdn.socket.io/4.7.2/socket.io.esm.min.js";
 import { CONTEXT } from "./context.js";
 import { handleGameOver, handleGameStopped } from "./API.js";
 import { updateGameScene } from "./pong.js";
-import { fetchErrcodeHandler } from "../eventTS/userLog.js";
+import { backToDefaultPage, fetchErrcodeHandler } from "../eventTS/userLog.js";
 import type { GameStateData, GameStartedData, Socket as SocketType } from '../types/socket.types';
 import type { GameOverData } from '../types/game.types';
 // import Paddle from "./paddle.js";
@@ -95,9 +95,11 @@ export function setupSocket(): SocketType | null {
 		try {
 			const result = messageSchema.validateSync({ message: message });
 			console.error("Game error received:", result);
+			backToDefaultPage();
 		}
 		catch (err) {
 			console.error("Error parsing game error:", err);
+			window.history.replaceState({}, "", "/");
 		}
 	});
 

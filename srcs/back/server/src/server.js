@@ -164,7 +164,6 @@ fastify.decorate('matchauthenticate',
 			request.user = decoded
 		}
 		catch(err) {
-
 			const errCode = err.code;
 			if (errCode === "FAST_JWT_EXPIRED")
 				return reply.status(403).send({ message: 'Expired JWT Token !', errRef:"expiredJWT"})
