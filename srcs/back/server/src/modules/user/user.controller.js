@@ -251,7 +251,7 @@ export async function refreshTokenHandler(request, reply) {
 		sameSite: "strict"
 	})
 
-	return reply.code(200).send({newAccessToken: newAccessToken});
+	return reply.code(201).send({newAccessToken: newAccessToken});
 }
 
 export async function alterUserHandler(request, reply) {
@@ -502,7 +502,7 @@ export async function friendAcceptHandler(request, reply) {
 
 	await syncPresenceOnFriendAdd(request.user.id, newfriend.id);
 
-	return { friendname: newfriend.name, message: "New friend added !" }; 
+	return reply.status(200).send( { friendname: newfriend.name, message: "New friend added !" }); 
 }
 
 export async function friendRejectHandler(request, reply) {
