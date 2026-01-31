@@ -9,7 +9,7 @@
     "watch:ts": "tsc -p tsconfig.json --watch",
     "watch:css": "tailwindcss -i ./src/css/input.css -o ./src/css/output.css --watch",
     "dev": "concurrently \"npm:watch:ts\" \"npm:watch:css\"",
-    "start": "npm run dev"
+    "start": "npm run build"
   },
   "devDependencies": {
 	"@tailwindcss/cli": "4.1.16",
