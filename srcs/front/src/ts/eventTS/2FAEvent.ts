@@ -3,6 +3,8 @@ import { show2FAStatus } from "./index.js";
 import { backToDefaultPage, displayCorrectErrMsg, fetchErrcodeHandler, alertBoxMsg } from "./userLog.js";
 import { adjustNavbar, router } from "./index.js";
 import type { QRCodeResponse, TwoFALoginResponse, Player2TwoFAResponse, TwoFACodeData } from "../types/api.types.js";
+import { setupSocketCommunication }  from "./userSocket.js";
+
 
 window.showQRCode = async function (event: Event): Promise<void> {
 	event.preventDefault();
@@ -151,6 +153,8 @@ window.loginWith2FACode = async function (event: Event): Promise<void> {
 			sessionStorage.setItem('access_token', result.newAccessToken);
 			sessionStorage.removeItem('temp_token');
 			window.sessionStorage.setItem('logStatus', 'loggedIn');
+			if (!setupSocketCommunication())
+					throw new Error(`Request failed: 401 ${JSON.stringify({ message: "Socket creation failed", errRef: "socketCreationFailed" })}`);
 			console.log('⏳ Logged in !');
 			alertBoxMsg(`Welcome ! 😉`);
 			await backToDefaultPage();
