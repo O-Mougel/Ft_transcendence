@@ -1,0 +1,232 @@
+import { startSchema, movementSchema, tournamentCreateSchema, tournamentGetStateSchema, tournamentNextMatchSchema, tournamentLeaveSchema, sessionRetrieveSchema } from "./schemaZod.js";
+import { DISCONNECT_GRACE_PERIOD } from "./config.js";
+
+function generateGameId() {
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+export function registerSocketHandlers(io, manager, tournamentManager, messageRateLimits) {
+  io.on("connection", (socket) => {
+    if (socket.recovered) {
+      console.log(`Socket reconnected: ${socket.id}`);
+      return;
+    }
+    console.log("New socket connection established");
+    console.log("User connected, socket id: ", socket.id);
+
+    let disconnectTimer = null; // To track the reconnection grace period
+    let disconnectedAt = null; // To track when the user disconnected
+
+    const limiter = messageRateLimits.get(socket.id); // Keeping this ??
+
+    socket.use((packet, next) => {
+      if (!limiter) return next();
+      const now = Date.now();
+      if (now > limiter.resetAt) {
+        limiter.count = 0;
+        limiter.resetAt = now + 1000;
+      }
+      if (++limiter.count > 10) {
+        console.warn(`Rate limit exceeded for ${socket.id}`);
+        socket.disconnect();
+        return;
+      }
+      next();
+    });
+
+    socket.onAny((event, ...args) => {
+      console.log(`Socket event received: ${event} with args: `, args);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("User disconnected, socket id: ", socket.id);
+      const gameId = socket.data.gameId;
+      if (gameId) {
+        manager.leaveGame(gameId, socket);
+        socket.data.gameId = null;
+      }
+      // Store the time of disconnection
+      disconnectedAt = Date.now();
+      // Start a timer to clean up if the user doesn't reconnect
+      disconnectTimer = setTimeout(() => {
+        tournamentManager.deleteTournament(socket.data.tournamentId, socket);
+        socket.data.tournamentId = null;
+        messageRateLimits.delete(socket.id);
+        console.log(`User disconnected and cleanup completed: ${socket.id}`);
+      }, DISCONNECT_GRACE_PERIOD);
+    });
+
+    socket.on("game:start", (data = {}) => {
+      try {
+        const parsed = startSchema.parse(data);
+        const gameId = generateGameId();
+  
+        socket.data.gameId = gameId;
+        manager.joinGame(gameId, socket);
+  
+        if (!manager.startGame(gameId, parsed))
+          throw new Error("Failed to start game");
+  
+        // Return the gameId to the client
+        socket.emit("game:started", { gameId } );
+      }
+      catch (e) {
+        console.error("game:start error:", e);
+        socket.emit("game:error", { message: e.message || "Invalid start data" });
+      }
+    });
+
+    // Is it still even called anywhere?
+    socket.on("game:join", (data = {}) => {
+      console.log("game:join called with data:", data);
+        const gameId = data.gameId;
+        if (!gameId) {
+          socket.emit("game:error", { message: "Missing gameId" });
+          return;
+        }
+      
+        const entry = manager.games.get(gameId);
+        if (!entry) {
+          socket.emit("game:error", { message: "Game not found" });
+          return;
+        }
+      
+        socket.data.gameId = gameId;
+        manager.joinGame(gameId, socket);
+      
+        socket.emit("game:joined", { gameId });
+        socket.emit("game:state", entry.game.getCurrentGameState());
+    });
+
+    socket.on("game:stop", () => {
+      const gameId = socket.data.gameId;
+      if (!gameId) return;
+
+      manager.stopGame(gameId);
+      socket.emit("game:stopped", { gameId });
+      tournamentManager.onGameStopped(gameId);
+    });
+
+    socket.on("game:move", (data) => {
+      try {
+        const result = movementSchema.parse(data);
+        const gameId = socket.data.gameId;
+        if (!gameId || !result) return;
+  
+        manager.updatePaddle(gameId, result.paddle, result.direction);
+      }
+      catch (e) {
+        console.error("game:move error:", e);
+        socket.emit("game:error", { message: e.message || "Invalid movement data" });
+      }
+    });
+
+    socket.on("tournament:create", (data = {}) => {
+      try {
+        console.log("tournament id in socket data:", socket.data.tournamentId);
+        const result = tournamentCreateSchema.parse(data);
+
+        const size = Number(result.size);
+        const names = result.names;
+
+        // If a tournament is already ongoing for this socket, reject
+        if (socket.data.tournamentId) {
+          console.log("User already in a tournament:", socket.data.tournamentId);
+          socket.emit("tournament:duplicate", { message: "Already in a tournament" });
+          return;
+        }
+        const tournamentId = tournamentManager.createTournament(size, names);
+        if (!tournamentId)
+          throw new Error("Failed to create tournament");
+
+        if (socket.data.gameId) {
+          manager.leaveGame(socket.data.gameId, socket);
+          socket.data.gameId = null;
+        }
+        if (socket.data.tournamentId) {
+          if (!tournamentManager.deleteTournament(socket.data.tournamentId, socket))
+            throw new Error("Failed to delete existing tournament");
+          socket.data.tournamentId = null;
+        } 
+
+        socket.data.tournamentId = tournamentId;
+
+        const tournament = tournamentManager.getTournament(tournamentId);
+        if (!tournament) throw new Error("Tournament not found after creation");
+        socket.emit("tournament:state", { tournamentId, tournament });
+      } catch (e) {
+        console.error("tournament:create error: ", e.messae);
+        socket.emit("tournament:error", { message: "Tournament create failed" });
+      }
+    });
+
+    socket.on("tournament:getState", (data = {}) => {
+      try {
+        const result = tournamentGetStateSchema.parse(data);
+        const tournamentId = result.tournamentId || socket.data.tournamentId;
+        const tournament = tournamentManager.getTournament(tournamentId);
+        if (!tournament)
+          throw new Error("Tournament not found");
+        socket.emit("tournament:state", { tournamentId, tournament });
+      }
+      catch (e) {
+        console.error("tournament:getState error: ", e.message);
+        socket.emit("tournament:error", { message: "getState failed" });
+      }
+    });
+
+    socket.on("tournament:nextMatch", (data = {}) => {
+      try {
+        const result = tournamentNextMatchSchema.parse(data);
+
+        const tournamentId = result.tournamentId || socket.data.tournamentId;
+      
+        if (socket.data.gameId) manager.leaveGame(socket.data.gameId, socket);
+      
+        const info = tournamentManager.nextMatch(tournamentId);
+      
+        socket.data.gameId = info.gameId;
+        manager.joinGame(info.gameId, socket);
+
+        const tournament = tournamentManager.getTournament(tournamentId);
+        if (!tournament) throw new Error("Tournament not found");
+
+        info.startData.mainPlayer = tournament.mainPlayer;
+        if (tournament.mainPlayer !== info.player1 && tournament.mainPlayer !== info.player2) {
+          info.startData.persistMatch = false;
+        }
+      
+        if (!manager.startGame(info.gameId, info.startData))
+          throw new Error("Failed to start tournament match game");
+        
+        socket.emit("match:started", info);
+        
+        socket.emit("tournament:state", { tournamentId, tournament });
+      } catch (e) {
+        console.log("tournament:nextMatch error: ", e.message);
+        socket.emit("tournament:error", { message: e.message || "nextMatch failed" });
+      }
+    });
+
+    socket.on("tournament:leave", (data = {}) => {
+      try {
+        const result = tournamentLeaveSchema.parse(data);
+
+        const tournamentId = result.tournamentId || socket.data.tournamentId;
+        tournamentManager.deleteTournament(tournamentId, socket);
+        socket.data.tournamentId = null;
+        console.log("Tournament deleted: ", tournamentId);
+      }
+      catch (e) {
+        console.error("tournament:leave error: ", e.message);
+        socket.emit("tournament:error", { message: "leave failed" });
+        if (tournamentManager.deleteTournament(socket.data.tournamentId, socket))
+          console.error("Failed to delete tournament on leave");
+        socket.data.tournamentId = null;
+      }
+    });    
+  });
+}
+
+
+

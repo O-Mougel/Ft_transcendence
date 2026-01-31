@@ -3,8 +3,32 @@
     "target": "es2022",
     "module": "esnext",
     "moduleResolution": "node",
-	"skipLibCheck": true,
+    "skipLibCheck": true,
     "outDir": "./src/js",
-	"rootDir": "./src/ts",
+    "rootDir": "./src/ts",
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "../types/*": ["./src/ts/types/*"]
+    }
   },
+
+  "include": [
+    "src/ts/types/**/*",
+    "src/ts/eventTS/**/*",
+    "src/ts/gameTS/**/*",
+    "src/ts/viewTS/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "./src/js"
+  ]
 }
