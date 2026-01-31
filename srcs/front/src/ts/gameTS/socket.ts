@@ -185,10 +185,10 @@ export function startNewGame(payload: unknown): void {
 	socket.emit("game:start", payload);
 }
 
-export function joinExistingGame(gameId: string | null): void {
-	if (!isSocketConnected() || !socket || !gameId) return;
-	socket.emit("game:join", { gameId });
-}
+// export function joinExistingGame(gameId: string | null): void {
+// 	if (!isSocketConnected() || !socket || !gameId) return;
+// 	socket.emit("game:join", { gameId });
+// }
 
 export function emitStopGame(): void {
 	if (!isSocketConnected() || !socket) return;
