@@ -49,6 +49,8 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
       disconnectedAt = Date.now();
       // Start a timer to clean up if the user doesn't reconnect
       disconnectTimer = setTimeout(() => {
+        tournamentManager.deleteTournament(socket.data.tournamentId, socket);
+        socket.data.tournamentId = null;
         messageRateLimits.delete(socket.id);
         console.log(`User disconnected and cleanup completed: ${socket.id}`);
       }, DISCONNECT_GRACE_PERIOD);
@@ -121,6 +123,7 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
 
     socket.on("tournament:create", (data = {}) => {
       try {
+        console.log("tournament id in socket data:", socket.data.tournamentId);
         const result = tournamentCreateSchema.parse(data);
 
         const size = Number(result.size);
@@ -217,6 +220,9 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
       catch (e) {
         console.error("tournament:leave error: ", e.message);
         socket.emit("tournament:error", { message: "leave failed" });
+        if (tournamentManager.deleteTournament(socket.data.tournamentId, socket))
+          console.error("Failed to delete tournament on leave");
+        socket.data.tournamentId = null;
       }
     });    
   });
