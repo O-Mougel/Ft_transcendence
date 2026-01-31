@@ -13,9 +13,9 @@ export default class CustomizeProfileView extends ViewTemplate {
 				<form class="pt-[3%] px-[3%]" onsubmit="return false">
 					<h2 class="flex items-start w-full text-left">► Choose your new username :</h2>
 					<div class="flex items-start w-[75%] pt-4">
-						<input id="newUsername" tabindex="1" class="uppercase ml-4 px-5 w-full hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] rounded-sm border border-[#c2dbf6]" name="unameNew" value="" type="text" autofocus autocomplete="off" placeholder="[old username] maxlength="13" oninput="this.value = this.value.replace(/[^A-Za-z0-9_]/g,'').slice(0,13)">
+						<input id="newUsername" tabindex="1" class="uppercase ml-4 px-5 w-full hover:text-[#98c6f8] text-ellipsis focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8] rounded-sm border border-[#c2dbf6]" name="unameNew" value="" type="text" autofocus autocomplete="off" placeholder="[old username]" maxlength="13" oninput="this.value = this.value.replace(/[^A-Za-z0-9_]/g,'').slice(0,13)">
 					</div>
-					<h2 class="flex items-start pt-4 w-full text-left">► Choose your new profile picture :</h2>
+					<h2 class="flex items-start pt-4 w-full text-left overflow-hidden">► Choose your new profile picture :</h2>
 					<div class="overflow-hidden flex items-center justify-center gap-4 pt-4">
  						<img id="userPfp" src="./img/userPfp/default.png" alt="userPfpImg" class="ml-5 mb-0 w-[120px] h-[120px] object-cover shrink-0 select-none" draggable="false" />
  						<input type="file" id="myfileSelector" name="fileSelector" onchange="onFileSelected(this)" accept="image/png, image/jpg, image/gif, image/jpeg" class="hidden" />
