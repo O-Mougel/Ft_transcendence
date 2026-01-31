@@ -723,7 +723,7 @@ export async function webSocketHandler(connection, request) {
 		if (decoded.type != "access")
 		{
 			console.log("Wrong token type, leaving function..");
-			socket.close(1008, 'Invalid token');
+			socket.close(1008, 'Invalid token type');
 			return;
 		}
 		user = decoded;
