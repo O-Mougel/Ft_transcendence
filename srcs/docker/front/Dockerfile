@@ -2,18 +2,18 @@ FROM node:20.19.6
 
 WORKDIR /usr/src/app
 
-
 #faster for cache
-COPY front/package.json ./
-COPY front/package-lock.json ./
-COPY front/tsconfig.json ./
+COPY package.json ./
+COPY tsconfig.json ./
 
-RUN npm ci
+# RUN npm ci
+RUN npm install
 RUN npm install -g nodemon
 
 COPY . .
 
-EXPOSE 3001
+#RUN npm run build
 
+#EXPOSE 3001
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "start"]

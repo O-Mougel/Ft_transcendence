@@ -13,8 +13,8 @@ import { generateAccessToken, generateRefreshToken, generate2faToken, generateMa
 import { generateSecret, verify2fa } from "../../utils/twofa.js"
 import { generate2faMatchToken } from "../../utils/token.js";
 
-const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 Mo
-const ALLOWED_MIME_TYPES = ["image/png", "image/jpg", "image/jpeg"];
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 Mo
+const ALLOWED_MIME_TYPES = ["image/png", "image/jpg", "image/gif", "image/jpeg"];
 
 export async function registerUserHandler(request, reply) {
 
@@ -65,12 +65,11 @@ export async function registerUserHandler(request, reply) {
 export async function dataGrabHandler(request, reply) {
 
 	const userId = request.user && request.user.id;
-	if (!userId) return reply.code(401).send({ message: 'Not authenticated !'}); //never called in theory, the fastify decorate does it first
+	if (!userId) return reply.code(401).send({ message: 'Not authenticated !'});
 
 	try {
 		const user = await findUserById(userId);
 		if (!user) return reply.code(404).send({ message: 'User not found using access token'});
-		// fields should be deleted if we send whole user, or instead just send username or stats
 		return reply.status(200).send(user);
 
 	} catch (error) {
@@ -131,6 +130,7 @@ export async function loginHandler(request, reply) {
 
 export async function loginMatchHandler(request, reply) {
 	const body = request.body;
+	body.name = body.name.toUpperCase()
 
 	const user = await findUserByName(body.name);
 
@@ -142,7 +142,7 @@ export async function loginMatchHandler(request, reply) {
 	};
 
 	if (user.id == request.user.id)
-		return reply.status(401).send({ //not sure about the error code
+		return reply.status(409).send({
 			message: "Player 1 already logged. Login with another player!",
 			errRef:"loginMatchUserNotP1"
 		});
@@ -162,12 +162,12 @@ export async function loginMatchHandler(request, reply) {
 	if (user.auth2fa) {
 
 		const tempToken = generate2faMatchToken(request.server, user)
-		return reply.code(201).send({ require2fa: true, token: tempToken });
+		return reply.code(200).send({ require2fa: true, token: tempToken });
 	}
 
 	const matchToken = generateMatchToken(request.server, user);
 
-	return reply.code(201).send({ require2fa: false, token: matchToken });
+	return reply.code(200).send({ require2fa: false, token: matchToken });
 
 }
 
@@ -284,6 +284,9 @@ export async function alterUserHandler(request, reply) {
 			message: "Error ! Couln't modify user !", errRef:"alterInnerFail"
 		});
 	};
+
+	await notifyFriendsAlter(userId);
+
 	return reply.status(200).send(updatedUser);
 }
 
@@ -332,7 +335,7 @@ export async function logoutHandler(request, reply) {
 		if (token)
 			await deleteRefreshToken(token)
 		reply.clearCookie("refresh_token");
-		return reply.status(201).send({ message: "Logged out..." });
+		return reply.status(200).send({ message: "Logged out..." });
 
 	} catch (err) {
 		return reply.status(403).send({
@@ -415,9 +418,11 @@ export async function friendRequestHandler(request, reply) {
 		errRef:"requestAlreadyFriend"
 	});
 
-	await requestfriend(request.user.id, newfriend.id) // can fail ?????? try catch
+	await requestfriend(request.user.id, newfriend.id) 
+	
+	await syncRequestFriend(newfriend.id)
 
-	return reply.status(200).send({
+	return reply.status(201).send({
 		message: "Request sent!"
 	});
 }
@@ -431,39 +436,43 @@ function sendToUser(userId, payload) {
 	}
 }
 
-async function syncPresenceOnFriendAdd(a, b) {
+async function syncPresenceOnFriendAdd(a, b) { //b is new friend, a is the one that requests
 
-	// A reçoit le statut de B
-	if (presenceCount.get(b) > 0) {
-		sendToUser(a, {
-			type: "presence:update",
-			userId: b,
-			isOnline: true
-		});
-	}
-	else {
-		sendToUser(a, {
-			type: "presence:update",
-			userId: b,
-			isOnline: false
-		});
-	}
+	sendToUser(a, {
+		type: "friend:update",
+		userId: b,
+	});
 
-	// B reçoit le statut de A
-	if (presenceCount.get(a) > 0) {
-		sendToUser(b, {
-			type: "presence:update",
-			userId: a,
-			isOnline:true
-		});
-	}
-	else {
-		sendToUser(b, {
-			type: "presence:update",
-			userId: a,
-			isOnline:false
-		});
-	}
+	sendToUser(b, {
+		type: "friend:update",
+		userId: a,
+	});
+}
+
+async function syncRequestFriend(userId) {
+	sendToUser(userId, {
+		type: "request:update",
+		userId: userId,
+	});
+}
+
+async function syncDeleteFriend(a, b) {
+	//sent to both in case other tabs are open
+	sendToUser(b, {
+		type: "delete:update",
+		userId: a,
+	});
+	sendToUser(a, {
+		type: "delete:update",
+		userId: b,
+	});
+}
+
+async function syncReject(a, b) {
+	sendToUser(a, {
+		type: "reject:update",
+		userId: b,
+	});
 }
 
 export async function friendAcceptHandler(request, reply) {
@@ -489,7 +498,7 @@ export async function friendAcceptHandler(request, reply) {
 		errRef:"requestAlreadyFriend"
 	});
 
-	await acceptfriend(request.user.id, newfriend.id) // can fail ?????? try catch
+	await acceptfriend(request.user.id, newfriend.id) 
 
 	await syncPresenceOnFriendAdd(request.user.id, newfriend.id);
 
@@ -519,9 +528,11 @@ export async function friendRejectHandler(request, reply) {
 		errRef:"requestAlreadyFriend"
 	});
 
-	await rejectfriend(request.user.id, friend.id) // can fail ?????? try catch
+	await rejectfriend(request.user.id, friend.id) 
 
-	return reply.status(201).send({
+	await syncReject(request.user.id, friend.id);
+
+	return reply.status(200).send({
 		message: "Request rejected !"
 	}); 
 }
@@ -543,7 +554,9 @@ export async function friendDeleteHandler(request, reply) {
 		errRef:"deleteNotFriends"
 	});
 
-	await deletefriend(request.user.id, friend.id) // can fail ?????? try catch
+	await deletefriend(request.user.id, friend.id) 
+
+	await syncDeleteFriend(request.user.id, friend.id);
 
 	return reply.status(200).send({ message: "Friend deleted !", removedName: friend.name });
 } 
@@ -554,10 +567,14 @@ export async function getFriendRequestHandler(request, reply) {
 	return reply.status(200).send(requestsList);
 }
 
-export async function getFriendsHandler(request, reply) {
-	const friendsArray = await findfriends(request.user.id)
-
-	return reply.status(200).send(friendsArray);
+export async function getFriendsHandler(request, reply) 
+{
+    const friendsArray = await findfriends(request.user.id)
+    const friends = friendsArray.friends.map(friend => ({
+        ...friend,
+		online: presenceCount.get(friend.id) > 0
+	}))
+    return reply.status(200).send({ friends: friends });
 }
 
 export async function checkLogStatus(request, reply) {
@@ -566,7 +583,7 @@ export async function checkLogStatus(request, reply) {
 
 export async function uploadProfilePicHandler(request, reply) {
 
-	if (!request.isMultipart || !request.isMultipart()) // we check if it exists first
+	if (!request.isMultipart || !request.isMultipart())
 		return reply.code(400).send({ 
 			message: 'Expected multipart/form-data',
 			errRef:"uploadNotMultipart"
@@ -580,10 +597,17 @@ export async function uploadProfilePicHandler(request, reply) {
 		});
 	}
 
+	if (!uploadedPic.filename || uploadedPic.filename.trim() === "") {
+		return reply.code(400).send({
+			message: "Filename cannot be empty !",
+			errRef: "uploadNameTooShort",
+		});
+	}
+
 	if (uploadedPic.file.truncated) {
-		return reply.code(413).send({
-			message: "File too large",
-			errRef: "uploadTooLarge",
+		return reply.code(400).send({
+			message: "File is truncated",
+			errRef: "uploadIncomplete",
 		});
 	}
 
@@ -596,21 +620,29 @@ export async function uploadProfilePicHandler(request, reply) {
 	}
 
 	const type = await fileTypeFromBuffer(buffer);
-	if (!type || !ALLOWED_MIME_TYPES.includes(type.mime)) {
+	if (!type || !type.mime) {
 		return reply.code(400).send({
 			message: "Invalid image format",
 			errRef: "uploadInvalidSignature",
 		});
 	}
+	if (!ALLOWED_MIME_TYPES.includes(type.mime)) {
+		return reply.code(415).send({
+			message: "Unauthorized file format",
+			errRef: "uploadWrongFiletype",
+		});
+	}
 
+	
 	const ext = path.extname(uploadedPic.filename);
 	const savedFilename = `${Date.now()}-${crypto.randomBytes(6).toString('hex')}${ext}`;
-
-	const uploadDir = path.resolve(process.cwd(), 'front', 'src', 'img', 'userPfp');
-	await fs.promises.mkdir(uploadDir, { recursive: true });
-
-	const filePath = path.join(uploadDir, savedFilename);
+	
 	try {
+		const uploadDir = path.resolve(process.cwd(), 'front', 'src', 'img', 'userPfp');
+		await fs.promises.mkdir(uploadDir, { recursive: true });
+	
+		const filePath = path.join(uploadDir, savedFilename);
+	
 		await fs.promises.writeFile(filePath, buffer);
 	} catch (err) {
 		return reply.code(403).send({
@@ -622,45 +654,48 @@ export async function uploadProfilePicHandler(request, reply) {
 }
 
 async function getFriends(userId) {
-  const friends = await findfriends(userId)
+	const friends = await findfriends(userId)
 
-  const ids = friends.friends.map(f => f.id);
-  friendsCache.set(userId, ids);
-  return ids;
+	const ids = friends.friends.map(f => f.id);
+	friendsCache.set(userId, ids);
+	return ids;
+}
+
+async function notifyFriendsAlter(userId) {
+	const friends = await getFriends(userId);
+
+	const payload = JSON.stringify({
+		type: "user:alter",
+		userId,
+	});
+
+	for (const friendId of friends) {
+		const sockets = userSockets.get(friendId);
+		if (!sockets) continue;
+
+		for (const ws of sockets) {
+			ws.send(payload);
+		}
+	}
 }
 
 async function notifyFriends(userId, online) {
-  const friends = await getFriends(userId);
+	const friends = await getFriends(userId);
 
-  const payload = JSON.stringify({ //use zod
-    type: "friend_presence",
-    userId,
-    online,
-  });
+	const payload = JSON.stringify({
+		type: "friend_presence",
+		userId,
+		online,
+	});
 
-  for (const friendId of friends) {
-    const sockets = userSockets.get(friendId);
-    if (!sockets) continue;
+	for (const friendId of friends) {
+		const sockets = userSockets.get(friendId);
+		if (!sockets) continue;
 
-    for (const ws of sockets) {
-      ws.send(payload);
-    }
-  }
-}
-
-async function onlineFriend(userId, socket) {
-	
-	const friendIds = await getFriends(userId);
-
-	const onlineFriends = friendIds.filter(fid =>
-		presenceCount.get(fid) > 0
-	);
-
-	socket.send(JSON.stringify({
-		type: "presence:snapshot",
-		onlineFriends
-	}));
-
+		for (const ws of sockets) {
+			ws.send(payload);
+		}
+	}
 }
 
 const userSockets = new Map(); // userId -> Set<ws>
@@ -668,55 +703,64 @@ const presenceCount = new Map(); // userId -> number
 const friendsCache = new Map(); // userId -> number[]
 
 export async function webSocketHandler(connection, request) {
+	
 	const socket = connection.socket;
-	const token = request.query.token;
+	const proto = request.headers['x-forwarded-proto'] ?? (request.raw.socket && request.raw.socket.encrypted ? 'https' : 'http'); //check nginx protocol first else use request.raw
+	const base = `${proto}://${request.headers.host}`;
+	const parsedUrl = new URL(request.raw.url, base);
+	const token = parsedUrl.searchParams.get('token');
 
 	if (!token) {
+		console.log("Token is missing, leaving function..")
 		socket.close(1008, 'Missing token');
 		return;
 	}
 
 	let user;
+
 	try {
 		const decoded = request.server.jwt.verify(token);
-		if (decoded.type != "access"){
-		socket.close(1008, 'Invalid token');
-		return;
+		if (decoded.type != "access")
+		{
+			console.log("Wrong token type, leaving function..");
+			socket.close(1008, 'Invalid token type');
+			return;
 		}
 		user = decoded;
 	} catch {
+		console.log("Could not verify token..");
 		socket.close(1008, 'Invalid token');
 		return;
 	}
 
 	const userId = user.id;
 
-	// 🔹 envoyer l’état actuel des amis à l’utilisateur qui vient de se connecter
-	await onlineFriend(userId, socket)
+	console.info("Created socket for user ", user.name);
 
-
-	// sockets
 	if (!userSockets.has(userId)){
+
+		console.log(user.name, " not part of userSocket, adding it");
 		userSockets.set(userId, new Set());
 	}
 	userSockets.get(userId).add(socket);
 
-	// compteur
 	presenceCount.set(userId, (presenceCount.get(userId) ?? 0) + 1);
 
-	// broadcastPresence
 	if (presenceCount.get(userId) == 1) {
+		console.log(user.name, " connected for the first time, notifying friends");
 		await notifyFriends(userId, true);
 	}
 
 	socket.on('close', async () => {
 		userSockets.get(userId)?.delete(socket);
-
+		console.info("Closed socket for user ", user.name);
 		const count = presenceCount.get(userId) - 1;
 		if (count == 0) {
+			console.log("No session open for", user.name, ", notifying friends");
 			presenceCount.delete(userId);
 			await notifyFriends(userId, false);
 		} else {
+			console.log("user ", user.name, "still has ", count, "session left open");
 			presenceCount.set(userId, count);
 		}
 	});

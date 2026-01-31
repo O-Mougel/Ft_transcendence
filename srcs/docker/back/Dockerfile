@@ -1,10 +1,10 @@
 FROM node:20-alpine
 
-ENV DATABASE_URL="file:./dev.db"
-
 WORKDIR /home
 
 RUN apk add --no-cache bash sqlite openssl
+
+ENV DATABASE_URL="file:./dev.db"
 
 COPY package.json ./
 
