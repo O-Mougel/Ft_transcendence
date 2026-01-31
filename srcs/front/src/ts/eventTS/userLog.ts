@@ -516,7 +516,7 @@ export	const checkForFriendRequests = async (): Promise<void> => {
 				// console.log("Safe name is : ", safeName);
 				// console.log(" name is : ", result.requestOf[i].name);
 				listItem.innerHTML = `
-				<span class="text-sm lg:text-3xl">↪ ${safeName}</span>
+				<span class="text-sm lg:text-2xl">↪ ${safeName}</span>
 				<span class="flex items-center gap-2">
 					<button class="accept-request px-2 py-1 rounded" onclick="acceptFriend(${friendId})" title="Accept">✅</button>
 					<button class="reject-request px-2 py-1 rounded" onclick="rejectFriend(${friendId})" title="Reject">❌</button>
@@ -558,9 +558,9 @@ export const displayUserFriends = async (): Promise<void> => {
 				let	clearName = result.friends[i].name + "[4242]";
 				listItem.className = 'py-2 flex items-center justify-between ml-5';
 				if (result.friends[i].online)
-					listItem.innerHTML = `<span class="text-sm lg:text-3xl border w-full p-2 mb-2" name="${clearName}">🟢 ${result.friends[i].name}</span>`; 
+					listItem.innerHTML = `<span class="text-sm lg:text-2xl border w-full p-2 mb-2" name="${clearName}">🟢 ${result.friends[i].name}</span>`; 
 				else
-					listItem.innerHTML = `<span class="text-sm lg:text-3xl border w-full p-2 mb-2" name="${clearName}">🔴 ${result.friends[i].name}</span>`;// false now
+					listItem.innerHTML = `<span class="text-sm lg:text-2xl border w-full p-2 mb-2" name="${clearName}">🔴 ${result.friends[i].name}</span>`;
 					
 				friendList.appendChild(listItem);
 			}
