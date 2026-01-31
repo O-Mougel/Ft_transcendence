@@ -28,6 +28,7 @@ export class GameManager {
       players: new Set(),
       meta: null,
     });
+    this.games.get(gameId).id = gameId;
   }
 
   joinGame(gameId, socket) {
@@ -55,6 +56,7 @@ export class GameManager {
   async startGame(gameId, data) {
     this.ensureGameExist(gameId);
     const entry = this.games.get(gameId);
+    entry.game.id = gameId;
     entry.game.reset();
 
     if (data.mode === 2 || data.persistMatch === false)
@@ -108,7 +110,7 @@ export class GameManager {
 
     entry.game.stop();
     this.stopLoops(gameId);
-    this.games.delete(gameId);
+    // this.games.delete(gameId);
   }
 
   updatePaddle(gameId, side, direction) {
