@@ -65,12 +65,11 @@ export async function registerUserHandler(request, reply) {
 export async function dataGrabHandler(request, reply) {
 
 	const userId = request.user && request.user.id;
-	if (!userId) return reply.code(401).send({ message: 'Not authenticated !'}); //never called in theory, the fastify decorate does it first
+	if (!userId) return reply.code(401).send({ message: 'Not authenticated !'});
 
 	try {
 		const user = await findUserById(userId);
 		if (!user) return reply.code(404).send({ message: 'User not found using access token'});
-		// fields should be deleted if we send whole user, or instead just send username or stats
 		return reply.status(200).send(user);
 
 	} catch (error) {
@@ -419,7 +418,7 @@ export async function friendRequestHandler(request, reply) {
 		errRef:"requestAlreadyFriend"
 	});
 
-	await requestfriend(request.user.id, newfriend.id) // can fail ?????? try catch
+	await requestfriend(request.user.id, newfriend.id)
 	
 	await syncRequestFriend(newfriend.id)
 
@@ -499,7 +498,7 @@ export async function friendAcceptHandler(request, reply) {
 		errRef:"requestAlreadyFriend"
 	});
 
-	await acceptfriend(request.user.id, newfriend.id) // can fail ?????? try catch
+	await acceptfriend(request.user.id, newfriend.id)
 
 	await syncPresenceOnFriendAdd(request.user.id, newfriend.id);
 
@@ -529,7 +528,7 @@ export async function friendRejectHandler(request, reply) {
 		errRef:"requestAlreadyFriend"
 	});
 
-	await rejectfriend(request.user.id, friend.id) // can fail ?????? try catch
+	await rejectfriend(request.user.id, friend.id)
 
 	await syncReject(request.user.id, friend.id);
 
@@ -555,7 +554,7 @@ export async function friendDeleteHandler(request, reply) {
 		errRef:"deleteNotFriends"
 	});
 
-	await deletefriend(request.user.id, friend.id) // can fail ?????? try catch
+	await deletefriend(request.user.id, friend.id)
 
 	await syncDeleteFriend(request.user.id, friend.id);
 
@@ -699,21 +698,6 @@ async function notifyFriends(userId, online) {
 	}
 }
 
-// async function onlineFriend(userId, socket) {
-	
-// 	const friendIds = await getFriends(userId);
-
-// 	const onlineFriends = friendIds.filter(fid =>
-// 		presenceCount.get(fid) > 0
-// 	);
-
-// 	socket.send(JSON.stringify({
-// 		type: "presence:snapshot",
-// 		onlineFriends
-// 	}));
-
-// }
-
 const userSockets = new Map(); // userId -> Set<ws>
 const presenceCount = new Map(); // userId -> number
 const friendsCache = new Map(); // userId -> number[]
@@ -751,13 +735,8 @@ export async function webSocketHandler(connection, request) {
 
 	const userId = user.id;
 
-	console.info("Created socket for user ", user.name); //
+	console.info("Created socket for user ", user.name);
 
-	//grab friend log info for used that just logged in
-	// await onlineFriend(userId, socket)
-
-
-	// sockets
 	if (!userSockets.has(userId)){
 
 		console.log(user.name, " not part of userSocket, adding it");
@@ -765,10 +744,8 @@ export async function webSocketHandler(connection, request) {
 	}
 	userSockets.get(userId).add(socket);
 
-	// compteur
 	presenceCount.set(userId, (presenceCount.get(userId) ?? 0) + 1);
 
-	// broadcastPresence
 	if (presenceCount.get(userId) == 1) {
 		console.log(user.name, " connected for the first time, notifying friends");
 		await notifyFriends(userId, true);
