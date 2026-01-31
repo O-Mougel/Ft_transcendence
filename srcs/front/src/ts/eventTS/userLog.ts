@@ -983,7 +983,7 @@ window.loginPlayer2 = async function (event: Event): Promise<void> {
 			
 			if (result.require2fa == true)
 			{
-				window.sessionStorage.setItem('temp_token',result.token);
+				window.sessionStorage.setItem('match_token',result.token);
 				if (divLogin) divLogin.style.display = "none";
 				if (divLogin2FA) divLogin2FA.style.display = "flex";
 				if (player2TwoFAInput) player2TwoFAInput.focus();

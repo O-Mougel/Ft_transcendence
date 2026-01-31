@@ -10,7 +10,7 @@ import type { GameStateData } from '../types/socket.types';
 
 export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 	if (mode.mode === 3 && !sessionStorage.getItem("player2_token")) {
-		window.history.pushState(null, "", `/ranked`);
+		window.history.pushState(null, "", `/`);
 		router();
 		return;
 	}

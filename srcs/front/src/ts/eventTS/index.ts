@@ -16,6 +16,7 @@ import changePassword from "../viewTS/changePassword.js";
 import rankedLogin from "../viewTS/rankedLogin.js";
 import UserMatchHistory from "../viewTS/UserMatchHistory.js";
 import pongTournament from "../viewTS/pongTournament.js";
+import pongRanked from "../viewTS/pongRanked.js";
 
 // stop pong game when navigating away from /pong
 import { emitStopGame } from "../gameTS/socket.js";
@@ -624,7 +625,7 @@ export const router = async (): Promise<void> => {
 		{ path: "/pongAI", view: pong },
 		{ path: "/pong", view: pong },
 		{ path: "/pong2", view: pong },
-		{ path: "/pongRanked", view: pong },
+		{ path: "/pongRanked", view: pongRanked },
 		{ path: "/pongTournament", view: pongTournament },
 		{ path: "/logUser", view: logUser },
 		{ path: "/tournament", view: tournament },
