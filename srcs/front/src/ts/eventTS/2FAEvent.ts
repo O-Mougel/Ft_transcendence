@@ -1,7 +1,7 @@
 import Login2fa from "../viewTS/2faLogin.js";
 import { show2FAStatus } from "./index.js";
 import { backToDefaultPage, displayCorrectErrMsg, fetchErrcodeHandler, alertBoxMsg } from "./userLog.js";
-import { adjustNavbar } from "./index.js";
+import { adjustNavbar, router } from "./index.js";
 import type { QRCodeResponse, TwoFALoginResponse, Player2TwoFAResponse, TwoFACodeData } from "../types/api.types.js";
 
 window.showQRCode = async function (event: Event): Promise<void> {
@@ -175,6 +175,7 @@ export const goTo2faLogin = async (): Promise<void> => {
 	const codeInput = document.getElementById('2FACodeInput') as HTMLInputElement | null;
 	if (codeInput) codeInput.focus();
 	history.pushState(null, "", "/2faLogin");
+	router();
 }
 
 window.player2TwoFAValidation = async function (event: Event): Promise<void> {
@@ -202,7 +203,7 @@ window.player2TwoFAValidation = async function (event: Event): Promise<void> {
 		const logWith2FACode = await fetch('/login/player2/2fa', {
 			credentials: 'include',
 			method: 'POST',
-			headers: { Authorization: `Bearer ${sessionStorage.getItem("temp_token")}`, 'Content-Type': 'application/json' },
+			headers: { Authorization: `Bearer ${sessionStorage.getItem("match_token")}`, 'Content-Type': 'application/json' },
 			body: JSON.stringify(data),
 		});
 
@@ -214,7 +215,7 @@ window.player2TwoFAValidation = async function (event: Event): Promise<void> {
 		const result: Player2TwoFAResponse = await logWith2FACode.json();
 		if (result) {
 			window.sessionStorage.setItem('player2_token', result.matchToken);
-			sessionStorage.removeItem('temp_token');
+			sessionStorage.removeItem('match_token');
 			await window.loadPlayer2Data();
 			alertBoxMsg('⏳ Player 2 Logged in !');
 			if (divLogin) divLogin.style.display = "none";

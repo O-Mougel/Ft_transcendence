@@ -10,7 +10,7 @@ export async function getMatchsHandler(request, reply) {
 	return stats;
 }
 
-export async function getFriendMatchsHandler(request, reply) { //check friend id et pas de ciuwbrg
+export async function getFriendMatchsHandler(request, reply) {
 	const { friendId } = request.params
 
 	const userId = Number(friendId)
