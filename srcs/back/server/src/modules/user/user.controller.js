@@ -701,6 +701,7 @@ async function notifyFriends(userId, online) {
 const userSockets = new Map(); // userId -> Set<ws>
 const presenceCount = new Map(); // userId -> number
 const friendsCache = new Map(); // userId -> number[]
+let time;
 
 export async function webSocketHandler(connection, request) {
 	
@@ -709,6 +710,8 @@ export async function webSocketHandler(connection, request) {
 	const base = `${proto}://${request.headers.host}`;
 	const parsedUrl = new URL(request.raw.url, base);
 	const token = parsedUrl.searchParams.get('token');
+	time = new Date()
+	console.log(time)
 
 	if (!token) {
 		console.log("Token is missing, leaving function..")
@@ -751,10 +754,31 @@ export async function webSocketHandler(connection, request) {
 		await notifyFriends(userId, true);
 	}
 
+	socket.isAlive = true
+
+	socket.on('pong', ()=>{
+		console.log('heartbeat')
+		socket.isAlive = true;
+	})
+	
+	const interval = setInterval(() => {
+		if (!socket.isAlive) {
+			socket.terminate();
+			return;
+		}
+
+		socket.isAlive = false;
+		socket.ping();
+	}, 29000);
+
 	socket.on('close', async () => {
+		clearInterval(interval)
 		userSockets.get(userId)?.delete(socket);
 		console.info("Closed socket for user ", user.name);
 		const count = presenceCount.get(userId) - 1;
+		time = new Date() - time 
+		console.log(time)
+		console.log(new Date())
 		if (count == 0) {
 			console.log("No session open for", user.name, ", notifying friends");
 			presenceCount.delete(userId);
