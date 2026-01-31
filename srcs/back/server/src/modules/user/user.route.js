@@ -76,7 +76,7 @@ async function userRoutes(fastify) {
             schema: {
                 body: $ref("twofaSchema"),
                 response: {
-                    200: $ref("accessTokenResponseSchema"),
+                    201: $ref("accessTokenResponseSchema"),
                 }
             },
 			preValidation: async (request, reply) => {
