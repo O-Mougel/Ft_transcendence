@@ -32,7 +32,6 @@ function handleKeyUp(e: KeyboardEvent): void {
   if (!CONTEXT.isGameStarted) return;
   const key = e.key;
 
-  // ESC stops the game
   if (key === "Escape" && !window.location.href.includes("/pongTournament")) handleEscapeKey();
   CONTEXT.keysPressed.delete(key);
   updateDirections();
@@ -80,7 +79,7 @@ function updateDirections(): void {
   else if (l && !o) leftPaddle2.direction = "down";
   else leftPaddle2.direction = "none";
 
-  // Right paddle: 6/3
+  // Right paddle in 2vs2: 6/3
   if (keysPressed.has("6") && !keysPressed.has("3")) rightPaddle.direction = "up";
   else if (keysPressed.has("3") && !keysPressed.has("6")) rightPaddle.direction = "down";
   else rightPaddle.direction = "none";

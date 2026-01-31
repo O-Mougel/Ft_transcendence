@@ -130,11 +130,6 @@ export async function waitStartGame(): Promise<void> {
 		const result = await dataRequestResponse.json();
 		if (!result) throw new Error('No data received from server');
 
-		if (CONTEXT.gameId && socket) {
-			console.log("Joining existing game with ID:", CONTEXT.gameId);
-			socket.emit("game:join", { gameId: CONTEXT.gameId });
-			return;
-		}
 		const tokenP1 = sessionStorage.getItem("access_token");
 
 		if (!socket) return;
@@ -215,7 +210,6 @@ export function emitNextMatch(tournamentId: string | null): void {
 export function updateGameState(): void {
 	const { isGameStarted, leftPaddle, rightPaddle, leftPaddle2, rightPaddle2 } = CONTEXT;
 	if (!isGameStarted || !socket) return;
-	// print value and their types
 
 	const directionLeft = leftPaddle?.direction || "none";
 	const directionRight = rightPaddle?.direction || "none";

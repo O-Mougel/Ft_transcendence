@@ -157,7 +157,6 @@ fastify.listen({ port: 3002, host: "0.0.0.0" }, (err) => {
 });
 
 export function verifyPlayerToken(token) {
-  // In a real implementation, verify the token properly
   try {
     const payload = fastify.jwt.verify(token);
     return payload;
