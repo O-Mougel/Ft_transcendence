@@ -102,6 +102,9 @@ window.addEventListener('storage', async (event) => {
 window.addEventListener("resize", reportWindowSize);
 
 window.addEventListener('keydown', (e: KeyboardEvent): void => {
+	
+	if (!e.key)
+		return ;
 	try {
 		const isF5 = e.code === 'F5' || e.key === 'F5';
 		const isCtrlR = e.key.toLowerCase() === 'r' && (e.ctrlKey || e.metaKey);

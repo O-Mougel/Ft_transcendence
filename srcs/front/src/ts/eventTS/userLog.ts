@@ -750,6 +750,8 @@ window.handleNewUserCreate = async function (event: Event): Promise<void> {
 			if (passwordConfirm) passwordConfirm.value = "";
 			window.sessionStorage.setItem('logStatus','loggedIn');
 			window.sessionStorage.setItem('access_token',result.token);
+			if (!setupSocketCommunication())
+					throw new Error(`Request failed: 401 ${JSON.stringify({ message: "Socket creation failed", errRef: "socketCreationFailed" })}`);
 			alertBoxMsg(`Welcome ${data.name} ! 😉`);
 			backToDefaultPage();
 		}
@@ -815,9 +817,6 @@ window.handleLoginClick = async function (event: Event): Promise<void> {
 				window.sessionStorage.setItem('temp_token',result.token);
 				console.log('⏳ 2FA required, redirecting ...');
 				await goTo2faLogin();
-				if (!setupSocketCommunication())
-					throw new Error(`Request failed: 401 ${JSON.stringify({ message: "Socket creation failed", errRef: "socketCreationFailed" })}`);
-
 			}
 			else
 			{
