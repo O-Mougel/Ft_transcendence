@@ -1,4 +1,5 @@
 import ViewTemplate from "./ViewTemplate.js";
+import { alertBoxMsg, backToDefaultPage } from "../eventTS/userLog.js";
 
 export default class TwoFALoginView extends ViewTemplate {
 	constructor() {
@@ -19,5 +20,14 @@ export default class TwoFALoginView extends ViewTemplate {
 					<a id="backToMenuButton" href="/" class="inline uppercase text-sm md:text-base xl:text-2xl focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis w-1/2 md:w-1/4 border hover:border-[#98c6f8] border-white py-2 px-4 rounded-lg shadow-[0_0_20px_rgba(158,202,237,0.9)]" name="backtomenuButton" data-link> 🚀 Back to menu </a>
 				</div>
 			</div>`;
+	}
+
+	async init(): Promise<void> {
+		
+		if (!sessionStorage.getItem("temp_token"))
+		{
+			alertBoxMsg("❌ You are not allowed to be here !");
+			return backToDefaultPage();
+		}
 	}
 }

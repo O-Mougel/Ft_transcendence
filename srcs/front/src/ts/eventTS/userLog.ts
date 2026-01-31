@@ -1,7 +1,7 @@
 import startingFile from "../viewTS/startingFile.js";
 import { setupSocketCommunication, closeSocketCommunication }  from "./userSocket.js";
 import { goTo2faLogin } from "./2FAEvent.js";
-import { adjustNavbar } from "./index.js";
+import { adjustNavbar, router } from "./index.js";
 import type {
 	FriendAcceptData,
 	FriendRejectData,
@@ -20,6 +20,7 @@ export const backToDefaultPage = async (): Promise<void> => {
 		await view.init();
 	}
 	history.pushState(null, "", "/");
+	router();
 }
 
 const hideAlertBoxMsg = async (): Promise<void> => {
@@ -982,7 +983,7 @@ window.loginPlayer2 = async function (event: Event): Promise<void> {
 			
 			if (result.require2fa == true)
 			{
-				window.sessionStorage.setItem('temp_token',result.token);
+				window.sessionStorage.setItem('match_token',result.token);
 				if (divLogin) divLogin.style.display = "none";
 				if (divLogin2FA) divLogin2FA.style.display = "flex";
 				if (player2TwoFAInput) player2TwoFAInput.focus();
