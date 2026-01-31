@@ -138,12 +138,15 @@ export function initTournament(): void {
 				if (statusEl) statusEl.textContent = `Error: ${result}`;
 				console.error("Tournament error:", result);
 				alertBoxMsg("❌ " + (result.message || "Tournament error occurred"));
-				console.log("back tot tournament page");
+				console.log("back to tournament page");
 				backToTournamentPage();
 			}
 			catch (err) {
 				console.error("Invalid tournament error data received:", err);
 				alertBoxMsg("❌ Tournament creation error occurred");
+				if (sessionStorage.getItem("currentTournamentId"))
+					sessionStorage.removeItem("currentTournamentId");
+				backToDefaultPage();
 			}
 		});
 
@@ -154,12 +157,12 @@ export function initTournament(): void {
 				console.error("Tournament duplicate error:", result);
 				alertBoxMsg("❌ " + (result.message || "There is already a tournament ongoing."));
 				history.pushState(null, "", "/tournament");
-				// router();
 			}
 			catch (err) {
 				console.error("Invalid tournament duplicate data received:", err, data);
 				alertBoxMsg("❌ Duplicate tournament join attempt.");
 				backToDefaultPage();
+				// window.history.replaceState({}, "", "/");
 			}
 		});
 

@@ -68,6 +68,7 @@ export class GameManager {
         var verifiedPlayer2 = verifyPlayerToken(data.player2Token);
         if (!verifiedPlayer2) {
           socket.emit("game:error", { message: "Invalid player 2 token" });
+          this.games.delete(gameId);
           return;
         }
         entry.game.player2 = verifiedPlayer2;
@@ -80,9 +81,8 @@ export class GameManager {
       if (data.player1) entry.game.player1.username = data.player1
 
       entry.game.start?.(data);
-      if (typeof entry.game.mode === "number" && typeof data.mode === "number") {
+      if (typeof entry.game.mode === "number" && typeof data.mode === "number")
         entry.game.mode = data.mode;
-      }
 
       this.startTickLoop(gameId);
       this.startAiLoop(gameId);
@@ -91,6 +91,7 @@ export class GameManager {
     }
     catch (err) {
       console.error("Error starting game:", err);
+      this.games.delete(gameId);
       return false;
     }
   }
@@ -107,6 +108,7 @@ export class GameManager {
 
     entry.game.stop();
     this.stopLoops(gameId);
+    this.games.delete(gameId);
   }
 
   updatePaddle(gameId, side, direction) {
@@ -144,6 +146,9 @@ export class GameManager {
           try {
           } catch (e) {
             console.error("onGameOver error:", e);
+            stopLoops(gameId);
+            this.games.delete(gameId);
+            return;
           }
         }
 
