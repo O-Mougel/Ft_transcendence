@@ -1,4 +1,3 @@
-// Socket.io event type definitions
 import type { GameMode, PaddleDirection } from './game.types';
 
 export interface GameStateData {
@@ -98,7 +97,7 @@ export interface TournamentErrorData {
   message?: string;
 }
 
-// Socket.io instance type
+//sock.io deftsc -p tsconfig.json
 export interface Socket {
   connected: boolean;
   emit(event: string, data?: unknown): void;

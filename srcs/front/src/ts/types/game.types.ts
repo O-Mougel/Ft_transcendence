@@ -1,9 +1,6 @@
-// Game-related type definitions
-
-export type GameMode = 0 | 1 | 2 | 3; // 0=AI, 1=2P local, 2=4P tournament, 3=Ranked
+export type GameMode = 0 | 1 | 2 | 3; // 0=AI, 1=2P local, 2=4P, 3=Ranked
 export type PaddleDirection = 'up' | 'down' | 'none';
 
-// Ball class interface
 export interface BallProps {
   x: number;
   y: number;
@@ -15,7 +12,6 @@ export interface BallProps {
   spawnY: number;
 }
 
-// Paddle class interface
 export interface PaddleProps {
   x: number;
   y: number;
@@ -29,7 +25,6 @@ export interface PaddleProps {
   spawnY: number;
 }
 
-// Forward declarations for Ball and Paddle classes
 export interface IBall {
   x: number;
   y: number;
@@ -58,23 +53,19 @@ export interface IPaddle {
   reset(): void;
 }
 
-// Game context type
 export interface GameContext {
-  // HTML elements
   canvas: HTMLCanvasElement | null;
   ctx: CanvasRenderingContext2D | null;
   startButton: HTMLButtonElement | null;
   backButton: HTMLButtonElement | null;
   score: HTMLElement | null;
 
-  // Game objects
   ball: IBall | null;
   leftPaddle: IPaddle | null;
   rightPaddle: IPaddle | null;
   leftPaddle2: IPaddle | null;
   rightPaddle2: IPaddle | null;
 
-  // Game state
   isGameStarted: boolean;
   gameId: string | null;
   keysPressed: Set<string>;
@@ -83,7 +74,6 @@ export interface GameContext {
   gameMode: GameMode;
   tournamentId: string | null;
 
-  // Dimensions
   PADDLE_WIDTH: number;
   PADDLE_HEIGHT: number;
   BALL_RADIUS: number;
@@ -91,24 +81,20 @@ export interface GameContext {
   GAME_HEIGHT: number;
   scale?: number;
 
-  // Optional tournament info
   leftName?: string;
   rightName?: string;
 }
 
-// Game initialization options
 export interface GameInitOptions {
   mode: GameMode;
   gameId?: string | null;
 }
 
-// Score data
 export interface ScoreData {
   left: number;
   right: number;
 }
 
-// Game over data
 export interface GameOverData {
   winner?: string;
   left: number;
