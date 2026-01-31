@@ -21,9 +21,9 @@ export async function showstats(id) {
 		},
 	})
 
-	if(matchsnb == 0) // if never played before
+	if(matchsnb == 0)
 	{
-		return { matchsnb:0, winmatchnb:0, winrate: 0, last10matchs: []} // we need numbers for zod schema
+		return { matchsnb:0, winmatchnb:0, winrate: 0, last10matchs: []}
 	}
 	
 	const winmatchnb = await db.match.count({
@@ -31,7 +31,7 @@ export async function showstats(id) {
 			winnerId: id,
 		},
 	})
-	const calc = winmatchnb / matchsnb * 100; //divide by zero ?
+	const calc = winmatchnb / matchsnb * 100;
 	const winrate = calc.toFixed(2);
 
 	const lastmatchs = await db.match.findMany({
