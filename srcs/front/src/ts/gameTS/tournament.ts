@@ -8,7 +8,7 @@ import { tournamentStateSchema, matchStartedSchema, tournamentEndedSchema, messa
 import { alertBoxMsg, backToDefaultPage } from "../eventTS/userLog.js";
 import { adjustNavbar } from "../eventTS/index.js";
 import tournament from "../viewTS/tournament.js";
-// import { router } from "../eventTS/index.js";
+import { router } from "../eventTS/index.js";
 
 window.addEventListener("pagehide", (): void => {
 	if (!(sessionStorage.getItem('f5WasPressed'))) {
@@ -35,7 +35,7 @@ export function initTournament(): void {
 		const statusEl = document.getElementById("tournamentStatus");
 		if (statusEl) statusEl.textContent = "Missing tournament id.";
 		window.history.pushState(null, "", "/tournamentSize");
-		window.dispatchEvent(new PopStateEvent("popstate"));
+		router();
 		return;
 	}
 
@@ -48,9 +48,10 @@ export function initTournament(): void {
 		quitBtn.onclick = (): void => {
 			console.log("Leaving tournament:", tournamentId);
 			sessionStorage.removeItem("currentTournamentId");
+			window.sessionStorage.setItem("tournamentEnded", "true");
 			CONTEXT.tournamentId = null;
 			window.history.pushState(null, "", "/tournamentSize");
-			window.dispatchEvent(new PopStateEvent("popstate"));
+			router();
 			socket.emit("tournament:leave", { tournamentId });
 		};
 	}
@@ -60,14 +61,14 @@ export function initTournament(): void {
 			nextMatchBtn.textContent = "Back to Match";
 			nextMatchBtn.onclick = (): void => {
 				window.history.pushState(null, "", "/pong");
-				window.dispatchEvent(new PopStateEvent("popstate"));
+				router();
 			};
 		} else {
 			CONTEXT.tournamentId = tournamentId;
 			nextMatchBtn.onclick = (): void => {
 				console.log("Presenting next match in tournament:", tournamentId);
 				window.history.pushState(null, "", "/pongTournament");
-				window.dispatchEvent(new PopStateEvent("popstate"));
+				router();
 			};
 		}
 	}
@@ -76,6 +77,7 @@ export function initTournament(): void {
 		socket.off("tournament:state");
 		socket.on("tournament:state", (data: unknown): void => {
 			try {
+				window.sessionStorage.setItem("tournamentEnded", "false");
 				const stateData = data as TournamentStateData;
 				const result = tournamentStateSchema.validateSync(stateData) as TournamentStateData;
 				if (result.tournamentId !== tournamentId) return;
@@ -83,6 +85,8 @@ export function initTournament(): void {
 					if (nextMatchBtn)
 						nextMatchBtn.style.display = "none";
 					nextMatchBtn?.remove();
+					window.sessionStorage.setItem("tournamentEnded", "true");
+					// 	window.sessionStorage.removeItem("currentTournamentId");
 				}
 				renderTournament(result.tournament);
 				const nextMatch = findNextReadyMatch(result.tournament);
@@ -138,7 +142,9 @@ export function initTournament(): void {
 				if (statusEl) statusEl.textContent = `Error: ${result}`;
 				console.error("Tournament error:", result);
 				alertBoxMsg("❌ " + (result.message || "Tournament error occurred"));
-				console.log("back tot tournament page");
+				window.sessionStorage.setItem("tournamentEnded", "true");
+				if (window.sessionStorage.getItem("currentTournamentId"))
+						window.sessionStorage.removeItem("currentTournamentId"); // if error in back, tournament deleted, so we remove it
 				backToTournamentPage();
 			}
 			catch (err) {

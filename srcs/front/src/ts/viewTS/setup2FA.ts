@@ -3,7 +3,7 @@ import ViewTemplate from "./ViewTemplate.js";
 export default class Setup2FAView extends ViewTemplate {
 	constructor() {
 		super();
-		this.setTitle("2FA Setup !");
+		this.setTitle("2FA Setup");
 	}
 
 	async getHTML(): Promise<string> {

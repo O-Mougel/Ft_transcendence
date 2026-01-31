@@ -1,11 +1,12 @@
 import ViewTemplate from "./ViewTemplate.js";
 import { CONTEXT } from "../gameTS/context.js";
 import type { GameMode } from '../types/game.types';
+import { alertBoxMsg, backToDefaultPage } from "../eventTS/userLog.js";
 
 export default class PongView extends ViewTemplate {
 	constructor() {
 		super();
-		this.setTitle("Pong!");
+		this.setTitle("Tournament Match");
 	}
 
 	async getHTML(): Promise<string> {
@@ -77,7 +78,6 @@ export default class PongView extends ViewTemplate {
 						</div>
 					</div>
 					
-
 					<div id="instruction1v1" class="flex flex-col justify-center w-full border border-dashed border-white rounded-lg p-4 pb-8">
 						<span class="pb-4">Controls</span>
 						<div class="flex justify-between w-full">
@@ -126,7 +126,8 @@ export default class PongView extends ViewTemplate {
 						</div>
 					</div>
 
-				</div>
+					<a id="backToTournament" href="/tournament" class="hidden px-6 py-3 bg-transparent border border-[#98c6f8] font-bold rounded-lg hover:bg-white/10 cursor-pointer" data-link>Back to tournament</a>
+					</div>
 			</div>`;
 	}
 
@@ -134,6 +135,11 @@ export default class PongView extends ViewTemplate {
 		const mode: GameMode = (location.pathname === '/pongAI') ? 0 : (location.pathname === '/pongRanked') ? 3 : (location.pathname === '/pong2') ? 2 : 1;
 		const module = await import("../gameTS/pong.js");
 
+		if (window.sessionStorage.getItem("tournamentEnded") && window.sessionStorage.getItem("tournamentEnded") == "true")
+		{
+			alertBoxMsg("❌ This tournament no longer exists !");
+			return backToDefaultPage();
+		}
 		if (typeof module.initPong === "function")
 			module.initPong({ mode, gameId: CONTEXT.gameId });
 
