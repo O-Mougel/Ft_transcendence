@@ -9,6 +9,8 @@ RUN openssl req -x509 -nodes \
     --keyout /etc/ssl/private/transcendence.key \
     --subj="/C=FR/ST=IDF/L=Lyon/O=42/OU=42/CN=zigotos.42.fr/UID=zigoto" #<- maybe change this 😅
 
-COPY ./conf/default.conf /etc/nginx/conf.d/default.conf
+COPY ./docker/nginx/conf/default.conf /etc/nginx/conf.d/default.conf
+
+COPY ./front/src/img/userPfp /var/www/html/src/img/userPfp
 
 CMD ["nginx", "-g", "daemon off;"]
