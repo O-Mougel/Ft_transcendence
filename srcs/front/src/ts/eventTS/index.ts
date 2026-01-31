@@ -49,6 +49,10 @@ declare global {
   let Chart: any;
 }
 
+let winLossChart: any = null;
+let winRatioChart: any = null;
+let multiChartObject: any = null;
+
 let friendWinLossChart: any = null;
 let friendWinRatioChart: any = null;
 let friendMultiChart: any = null;
@@ -132,7 +136,13 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 	const multiChart = document.getElementById("multiChart") as HTMLCanvasElement | null;
 	const noMatchesMessage = document.getElementById("noMatchesMessage") as HTMLElement | null;
 
+	console.log("chart iss : ",Chart.getChart("0"));
 	if (!winLossDoughnutChart || !winRatioBar || !multiChart || !noMatchesMessage) return;
+
+	
+	if (winLossChart) { try {	winLossChart.destroy(); } catch(_) {} winLossChart = null;}
+	if (winRatioChart) { try { winRatioChart.destroy(); } catch(_) {} winRatioChart = null; }
+	if (multiChartObject) { try { multiChartObject.destroy(); } catch(_) {} multiChartObject = null; }
 
 	try {
 		const loggedUserStatsRequestResponse = await fetch('/match/self', {
@@ -149,7 +159,7 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 			if (result.matchsnb === 0) {
 				noMatchesMessage.style.display = "block";
 			} else {
-				new Chart(winLossDoughnutChart, {
+			winLossChart = new Chart(winLossDoughnutChart, {
 					type: 'doughnut',
 					data: {
 						labels: ['Win', 'Loss'],
@@ -166,7 +176,7 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 					},
 				});
 
-				new Chart(winRatioBar, {
+			winRatioChart = new Chart(winRatioBar, {
 					type: 'bar',
 					data: {
 						labels: ['Win Ratio'],
@@ -190,7 +200,7 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 					},
 				});
 
-				new Chart(multiChart, {
+				multiChartObject = new Chart(multiChart, {
 					type: 'line',
 					data: {
 						labels: ['match 1', 'match 2', 'match 3', 'match 4', 'match 5', 'match 6', 'match 7', 'match 8', 'match 9', 'match 10'],
