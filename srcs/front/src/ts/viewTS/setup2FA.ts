@@ -30,11 +30,11 @@ export default class Setup2FAView extends ViewTemplate {
 							<div class="pt-4">
 								<input class="px-5 pb-1 sm:pb-2 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg cursor-pointer disabled:cursor-not-allowed" type="button" id="showQRCodeButton" value="Generate QR code" onclick="showQRCode(event)">
 							</div>
-							<div id="qrCodeSection" class="hidden flex-col align-center items-center pt-4 mb-5">
+							<form id="qrCodeSection" class="hidden flex-col align-center items-center pt-4 mb-5">
 								<img id="qrCodeImage" class="hidden aspect-square w-60" src="" alt="QR Code will appear here select-none" draggable="false" />
 								<input class="text-center my-5 px-5 pb-1 sm:pb-2 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg cursor-pointer disabled:cursor-not-allowed" type="text" id="2FACodeInput" value="" placeholder="Enter 2FA Code" pattern="[0-9]{6}" maxlength="6" oninput="this.value = this.value.replace(/\\D/g,'').slice(0,6)">
 								<input class="px-5 pb-1 sm:pb-2 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg cursor-pointer disabled:cursor-not-allowed" type="submit" value="Submit 2FA Code" onclick="validate2FACode(event)">
-							</div>
+							</form>
 							<a class="uppercase p-5 my-5 focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] text-ellipsis border hover:border-[#98c6f8] border-white rounded-lg" name="gotoMainMenu" href="/" data-link>🚀 Back to menu</a>
 						</div>
 					</div>
