@@ -1,4 +1,4 @@
-import { waitStartGame, isSocketConnected, setupSocket, emitNextMatch /*, joinExistingGame*/ } from "./socket.js";
+import { waitStartGame, isSocketConnected, setupSocket, emitNextMatch } from "./socket.js";
 import { CONTEXT, createGameElements } from "./context.js";
 import { draw, drawScore, resetState } from "./graphics.js";
 import { router} from "../eventTS/index.js";
@@ -53,7 +53,6 @@ export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 		CONTEXT.tournamentId = sessionStorage.getItem("currentTournamentId");
 	
 	if (CONTEXT.tournamentId && window.location.href.includes("/pongTournament")) {
-		// joinExistingGame(CONTEXT.gameId);
 		resetState();
 
 		if (CONTEXT.score) CONTEXT.score.style.display = "flex";
