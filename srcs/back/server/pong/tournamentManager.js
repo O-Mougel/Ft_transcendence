@@ -16,7 +16,7 @@ function buildBracket(players, size) {
       player1: null,
       player2: null,
       winner: null,
-      status: "pending", // pending|ready|playing|done
+      status: "pending", // pending|ready|playing|done|aborted
     }));
   });
 
@@ -57,9 +57,9 @@ function findNextReadyMatch(tournament) {
 }
 
 function chooseWinner(match, score) {
-  if (!score || typeof score.left !== "number" || typeof score.right !== "number") return match.player1; // fallback on invalid score
+  if (!score || typeof score.left !== "number" || typeof score.right !== "number") return match.player1;
  
-  if (score.left === score.right) return match.player1; // fallback on draw
+  if (score.left === score.right) return match.player1;
   return (score.left >= score.right) ? match.player1 : match.player2;
 }
 
@@ -86,11 +86,11 @@ export class TournamentManager {
     this.tournamentSize = size;
     if (!Array.isArray(names) || names.length !== size) throw new Error(`Expected ${size} player names`);
 
-    const cleanedArray = names.map(n => String(n ?? "").trim()); // ensure strings and trim whitespace
-    if (cleanedArray.some(n => n.length === 0)) throw new Error("All names must be non-empty"); // If some (at leat one) name is empty
+    const cleanedArray = names.map(n => String(n ?? "").trim())
+    if (cleanedArray.some(n => n.length === 0)) throw new Error("All names must be non-empty");
 
-    const loweredNames = cleanedArray.map(n => n.toLowerCase()); // case-insensitive check for uniqueness
-    if (new Set(loweredNames).size !== loweredNames.length) throw new Error("Names must be unique"); // If there are duplicates after cleaning (different array size)
+    const loweredNames = cleanedArray.map(n => n.toLowerCase());
+    if (new Set(loweredNames).size !== loweredNames.length) throw new Error("Names must be unique");
 
     const tournamentId = generateTournamentId();
     const mainPlayerName = cleanedArray[0];
@@ -172,7 +172,6 @@ export class TournamentManager {
 
     advanceWinner(tournament, r, m, match.winner);
 
-    // clear current and mapping
     tournament.current = null;
     this.gameToMatch.delete(gameId);
 
@@ -200,7 +199,6 @@ export class TournamentManager {
 
     advanceWinner(tournament, r, m, winnerName);
 
-    // clear current and mapping
     tournament.current = null;
     this.gameToMatch.delete(gameId);
 
@@ -215,7 +213,6 @@ export class TournamentManager {
     const tournament = this.tournaments.get(tournamentId);
     if (!tournament) return false;
 
-    // Clean up any ongoing match mappings
     for (const round of tournament.bracket) {
       for (const match of round) {
         if (match.gameId) {

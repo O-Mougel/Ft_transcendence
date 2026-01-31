@@ -46,7 +46,6 @@ export class GameManager {
     entry.players.delete(socket.id);
     socket.leave(gameId);
 
-    // If room is empty, stop loops + delete game
     if (entry.players.size === 0) {
       this.stopLoops(gameId);
       this.games.delete(gameId);
@@ -110,7 +109,6 @@ export class GameManager {
 
     entry.game.stop();
     this.stopLoops(gameId);
-    // this.games.delete(gameId);
   }
 
   updatePaddle(gameId, side, direction) {
@@ -135,8 +133,6 @@ export class GameManager {
         this.io.to(gameId).emit("game:over", state.score);
 
         if (this.onGameOver) this.onGameOver({ gameId, state });
-
-        // console.log("Tournament: ", entry.meta?.tournamentId);
 
         if (entry.game.persistMatch) {
           persistMatch(entry.game).catch((err) => {
@@ -164,7 +160,6 @@ export class GameManager {
     const entry = this.games.get(gameId);
     if (!entry || entry.aiId) return;
 
-    // Only schedule AI updates for AI mode
     entry.aiId = setInterval(() => {
       const { game } = entry;
 

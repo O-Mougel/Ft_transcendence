@@ -117,6 +117,5 @@ export function printGameOver(data: GameOverData): void {
 		gameOverScore.textContent = `${left} - ${right}`;
 		gameOverDiv.style.display = "block";
 		winnerSpan.textContent = `WINNER : ${winnerName}`
-		// winnerSpan.textContent = `GAME OVER`
 	}
 }
