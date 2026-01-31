@@ -41,7 +41,6 @@ export interface GameJoinPayload {
 
 export interface GameStartedData {
   gameId: string;
-  [key: string]: unknown;
 }
 
 export interface TournamentCreatePayload {

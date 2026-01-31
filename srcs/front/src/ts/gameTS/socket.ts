@@ -165,9 +165,9 @@ export async function waitStartGame(): Promise<void> {
 			});
 		}
 
-		socket.once("game:started", (...args: unknown[]) => {
+		socket.once("game:started", ( id: unknown) => {
 			try {
-				const result = gameStartedSchema.validateSync(args[0]) as GameStartedData;
+				const result = gameStartedSchema.validateSync(id) as GameStartedData;
 				console.log("Game started with data:", result);
 			}
 			catch (err) {
