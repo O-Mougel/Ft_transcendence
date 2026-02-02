@@ -1,4 +1,5 @@
 import type { IBall } from '../types/game.types';
+import { CONTEXT } from './context.js';
 
 export default class Ball implements IBall {
     x: number;
@@ -22,7 +23,7 @@ export default class Ball implements IBall {
     draw(ctx: CanvasRenderingContext2D): void {
         ctx.fillStyle = this.color;
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.arc(this.x, this.y, this.radius * CONTEXT.RES_CHANGE, 0, Math.PI * 2);
         ctx.fill();
     }
 
