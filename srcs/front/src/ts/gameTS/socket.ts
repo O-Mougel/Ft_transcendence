@@ -36,6 +36,8 @@ export function setupSocket(): SocketType | null {
 	});
 
 	socket.on("disconnect", (reason: unknown) => {
+		
+		console.info("Socket detected a disconnect !");
 		try {
 			const result = reasonSchema.validateSync({ reason });
 			console.log("WebSocket disconnected:", result);
