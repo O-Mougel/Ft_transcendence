@@ -1,4 +1,4 @@
-.PHONY: all build dev up stop down downv clean fclean again re
+.PHONY: all build dev up stop down downv clean fclean again againdev re
 
 DOCKER_DIR = srcs
 
@@ -33,6 +33,8 @@ fclean: downv
 	docker system prune -af --volumes
 
 again: down all
+
+againdev: down dev
 
 re: fclean all
 
