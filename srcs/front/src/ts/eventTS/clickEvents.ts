@@ -22,6 +22,13 @@ document.addEventListener("DOMContentLoaded", (): void => {
 
 function reportWindowSize(): void {
 
+	const canvas = document.getElementById("canvas") as HTMLCanvasElement | null;
+	if (!canvas) return;
+	canvas!.width = canvas.parentElement?.clientWidth ?? 800;
+	canvas!.height = canvas.parentElement?.clientHeight ?? 500;
+	CONTEXT.RES_CHANGE = CONTEXT.canvas!.height / CONTEXT.GAME_HEIGHT;
+	
+	
 	const panel = document.getElementById('profilePanel') as HTMLElement | null;
 	if (panel)
 	{
@@ -58,26 +65,21 @@ export function resizeCanvasToElement(): void {
 	{
 		return ;
 	}
-	const scale = window.devicePixelRatio || 1;
-	const rect = canvas.getBoundingClientRect();
-	const cssW = Math.max(1, Math.floor(rect.width));
-	const cssH = Math.max(1, Math.floor(rect.height));
+	const cssW = canvas.parentElement?.clientWidth ?? 800;
+	const cssH = canvas.parentElement?.clientHeight ?? 500;
 
 	CONTEXT.GAME_WIDTH = cssW;
 	CONTEXT.GAME_HEIGHT = cssH;
-
-	const backingW = Math.floor(cssW * scale);
-	const backingH = Math.floor(cssH * scale);
-	if (canvas.width !== backingW || canvas.height !== backingH) {
-		canvas.width = backingW;
-		canvas.height = backingH;
+	
+	const backingW = Math.floor(cssW);
+	const backingH = Math.floor(cssH);
+	if (canvas!.width !== backingW || canvas!.height !== backingH) {
+		canvas!.width = backingW;
+		canvas!.height = backingH;
 	}
-
-	canvas.style.width = cssW + "px";
-	canvas.style.height = cssH + "px";
+	CONTEXT.RES_CHANGE = CONTEXT.canvas!.height / CONTEXT.GAME_HEIGHT;
 
 	ctx.setTransform(1, 0, 0, 1, 0, 0);
-	ctx.scale(scale, scale);
 };
 
 window.addEventListener('storage', async (event) => {

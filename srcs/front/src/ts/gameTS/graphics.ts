@@ -6,7 +6,7 @@ export function draw(): void {
 	const { ctx, canvas, GAME_WIDTH, GAME_HEIGHT, leftPaddle, rightPaddle, leftPaddle2, rightPaddle2, ball } = CONTEXT;
 	if (!ctx || !canvas) return;
 
-	ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+	ctx.clearRect(0, 0, GAME_WIDTH * CONTEXT.RES_CHANGE, GAME_HEIGHT * CONTEXT.RES_CHANGE);
 
 	if (leftPaddle) leftPaddle.draw(ctx);
 	if (rightPaddle) rightPaddle.draw(ctx);
@@ -25,8 +25,8 @@ function drawCenterLine(): void {
 	ctx.strokeStyle = "white";
 	ctx.setLineDash([10, 10]);
 	ctx.beginPath();
-	ctx.moveTo(GAME_WIDTH / 2, 0);
-	ctx.lineTo(GAME_WIDTH / 2, GAME_HEIGHT);
+	ctx.moveTo(GAME_WIDTH * CONTEXT.RES_CHANGE / 2, 0);
+	ctx.lineTo(GAME_WIDTH * CONTEXT.RES_CHANGE / 2, GAME_HEIGHT * CONTEXT.RES_CHANGE);
 	ctx.stroke();
 	ctx.setLineDash([]);
 }
@@ -48,17 +48,17 @@ export function resetState(): void {
 	ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 	if (ball) ball.reset();
 	if (leftPaddle) {
-		leftPaddle.y = (GAME_HEIGHT / 2 - leftPaddle.height / 2);
+		leftPaddle.y = (GAME_HEIGHT * CONTEXT.RES_CHANGE / 2 - leftPaddle.height / 2);
 	}
 	if (rightPaddle) {
-		rightPaddle.y = (GAME_HEIGHT / 2 - rightPaddle.height / 2);
+		rightPaddle.y = (GAME_HEIGHT * CONTEXT.RES_CHANGE / 2 - rightPaddle.height / 2);
 	}
 	if (CONTEXT.gameMode === 2) {
 		if (leftPaddle2) {
-			leftPaddle2.y = (GAME_HEIGHT / 2 - leftPaddle2.height / 2);
+			leftPaddle2.y = (GAME_HEIGHT * CONTEXT.RES_CHANGE / 2 - leftPaddle2.height / 2);
 		}
 		if (rightPaddle2) {
-			rightPaddle2.y = (GAME_HEIGHT / 2 - rightPaddle2.height / 2);
+			rightPaddle2.y = (GAME_HEIGHT * CONTEXT.RES_CHANGE / 2 - rightPaddle2.height / 2);
 		}
 	}
 	if (leftPaddle) leftPaddle.score = 0;

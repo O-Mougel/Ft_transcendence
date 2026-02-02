@@ -1,4 +1,5 @@
 import type { IPaddle, PaddleDirection } from '../types/game.types';
+import { CONTEXT } from './context.js';
 
 export default class Paddle implements IPaddle {
     x: number;
@@ -25,7 +26,12 @@ export default class Paddle implements IPaddle {
 
     draw(ctx: CanvasRenderingContext2D): void {
         ctx.fillStyle = this.color;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        ctx.fillRect(
+			this.x * CONTEXT.RES_CHANGE,
+			this.y,
+			this.width * CONTEXT.RES_CHANGE,
+			this.height * CONTEXT.RES_CHANGE
+		);
     }
 
     reset(): void {

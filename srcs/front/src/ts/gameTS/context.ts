@@ -32,6 +32,7 @@ export const CONTEXT: GameContext = {
 	BALL_RADIUS: 10,
 	GAME_WIDTH: 800,
 	GAME_HEIGHT: 500,
+	RES_CHANGE: 1,
 
 	// Player names
 	leftName: "",
