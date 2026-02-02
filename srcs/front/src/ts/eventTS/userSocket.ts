@@ -1,4 +1,4 @@
-import { displayUserFriends, checkForFriendRequests, backToDefaultPage } from "./userLog.js";
+import { displayUserFriends, checkForFriendRequests, backToDefaultPage, alertBoxMsg } from "./userLog.js";
 
 let UserSocket: WebSocket | null = null;
 
@@ -11,6 +11,7 @@ const interpretSocketMsg = async (socketMsgType: string): Promise<void> => {
 			break;
 		case "friend:update":
 			console.info("A friend was added to the list, reloading..");
+			alertBoxMsg("✅ A new friend has been added to your friends list !");
 			displayUserFriends();
 			checkForFriendRequests();
 			break;
