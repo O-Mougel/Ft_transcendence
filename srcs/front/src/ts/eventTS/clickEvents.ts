@@ -263,7 +263,7 @@ window.createCustomTournamentPage = async function (nbPlayers: number): Promise<
 	listItem.setAttribute('type', 'text');
 	listItem.setAttribute('autocomplete', 'off');
 	listItem.setAttribute('oninput', "this.value = this.value.replace(/[^A-Za-z0-9_]/g,'').slice(0,13)");
-	listItem.className = 'pb-2 w-[40%] mt-[1vw] ml-4 pl-5 mx-auto hover:text-[#98c6f8] focus:outline-none focus:border-[#2d9429] hover:border-[#2d9429]-[35px] rounded-sm border border-[#2d9429]';
+	listItem.className = 'pb-2 w-[40%] mt-[1vw] ml-4 pl-5 mx-auto hover:text-[#98c6f8] focus:outline-none focus:border-[#fc035e] hover:border-[#fc035e]-[35px] rounded-sm border border-[#fc035e]';
 	listItem.setAttribute('autofocus', 'true');
 	tournamentBuiltBlock.appendChild(listItem);
 
