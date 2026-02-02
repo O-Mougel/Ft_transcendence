@@ -1,11 +1,15 @@
-.PHONY: all build up stop down downv clean fclean again re
+.PHONY: all build dev up stop down downv clean fclean again re
 
 DOCKER_DIR = srcs
 
 DOCKER_COMPOSE_PATH = ${DOCKER_DIR}/docker-compose.yml
-DEV_DOCKER_COMPOSE_PATH = ${DOCKER_DIR}/docker-compose.dev.yml
+DEV_DOCKER_COMPOSE_PATH = ${DOCKER_DIR}/docker-compose-dev.yml
 
 all: build up
+
+dev: 
+	docker compose -f ${DEV_DOCKER_COMPOSE_PATH} build
+	docker compose -f ${DEV_DOCKER_COMPOSE_PATH} up -d
 
 build:
 	docker compose -f ${DOCKER_COMPOSE_PATH} build

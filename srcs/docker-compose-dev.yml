@@ -27,23 +27,28 @@ services:
      - transcendence
     volumes:
       - front:/usr/src/app
+      - ./front/src/ts:/usr/src/app/src/ts
     restart: on-failure
+    command: npm run dev
 
   back:
     build: 
       context: ./back/server/.
       dockerfile: ../../docker/back/Dockerfile
-    env_file: ../.env
     container_name: back 
+    env_file: ../.env
     volumes:
       - db:/home/prisma
       - images:/home/front/src/img/userPfp
+      - ./back/server/src:/home/src
+      - ./back/server/pong:/home/pong
     networks:
       - transcendence
     restart: on-failure
     expose: 
       - "3000"
       - "3002"
+    command: npm run dev
 
 networks:
   transcendence:
