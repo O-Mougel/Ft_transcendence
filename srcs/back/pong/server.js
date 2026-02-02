@@ -33,7 +33,7 @@ io.use((socket, next) => {
     const payload = fastify.jwt.verify(token);
     socket.data.user = payload;
 
-    messageRateLimits.set(socket.id, { messageCount: 0, resetTime: Date.now() + 60000 });
+    messageRateLimits.set(socket.id, { count: 0, resetAt: Date.now() + 1000 });
 
     return next();
   } catch (e) {
