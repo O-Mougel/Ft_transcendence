@@ -295,33 +295,31 @@ window.ft_bh = function (): void {
 
 window.saveProfileInfo = async function (): Promise<void> {
 	const username = document.getElementById('newUsername') as HTMLInputElement | null;
-	const confirmText = document.getElementById('confirmChangeResults') as HTMLElement | null;
 	const fileInput = document.getElementById("myfileSelector") as HTMLInputElement | null;
 	const userPfp = document.getElementById('userPfp') as HTMLImageElement | null;
 	const selectedFileName = document.getElementById('selectedFileName') as HTMLElement | null;
 
-	if (!username || !confirmText || !fileInput || !userPfp || !selectedFileName) return;
+	if (!username || !fileInput || !userPfp || !selectedFileName) return;
 
 	const selectedFile = fileInput.files?.[0];
-	confirmText.innerText = "";
 
 	if (!username.value && !selectedFile)
 		return;
 
 	if (username) {
 		if (username.value && username.value.length < 3) {
-			confirmText.innerText = "❌ Username must be at least 3 characters !";
+			alertBoxMsg("❌ Username must be at least 3 characters !");
 			username.focus();
 			return;
 		}
 		if (username.value.length > 13) {
-			confirmText.innerText = "❌ New username is too long ! (13 max)";
+			alertBoxMsg("❌ New username is too long ! (13 max)");
 			username.value = "";
 			username.focus();
 			return;
 		}
 		if (username.value === username.placeholder) {
-			confirmText.innerText = "❌ New username cannot be the same as the old one !";
+			alertBoxMsg("❌ New username cannot be the same as the old one !");
 			username.value = "";
 			username.focus();
 			return;

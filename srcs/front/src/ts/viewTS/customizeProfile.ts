@@ -24,7 +24,6 @@ export default class CustomizeProfileView extends ViewTemplate {
 					</div>
 					<div class="flex items-start w-[75%] pt-4">
 						<input tabindex="3" class="uppercase ml-4 px-5 hover:text-[#98c6f8] text-ellipsis focus:outline-none  focus:border-[#98c6f8] hover:border-[#98c6f8] border-white rounded-lg border pb-1 sm:pb-2" onclick="saveProfileInfo()" name="updateChanges" type="submit" value="💾 Apply changes">
-						<p id="confirmChangeResults" class="text-ellipsis text-center pl-3 text-[2vw] text-[#e85b51]"></p>
 					</div>
 				</form>
 				<div class="border-b border-[#98c6f8] w-full pt-5"></div>
