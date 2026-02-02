@@ -222,7 +222,7 @@ window.validatePlayerNameFields = function (nbPlayers: number, event: Event): vo
 	startTournament(nbPlayers, event);
 };
 
-window.createCustomTournamentPage = function (nbPlayers: number): void {
+window.createCustomTournamentPage = async function (nbPlayers: number): Promise<void> {
 	if (nbPlayers !== 4 && nbPlayers !== 8 && nbPlayers !== 16)
 		return;
 	const tournamentNbPlayerSelect = document.getElementById('tournamentNbPlayerSelect') as HTMLElement | null;
@@ -232,20 +232,52 @@ window.createCustomTournamentPage = function (nbPlayers: number): void {
 	tournamentNbPlayerSelect.style.display = "none";
 	tournamentBuiltBlock.style.display = "block";
 	tournamentBuiltBlock.innerHTML = "";
+	let loggedPlayerName;
+	try 
+	{
+		const dataRequestResponse = await fetch('/profile/grab', {
+				headers: {Authorization: `Bearer ${sessionStorage.getItem("access_token")}`},
+				credentials: 'include',
+		});
+	
+		if (!dataRequestResponse.ok) {
+				const text = await dataRequestResponse.text().catch(() => dataRequestResponse.statusText);
+				throw new Error(`Request failed: ${dataRequestResponse.status} ${text}`);
+		}
+		const result = await dataRequestResponse.json();	
+		if (result)
+			loggedPlayerName = result.name;
+	} 
+	catch (err) 
+	{
+		loggedPlayerName = "";
+	}
+
+	const listItem = document.createElement("input");
+	if (loggedPlayerName)
+		listItem.setAttribute('placeholder', loggedPlayerName);
+	else
+		listItem.setAttribute('placeholder', "Player_1");
+	listItem.setAttribute('id', "player1");
+	listItem.setAttribute('tabindex', `1`);
+	listItem.setAttribute('type', 'text');
+	listItem.setAttribute('autocomplete', 'off');
+	listItem.setAttribute('oninput', "this.value = this.value.replace(/[^A-Za-z0-9_]/g,'').slice(0,13)");
+	listItem.className = 'pb-2 w-[40%] mt-[1vw] ml-4 pl-5 mx-auto hover:text-[#98c6f8] focus:outline-none focus:border-[#2d9429] hover:border-[#2d9429]-[35px] rounded-sm border border-[#2d9429]';
+	listItem.setAttribute('autofocus', 'true');
+	tournamentBuiltBlock.appendChild(listItem);
+
 
 	let i: number;
-	for (i = 1; i <= nbPlayers; i++) {
+	for (i = 2; i <= nbPlayers; i++) {
 		const listItem = document.createElement("input");
 		listItem.setAttribute('placeholder', "Player" + `${i}`);
 		listItem.setAttribute('id', "player" + `${i}`);
-		listItem.setAttribute('placeholder', "Player " + `${i}`);
 		listItem.setAttribute('tabindex', `${i}`);
 		listItem.setAttribute('type', 'text');
 		listItem.setAttribute('autocomplete', 'off');
 		listItem.setAttribute('oninput', "this.value = this.value.replace(/[^A-Za-z0-9_]/g,'').slice(0,13)");
 		listItem.className = 'pb-2 w-[40%] mt-[1vw] ml-4 pl-5 mx-auto hover:text-[#98c6f8] focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]';
-		if (i === 1)
-			listItem.setAttribute('autofocus', 'true');
 		tournamentBuiltBlock.appendChild(listItem);
 	}
 
