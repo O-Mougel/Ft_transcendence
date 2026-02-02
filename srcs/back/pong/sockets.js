@@ -34,14 +34,15 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
       next();
     });
 
-    socket.onAny((event, ...args) => {
-      console.log(`Socket event received: ${event} with args: `, args);
-    });
+    // socket.onAny((event, ...args) => {
+    //   console.log(`Socket event received: ${event} with args: `, args);
+    // });
 
     socket.on("disconnect", () => {
       console.log("User disconnected, socket id: ", socket.id);
       const gameId = socket.data.gameId;
       if (gameId) {
+        if (tournamentManager.isGameInTournament(gameId)) tournamentManager.onGameStopped(gameId);
         manager.leaveGame(gameId, socket);
         socket.data.gameId = null;
       }
@@ -99,7 +100,6 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
 
     socket.on("tournament:create", (data = {}) => {
       try {
-        console.log("tournament id in socket data:", socket.data.tournamentId);
         const result = tournamentCreateSchema.parse(data);
 
         const size = Number(result.size);
@@ -116,14 +116,17 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
           throw new Error("Failed to create tournament");
 
         if (socket.data.gameId) {
-          manager.leaveGame(socket.data.gameId, socket);
+          if (tournamentManager.isGameInTournament(socket.data.gameId))
+            tournamentManager.onGameStopped(socket.data.gameId);
+          else
+            manager.leaveGame(socket.data.gameId, socket);
           socket.data.gameId = null;
         }
-        if (socket.data.tournamentId) {
-          if (!tournamentManager.deleteTournament(socket.data.tournamentId, socket))
-            throw new Error("Failed to delete existing tournament");
-          socket.data.tournamentId = null;
-        } 
+        // if (socket.data.tournamentId) {
+        //   if (!tournamentManager.deleteTournament(socket.data.tournamentId, socket))
+        //     throw new Error("Failed to delete existing tournament");
+        //   socket.data.tournamentId = null;
+        // } 
 
         socket.data.tournamentId = tournamentId;
 
@@ -131,7 +134,7 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         if (!tournament) throw new Error("Tournament not found after creation");
         socket.emit("tournament:state", { tournamentId, tournament });
       } catch (e) {
-        console.error("tournament:create error: ", e.messae);
+        console.error("tournament:create error: ", e.message);
         socket.emit("tournament:error", { message: "Tournament creation error" });
       }
     });
@@ -143,6 +146,13 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         const tournament = tournamentManager.getTournament(tournamentId);
         if (!tournament)
           throw new Error("Tournament not found");
+        if (tournament.current) {
+          if (tournamentManager.isGameInTournament(tournament.current))
+            tournamentManager.onGameStopped(socket.data.gameId);
+          else
+            manager.leaveGame(socket.data.gameId, socket);
+          socket.data.gameId = null;
+        }
         socket.emit("tournament:state", { tournamentId, tournament });
       }
       catch (e) {
@@ -181,6 +191,25 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
       } catch (e) {
         console.log("tournament:nextMatch error: ", e.message);
         socket.emit("tournament:error", { message: e.message || "Can't access next match" });
+      }
+    });
+
+    socket.on("session:retrieve", (data = {}) => {
+      try {
+        const result = sessionRetrieveSchema.parse(data);
+        const tournamentId = result.tournamentId;
+        if (tournamentId) {
+          const tournament = tournamentManager.getTournament(tournamentId);
+          if (tournament) {
+            socket.data.tournamentId = tournamentId;
+            socket.emit("tournament:sessionData", { tournamentId, tournament });
+          } else {
+            socket.emit("tournament:error", { message: "Tournament not found" });
+          }
+        }
+      } catch (e) {
+        console.error("session:retrieve error: ", e.message);
+        socket.emit("tournament:error", { message: "Session retrieve error" });
       }
     });
 
