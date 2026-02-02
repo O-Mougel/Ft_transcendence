@@ -22,6 +22,13 @@ document.addEventListener("DOMContentLoaded", (): void => {
 
 function reportWindowSize(): void {
 
+	const canvas = document.getElementById("canvas") as HTMLCanvasElement | null;
+	if (!canvas) return;
+	canvas!.width = canvas.parentElement?.clientWidth ?? 800;
+	canvas!.height = canvas.parentElement?.clientHeight ?? 500;
+	CONTEXT.RES_CHANGE = CONTEXT.canvas!.height / CONTEXT.GAME_HEIGHT ;
+	
+	
 	const panel = document.getElementById('profilePanel') as HTMLElement | null;
 	if (panel)
 	{
@@ -68,13 +75,10 @@ export function resizeCanvasToElement(): void {
 
 	const backingW = Math.floor(cssW * scale);
 	const backingH = Math.floor(cssH * scale);
-	if (canvas.width !== backingW || canvas.height !== backingH) {
-		canvas.width = backingW;
-		canvas.height = backingH;
+	if (canvas!.width !== backingW || canvas!.height !== backingH) {
+		canvas!.width = backingW;
+		canvas!.height = backingH;
 	}
-
-	canvas.style.width = cssW + "px";
-	canvas.style.height = cssH + "px";
 
 	ctx.setTransform(1, 0, 0, 1, 0, 0);
 	ctx.scale(scale, scale);
