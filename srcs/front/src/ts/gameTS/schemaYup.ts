@@ -1,4 +1,4 @@
-import * as yup from 'yup';
+import * as yup from "https://esm.sh/yup@1.7.1";
 
 export const gameStateSchema = yup.object({
 	paddles: yup.object({
