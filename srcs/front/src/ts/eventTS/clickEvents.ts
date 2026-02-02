@@ -236,16 +236,22 @@ window.createCustomTournamentPage = function (nbPlayers: number): void {
 	let i: number;
 	for (i = 1; i <= nbPlayers; i++) {
 		const listItem = document.createElement("input");
-		listItem.setAttribute('placeholder', "Player" + `${i}`);
 		listItem.setAttribute('id', "player" + `${i}`);
-		listItem.setAttribute('placeholder', "Player " + `${i}`);
 		listItem.setAttribute('tabindex', `${i}`);
 		listItem.setAttribute('type', 'text');
 		listItem.setAttribute('autocomplete', 'off');
 		listItem.setAttribute('oninput', "this.value = this.value.replace(/[^A-Za-z0-9_]/g,'').slice(0,13)");
-		listItem.className = 'pb-2 w-[40%] mt-[1vw] ml-4 pl-5 mx-auto hover:text-[#98c6f8] focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]';
 		if (i === 1)
-			listItem.setAttribute('autofocus', 'true');
+		{
+			listItem.setAttribute('placeholder', "You");
+			listItem.className = 'autofocus pb-2 w-[40%] mt-[1vw] ml-4 pl-5 mx-auto hover:text-[#98c6f8] focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]';
+		}
+		else
+		{
+			listItem.setAttribute('placeholder', "Player" + `${i}`);
+			listItem.className = 'pb-2 w-[40%] mt-[1vw] ml-4 pl-5 mx-auto hover:text-[#98c6f8] focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]';
+		}
+
 		tournamentBuiltBlock.appendChild(listItem);
 	}
 
