@@ -79,6 +79,7 @@ export interface GameContext {
   BALL_RADIUS: number;
   GAME_WIDTH: number;
   GAME_HEIGHT: number;
+  RES_CHANGE: number;
   scale?: number;
 
   leftName?: string;
