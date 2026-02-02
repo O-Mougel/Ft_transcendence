@@ -2,6 +2,10 @@ import ViewTemplate from "./ViewTemplate.js";
 import { CONTEXT } from "../gameTS/context.js";
 import type { GameMode } from '../types/game.types';
 import { alertBoxMsg, backToDefaultPage } from "../eventTS/userLog.js";
+import { getSocket } from "../gameTS/socket.js";
+import { tournamentStateSchema } from "../gameTS/schemaYup.js";
+import { findNextReadyMatch } from "../gameTS/tournament.js";
+import type { TournamentStateData } from '../types/socket.types';
 
 export default class PongView extends ViewTemplate {
 	constructor() {
@@ -140,6 +144,45 @@ export default class PongView extends ViewTemplate {
 			alertBoxMsg("❌ This tournament no longer exists !");
 			return backToDefaultPage();
 		}
+
+		if (!CONTEXT.tournamentId)
+			CONTEXT.tournamentId = sessionStorage.getItem("currentTournamentId");
+
+		if (!CONTEXT.tournamentId) {
+			alertBoxMsg("❌ No tournament found !");
+			return backToDefaultPage();
+		}
+		const socket = getSocket();
+		if (!socket) {
+			alertBoxMsg("❌ Disconnected from server !");
+			return backToDefaultPage();
+		}
+		socket.emit("tournament:retrieve", { tournamentId: CONTEXT.tournamentId });
+
+		socket.on("tournament:sessionData", (data: unknown): void => {
+			if (!data) {
+				alertBoxMsg(`❌ Tournament session data could not be retrieved !`);
+				backToDefaultPage();
+			}
+			else {
+				try {
+					const result = tournamentStateSchema.validateSync(data) as TournamentStateData;
+					if (!CONTEXT.tournamentId)
+						CONTEXT.tournamentId = result.tournamentId;
+					const nextMatch = findNextReadyMatch(result.tournament);
+					if (nextMatch) {
+						CONTEXT.leftName = nextMatch.player1;
+						CONTEXT.rightName = nextMatch.player2;
+					}
+					console.log("Tournament session data retrieved successfully.");
+				} catch (err) {
+					console.error("Error validating tournament session data:", err, data);
+					alertBoxMsg("❌ Error validating tournament session data.");
+					backToDefaultPage();
+				}
+			}
+		});
+
 		if (typeof module.initPong === "function")
 			module.initPong({ mode, gameId: CONTEXT.gameId });
 
