@@ -65,7 +65,7 @@ export async function startTournament(expectedCount: number, event: Event): Prom
 		try {
 			const result = messageSchema.validate(message);
 			console.error("Tournament error received:", result);
-			alertBoxMsg("❌ " + (result));
+			alertBoxMsg("❌ Tournament creation error occurred");
 			backToDefaultPage();
 		}
 		catch (err) {
