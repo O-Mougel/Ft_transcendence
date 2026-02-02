@@ -47,7 +47,7 @@ export class GameManager {
     socket.leave(gameId);
 
     if (entry.players.size === 0) {
-      this.stopLoops(gameId);
+      this.games.get(gameId).game.stop();      
       this.games.delete(gameId);
     }
   }
@@ -195,16 +195,11 @@ async function persistMatch(game) {
 
   const player2name = type === "AI" ? "COMPUTER" : "1v1" ? "Guest" : game.player2.username;
 
-  console.log("Match type determined as:", type);
-  console.log("Main tournament player:", game.mainTournamentPlayer);
-
   if (type == "tournament" && (game.mainTournamentPlayer === game.player2.username || game.mainTournamentPlayer === game.player1.username)) {
     if (game.mainTournamentPlayer === game.player2.username) {
-      console.log("");
       const tempScore = state.score.left;
       state.score.left = state.score.right;
       state.score.right = tempScore;
-      console.log("Swapped scores for main tournament player:", game.mainTournamentPlayer);
     }
   }
 
