@@ -26,7 +26,7 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         limiter.count = 0;
         limiter.resetAt = now + 1000;
       }
-      if (++limiter.count > 10) {
+      if (++limiter.count > 60) {
         console.warn(`Rate limit exceeded for ${socket.id}`);
         socket.disconnect();
         return;
@@ -46,12 +46,12 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         manager.leaveGame(gameId, socket);
         socket.data.gameId = null;
       }
+      messageRateLimits.delete(socket.id);
       disconnectedAt = Date.now();
 
       disconnectTimer = setTimeout(() => {
-        tournamentManager.deleteTournament(socket.data.tournamentId, socket);
-        socket.data.tournamentId = null;
-        messageRateLimits.delete(socket.id);
+        // tournamentManager.deleteTournament(socket.data.tournamentId, socket);
+        // socket.data.tournamentId = null;
         console.log(`User disconnected and cleanup completed: ${socket.id}`);
       }, DISCONNECT_GRACE_PERIOD);
     });
@@ -215,17 +215,22 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
 
     socket.on("tournament:leave", (data = {}) => {
       try {
+        console.log("tournament:leave called with data: ", data);
         const result = tournamentLeaveSchema.parse(data);
 
         const tournamentId = result.tournamentId || socket.data.tournamentId;
-        tournamentManager.deleteTournament(tournamentId, socket);
+        if (tournamentManager.deleteTournament(tournamentId, socket))
+        {
+          socket.data.tournamentId = null;
+          throw new Error("Failed to delete tournament on leave");
+        }
         socket.data.tournamentId = null;
         console.log("Tournament deleted: ", tournamentId);
       }
       catch (e) {
         console.error("tournament:leave error: ", e.message);
         socket.emit("tournament:error", { message: "Leave tournament" });
-        if (tournamentManager.deleteTournament(socket.data.tournamentId, socket))
+        if (socket.data.tournamentId && tournamentManager.deleteTournament(socket.data.tournamentId, socket))
           console.error("Failed to delete tournament on leave");
         socket.data.tournamentId = null;
       }
