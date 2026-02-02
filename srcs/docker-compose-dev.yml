@@ -33,15 +33,15 @@ services:
 
   back:
     build: 
-      context: ./back/server/.
-      dockerfile: ../../docker/back/Dockerfile
+      context: ./back/.
+      dockerfile: ../docker/back/Dockerfile
     container_name: back 
     env_file: ../.env
     volumes:
       - db:/home/prisma
       - images:/home/front/src/img/userPfp
-      - ./back/server/src:/home/src
-      - ./back/server/pong:/home/pong
+      - ./back/server:/home/server
+      - ./back/pong:/home/pong
     networks:
       - transcendence
     restart: on-failure

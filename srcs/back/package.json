@@ -5,9 +5,9 @@
   "main": "server.js",
   "scripts": {
     "watch:pong": "nodemon pong/server.js",
-    "watch:back": "nodemon src/server.js",
+    "watch:back": "nodemon server/server.js",
     "build:pong": "node pong/server.js",
-    "build:back": "node src/server.js",
+    "build:back": "node server/server.js",
 
     "dev": "concurrently \"npm:watch:pong\" \"npm:watch:back\"",
     "start": "concurrently \"npm:build:pong\" \"npm:build:back\""
