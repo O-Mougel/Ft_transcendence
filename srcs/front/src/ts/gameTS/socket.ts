@@ -41,7 +41,7 @@ export function setupSocket(): SocketType | null {
 			console.log("WebSocket disconnected:", result);
 			console.log("TEST");
 			if (sessionStorage.getItem("currentTournamentId"))
-				sessionStorage.delete("currentTournamentId");
+				sessionStorage.removeItem("currentTournamentId");
 		}
 		catch (err) {
 			console.error("Error parsing disconnect reason:", err);
