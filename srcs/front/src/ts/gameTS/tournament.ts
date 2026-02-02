@@ -84,7 +84,7 @@ export function initTournament(): void {
 						nextMatchBtn.style.display = "none";
 					nextMatchBtn?.remove();
 					window.sessionStorage.setItem("tournamentEnded", "true");
-					// 	window.sessionStorage.removeItem("currentTournamentId");
+					// window.sessionStorage.removeItem("currentTournamentId");
 				}
 				renderTournament(result.tournament);
 				const nextMatch = findNextReadyMatch(result.tournament);
@@ -94,8 +94,9 @@ export function initTournament(): void {
 				}
 			}
 			catch (err) {
-				console.error("Invalid tournament state data received:", err, data);
 				alertBoxMsg("❌ Tournament state error occurred");
+				if (sessionStorage.getItem("currentTournamentId"))
+					sessionStorage.removeItem("currentTournamentId");
 				backToDefaultPage();
 			}
 		});
@@ -115,6 +116,7 @@ export function initTournament(): void {
 			catch (err) {
 				console.error("Invalid match started data received:", err, data);
 				alertBoxMsg("❌ Match start error");
+				backToDefaultPage();
 			}
 		});
 
@@ -125,6 +127,7 @@ export function initTournament(): void {
 				const endData = tournamentEndedSchema.validateSync(data) as TournamentEndedData;
 				if (endData.tournamentId !== tournamentId) return;
 				console.log("Tournament ended, winner:", endData.winner);
+				window.sessionStorage.setItem("tournamentEnded", "true");
 			}
 			catch (err) {
 				console.error("Invalid tournament ended data received:", err, data);
@@ -136,9 +139,15 @@ export function initTournament(): void {
 		socket.on("tournament:error", (message: unknown) => {
 			try {
 				const result = messageSchema.validateSync(message);
+				if (result.message === "A match is already in progress") {
+					console.error("Tournament error:", result);
+					alertBoxMsg("❌ " + result.message);
+					window.history.replaceState(null, "", "/tournament");
+					return;
+				}
 				const statusEl = document.getElementById("tournamentStatus");
 				if (statusEl) statusEl.textContent = `Error: ${result}`;
-				console.error("Tournament error:", result);
+				// console.error("Tournament error:", result);
 				alertBoxMsg("❌ " + (result.message || "Tournament error occurred"));
 				window.sessionStorage.setItem("tournamentEnded", "true");
 				if (window.sessionStorage.getItem("currentTournamentId"))
@@ -148,8 +157,8 @@ export function initTournament(): void {
 			catch (err) {
 				console.error("Invalid tournament error data received:", err);
 				alertBoxMsg("❌ Tournament creation error occurred");
-				if (sessionStorage.getItem("currentTournamentId"))
-					sessionStorage.removeItem("currentTournamentId");
+				// if (sessionStorage.getItem("currentTournamentId"))
+				// 	sessionStorage.removeItem("currentTournamentId");
 				backToDefaultPage();
 			}
 		});
@@ -240,11 +249,11 @@ function renderTournament(tournament: Tournament): void {
 	if (tournament.status === "ended") {
 		const nextMatchBtn = document.getElementById("nextMatchBtn") as HTMLButtonElement | null;
 		if (nextMatchBtn) nextMatchBtn.style.display = "none";
-		sessionStorage.removeItem("currentTournamentId");
+		// sessionStorage.removeItem("currentTournamentId");
 	}
 }
 
-function findNextReadyMatch(tournament: Tournament): { player1: string | undefined; player2: string | undefined; status: string; winner: string | null } | null {
+export function findNextReadyMatch(tournament: Tournament): { player1: string | undefined; player2: string | undefined; status: string; winner: string | null } | null {
 	for (let r = 0; r < tournament.bracket.length; r++) {
 	  for (let m = 0; m < tournament.bracket[r].length; m++) {
 		const match = tournament.bracket[r][m];
