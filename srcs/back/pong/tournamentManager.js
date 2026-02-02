@@ -124,7 +124,10 @@ export class TournamentManager {
     const tournament = this.tournaments.get(tournamentId);
     if (!tournament) throw new Error("Tournament not found");
     if (tournament.status !== "running") throw new Error("Tournament is finished");
-    if (tournament.current) throw new Error("A match is already running");
+    if (tournament.current) {
+      this.onGameStopped(tournament.current.gameId);
+      throw new Error("A match was already in progress");
+    }
 
     const next = findNextReadyMatch(tournament);
     if (!next) throw new Error("No ready matches available");
@@ -153,7 +156,10 @@ export class TournamentManager {
         tournament: { tournamentId, r: roundIndex, m: matchIndex, size: tournament.size},
       },
     };
+  }
 
+  isGameInTournament(gameId) {
+    return this.gameToMatch.has(gameId);
   }
   
   onGameStopped(gameId) {

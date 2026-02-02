@@ -39,21 +39,24 @@ export function setupSocket(): SocketType | null {
 		try {
 			const result = reasonSchema.validateSync({ reason });
 			console.log("WebSocket disconnected:", result);
-			if (sessionStorage.getItem("currentTournamentId"))
-				sessionStorage.removeItem("currentTournamentId");
+			// if (sessionStorage.getItem("currentTournamentId"))
+				// sessionStorage.removeItem("currentTournamentId");
 		}
 		catch (err) {
 			console.error("Error parsing disconnect reason:", err);
 		}
+		backToDefaultPage();
 	});
 
 	socket.on("connect_error",	(err: unknown) => {
 		try {
 			const result = errorSchema.validateSync({ error: (err as Error).message });
 			console.error("WebSocket connection error:", result);
+			backToDefaultPage();
 		}
 		catch (err) {
 			console.error("Error parsing connection error:", err);
+			backToDefaultPage();
 		}
 	});
 
