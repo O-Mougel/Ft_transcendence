@@ -56,7 +56,6 @@ export const accessTokenResponseSchema = z.object({
 
 export const infoGrabResponseSchema = z.object({
 	id: z.number(),
-	email: z.string().min(1),
 	name: z.string().min(1),
 	avatar: z.string().min(1),
 });
