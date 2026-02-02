@@ -90,22 +90,22 @@ export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 
 export function updateGameScene(data: GameStateData): void {
 	if (!data) return;
-	const { ball, leftPaddle, rightPaddle, GAME_WIDTH, GAME_HEIGHT, isGameStarted } = CONTEXT;
+	const { ball, leftPaddle, rightPaddle, isGameStarted } = CONTEXT;
 
 	if (!ball || !leftPaddle || !rightPaddle) return;
 
 	// Ball
-	if (typeof data.ball?.x === "number") ball.x = data.ball.x * GAME_WIDTH;
-	if (typeof data.ball?.y === "number") ball.y = data.ball.y * GAME_HEIGHT;
+	if (typeof data.ball?.x === "number") ball.x = data.ball.x * CONTEXT.RES_CHANGE * CONTEXT.GAME_WIDTH;
+	if (typeof data.ball?.y === "number") ball.y = data.ball.y * CONTEXT.RES_CHANGE * CONTEXT.GAME_HEIGHT;
 	if (typeof data.ball?.vx === "number") ball.speedX = data.ball.vx;
 	if (typeof data.ball?.vy === "number") ball.speedY = data.ball.vy;
 
-	if (typeof data.paddles?.left === "number") leftPaddle.y = data.paddles.left * GAME_HEIGHT;
-	if (typeof data.paddles?.right === "number") rightPaddle.y = data.paddles.right * GAME_HEIGHT;
+	if (typeof data.paddles?.left === "number") leftPaddle.y = data.paddles.left * CONTEXT.RES_CHANGE * CONTEXT.GAME_HEIGHT;
+	if (typeof data.paddles?.right === "number") rightPaddle.y = data.paddles.right * CONTEXT.RES_CHANGE * CONTEXT.GAME_HEIGHT;
 	if (CONTEXT.gameMode === 2) {
 		const { leftPaddle2, rightPaddle2 } = CONTEXT;
-		if (leftPaddle2 && typeof data.paddles?.left2 === "number") leftPaddle2.y = data.paddles.left2 * GAME_HEIGHT;
-		if (rightPaddle2 && typeof data.paddles?.right2 === "number") rightPaddle2.y = data.paddles.right2 * GAME_HEIGHT;
+		if (leftPaddle2 && typeof data.paddles?.left2 === "number") leftPaddle2.y = data.paddles.left2 * CONTEXT.RES_CHANGE * CONTEXT.GAME_HEIGHT;
+		if (rightPaddle2 && typeof data.paddles?.right2 === "number") rightPaddle2.y = data.paddles.right2 * CONTEXT.RES_CHANGE * CONTEXT.GAME_HEIGHT;
 	}
 
 	// Score
@@ -144,8 +144,8 @@ function startGame(): void {
 }
 
 function gameInit(): void {
-	const { ctx, GAME_WIDTH, GAME_HEIGHT } = CONTEXT;
+	const { ctx } = CONTEXT;
 	if (!ctx) return;
-	ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+	ctx.clearRect(0, 0, CONTEXT.RES_CHANGE * CONTEXT.GAME_WIDTH, CONTEXT.RES_CHANGE * CONTEXT.GAME_HEIGHT);
 	draw();
 }
