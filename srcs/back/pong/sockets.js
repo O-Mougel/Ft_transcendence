@@ -17,22 +17,22 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
     let disconnectTimer = null;
     let disconnectedAt = null;
 
-    const limiter = messageRateLimits.get(socket.id);
+    // const limiter = messageRateLimits.get(socket.id);
 
-    socket.use((packet, next) => {
-      if (!limiter) return next();
-      const now = Date.now();
-      if (now > limiter.resetAt) {
-        limiter.count = 0;
-        limiter.resetAt = now + 1000;
-      }
-      if (++limiter.count > 60) {
-        console.warn(`Rate limit exceeded for ${socket.id}`);
-        socket.disconnect();
-        return;
-      }
-      next();
-    });
+    // socket.use((packet, next) => {
+    //   if (!limiter) return next();
+    //   const now = Date.now();
+    //   if (now > limiter.resetAt) {
+    //     limiter.count = 0;
+    //     limiter.resetAt = now + 1000;
+    //   }
+    //   if (++limiter.count > 60) {
+    //     console.warn(`Rate limit exceeded for ${socket.id}`);
+    //     socket.disconnect();
+    //     return;
+    //   }
+    //   next();
+    // });
 
     // socket.onAny((event, ...args) => {
     //   console.log(`Socket event received: ${event} with args: `, args);
@@ -42,18 +42,19 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
       console.log("User disconnected, socket id: ", socket.id);
       const gameId = socket.data.gameId;
       if (gameId) {
-        if (tournamentManager.isGameInTournament(gameId)) tournamentManager.onGameStopped(gameId);
+        if (tournamentManager.isGameInTournament(gameId))
+			tournamentManager.onGameStopped(gameId);
         manager.leaveGame(gameId, socket);
         socket.data.gameId = null;
       }
       messageRateLimits.delete(socket.id);
       disconnectedAt = Date.now();
 
-      disconnectTimer = setTimeout(() => {
-        // tournamentManager.deleteTournament(socket.data.tournamentId, socket);
-        // socket.data.tournamentId = null;
-        console.log(`User disconnected and cleanup completed: ${socket.id}`);
-      }, DISCONNECT_GRACE_PERIOD);
+    //   disconnectTimer = setTimeout(() => {
+    //     // tournamentManager.deleteTournament(socket.data.tournamentId, socket);
+    //     // socket.data.tournamentId = null;
+    //     console.log(`User disconnected and cleanup completed: ${socket.id}`);
+    //   }, DISCONNECT_GRACE_PERIOD);
     });
 
     socket.on("game:start", (data = {}) => {
@@ -135,7 +136,7 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         socket.emit("tournament:state", { tournamentId, tournament });
       } catch (e) {
         console.error("tournament:create error: ", e.message);
-        socket.emit("tournament:error", { message: "Tournament creation error" });
+        socket.emit("tournament:error", { eeeemessage: "Tournament creation error" });
       }
     });
 
@@ -219,7 +220,7 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         const result = tournamentLeaveSchema.parse(data);
 
         const tournamentId = result.tournamentId || socket.data.tournamentId;
-        if (tournamentManager.deleteTournament(tournamentId, socket))
+        if (!tournamentManager.deleteTournament(tournamentId, socket))
         {
           socket.data.tournamentId = null;
           throw new Error("Failed to delete tournament on leave");
@@ -229,8 +230,8 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
       }
       catch (e) {
         console.error("tournament:leave error: ", e.message);
-        socket.emit("tournament:error", { message: "Leave tournament" });
-        if (socket.data.tournamentId && tournamentManager.deleteTournament(socket.data.tournamentId, socket))
+        socket.emit("tournament:error", { message: "Failed to leave tournament" });
+        if (socket.data.tournamentId && !tournamentManager.deleteTournament(socket.data.tournamentId, socket))
           console.error("Failed to delete tournament on leave");
         socket.data.tournamentId = null;
       }
