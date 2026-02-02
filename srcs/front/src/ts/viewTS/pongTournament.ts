@@ -142,6 +142,8 @@ export default class PongView extends ViewTemplate {
 		if (window.sessionStorage.getItem("tournamentEnded") && window.sessionStorage.getItem("tournamentEnded") == "true")
 		{
 			alertBoxMsg("❌ This tournament no longer exists !");
+			if (window.sessionStorage.getItem("currentTournamentId"))
+					window.sessionStorage.removeItem("currentTournamentId");
 			return backToDefaultPage();
 		}
 
@@ -154,7 +156,7 @@ export default class PongView extends ViewTemplate {
 		}
 		const socket = getSocket();
 		if (!socket) {
-			alertBoxMsg("❌ Disconnected from server !");
+			alertBoxMsg("❌ Reloading the page during a tournament is not allowed !");
 			return backToDefaultPage();
 		}
 		socket.emit("tournament:retrieve", { tournamentId: CONTEXT.tournamentId });
@@ -162,7 +164,10 @@ export default class PongView extends ViewTemplate {
 		socket.on("tournament:sessionData", (data: unknown): void => {
 			if (!data) {
 				alertBoxMsg(`❌ Tournament session data could not be retrieved !`);
+				if (window.sessionStorage.getItem("currentTournamentId"))
+					window.sessionStorage.removeItem("currentTournamentId");
 				backToDefaultPage();
+				return ;
 			}
 			else {
 				try {

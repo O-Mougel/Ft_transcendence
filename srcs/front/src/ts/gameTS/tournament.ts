@@ -2,28 +2,11 @@ import { CONTEXT } from "./context.js";
 import { setupSocket, getSocket } from "./socket.js";
 // import type { Socket } from '../types/socket.types';
 import type { Tournament, TournamentStateData, MatchStartedData, TournamentEndedData } from '../types/socket.types';
-import { isPageReload } from "../eventTS/clickEvents.js";
-import { closeSocketCommunication } from "../eventTS/userSocket.js";
 import { tournamentStateSchema, matchStartedSchema, tournamentEndedSchema, messageSchema } from "./schemaYup.js";
 import { alertBoxMsg, backToDefaultPage } from "../eventTS/userLog.js";
 import { adjustNavbar } from "../eventTS/index.js";
 import tournament from "../viewTS/tournament.js";
 import { router } from "../eventTS/index.js";
-
-window.addEventListener("pagehide", (): void => {
-	if (!(sessionStorage.getItem('f5WasPressed'))) {
-		sessionStorage.setItem('f5WasPressed', 'false');
-	}
-
-	const checkKeyReload = sessionStorage.getItem('f5WasPressed') === 'true';
-	const reloadTypeResult = isPageReload();
-
-	if (checkKeyReload || reloadTypeResult) {
-		window.sessionStorage.setItem('pagehide', 'pageshouldreload');
-		closeSocketCommunication();
-		return;
-	}
-});
 
 export function initTournament(): void {
 	setupSocket();
@@ -130,7 +113,7 @@ export function initTournament(): void {
 				window.sessionStorage.setItem("tournamentEnded", "true");
 			}
 			catch (err) {
-				console.error("Invalid tournament ended data received:", err, data);
+				console.error("Invalid tournament ended data received:", err);
 				alertBoxMsg("❌ Tournament end error occurred");
 			}
 		});
@@ -138,6 +121,7 @@ export function initTournament(): void {
 		socket.off("tournament:error");
 		socket.on("tournament:error", (message: unknown) => {
 			try {
+
 				const result = messageSchema.validateSync(message);
 				if (result.message === "A match is already in progress") {
 					console.error("Tournament error:", result);
@@ -146,9 +130,10 @@ export function initTournament(): void {
 					return;
 				}
 				const statusEl = document.getElementById("tournamentStatus");
-				if (statusEl) statusEl.textContent = `Error: ${result}`;
-				// console.error("Tournament error:", result);
-				alertBoxMsg("❌ " + (result.message || "Tournament error occurred"));
+				if (statusEl)
+					statusEl.textContent = `Error: ${result}`;
+				console.error("Tournament error:", result.message);
+				alertBoxMsg("❌ " + (result.message));
 				window.sessionStorage.setItem("tournamentEnded", "true");
 				if (window.sessionStorage.getItem("currentTournamentId"))
 						window.sessionStorage.removeItem("currentTournamentId"); // if error in back, tournament deleted, so we remove it
@@ -157,8 +142,8 @@ export function initTournament(): void {
 			catch (err) {
 				console.error("Invalid tournament error data received:", err);
 				alertBoxMsg("❌ Tournament creation error occurred");
-				// if (sessionStorage.getItem("currentTournamentId"))
-				// 	sessionStorage.removeItem("currentTournamentId");
+				if (sessionStorage.getItem("currentTournamentId"))
+					sessionStorage.removeItem("currentTournamentId");
 				backToDefaultPage();
 			}
 		});
@@ -172,7 +157,7 @@ export function initTournament(): void {
 				history.pushState(null, "", "/tournament");
 			}
 			catch (err) {
-				console.error("Invalid tournament duplicate data received:", err, data);
+				console.error("Invalid tournament duplicate data received:", err);
 				alertBoxMsg("❌ Duplicate tournament join attempt.");
 				backToDefaultPage();
 				// window.history.replaceState({}, "", "/");
