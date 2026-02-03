@@ -22,8 +22,8 @@ export default class PongView extends ViewTemplate {
 					<a href="/customizeProfile" class="mx-4 text-2xl lg:text-4xl mb-5 border p-4 text-[#798490] hover:text-[#98c6f8]" name="profileLink" data-link>Update profile</a>
 					<a id="logoutButton" class="mx-4 text-2xl lg:text-4xl mb-8 border p-4 cursor-pointer hover:text-[#dee9f4] hover:bg-[#882639] text-[#882639]" onclick=logoutUser() name="logoutButtonName">➜] Log out</a>
 					<div class="self-start px-4 w-full">
-						<input class="sr-only peer" id="friendCheck" type="checkbox"/>
-						<label for="friendCheck" class="text-2xl lg:text-3xl cursor-pointer py-2 mb-10 select-none hover:text-[#98c6f8]">➤ Friend list</label>
+						<input class="sr-only peer" id="friendCheck" type="checkbox" onchange='handleCheck();'/>
+						<label id="friendCheckText" for="friendCheck" class="text-2xl lg:text-3xl cursor-pointer py-2 mb-10 select-none hover:text-[#98c6f8]">➤ Friend list</label>
 						<ul class="select-none peer-checked:block hidden mt-3 ml-2 self-start text-left animate-slide-fade-up" id="friendlist"></ul>
 					</div>
 					<div id="pendingRequestBlock" class="w-full mt-8 lg:mt-15 px-4 hidden">
@@ -139,8 +139,6 @@ export default class PongView extends ViewTemplate {
 		if (window.sessionStorage.getItem("tournamentEnded") && window.sessionStorage.getItem("tournamentEnded") == "true")
 		{
 			alertBoxMsg("❌ This tournament no longer exists !");
-			if (window.sessionStorage.getItem("currentTournamentId"))
-					window.sessionStorage.removeItem("currentTournamentId");
 			return backToDefaultPage();
 		}
 
