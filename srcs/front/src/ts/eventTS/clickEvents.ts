@@ -162,7 +162,7 @@ export function isPageReload(): boolean {
 			window.sessionStorage.setItem('nbReloadsLeft', '1');
 			return true;
 		}
-	} catch (e) { }
+	} catch (err) { }
 	return false;
 }
 
