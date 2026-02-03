@@ -36,8 +36,8 @@ io.use((socket, next) => {
     messageRateLimits.set(socket.id, { count: 0, resetAt: Date.now() + 1000 });
 
     return next();
-  } catch (e) {
-    console.error("Socket auth error:", e);
+  } catch (err) {
+    console.error("Socket auth error:", err);
     return next(new Error("Invalid token"));
   }
 });
@@ -74,15 +74,14 @@ fastify.post("/api/pong/games", async (req, reply) => {
 
     const { mode = 0, data = {} } = req.body ?? {};
     const gameId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
-    console.log("SERVER.JS: Creating new game with id:", gameId);
 
     manager.ensureGameExist(gameId);
     if (!manager.startGame(gameId, { ...data, mode }))
       throw new Error("Failed to start game");
     return { gameId };
-  } catch (e) {
-    console.error("Error in /api/pong/games:", e);
-    const errCode = e.code;
+  } catch (err) {
+    console.error("Error in /api/pong/games:", err);
+    const errCode = err.code;
 		if (errCode === "FAST_JWT_EXPIRED")
 			return reply.status(403).send({ message: 'Expired JWT Token !', errRef:"expiredJWT"})
 		else if (errCode === "FAST_JWT_MALFORMED") 
@@ -110,9 +109,9 @@ fastify.post("/api/pong/games/:gameId/input", async (req, reply) => {
   
     manager.updatePaddle(gameId, side, direction);
     return { ok: true };
-  } catch (e) {
-    console.error("Error in /api/pong/games/:gameId/input:", e);
-    const errCode = e.code;
+  } catch (err) {
+    console.error("Error in /api/pong/games/:gameId/input:", err);
+    const errCode = err.code;
 			if (errCode === "FAST_JWT_EXPIRED")
 				return reply.status(403).send({ message: 'Expired JWT Token !', errRef:"expiredJWT"})
 			else if (errCode === "FAST_JWT_MALFORMED") 
@@ -137,9 +136,9 @@ fastify.get("/api/pong/games/:gameId/state:", async (req, reply) => {
     const state = manager.getState(gameId);
     if (!state) return reply.code(404).send({ error: "Game not found" });
     return state;
-  } catch (e) {
-    console.error("Error in /api/pong/games/:gamId/state", e);
-    const errCode = e.code;
+  } catch (err) {
+    console.error("Error in /api/pong/games/:gamId/state", err);
+    const errCode = err.code;
 			if (errCode === "FAST_JWT_EXPIRED")
 				return reply.status(403).send({ message: 'Expired JWT Token !', errRef:"expiredJWT"})
 			else if (errCode === "FAST_JWT_MALFORMED") 
@@ -160,8 +159,8 @@ export function verifyPlayerToken(token) {
   try {
     const payload = fastify.jwt.verify(token);
     return payload;
-  } catch (e) {
-    console.error("Token verification error:", e);
+  } catch (err) {
+    console.error("Token verification error:", err);
     return null;
   }
 }

@@ -142,8 +142,8 @@ export class GameManager {
 
         if (this.onGameOver) {
           try {
-          } catch (e) {
-            console.error("onGameOver error:", e);
+          } catch (err) {
+            console.error("onGameOver error:", err);
             stopLoops(gameId);
             this.games.delete(gameId);
             return;
