@@ -14,9 +14,6 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
     console.log("New socket connection established");
     console.log("User connected, socket id: ", socket.id);
 
-    let disconnectTimer = null;
-    let disconnectedAt = null;
-
     const limiter = messageRateLimits.get(socket.id);
 
     socket.use((packet, next) => {
@@ -26,17 +23,14 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         limiter.count = 0;
         limiter.resetAt = now + 1000;
       }
-      if (++limiter.count > 60) {
+      console.log(`Socket ${socket.id} message count: ${limiter.count}`);
+      if (++limiter.count > 2000) {
         console.warn(`Rate limit exceeded for ${socket.id}`);
         socket.disconnect();
         return;
       }
       next();
     });
-
-    // socket.onAny((event, ...args) => {
-    //   console.log(`Socket event received: ${event} with args: `, args);
-    // });
 
     socket.on("disconnect", () => {
       console.log("User disconnected, socket id: ", socket.id);
@@ -47,13 +41,6 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         socket.data.gameId = null;
       }
       messageRateLimits.delete(socket.id);
-      disconnectedAt = Date.now();
-
-      disconnectTimer = setTimeout(() => {
-        // tournamentManager.deleteTournament(socket.data.tournamentId, socket);
-        // socket.data.tournamentId = null;
-        console.log(`User disconnected and cleanup completed: ${socket.id}`);
-      }, DISCONNECT_GRACE_PERIOD);
     });
 
     socket.on("game:start", (data = {}) => {
