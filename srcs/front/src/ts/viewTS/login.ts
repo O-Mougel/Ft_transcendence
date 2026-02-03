@@ -65,7 +65,7 @@ export default class LoginView extends ViewTemplate {
 		if (sessionStorage.getItem('logStatus') && sessionStorage.getItem('logStatus') == "loggedIn")
 		{
 			alertBoxMsg("🔑 You are already logged in !");
-			return backToDefaultPage();
+			return await backToDefaultPage();
 		}
 		const usernameInput = document.getElementById('clientUsername');
 		if (usernameInput)
@@ -73,7 +73,7 @@ export default class LoginView extends ViewTemplate {
 		if (sessionStorage.getItem("logStatus") == "loggedIn")
 		{
 			console.log("You are already logged in, redirecting..");
-			backToDefaultPage();
+			await backToDefaultPage();
 		}
 	}
 }

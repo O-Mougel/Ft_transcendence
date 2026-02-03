@@ -139,7 +139,7 @@ export default class PongView extends ViewTemplate {
 		if (window.sessionStorage.getItem("tournamentEnded") && window.sessionStorage.getItem("tournamentEnded") == "true")
 		{
 			alertBoxMsg("❌ This tournament no longer exists !");
-			return backToDefaultPage();
+			return await backToDefaultPage();
 		}
 
 		if (!CONTEXT.tournamentId)
@@ -147,7 +147,7 @@ export default class PongView extends ViewTemplate {
 
 		if (!CONTEXT.tournamentId) {
 			alertBoxMsg("❌ No tournament found !");
-			return backToDefaultPage();
+			return await backToDefaultPage();
 		}
 		// const socket = getSocket();
 		// if (!socket) {

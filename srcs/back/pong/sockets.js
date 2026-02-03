@@ -22,7 +22,7 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         limiter.count = 0;
         limiter.resetAt = now + 1000;
       }
-      console.log(`Socket ${socket.id} message count: ${limiter.count}`);
+    //   console.log(`Socket ${socket.id} message count: ${limiter.count}`);
       if (++limiter.count > 2000) {
         console.warn(`Rate limit exceeded for ${socket.id}`);
         socket.disconnect();
