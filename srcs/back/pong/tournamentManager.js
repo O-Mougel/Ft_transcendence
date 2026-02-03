@@ -233,7 +233,6 @@ export class TournamentManager {
         }
       }
     }
-
     this.tournaments.delete(tournamentId);
     return true;
   }
