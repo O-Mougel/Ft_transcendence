@@ -316,7 +316,7 @@ function tournamentDuplicateSetup(socket: ReturnType<typeof getSocket>): void {
 	socket.on("tournament:duplicate", (data) => {
 		try {
 			const result = messageSchema.validateSync(data);
-			console.error("Tournament duplicate error:", result);
+			console.error("Tournament duplicate error:", result.message);
 			alertBoxMsg("❌ " + (result.message || "There is already a tournament ongoing."));
 			history.pushState(null, "", "/tournament");
 		}
