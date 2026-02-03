@@ -158,16 +158,20 @@ function gameInit(): void {
 export function retrieveSessionData(): void {
 	const socket = getSocket();
 	if (!socket) {
-		alertBoxMsg("❌ Disconnected from server !");
+		alertBoxMsg("❌ Reloading the page during a tournament is not allowed !");
 		backToDefaultPage();
 		return;
 	}
+
 	socket.emit("tournament:retrieve", { tournamentId: CONTEXT.tournamentId });
 
 	socket.on("tournament:sessionData", (data: unknown): void => {
 		if (!data) {
 			alertBoxMsg(`❌ Tournament session data could not be retrieved !`);
+			if (window.sessionStorage.getItem("currentTournamentId"))
+				window.sessionStorage.removeItem("currentTournamentId");
 			backToDefaultPage();
+			return ;
 		}
 		else {
 			try {
