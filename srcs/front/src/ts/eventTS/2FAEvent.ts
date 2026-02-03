@@ -151,7 +151,8 @@ window.loginWith2FACode = async function (event: Event): Promise<void> {
 		const result: TwoFALoginResponse = await logWith2FACode.json();
 		if (result) {
 			sessionStorage.setItem('access_token', result.newAccessToken);
-			sessionStorage.removeItem('temp_token');
+			if (sessionStorage.getItem('temp_token'))
+				sessionStorage.removeItem('temp_token');
 			window.sessionStorage.setItem('logStatus', 'loggedIn');
 			if (!setupSocketCommunication())
 					throw new Error(`Request failed: 401 ${JSON.stringify({ message: "Socket creation failed", errRef: "socketCreationFailed" })}`);
@@ -219,7 +220,8 @@ window.player2TwoFAValidation = async function (event: Event): Promise<void> {
 		const result: Player2TwoFAResponse = await logWith2FACode.json();
 		if (result) {
 			window.sessionStorage.setItem('player2_token', result.matchToken);
-			sessionStorage.removeItem('match_token');
+			if (sessionStorage.getItem('match_token'))
+				sessionStorage.removeItem('match_token');
 			await window.loadPlayer2Data();
 			alertBoxMsg('⏳ Player 2 Logged in !');
 			if (divLogin) divLogin.style.display = "none";

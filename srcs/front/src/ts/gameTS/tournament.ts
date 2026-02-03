@@ -32,7 +32,8 @@ export function initTournament(): void {
 	if (quitBtn && socket) {
 		quitBtn.onclick = (): void => {
 			console.log("Leaving tournament:", tournamentId);
-			sessionStorage.removeItem("currentTournamentId");
+			if (window.sessionStorage.getItem("currentTournamentId"))
+				sessionStorage.removeItem("currentTournamentId");
 			window.sessionStorage.setItem("tournamentEnded", "true");
 			CONTEXT.tournamentId = null;
 			window.history.pushState(null, "", "/tournamentSize");
@@ -150,7 +151,7 @@ export function initTournament(): void {
 		// 		window.sessionStorage.setItem("tournamentEnded", "true");
 		// 		if (window.sessionStorage.getItem("currentTournamentId"))
 		// 				window.sessionStorage.removeItem("currentTournamentId"); // if error in back, tournament deleted, so we remove it
-		// 		backToTournamentPage();
+				// backToDefaultPage();
 		// 	}
 		// 	catch (err) {
 		// 		console.error("Invalid tournament error data received:", err);
@@ -294,7 +295,7 @@ function tournamentErrorSetup(socket: ReturnType<typeof getSocket>): void {
 			window.sessionStorage.setItem("tournamentEnded", "true");
 			if (window.sessionStorage.getItem("currentTournamentId"))
 					window.sessionStorage.removeItem("currentTournamentId"); // if error in back, tournament deleted, so we remove it
-			backToTournamentPage();
+			backToDefaultPage();
 		}
 		catch (err) {
 			console.error("Invalid tournament error data received:", err);
@@ -409,17 +410,4 @@ export function findNextReadyMatch(tournament: Tournament): { player1: string | 
 	  }
 	}
 	return null;
-}
-
-const backToTournamentPage = async (): Promise<void> => {
-	const view = new tournament();
-	const appElement = document.querySelector("#app") as HTMLElement | null;
-	if (appElement) {
-		appElement.innerHTML = await view.getHTML();
-	}
-	adjustNavbar("/tournament");
-	if (typeof view.init === "function") {
-		await view.init();
-	}
-	history.pushState(null, "", "/tournament");
 }

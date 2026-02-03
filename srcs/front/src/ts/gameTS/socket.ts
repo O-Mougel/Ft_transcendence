@@ -183,7 +183,8 @@ export async function waitStartGame(): Promise<void> {
 	} catch (err) {
 		if (await fetchErrcodeHandler(err as Error) === 0)
 					return waitStartGame();
-		console.error('Couldn\'t grab user info!\n => ', err);
+		console.error('Couldn\'t start beacause of invalid profile info!');
+		alertBoxMsg("⚠️ Couldn\'t start game, invalid profile info!");
 	}
 }
 
