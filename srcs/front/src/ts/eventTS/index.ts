@@ -605,6 +605,7 @@ const newtabRelogFetch = async (): Promise<void> => {
 
 const forceUserRelog = async (): Promise<void> => {
 	const view = new logUser();
+
 	const appElement = document.querySelector("#app") as HTMLElement | null;
 	if (appElement) {
 		appElement.innerHTML = await view.getHTML();
@@ -617,16 +618,25 @@ const forceUserRelog = async (): Promise<void> => {
 	router();
 };
 
-export const adjustNavbar = async (path: string): Promise<void> => {
+export const checkRouteValidity = async (path: string): Promise<boolean> => {
+
+
 	if (path === "/logUser" || path === "/" || path === "/404" || path === "/newUserRegistration" || path === "/2faLogin") {
-		// no logging required
+		return true;
 	} else {
 		const res = await isUserAllowedHere();
 		if (res === 0) {
 			console.info("You are not allowed here ! Forced relog!");
+			window.sessionStorage.setItem('logStatus', 'loggedOut');
+			window.sessionStorage.setItem('access_token', 'userSelfLogoutToken');
+			window.localStorage.setItem('allowAutolog','false');
 			await forceUserRelog();
+			return false;
 		}
+		return(true);
 	}
+}
+export const adjustNavbar = async (path: string): Promise<void> => {
 
 	navbarHiddenCheck();
 	if (path === "/customizeProfile") {
@@ -670,6 +680,7 @@ const attemptAutolog = async (): Promise<void> => {
 		return (await router());
 	
 	try {
+		console.log("GUUUH");
 		await attemptSocketConnection()
 	} 
 	catch (err) 
@@ -743,6 +754,10 @@ export const router = async (): Promise<void> => {
 	if (sessionStorage.getItem('pagehide') && sessionStorage.getItem('pagehide') === 'pageshouldreload') {
 		sessionStorage.setItem('pagehide', 'pagehasreloaded');
 	}
+
+	const trustedUser = await checkRouteValidity(match.mapElement.path);
+	if (!trustedUser)
+		return;
 
 	const appElement = document.querySelector("#app") as HTMLElement | null;
 	if (appElement) {
