@@ -6,6 +6,11 @@ import { resizeCanvasToElement} from "../eventTS/clickEvents.js";
 import { bindControls } from "./controls.js";
 import type { GameInitOptions, GameMode } from '../types/game.types';
 import type { GameStateData } from '../types/socket.types';
+import { getSocket } from "../gameTS/socket.js";
+import { tournamentStateSchema } from "../gameTS/schemaYup.js";
+import { findNextReadyMatch } from "../gameTS/tournament.js";
+import type { TournamentStateData } from '../types/socket.types';
+import { alertBoxMsg, backToDefaultPage } from "../eventTS/userLog.js";
 
 
 export function initPong(mode: GameInitOptions = { mode: 0 }): void {
@@ -148,4 +153,38 @@ function gameInit(): void {
 	if (!ctx) return;
 	ctx.clearRect(0, 0, CONTEXT.RES_CHANGE * CONTEXT.GAME_WIDTH, CONTEXT.RES_CHANGE * CONTEXT.GAME_HEIGHT);
 	draw();
+}
+
+export function retrieveSessionData(): void {
+	const socket = getSocket();
+	if (!socket) {
+		alertBoxMsg("❌ Disconnected from server !");
+		backToDefaultPage();
+		return;
+	}
+	socket.emit("tournament:retrieve", { tournamentId: CONTEXT.tournamentId });
+
+	socket.on("tournament:sessionData", (data: unknown): void => {
+		if (!data) {
+			alertBoxMsg(`❌ Tournament session data could not be retrieved !`);
+			backToDefaultPage();
+		}
+		else {
+			try {
+				const result = tournamentStateSchema.validateSync(data) as TournamentStateData;
+				if (!CONTEXT.tournamentId)
+					CONTEXT.tournamentId = result.tournamentId;
+				const nextMatch = findNextReadyMatch(result.tournament);
+				if (nextMatch) {
+					CONTEXT.leftName = nextMatch.player1;
+					CONTEXT.rightName = nextMatch.player2;
+				}
+				console.log("Tournament session data retrieved successfully.");
+			} catch (err) {
+				console.error("Error validating tournament session data:", err, data);
+				alertBoxMsg("❌ Error validating tournament session data.");
+				backToDefaultPage();
+			}
+		}
+	});
 }

@@ -15,21 +15,21 @@ export const startSchema = z.object({
 
 export const tournamentCreateSchema = z.object({
   size: z.number().refine((val) => [4, 8, 16].includes(val), { message: "Invalid tournament size" }),
-  names: z.array(z.string()).optional(),
+  names: z.array(z.string({ message: "Name must be a string !" } ).min(3, { message: "Name must be at least 3 characters long" }).max(13, { message: "Name cannot be longer than 13 characters"} ).regex(/^[a-zA-Z0-9_]+$/, { message: "Name can only contains letters, numbers and underscores"} )).optional(),
 });
 
 export const tournamentGetStateSchema = z.object({
-	tournamentId: z.string().min(3, { message: "tournamentId is required" }),
+	tournamentId: z.string({ message: "tournamentId must be a string !" }).min(3, { message: "tournamentId is required" }),
 });
 
 export const tournamentNextMatchSchema = z.object({
-	tournamentId: z.string().min(3, { message: "tournamentId is required" }),
+	tournamentId: z.string({ message: "tournamentId must be a string !" }).min(3, { message: "tournamentId is required" }),
 });
 
 export const tournamentLeaveSchema = z.object({
-	tournamentId: z.string().min(3, { message: "tournamentId is required" }),
+	tournamentId: z.string({ message: "tournamentId must be a string !" }).min(3, { message: "tournamentId is required" }),
 });
 
 export const sessionRetrieveSchema = z.object({
-  tournamentId: z.string().min(3, { message: "tournamentId is required" }).optional(),
+  tournamentId: z.string({ message: "tournamentId must be a string !" }).min(3, { message: "tournamentId is required" }).optional(),
 });
