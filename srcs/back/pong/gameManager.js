@@ -52,7 +52,8 @@ export class GameManager {
     }
   }
 
-  async startGame(gameId, data) {
+  startGame(gameId, data) {
+    console.log("Starting game with id:", gameId);
     this.ensureGameExist(gameId);
     const entry = this.games.get(gameId);
     entry.game.id = gameId;
@@ -68,9 +69,9 @@ export class GameManager {
       if (data.mode === 3) {
         var verifiedPlayer2 = verifyPlayerToken(data.player2Token);
         if (!verifiedPlayer2) {
-          socket.emit("game:error", { message: "Invalid player 2 token" });
+          console.error("Invalid player 2 token");
           this.games.delete(gameId);
-          return;
+          throw new Error("Invalid player 2 token");
         }
         entry.game.player2 = verifiedPlayer2;
       }
@@ -93,7 +94,7 @@ export class GameManager {
     catch (err) {
       console.error("Error starting game:", err);
       this.games.delete(gameId);
-      return false;
+      throw err;
     }
   }
 

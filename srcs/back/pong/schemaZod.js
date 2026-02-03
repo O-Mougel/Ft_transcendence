@@ -8,7 +8,7 @@ export const movementSchema = z.object({
 export const startSchema = z.object({
   mode: z.number().refine((val) => [0, 1, 2, 3].includes(val), { message: "Invalid game mode" }),
   player1Token: z.string().min(1, { message: "player1Token is required" }),
-  player2Token: z.string().min(1, { message: "player2Token cannot be empty" }).optional(),
+  player2Token: z.string({ message: "Player 2 Token is required." }).min(1, { message: "Player 2 token cannot be empty" }).optional( { message: "Player 2 token is required for this mode" }),
   player2: z.string().min(3, { message: "player2 cannot be empty" }).optional(),
 
 });
