@@ -182,13 +182,18 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 							data: [result.winrate],
 							backgroundColor: '#4ac03d9f',
 							hoverBackgroundColor: '#4ac03d9f'
+						},
+						{
+							label: 'Loose Ratio %',
+							data: [100 - result.winrate],
+							backgroundColor: '#c03d3d9f',
+							hoverBackgroundColor: '#c03d3d9f'
 						}]
 					},
 					options: {
 						borderColor: 'none',
-						indexAxis: 'y',
 						scales: {
-							x: {
+							y: {
 								beginAtZero: true,
 								min: 0,
 								max: 100,
@@ -303,13 +308,19 @@ window.fetchPlayerStats = async (playerId: string, playerUsername: string): Prom
 							data: [result.winrate],
 							backgroundColor: '#4ac03d9f',
 							hoverBackgroundColor: '#4ac03d9f'
-						}]
+						},
+						{
+							label: 'Loose Ratio %',
+							data: [100 - result.winrate],
+							backgroundColor: '#c03d3d9f',
+							hoverBackgroundColor: '#c03d3d9f'
+						}
+					]
 					},
 					options: {
 						borderColor: 'none',
-						indexAxis: 'y',
 						scales: {
-							x: {
+							y: {
 								beginAtZero: true,
 								min: 0,
 								max: 100,
@@ -680,7 +691,6 @@ const attemptAutolog = async (): Promise<void> => {
 		return (await router());
 	
 	try {
-		console.log("GUUUH");
 		await attemptSocketConnection()
 	} 
 	catch (err) 
