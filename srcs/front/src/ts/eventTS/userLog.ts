@@ -905,6 +905,14 @@ window.updateUserPassword = async function (event: Event): Promise<void> {
 			confirmNewPassword.value = '';
 			return ;
 		}
+		if (newPassword.value.length > 32)
+		{
+			requestResult.innerText = "❌ Password cannot be longer than 32 characters !";
+			newPassword.focus();
+			newPassword.value = '';
+			confirmNewPassword.value = '';
+			return ;
+		}
 		else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(newPassword.value))
 		{
 			requestResult.innerText = "❌ Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character !";
@@ -915,7 +923,7 @@ window.updateUserPassword = async function (event: Event): Promise<void> {
 		}
 		if (newPassword.value !== confirmNewPassword.value)
 		{
-			requestResult.innerText = "❌ New passwords do not match !";
+			requestResult.innerText = "❌ Passwords do not match !";
 			newPassword.value = '';
 			confirmNewPassword.value = '';
 			newPassword.focus();
