@@ -182,13 +182,18 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 							data: [result.winrate],
 							backgroundColor: '#4ac03d9f',
 							hoverBackgroundColor: '#4ac03d9f'
+						},
+						{
+							label: 'Loose Ratio %',
+							data: [100 - result.winrate],
+							backgroundColor: '#c03d3d9f',
+							hoverBackgroundColor: '#c03d3d9f'
 						}]
 					},
 					options: {
 						borderColor: 'none',
-						indexAxis: 'y',
 						scales: {
-							x: {
+							y: {
 								beginAtZero: true,
 								min: 0,
 								max: 100,
@@ -303,13 +308,19 @@ window.fetchPlayerStats = async (playerId: string, playerUsername: string): Prom
 							data: [result.winrate],
 							backgroundColor: '#4ac03d9f',
 							hoverBackgroundColor: '#4ac03d9f'
-						}]
+						},
+						{
+							label: 'Loose Ratio %',
+							data: [100 - result.winrate],
+							backgroundColor: '#c03d3d9f',
+							hoverBackgroundColor: '#c03d3d9f'
+						}
+					]
 					},
 					options: {
 						borderColor: 'none',
-						indexAxis: 'y',
 						scales: {
-							x: {
+							y: {
 								beginAtZero: true,
 								min: 0,
 								max: 100,
@@ -575,6 +586,7 @@ const hideProfileButtons = (): void => {
 };
 
 const newtabRelogFetch = async (): Promise<void> => {
+	
 	try {
 		const newTabrefreshTokenResponse = await fetch('/login/refresh', {
 			credentials: 'include',
@@ -597,12 +609,14 @@ const newtabRelogFetch = async (): Promise<void> => {
 			throw new Error(`Token could not be generated !`);
 		}
 	} catch (err) {
+		console.info("You could not be automatically relogged, sign-in again !");
 		window.sessionStorage.setItem('logStatus', 'loggedOut');
 	}
 };
 
 const forceUserRelog = async (): Promise<void> => {
 	const view = new logUser();
+
 	const appElement = document.querySelector("#app") as HTMLElement | null;
 	if (appElement) {
 		appElement.innerHTML = await view.getHTML();
@@ -615,16 +629,25 @@ const forceUserRelog = async (): Promise<void> => {
 	router();
 };
 
-export const adjustNavbar = async (path: string): Promise<void> => {
+export const checkRouteValidity = async (path: string): Promise<boolean> => {
+
+
 	if (path === "/logUser" || path === "/" || path === "/404" || path === "/newUserRegistration" || path === "/2faLogin") {
-		// no logging required
+		return true;
 	} else {
 		const res = await isUserAllowedHere();
 		if (res === 0) {
 			console.info("You are not allowed here ! Forced relog!");
+			window.sessionStorage.setItem('logStatus', 'loggedOut');
+			window.sessionStorage.setItem('access_token', 'userSelfLogoutToken');
+			window.localStorage.setItem('allowAutolog','false');
 			await forceUserRelog();
+			return false;
 		}
+		return(true);
 	}
+}
+export const adjustNavbar = async (path: string): Promise<void> => {
 
 	navbarHiddenCheck();
 	if (path === "/customizeProfile") {
@@ -659,9 +682,10 @@ export const adjustNavbar = async (path: string): Promise<void> => {
 
 const attemptAutolog = async (): Promise<void> => {
 
-	// console.info("Should i autolog ? ", localStorage.getItem("allowAutolog"));
 	if (sessionStorage.getItem('pagehide') !== 'pageshouldreload' && localStorage.getItem("allowAutolog") == "true")
+	{
 		await newtabRelogFetch();
+	}
 	
 	if (sessionStorage.getItem('logStatus') && sessionStorage.getItem('logStatus') == "loggedOut")
 		return (await router());
@@ -740,6 +764,10 @@ export const router = async (): Promise<void> => {
 	if (sessionStorage.getItem('pagehide') && sessionStorage.getItem('pagehide') === 'pageshouldreload') {
 		sessionStorage.setItem('pagehide', 'pagehasreloaded');
 	}
+
+	const trustedUser = await checkRouteValidity(match.mapElement.path);
+	if (!trustedUser)
+		return;
 
 	const appElement = document.querySelector("#app") as HTMLElement | null;
 	if (appElement) {
