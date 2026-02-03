@@ -11,7 +11,6 @@ import { gameStateSchema, gameOverSchema, gameStartedSchema, reasonSchema, error
 let socket: SocketType | null = null;
 
 export function setupSocket(): SocketType | null {
-
 	if (socket) return socket;
 
 	const token = sessionStorage.getItem("access_token");
