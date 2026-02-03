@@ -185,6 +185,7 @@ export async function waitStartGame(): Promise<void> {
 					return waitStartGame();
 		console.error('Couldn\'t start beacause of invalid profile info!');
 		alertBoxMsg("⚠️ Couldn\'t start game, invalid profile info!");
+		backToDefaultPage();
 	}
 }
 
