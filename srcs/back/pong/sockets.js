@@ -122,7 +122,7 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         socket.emit("tournament:state", { tournamentId, tournament });
       } catch (e) {
         console.error("tournament:create error: ", e.message);
-        socket.emit("tournament:error", { eeeemessage: "Tournament creation error" });
+        socket.emit("tournament:error", { message: "Can't create tournament" });
       }
     });
 

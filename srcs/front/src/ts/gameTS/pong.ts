@@ -51,7 +51,12 @@ export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 	// window.addEventListener("resize", resizeCanvasToElement);
 	
 	createGameElements();
-	setupSocket();
+	if (!setupSocket())
+	{
+		alertBoxMsg("❌ Unable to establish socket connection");
+		backToDefaultPage();
+		return;
+	}
 	bindControls();
 
 	if (!CONTEXT.tournamentId)
