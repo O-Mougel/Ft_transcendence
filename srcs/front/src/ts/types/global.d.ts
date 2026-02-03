@@ -45,7 +45,6 @@ declare global {
     saveProfileInfo: () => Promise<void>;
 
     //Tournament
-    backToTournamentPage: () => void;
     validatePlayerNameFields: (nbPlayers: number, event: Event) => void;
     createCustomTournamentPage: (nbPlayers: number) => void;
 
