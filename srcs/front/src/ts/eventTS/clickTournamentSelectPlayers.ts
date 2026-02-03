@@ -32,8 +32,12 @@ function validateNames(names: string[], expectedCount: number): string | null {
 }
 
 export async function startTournament(expectedCount: number, event: Event): Promise<void> {
-	setupSocket();
-	const socket = getSocket();
+	const socket = setupSocket();
+	if (!socket) {
+		alertBoxMsg("❌ Unable to establish socket connection");
+		backToDefaultPage();
+		return;
+	}
 
 	event.preventDefault();
 
@@ -64,13 +68,14 @@ export async function startTournament(expectedCount: number, event: Event): Prom
 	socket.once("tournament:error", (message: unknown) => {
 		try {
 			messageSchema.validateSync(message);
-			console.error("Tournament error received");
+			console.error("Tournament creation error.");
 			alertBoxMsg("❌ Tournament creation error occurred");
 			if (window.sessionStorage.getItem("currentTournamentId"))
 				window.sessionStorage.removeItem("currentTournamentId");
 			backToDefaultPage();
 		}
 		catch (err) {
+			alertBoxMsg("❌ Invalid tournament message received");
 			console.error("Could not validate tournament info !");
 			if (window.sessionStorage.getItem("currentTournamentId"))
 				window.sessionStorage.removeItem("currentTournamentId");

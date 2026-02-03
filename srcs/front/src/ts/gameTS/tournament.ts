@@ -9,8 +9,12 @@ import tournament from "../viewTS/tournament.js";
 import { router } from "../eventTS/index.js";
 
 export function initTournament(): void {
-	setupSocket();
-	const socket = getSocket();
+	const socket = setupSocket();
+	if (!socket) {
+		alertBoxMsg("❌ Unable to establish socket connection");
+		backToDefaultPage();
+		return;
+	}
 
 	const tournamentId = extractTournamentId();
 	if (!tournamentId) {

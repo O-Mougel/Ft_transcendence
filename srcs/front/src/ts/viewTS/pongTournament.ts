@@ -184,6 +184,7 @@ export default class PongView extends ViewTemplate {
 		// 		}
 		// 	}
 		// });
+		retrieveSessionData();
 
 		if (typeof module.initPong === "function")
 			module.initPong({ mode, gameId: CONTEXT.gameId });
