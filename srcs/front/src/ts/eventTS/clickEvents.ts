@@ -206,11 +206,6 @@ async function uploadFileToServer(fileObj: File): Promise<string | null> {
 	return null;
 }
 
-window.backToTournamentPage = function (): void {
-	window.history.pushState(null, "", "/tournament");
-	router();
-};
-
 window.validatePlayerNameFields = function (nbPlayers: number, event: Event): void {
 	for (let i = 1; i <= nbPlayers; i++) {
 		const currentInput = document.getElementById(`player${i}`) as HTMLInputElement | null;
