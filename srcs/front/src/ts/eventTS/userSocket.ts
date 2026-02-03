@@ -43,7 +43,7 @@ export const closeSocketCommunication = async (): Promise<void> => {
 	if (UserSocket)
 	{
 		UserSocket.close(1000, 'closing socket..');
-		console.info("Closed socket...");
+		console.info("Closed friend socket...");
 	}
 }
 

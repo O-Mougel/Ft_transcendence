@@ -63,14 +63,17 @@ export async function startTournament(expectedCount: number, event: Event): Prom
 
 	socket.once("tournament:error", (message: unknown) => {
 		try {
-			const result = messageSchema.validate(message);
-			console.error("Tournament error received:", result);
+			messageSchema.validateSync(message);
+			console.error("Tournament error received");
 			alertBoxMsg("❌ Tournament creation error occurred");
+			if (window.sessionStorage.getItem("currentTournamentId"))
+				window.sessionStorage.removeItem("currentTournamentId");
 			backToDefaultPage();
 		}
 		catch (err) {
-			console.error("Invalid tournament error data received:", err);
-			alertBoxMsg("❌ Unknown tournament creation error occurred");
+			console.error("Could not validate tournament info !");
+			if (window.sessionStorage.getItem("currentTournamentId"))
+				window.sessionStorage.removeItem("currentTournamentId");
 			backToDefaultPage();
 		}
 	});

@@ -621,7 +621,7 @@ export const adjustNavbar = async (path: string): Promise<void> => {
 	} else {
 		const res = await isUserAllowedHere();
 		if (res === 0) {
-			console.info("Forced relog!");
+			console.info("You are not allowed here ! Forced relog!");
 			await forceUserRelog();
 		}
 	}
