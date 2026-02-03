@@ -7,7 +7,7 @@ import { bindControls } from "./controls.js";
 import type { GameInitOptions, GameMode } from '../types/game.types';
 import type { GameStateData } from '../types/socket.types';
 import { getSocket } from "../gameTS/socket.js";
-import { tournamentStateSchema } from "../gameTS/schemaYup.js";
+import { tournamentStateSchema, messageSchema } from "../gameTS/schemaYup.js";
 import { findNextReadyMatch } from "../gameTS/tournament.js";
 import type { TournamentStateData } from '../types/socket.types';
 import { alertBoxMsg, backToDefaultPage } from "../eventTS/userLog.js";
@@ -161,6 +161,7 @@ function gameInit(): void {
 }
 
 export function retrieveSessionData(): void {
+	// const socket = setupSocket();
 	const socket = getSocket();
 	if (!socket) {
 		alertBoxMsg("❌ Reloading the page during a tournament is not allowed !");
@@ -168,9 +169,24 @@ export function retrieveSessionData(): void {
 		return;
 	}
 
+	socket.once("tournament:error", (message: unknown) => {
+		try {
+			const result = messageSchema.validateSync(message);
+			alertBoxMsg("❌ " + result.message);
+			if (window.sessionStorage.getItem("currentTournamentId"))
+				window.sessionStorage.removeItem("currentTournamentId");
+			backToDefaultPage();
+		} catch (err) {
+			console.error("Error handling tournament error:", err);
+			alertBoxMsg("❌ An unknown error occurred.");
+			backToDefaultPage();
+		}
+	});
+
 	socket.emit("tournament:retrieve", { tournamentId: CONTEXT.tournamentId });
 
 	socket.on("tournament:sessionData", (data: unknown): void => {
+		console.log("tournament:sessionData received:", data);
 		if (!data) {
 			alertBoxMsg(`❌ Tournament session data could not be retrieved !`);
 			if (window.sessionStorage.getItem("currentTournamentId"))
@@ -184,9 +200,14 @@ export function retrieveSessionData(): void {
 				if (!CONTEXT.tournamentId)
 					CONTEXT.tournamentId = result.tournamentId;
 				const nextMatch = findNextReadyMatch(result.tournament);
+				console.log("Next match found:", nextMatch);
 				if (nextMatch) {
 					CONTEXT.leftName = nextMatch.player1;
 					CONTEXT.rightName = nextMatch.player2;
+					if (nextMatch.player1)
+						document.getElementById("LeftPlayer")!.textContent = nextMatch.player1;
+					if (nextMatch.player2)
+						document.getElementById("RightPlayer")!.textContent = nextMatch.player2;
 				}
 				console.log("Tournament session data retrieved successfully.");
 			} catch (err) {

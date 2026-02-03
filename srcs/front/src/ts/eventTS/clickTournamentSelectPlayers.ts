@@ -67,9 +67,8 @@ export async function startTournament(expectedCount: number, event: Event): Prom
 
 	socket.once("tournament:error", (message: unknown) => {
 		try {
-			messageSchema.validateSync(message);
-			console.error("Tournament creation error.");
-			alertBoxMsg("❌ Tournament creation error occurred");
+			const result = messageSchema.validateSync(message);
+			alertBoxMsg("❌ " + result.message);
 			if (window.sessionStorage.getItem("currentTournamentId"))
 				window.sessionStorage.removeItem("currentTournamentId");
 			backToDefaultPage();
