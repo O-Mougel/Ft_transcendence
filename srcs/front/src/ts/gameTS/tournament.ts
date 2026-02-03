@@ -72,115 +72,268 @@ export function initTournament(): void {
 	}
 
 	if (socket) {
-		socket.off("tournament:state");
-		socket.on("tournament:state", (data: unknown): void => {
-			try {
-				window.sessionStorage.setItem("tournamentEnded", "false");
-				const stateData = data as TournamentStateData;
-				const result = tournamentStateSchema.validateSync(stateData) as TournamentStateData;
-				if (result.tournamentId !== tournamentId) return;
-				if (result.tournament.status === "finished") {
-					if (nextMatchBtn)
-						nextMatchBtn.style.display = "none";
-					nextMatchBtn?.remove();
-					window.sessionStorage.setItem("tournamentEnded", "true");
-					// window.sessionStorage.removeItem("currentTournamentId");
-				}
-				renderTournament(result.tournament);
-				const nextMatch = findNextReadyMatch(result.tournament);
-				if (nextMatch) {
-					CONTEXT.leftName = nextMatch.player1;
-					CONTEXT.rightName = nextMatch.player2;
-				}
-			}
-			catch (err) {
-				alertBoxMsg("❌ Tournament state error occurred");
-				if (sessionStorage.getItem("currentTournamentId"))
-					sessionStorage.removeItem("currentTournamentId");
-				backToDefaultPage();
-			}
-		});
+		if (!socket) {
+			alertBoxMsg("❌ Disconnected from server !");
+			backToDefaultPage();
+			return;
+		}
 
-		socket.off("match:started");
-		socket.on("match:started", (data: unknown): void => {
-			try {
-				const info = matchStartedSchema.validateSync(data) as MatchStartedData;
-				if (info.tournamentId && info.tournamentId !== tournamentId) return;
+		// socket.off("tournament:state");
+		// socket.on("tournament:state", (data: unknown): void => {
+		// 	try {
+		// 		window.sessionStorage.setItem("tournamentEnded", "false");
+		// 		const stateData = data as TournamentStateData;
+		// 		const result = tournamentStateSchema.validateSync(stateData) as TournamentStateData;
+		// 		if (result.tournamentId !== tournamentId) return;
+		// 		if (result.tournament.status === "finished") {
+		// 			if (nextMatchBtn)
+		// 				nextMatchBtn.style.display = "none";
+		// 			nextMatchBtn?.remove();
+		// 			window.sessionStorage.setItem("tournamentEnded", "true");
+		// 			// window.sessionStorage.removeItem("currentTournamentId");
+		// 		}
+		// 		renderTournament(result.tournament);
+		// 		const nextMatch = findNextReadyMatch(result.tournament);
+		// 		if (nextMatch) {
+		// 			CONTEXT.leftName = nextMatch.player1;
+		// 			CONTEXT.rightName = nextMatch.player2;
+		// 		}
+		// 	}
+		// 	catch (err) {
+		// 		alertBoxMsg("❌ Tournament state error occurred");
+		// 		if (sessionStorage.getItem("currentTournamentId"))
+		// 			sessionStorage.removeItem("currentTournamentId");
+		// 		backToDefaultPage();
+		// 	}
+		// });
+		tournamentStateSetup(socket, tournamentId, nextMatchBtn);
+
+		// socket.off("match:started");
+		// socket.on("match:started", (data: unknown): void => {
+		// 	try {
+		// 		const info = matchStartedSchema.validateSync(data) as MatchStartedData;
+		// 		if (info.tournamentId && info.tournamentId !== tournamentId) return;
 	
-				CONTEXT.gameId = info.gameId;
-				CONTEXT.leftName = info.player1;
-				CONTEXT.rightName = info.player2;
-				CONTEXT.gameMode = 1;
-				CONTEXT.tournamentId = tournamentId;
-			}
-			catch (err) {
-				console.error("Invalid match started data received:", err, data);
-				alertBoxMsg("❌ Match start error");
-				backToDefaultPage();
-			}
-		});
+		// 		CONTEXT.gameId = info.gameId;
+		// 		CONTEXT.leftName = info.player1;
+		// 		CONTEXT.rightName = info.player2;
+		// 		CONTEXT.gameMode = 1;
+		// 		CONTEXT.tournamentId = tournamentId;
+		// 	}
+		// 	catch (err) {
+		// 		console.error("Invalid match started data received:", err, data);
+		// 		alertBoxMsg("❌ Match start error");
+		// 		backToDefaultPage();
+		// 	}
+		// });
+		matchStartedSetup(socket, tournamentId);
 
 		// Tournament ended
-		socket.off("tournament:ended");
-		socket.on("tournament:ended", (data: unknown): void => {
-			try {
-				const endData = tournamentEndedSchema.validateSync(data) as TournamentEndedData;
-				if (endData.tournamentId !== tournamentId) return;
-				console.log("Tournament ended, winner:", endData.winner);
-				window.sessionStorage.setItem("tournamentEnded", "true");
-			}
-			catch (err) {
-				console.error("Invalid tournament ended data received:", err, data);
-				alertBoxMsg("❌ Tournament end error occurred");
-			}
-		});
+		// socket.off("tournament:ended");
+		// socket.on("tournament:ended", (data: unknown): void => {
+		// 	try {
+		// 		const endData = tournamentEndedSchema.validateSync(data) as TournamentEndedData;
+		// 		if (endData.tournamentId !== tournamentId) return;
+		// 		console.log("Tournament ended, winner:", endData.winner);
+		// 		window.sessionStorage.setItem("tournamentEnded", "true");
+		// 	}
+		// 	catch (err) {
+		// 		console.error("Invalid tournament ended data received:", err, data);
+		// 		alertBoxMsg("❌ Tournament end error occurred");
+		// 	}
+		// });
+		tournamentEndedSetup(socket, tournamentId);
 
-		socket.off("tournament:error");
-		socket.on("tournament:error", (message: unknown) => {
-			try {
-				const result = messageSchema.validateSync(message);
-				if (result.message === "A match is already in progress") {
-					console.error("Tournament error:", result);
-					alertBoxMsg("❌ " + result.message);
-					window.history.replaceState(null, "", "/tournament");
-					return;
-				}
-				const statusEl = document.getElementById("tournamentStatus");
-				if (statusEl) statusEl.textContent = `Error: ${result}`;
-				// console.error("Tournament error:", result);
-				alertBoxMsg("❌ " + (result.message || "Tournament error occurred"));
-				window.sessionStorage.setItem("tournamentEnded", "true");
-				if (window.sessionStorage.getItem("currentTournamentId"))
-						window.sessionStorage.removeItem("currentTournamentId"); // if error in back, tournament deleted, so we remove it
-				backToTournamentPage();
-			}
-			catch (err) {
-				console.error("Invalid tournament error data received:", err);
-				alertBoxMsg("❌ Tournament creation error occurred");
-				// if (sessionStorage.getItem("currentTournamentId"))
-				// 	sessionStorage.removeItem("currentTournamentId");
-				backToDefaultPage();
-			}
-		});
+		// socket.off("tournament:error");
+		// socket.on("tournament:error", (message: unknown) => {
+		// 	try {
+		// 		const result = messageSchema.validateSync(message);
+		// 		if (result.message === "A match is already in progress") {
+		// 			console.error("Tournament error:", result);
+		// 			alertBoxMsg("❌ " + result.message);
+		// 			window.history.replaceState(null, "", "/tournament");
+		// 			return;
+		// 		}
+		// 		const statusEl = document.getElementById("tournamentStatus");
+		// 		if (statusEl) statusEl.textContent = `Error: ${result}`;
+		// 		// console.error("Tournament error:", result);
+		// 		alertBoxMsg("❌ " + (result.message || "Tournament error occurred"));
+		// 		window.sessionStorage.setItem("tournamentEnded", "true");
+		// 		if (window.sessionStorage.getItem("currentTournamentId"))
+		// 				window.sessionStorage.removeItem("currentTournamentId"); // if error in back, tournament deleted, so we remove it
+		// 		backToTournamentPage();
+		// 	}
+		// 	catch (err) {
+		// 		console.error("Invalid tournament error data received:", err);
+		// 		alertBoxMsg("❌ Tournament creation error occurred");
+		// 		// if (sessionStorage.getItem("currentTournamentId"))
+		// 		// 	sessionStorage.removeItem("currentTournamentId");
+		// 		backToDefaultPage();
+		// 	}
+		// });
+		tournamentErrorSetup(socket);
 
-		socket.off("tournament:duplicate");
-		socket.on("tournament:duplicate", (data) => {
-			try {
-				const result = messageSchema.validateSync(data);
-				console.error("Tournament duplicate error:", result);
-				alertBoxMsg("❌ " + (result.message || "There is already a tournament ongoing."));
-				history.pushState(null, "", "/tournament");
-			}
-			catch (err) {
-				console.error("Invalid tournament duplicate data received:", err, data);
-				alertBoxMsg("❌ Duplicate tournament join attempt.");
-				backToDefaultPage();
-				// window.history.replaceState({}, "", "/");
-			}
-		});
+		// socket.off("tournament:duplicate");
+		// socket.on("tournament:duplicate", (data) => {
+		// 	try {
+		// 		const result = messageSchema.validateSync(data);
+		// 		console.error("Tournament duplicate error:", result);
+		// 		alertBoxMsg("❌ " + (result.message || "There is already a tournament ongoing."));
+		// 		history.pushState(null, "", "/tournament");
+		// 	}
+		// 	catch (err) {
+		// 		console.error("Invalid tournament duplicate data received:", err, data);
+		// 		alertBoxMsg("❌ Duplicate tournament join attempt.");
+		// 		backToDefaultPage();
+		// 		// window.history.replaceState({}, "", "/");
+		// 	}
+		// });
+		tournamentDuplicateSetup(socket);
 
 		socket.emit("tournament:getState", { tournamentId });
 	}
+}
+
+function tournamentStateSetup(socket: ReturnType<typeof getSocket>, tournamentId: string, nextMatchBtn: HTMLButtonElement | null): void {
+	if (!socket) {
+		alertBoxMsg("❌ Disconnected from server !");
+		backToDefaultPage();
+		return;
+	}
+
+	socket.off("tournament:state");
+	socket.on("tournament:state", (data: unknown): void => {
+		try {
+			window.sessionStorage.setItem("tournamentEnded", "false");
+			const stateData = data as TournamentStateData;
+			const result = tournamentStateSchema.validateSync(stateData) as TournamentStateData;
+			if (result.tournamentId !== tournamentId) return;
+			if (result.tournament.status === "finished") {
+				if (nextMatchBtn)
+					nextMatchBtn.style.display = "none";
+				nextMatchBtn?.remove();
+				window.sessionStorage.setItem("tournamentEnded", "true");
+				// window.sessionStorage.removeItem("currentTournamentId");
+			}
+			renderTournament(result.tournament);
+			const nextMatch = findNextReadyMatch(result.tournament);
+			if (nextMatch) {
+				CONTEXT.leftName = nextMatch.player1;
+				CONTEXT.rightName = nextMatch.player2;
+			}
+		}
+		catch (err) {
+			alertBoxMsg("❌ Tournament state error occurred");
+			if (sessionStorage.getItem("currentTournamentId"))
+				sessionStorage.removeItem("currentTournamentId");
+			backToDefaultPage();
+		}
+	});
+}
+
+function matchStartedSetup(socket: ReturnType<typeof getSocket>, tournamentId: string): void {
+	if (!socket) {
+		alertBoxMsg("❌ Disconnected from server !");
+		backToDefaultPage();
+		return;
+	}
+	socket.off("match:started");
+	socket.on("match:started", (data: unknown): void => {
+		try {
+			const info = matchStartedSchema.validateSync(data) as MatchStartedData;
+			if (info.tournamentId && info.tournamentId !== tournamentId) return;
+
+			CONTEXT.gameId = info.gameId;
+			CONTEXT.leftName = info.player1;
+			CONTEXT.rightName = info.player2;
+			CONTEXT.gameMode = 1;
+			CONTEXT.tournamentId = tournamentId;
+		}
+		catch (err) {
+			console.error("Invalid match started data received:", err, data);
+			alertBoxMsg("❌ Match start error");
+			backToDefaultPage();
+		}
+	});
+}
+
+function tournamentEndedSetup(socket: ReturnType<typeof getSocket>, tournamentId: string): void {
+	if (!socket) {
+		alertBoxMsg("❌ Disconnected from server !");
+		backToDefaultPage();
+		return;
+	}
+	socket.off("tournament:ended");
+	socket.on("tournament:ended", (data: unknown): void => {
+		try {
+			const endData = tournamentEndedSchema.validateSync(data) as TournamentEndedData;
+			if (endData.tournamentId !== tournamentId) return;
+			console.log("Tournament ended, winner:", endData.winner);
+			window.sessionStorage.setItem("tournamentEnded", "true");
+		}
+		catch (err) {
+			console.error("Invalid tournament ended data received:", err, data);
+			alertBoxMsg("❌ Tournament end error occurred");
+		}
+	});
+}
+
+function tournamentErrorSetup(socket: ReturnType<typeof getSocket>): void {
+	if (!socket) {
+		alertBoxMsg("❌ Disconnected from server !");
+		backToDefaultPage();
+		return;
+	}
+	socket.off("tournament:error");
+	socket.on("tournament:error", (message: unknown) => {
+		try {
+			const result = messageSchema.validateSync(message);
+			if (result.message === "A match is already in progress") {
+				console.error("Tournament error:", result);
+				alertBoxMsg("❌ " + result.message);
+				window.history.replaceState(null, "", "/tournament");
+				return;
+			}
+			const statusEl = document.getElementById("tournamentStatus");
+			if (statusEl) statusEl.textContent = `Error: ${result}`;
+			// console.error("Tournament error:", result);
+			alertBoxMsg("❌ " + (result.message || "Tournament error occurred"));
+			window.sessionStorage.setItem("tournamentEnded", "true");
+			if (window.sessionStorage.getItem("currentTournamentId"))
+					window.sessionStorage.removeItem("currentTournamentId"); // if error in back, tournament deleted, so we remove it
+			backToTournamentPage();
+		}
+		catch (err) {
+			console.error("Invalid tournament error data received:", err);
+			alertBoxMsg("❌ Tournament creation error occurred");
+			// if (sessionStorage.getItem("currentTournamentId"))
+			// 	sessionStorage.removeItem("currentTournamentId");
+			backToDefaultPage();
+		}
+	});
+}
+
+function tournamentDuplicateSetup(socket: ReturnType<typeof getSocket>): void {
+	if (!socket) {
+		alertBoxMsg("❌ Disconnected from server !");
+		backToDefaultPage();
+		return;
+	}
+	socket.off("tournament:duplicate");
+	socket.on("tournament:duplicate", (data) => {
+		try {
+			const result = messageSchema.validateSync(data);
+			console.error("Tournament duplicate error:", result);
+			alertBoxMsg("❌ " + (result.message || "There is already a tournament ongoing."));
+			history.pushState(null, "", "/tournament");
+		}
+		catch (err) {
+			console.error("Invalid tournament duplicate data received:", err, data);
+			alertBoxMsg("❌ Duplicate tournament join attempt.");
+			backToDefaultPage();
+			// window.history.replaceState({}, "", "/");
+		}
+	});
 }
 
 function extractTournamentId(): string | null {

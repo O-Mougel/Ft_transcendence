@@ -38,10 +38,45 @@ function handleKeyUp(e: KeyboardEvent): void {
 }
 
 function updateDirections(): void {
-  const { keysPressed, leftPaddle, rightPaddle, leftPaddle2, rightPaddle2 } = CONTEXT;
+  if (CONTEXT.gameMode === 2) {
+    const { keysPressed, leftPaddle, rightPaddle, leftPaddle2, rightPaddle2 } = CONTEXT;
+    
+    if (!leftPaddle || !rightPaddle || !leftPaddle2 || !rightPaddle2) return;
 
+    const state: { right: PaddleDirection; left: PaddleDirection; right2: PaddleDirection; left2: PaddleDirection } = { right: rightPaddle.direction, left: leftPaddle.direction, right2: rightPaddle2.direction, left2: leftPaddle2.direction };
+
+    // Left paddle: W/S
+    const w = keysPressed.has("w") || keysPressed.has("W");
+    const s = keysPressed.has("s") || keysPressed.has("S");
+    if (w && !s) leftPaddle.direction = "up";
+    else if (s && !w) leftPaddle.direction = "down";
+    else leftPaddle.direction = "none";
+
+    // Left paddle 2: O/L
+    const o = keysPressed.has("o") || keysPressed.has("O");
+    const l = keysPressed.has("l") || keysPressed.has("L");
+    if (o && !l) leftPaddle2.direction = "up";
+    else if (l && !o) leftPaddle2.direction = "down";
+    else leftPaddle2.direction = "none";
+
+    // Right paddle 2: 6/3
+    if (keysPressed.has("6") && !keysPressed.has("3")) rightPaddle.direction = "up";
+    else if (keysPressed.has("3") && !keysPressed.has("6")) rightPaddle.direction = "down";
+    else rightPaddle.direction = "none";
+
+    // Right paddle: arrow keys
+    if (keysPressed.has("ArrowUp") && !keysPressed.has("ArrowDown")) rightPaddle2.direction = "up";
+    else if (keysPressed.has("ArrowDown") && !keysPressed.has("ArrowUp")) rightPaddle2.direction = "down";
+    else rightPaddle2.direction = "none";
+
+    if (state.left !== leftPaddle.direction || state.right !== rightPaddle.direction || state.left2 !== leftPaddle2.direction || state.right2 !== rightPaddle2.direction) 
+      updateGameState();
+    return;
+  }
+
+  const { keysPressed, leftPaddle, rightPaddle } = CONTEXT;
+  
   if (!leftPaddle || !rightPaddle) return;
-
   const state: { right: PaddleDirection; left: PaddleDirection } = { right: rightPaddle.direction, left: leftPaddle.direction };
 
   // Right paddle or Right paddle2: arrow keys
@@ -49,10 +84,6 @@ function updateDirections(): void {
     if (keysPressed.has("ArrowUp") && !keysPressed.has("ArrowDown")) rightPaddle.direction = "up";
     else if (keysPressed.has("ArrowDown") && !keysPressed.has("ArrowUp")) rightPaddle.direction = "down";
     else rightPaddle.direction = "none";
-  } else if (CONTEXT.gameMode === 2 && rightPaddle2) {
-    if (keysPressed.has("ArrowUp") && !keysPressed.has("ArrowDown")) rightPaddle2.direction = "up";
-    else if (keysPressed.has("ArrowDown") && !keysPressed.has("ArrowUp")) rightPaddle2.direction = "down";
-    else rightPaddle2.direction = "none";
   }
 
   // Left paddle: W/S
@@ -62,28 +93,6 @@ function updateDirections(): void {
   else if (s && !w) leftPaddle.direction = "down";
   else leftPaddle.direction = "none";
 
-  if (state.left !== leftPaddle.direction || state.right !== rightPaddle.direction) updateGameState();
-  updateGameState();
-
-
-  if (CONTEXT.gameMode !== 2) return;
-
-  if (!leftPaddle2 || !rightPaddle2) return;
-
-  const state2: { right: PaddleDirection; left: PaddleDirection } = { right: rightPaddle2.direction, left: leftPaddle2.direction };
-
-  // Left paddle 2: O/L
-  const o = keysPressed.has("o") || keysPressed.has("O");
-  const l = keysPressed.has("l") || keysPressed.has("L");
-  if (o && !l) leftPaddle2.direction = "up";
-  else if (l && !o) leftPaddle2.direction = "down";
-  else leftPaddle2.direction = "none";
-
-  // Right paddle in 2vs2: 6/3
-  if (keysPressed.has("6") && !keysPressed.has("3")) rightPaddle.direction = "up";
-  else if (keysPressed.has("3") && !keysPressed.has("6")) rightPaddle.direction = "down";
-  else rightPaddle.direction = "none";
-
-  if (state2.left !== leftPaddle2.direction || state2.right !== rightPaddle2.direction) updateGameState();
-  updateGameState();
+  if (state.left !== leftPaddle.direction || state.right !== rightPaddle.direction) 
+    updateGameState();
 }

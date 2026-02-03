@@ -196,10 +196,12 @@ export function emitStopGame(): void {
 export function emitNextMatch(tournamentId: string | null): void {
 	if (!isSocketConnected() || !socket) {
 		console.log("Cannot start next match: Not connected to server");
+		backToDefaultPage();
 		return;
 	}
 	if (!tournamentId) {
 		console.log("Cannot start next match: No tournament ID provided");
+		backToDefaultPage();
 		return;
 	}
 	socket.emit("tournament:nextMatch", { tournamentId });
