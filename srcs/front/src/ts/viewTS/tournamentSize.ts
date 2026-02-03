@@ -59,8 +59,9 @@ export default class TournamentSizeView extends ViewTemplate {
 						</div>
 					</div>
 					<div id="tournamentBuiltBlock" class="hidden w-[80%] mx-auto">
-						<form id="tournamentForm" class="mt-[5vw]">
-						</form>
+						<h1 class="">Choose your nickname (optional) :</h1>
+						<div id="playerFieldsDiv">
+						</div>
 					</div>
 				</div>
 			</div>`;
