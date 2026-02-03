@@ -1,5 +1,5 @@
 import { startSchema, movementSchema, tournamentCreateSchema, tournamentGetStateSchema, tournamentNextMatchSchema, tournamentLeaveSchema, sessionRetrieveSchema } from "./schemaZod.js";
-import { DISCONNECT_GRACE_PERIOD } from "./config.js";
+// import { DISCONNECT_GRACE_PERIOD } from "./config.js";
 
 function generateGameId() {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;

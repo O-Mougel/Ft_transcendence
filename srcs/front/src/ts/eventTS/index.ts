@@ -575,6 +575,7 @@ const hideProfileButtons = (): void => {
 };
 
 const newtabRelogFetch = async (): Promise<void> => {
+	
 	try {
 		const newTabrefreshTokenResponse = await fetch('/login/refresh', {
 			credentials: 'include',
@@ -597,6 +598,7 @@ const newtabRelogFetch = async (): Promise<void> => {
 			throw new Error(`Token could not be generated !`);
 		}
 	} catch (err) {
+		console.info("You could not be automatically relogged, sign-in again !");
 		window.sessionStorage.setItem('logStatus', 'loggedOut');
 	}
 };
@@ -659,9 +661,10 @@ export const adjustNavbar = async (path: string): Promise<void> => {
 
 const attemptAutolog = async (): Promise<void> => {
 
-	// console.info("Should i autolog ? ", localStorage.getItem("allowAutolog"));
 	if (sessionStorage.getItem('pagehide') !== 'pageshouldreload' && localStorage.getItem("allowAutolog") == "true")
+	{
 		await newtabRelogFetch();
+	}
 	
 	if (sessionStorage.getItem('logStatus') && sessionStorage.getItem('logStatus') == "loggedOut")
 		return (await router());

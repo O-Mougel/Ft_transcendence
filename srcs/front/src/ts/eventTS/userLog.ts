@@ -2,6 +2,7 @@ import startingFile from "../viewTS/startingFile.js";
 import { setupSocketCommunication, closeSocketCommunication }  from "./userSocket.js";
 import { goTo2faLogin } from "./2FAEvent.js";
 import { adjustNavbar, router } from "./index.js";
+import {getSocket } from "../gameTS/socket.js";
 import type {
 	FriendAcceptData,
 	FriendRejectData,
@@ -552,6 +553,14 @@ export const displayUserFriends = async (): Promise<void> => {
 		if (result)
 		{	
 			friendList.innerHTML = '';
+			if (result.friends.length == 0)
+			{
+				let listItem = document.createElement("li");
+				listItem.className = 'py-2 flex items-center justify-between ml-5';
+				listItem.innerHTML = `<span class="text-sm lg:text-2xl w-full p-2 mb-2" name="NofriendSpan">No friends added !</span>`;
+				friendList.appendChild(listItem);
+				return;
+			}
 			for(let i = 0; i < result.friends.length; i++) 
 			{
 				let listItem = document.createElement("li");
@@ -626,6 +635,21 @@ window.grabProfileInfo = async function (): Promise<void> {
 }
 
 
+window.handleCheck = async function (): Promise<void> {
+	
+	const checkbox = document.getElementById('friendCheck') as HTMLInputElement | null;
+	const checkboxText = document.getElementById('friendCheckText') as HTMLInputElement | null;
+	
+	if(!checkbox || !checkboxText)
+		return ;
+	if (!checkbox.checked)
+		checkboxText.textContent = "➤ Friend list";
+	else
+		checkboxText.textContent = "⌄ Friend list";
+
+
+}
+
 window.sendNewFriendRequest = async function (event): Promise<void> {
 	event.preventDefault();
 	const friendReqInput = document.getElementById('friendSearchInput') as HTMLInputElement | null;
@@ -694,6 +718,16 @@ export async function logoutUser(): Promise<void> {
 			alertBoxMsg("✅ You are now logged out");
 			window.sessionStorage.setItem('logStatus', 'loggedOut');
 			window.sessionStorage.setItem('access_token', 'userSelfLogoutToken');
+			if (window.sessionStorage.getItem('currentTournamentId'))
+			{
+				const socket = getSocket();
+				if (socket)
+				{
+					const tournamentId = window.sessionStorage.getItem('currentTournamentId')
+					socket.emit("tournament:leave", { tournamentId })
+				}
+				window.sessionStorage.removeItem('currentTournamentId');
+			}
 			window.localStorage.setItem('allowAutolog','false');
 			window.localStorage.setItem('delogAllOthers','true');
 			closeSocketCommunication(); // to check for error
@@ -760,10 +794,6 @@ window.handleNewUserCreate = async function (event: Event): Promise<void> {
 	{
 		if (await fetchErrcodeHandler(err as Error) == 0)
 			return(window.handleNewUserCreate(event));
-		// username.value = "";
-		// email.value = "";
-		// password.value = "";
-		// passwordConfirm.value = "";
 		console.error('Could not create new user !\n => ', err);
 		displayCorrectErrMsg(err as Error);
 	}
@@ -812,6 +842,7 @@ window.handleLoginClick = async function (event: Event): Promise<void> {
 			username.value = "";
 			password.value = "";
 			
+			window.sessionStorage.removeItem('currentTournamentId');
 			if (result.require2fa == true)
 			{
 				window.sessionStorage.setItem('temp_token',result.token);
