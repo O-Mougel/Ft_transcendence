@@ -212,6 +212,9 @@ window.backToTournamentPage = function (): void {
 };
 
 window.validatePlayerNameFields = function (nbPlayers: number, event: Event): void {
+	
+	const resultFieldTournament = document.getElementById('resultFieldTournament') as HTMLElement | null;
+
 	for (let i = 1; i <= nbPlayers; i++) {
 		const currentInput = document.getElementById(`player${i}`) as HTMLInputElement | null;
 		if (currentInput) {
@@ -219,7 +222,6 @@ window.validatePlayerNameFields = function (nbPlayers: number, event: Event): vo
 				currentInput.value = currentInput.placeholder;
 			if (currentInput.value.length > 13) {
 				currentInput.focus();
-				const resultFieldTournament = document.getElementById('resultFieldTournament') as HTMLElement | null;
 				if (resultFieldTournament) {
 					resultFieldTournament.classList.remove('hidden');
 					resultFieldTournament.textContent = "❌ Player names must be at most 13 characters.";
@@ -228,7 +230,6 @@ window.validatePlayerNameFields = function (nbPlayers: number, event: Event): vo
 			}
 			else if (currentInput.value.length < 3) {
 				currentInput.focus();
-				const resultFieldTournament = document.getElementById('resultFieldTournament') as HTMLElement | null;
 				if (resultFieldTournament) {
 					resultFieldTournament.classList.remove('hidden');
 					resultFieldTournament.textContent = "❌ Player names must be at least 3 characters.";
@@ -237,7 +238,6 @@ window.validatePlayerNameFields = function (nbPlayers: number, event: Event): vo
 			}
 			else if (!/^[A-Za-z0-9_]+$/.test(currentInput.value)) {
 				currentInput.focus();
-				const resultFieldTournament = document.getElementById('resultFieldTournament') as HTMLElement | null;
 				if (resultFieldTournament) {
 					resultFieldTournament.classList.remove('hidden');
 					resultFieldTournament.textContent = "❌ Player names can only contain letters, numbers and underscores.";
@@ -257,11 +257,12 @@ window.createCustomTournamentPage = async function (nbPlayers: number): Promise<
 		return;
 	const tournamentNbPlayerSelect = document.getElementById('tournamentNbPlayerSelect') as HTMLElement | null;
 	const tournamentBuiltBlock = document.getElementById('tournamentBuiltBlock') as HTMLElement | null;
-	if (!tournamentBuiltBlock || !tournamentNbPlayerSelect) return;
+	const playerFieldsDiv = document.getElementById('playerFieldsDiv') as HTMLElement | null;
+	if (!tournamentBuiltBlock || !tournamentNbPlayerSelect || !playerFieldsDiv) return;
 
 	tournamentNbPlayerSelect.style.display = "none";
 	tournamentBuiltBlock.style.display = "block";
-	tournamentBuiltBlock.innerHTML = "";
+	playerFieldsDiv.innerHTML = "";
 	let loggedPlayerName;
 	try 
 	{
@@ -283,20 +284,25 @@ window.createCustomTournamentPage = async function (nbPlayers: number): Promise<
 		loggedPlayerName = "";
 	}
 
-	const listItem = document.createElement("input");
+	const nicknameDiv = document.createElement("div");
+	const nicknameInput = document.createElement("input");
+	const otherPlayersHeader = document.createElement("h1");
 	if (loggedPlayerName)
-		listItem.setAttribute('placeholder', loggedPlayerName);
+		nicknameInput.setAttribute('placeholder', loggedPlayerName);
 	else
-		listItem.setAttribute('placeholder', "Player_1");
-	listItem.setAttribute('id', "player1");
-	listItem.setAttribute('tabindex', `1`);
-	listItem.setAttribute('type', 'text');
-	listItem.setAttribute('autocomplete', 'off');
-	listItem.setAttribute('oninput', "this.value = this.value.replace(/[^A-Za-z0-9_]/g,'').slice(0,13)");
-	listItem.className = 'pb-2 w-[40%] mt-[1vw] ml-4 pl-5 mx-auto hover:text-[#98c6f8] focus:outline-none focus:border-[#fc035e] hover:border-[#fc035e]-[35px] rounded-sm border border-[#fc035e]';
-	listItem.setAttribute('autofocus', 'true');
-	tournamentBuiltBlock.appendChild(listItem);
-
+		nicknameInput.setAttribute('placeholder', "Player_1");
+	nicknameInput.setAttribute('id', "player1");
+	nicknameInput.setAttribute('tabindex', `1`);
+	nicknameInput.setAttribute('type', 'text');
+	nicknameInput.setAttribute('autocomplete', 'off');
+	nicknameInput.setAttribute('oninput', "this.value = this.value.replace(/[^A-Za-z0-9_]/g,'').slice(0,13)");
+	nicknameInput.className = 'pb-2 w-[40%] mt-[1vw] ml-4 pl-5 mx-auto hover:text-[#98c6f8] focus:outline-none hover:border-[#3e64fa]-[35px] rounded-sm border border-[#3e64fa]';
+	nicknameInput.setAttribute('autofocus', 'true');
+	nicknameDiv.appendChild(nicknameInput);
+	otherPlayersHeader.textContent = "Other participants names :"
+	otherPlayersHeader.className = "mt-5"
+	playerFieldsDiv.appendChild(nicknameDiv);
+	playerFieldsDiv.appendChild(otherPlayersHeader);
 
 	let i: number;
 	for (i = 2; i <= nbPlayers; i++) {
@@ -308,19 +314,19 @@ window.createCustomTournamentPage = async function (nbPlayers: number): Promise<
 		listItem.setAttribute('autocomplete', 'off');
 		listItem.setAttribute('oninput', "this.value = this.value.replace(/[^A-Za-z0-9_]/g,'').slice(0,13)");
 		listItem.className = 'pb-2 w-[40%] mt-[1vw] ml-4 pl-5 mx-auto hover:text-[#98c6f8] focus:outline-none focus:border-[#98c6f8] hover:border-[#98c6f8]-[35px] rounded-sm border border-[#c2dbf6]';
-		tournamentBuiltBlock.appendChild(listItem);
+		playerFieldsDiv.appendChild(listItem);
 	}
 
-	const usernameInputDiv = document.createElement("div");
-	usernameInputDiv.className = "mt-5";
-	usernameInputDiv.innerHTML = `<input tabindex=\"${i}\" class=\"shadow-[0_0_20px_rgba(158,202,237,0.9)] w-[20vw] mt-[1vw] h-[4vw] focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] border hover:border-[#98c6f8] border-white rounded-lg \" name=\"start4Players\" type=\"submit\" value=\"Start\" onclick=\"validatePlayerNameFields(${nbPlayers} ,event)\">`;
-	tournamentBuiltBlock.appendChild(usernameInputDiv);
+	const startTournamentBtnDiv = document.createElement("div");
+	startTournamentBtnDiv.className = "mt-5";
+	startTournamentBtnDiv.innerHTML = `<input tabindex=\"${i}\" class=\"shadow-[0_0_20px_rgba(158,202,237,0.9)] w-[20vw] mt-[1vw] h-[4vw] focus:outline-none focus:border-[#98c6f8] hover:text-[#98c6f8] border hover:border-[#98c6f8] border-white rounded-lg \" name=\"validatePlayerNameDiv\" type=\"submit\" value=\"Start\" onclick=\"validatePlayerNameFields(${nbPlayers} ,event)\">`;
+	playerFieldsDiv.appendChild(startTournamentBtnDiv);
 
 	const resultTextDiv = document.createElement("div");
 	resultTextDiv.setAttribute('id', 'resultFieldTournament');
 	resultTextDiv.className = "text-[#e85b51] mt-4 text-center w-[60%] mx-auto hidden";
 	resultTextDiv.textContent = "Player names must be between 3 and 13 characters and can only contain letters, numbers and underscores.";
-	tournamentBuiltBlock.appendChild(resultTextDiv);
+	playerFieldsDiv.appendChild(resultTextDiv);
 };
 
 window.spinMeAround = function (): void {
