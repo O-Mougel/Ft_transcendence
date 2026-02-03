@@ -220,12 +220,13 @@ export async function check2faHandler(request, reply) {
 
 export async function refreshTokenHandler(request, reply) {
 	const token = request.cookies.refresh_token;
-	if (!token) return reply.status(403).send({ message: 'Refresh_token cookie is missing !' })
+	if (!token)
+		return reply.status(403).send({ message: 'Refresh_token cookie is missing !' })
 
 	const stored = await findToken(token)
 	
 	if (!stored) {
-		return reply.status(403).send({ message: "Invalid refresh_token !" });
+		return reply.status(403).send({ message: "Invalid refresh_token ! Log-in again !" });
 	}
 	
 	const now = Date.now()
