@@ -56,9 +56,9 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
   
         socket.emit("game:started", { gameId } );
       }
-      catch (e) {
-        console.error("game:start error:", e);
-        socket.emit("game:error", { message: e.message || "Invalid start data" });
+      catch (err) {
+        console.error("game:start error:", err);
+        socket.emit("game:error", { message: err.message || "Invalid start data" });
       }
     });
 
@@ -79,9 +79,9 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
   
         manager.updatePaddle(gameId, result.paddle, result.direction);
       }
-      catch (e) {
-        console.error("game:move error:", e);
-        socket.emit("game:error", { message: e.message || "Invalid movement data" });
+      catch (err) {
+        console.error("game:move error:", err);
+        socket.emit("game:error", { message: err.message || "Invalid movement data" });
       }
     });
 
@@ -120,8 +120,8 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         const tournament = tournamentManager.getTournament(tournamentId);
         if (!tournament) throw new Error("Tournament not found after creation");
         socket.emit("tournament:state", { tournamentId, tournament });
-      } catch (e) {
-        console.error("tournament:create error: ", e.message);
+      } catch (err) {
+        console.error("tournament:create error: ", err.message);
         socket.emit("tournament:error", { message: "Can't create tournament" });
       }
     });
@@ -142,8 +142,8 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         }
         socket.emit("tournament:state", { tournamentId, tournament });
       }
-      catch (e) {
-        console.error("tournament:getState error: ", e.message);
+      catch (err) {
+        console.error("tournament:getState error: ", err.message);
         socket.emit("tournament:error", { message: "Can't access tournament" });
       }
     });
@@ -175,9 +175,9 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         socket.emit("match:started", info);
         
         socket.emit("tournament:state", { tournamentId, tournament });
-      } catch (e) {
-        console.log("tournament:nextMatch error: ", e.message);
-        socket.emit("tournament:error", { message: e.message || "Can't access next match" });
+      } catch (err) {
+        console.log("tournament:nextMatch error: ", err.message);
+        socket.emit("tournament:error", { message: err.message || "Can't access next match" });
       }
     });
 
@@ -194,8 +194,8 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
             socket.emit("tournament:error", { message: "Tournament not found" });
           }
         }
-      } catch (e) {
-        console.error("session:retrieve error: ", e.message);
+      } catch (err) {
+        console.error("session:retrieve error: ", err.message);
         socket.emit("tournament:error", { message: "Session retrieve error" });
       }
     });
@@ -214,8 +214,8 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         socket.data.tournamentId = null;
         console.log("Tournament deleted: ", tournamentId);
       }
-      catch (e) {
-        console.error("tournament:leave error: ", e.message);
+      catch (err) {
+        console.error("tournament:leave error: ", err.message);
         socket.emit("tournament:error", { message: "Failed to leave tournament" });
         if (socket.data.tournamentId && !tournamentManager.deleteTournament(socket.data.tournamentId, socket))
           console.error("Failed to delete tournament on leave");
