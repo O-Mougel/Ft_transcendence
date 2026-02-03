@@ -726,7 +726,8 @@ export async function logoutUser(): Promise<void> {
 					const tournamentId = window.sessionStorage.getItem('currentTournamentId')
 					socket.emit("tournament:leave", { tournamentId })
 				}
-				window.sessionStorage.removeItem('currentTournamentId');
+				if (window.sessionStorage.getItem('currentTournamentId'))
+					window.sessionStorage.removeItem('currentTournamentId');
 			}
 			window.localStorage.setItem('allowAutolog','false');
 			window.localStorage.setItem('delogAllOthers','true');
