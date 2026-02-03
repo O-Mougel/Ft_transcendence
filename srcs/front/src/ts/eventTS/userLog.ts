@@ -842,7 +842,10 @@ window.handleLoginClick = async function (event: Event): Promise<void> {
 			username.value = "";
 			password.value = "";
 			
-			window.sessionStorage.removeItem('currentTournamentId');
+			if (window.sessionStorage.getItem('currentTournamentId'))
+				window.sessionStorage.removeItem('currentTournamentId');
+			if (window.sessionStorage.getItem('player2_token'))
+				window.sessionStorage.removeItem('player2_token');
 			if (result.require2fa == true)
 			{
 				window.sessionStorage.setItem('temp_token',result.token);
