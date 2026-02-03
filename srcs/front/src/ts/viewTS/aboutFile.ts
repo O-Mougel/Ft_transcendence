@@ -52,7 +52,7 @@ export default class AboutFileView extends ViewTemplate {
 				</div>
 				<h1 class="flex items-start text-amber-50">✦ Which framework was used ?</h1>
 				<div class="flex items-start w-full py-5 mb-4">
-					<h2 class="text-left w-full wrap-break-words text-[#44494f] pl-12">For the backend, we used Fastify and NodeJS for the framework.</h2>
+					<h2 class="text-left w-full wrap-break-words text-[#44494f] pl-12">For the backend, we used Fastify and Node.JS for the framework.</h2>
 				</div>
 				<h1 class="flex items-start text-amber-50">✦ What about the database ?</h1>
 				<div class="flex items-start w-full py-5 mb-4">
