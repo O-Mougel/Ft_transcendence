@@ -73,7 +73,7 @@ export class AIPlayer {
         predictedY = 2 * bottomLimit - predictedY;
     }
 
-	predictedY = Math.round(predictedY); // Round to nearest integer for consistency
+	predictedY = Math.round(predictedY);
     return predictedY;
   }
 }
