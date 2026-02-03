@@ -356,6 +356,7 @@ export class Game {
   }
 
   stop() {
+    console.log('Game stopped id:', this.id);
     this.isGameStarted = false;
     this.reset();
     this.startTime = null;
