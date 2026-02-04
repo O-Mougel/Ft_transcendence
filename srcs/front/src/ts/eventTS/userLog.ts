@@ -53,7 +53,6 @@ export const displayCorrectErrMsg = async (error: Error | string): Promise<void>
 	}
 	let errstr = error.toString().substring(index);	
 	let key = errstr.substring(errstr.indexOf(":") + 2,errstr.indexOf("}") - 1);
-	// console.log("Isolated error is : (",key,")");
 
 	switch (key) {
 		case "authBearerMissing":
@@ -514,8 +513,7 @@ export	const checkForFriendRequests = async (): Promise<void> => {
 				listItem.setAttribute('name', clearName);
 				const jsonString = JSON.stringify(result.requestOf[i].name);
 				const safeName = jsonString.replace(/['"]+/g, '');
-				// console.log("Safe name is : ", safeName);
-				// console.log(" name is : ", result.requestOf[i].name);
+
 				listItem.innerHTML = `
 				<span class="text-sm lg:text-2xl">↪ ${safeName}</span>
 				<span class="flex items-center gap-2">

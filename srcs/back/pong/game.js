@@ -258,7 +258,7 @@ export class Game {
     const maxY = paddle.y + paddle.height + r;
 
 
-    if (x0 >= minX && x0 <= maxX && y0 >= minY && y0 <= maxY) return false; // i=If ball starts inside paddle, ignore collision
+    if (x0 >= minX && x0 <= maxX && y0 >= minY && y0 <= maxY) return false; // if ball starts inside paddle, ignore collision
 
     const hit = this.sweepSphereAABB(x0, y0, vx, vy, minX, minY, maxX, maxY);
     if (!hit) return false;

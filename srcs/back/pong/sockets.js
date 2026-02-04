@@ -112,10 +112,7 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
           socket.data.gameId = null;
         }
 
-        // If a tournament is already ongoing for this socket, delete it first
         if (socket.data.tournamentId) {
-          // console.log("User already in a tournament:", socket.data.tournamentId);
-          // return;
           tournamentManager.deleteTournament(socket.data.tournamentId, socket);
           socket.data.tournamentId = null;
         }

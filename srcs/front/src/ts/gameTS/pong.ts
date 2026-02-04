@@ -48,7 +48,6 @@ export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 
 	// initial size and keep responsive on resize
 	resizeCanvasToElement();
-	// window.addEventListener("resize", resizeCanvasToElement);
 	
 	createGameElements();
 	if (!setupSocket())
@@ -89,10 +88,6 @@ export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 
 	if (CONTEXT.tournamentId && window.location.href.includes("/pongTournament") && CONTEXT.backButton) {
 		CONTEXT.backButton.classList.remove("hidden");
-		// CONTEXT.backButton.onclick = (): void => {
-		// 	window.history.pushState(null, "", `/tournament`);
-		// 	router();
-		// };
 	}
 
 	draw();
