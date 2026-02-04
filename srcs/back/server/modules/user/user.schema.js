@@ -61,7 +61,7 @@ export const infoGrabResponseSchema = z.object({
 });
 
 export const editPasswordSchema = z.object({
-	oldpassword: z.string().min(1),
+	oldpassword: z.string().min(1).max(32, "Password cannot be longer than 32 characters"),
 	newpassword: z.string().min(8, "Password must be at least 8 character long").max(32, "Password cannot be longer than 32 characters").regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain at least 1 uppercase, 1 lowercase, 1 number and a special character"),
 	newpasswordconfirmation: z.string().min(8, "Password must be at least 8 character long").max(32, "Password cannot be longer than 32 characters").regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, "Password must contain at least 1 uppercase, 1 lowercase, 1 number and a special character"),
 })

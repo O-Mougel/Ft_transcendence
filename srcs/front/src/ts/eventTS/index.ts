@@ -706,7 +706,7 @@ const attemptAutolog = async (): Promise<void> => {
 			window.sessionStorage.setItem('logStatus', 'loggedOut');
 			window.sessionStorage.setItem('access_token', 'userSelfLogoutToken');
 			window.localStorage.setItem('allowAutolog','false');
-			return backToDefaultPage();
+			return await backToDefaultPage();
 		}
 	}
 	await router();

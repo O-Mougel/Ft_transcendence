@@ -202,7 +202,7 @@ export const fetchErrcodeHandler = async (error: Error | string): Promise<number
 	if(isNotAuth || isMalformed || isSelfLogout || tokenNoRefresh || InvalidSocket)
 	{
 		window.sessionStorage.setItem('logStatus', 'loggedOut');
-		backToDefaultPage();
+		await backToDefaultPage();
 		return (-1);
 	}
 	else if (isExpired)
@@ -216,7 +216,7 @@ export const fetchErrcodeHandler = async (error: Error | string): Promise<number
 			{
 				window.sessionStorage.setItem('logStatus', 'loggedOut');
 				console.log("No tries left ! backToDefaultPage !");
-				backToDefaultPage();
+				await backToDefaultPage();
 				return (-1);
 			}
 			window.sessionStorage.setItem('nbReloadsLeft', String(reloadCpt - 1));
@@ -248,7 +248,7 @@ export const fetchErrcodeHandler = async (error: Error | string): Promise<number
 			console.error("⚠️ Could not refresh tokens ... please log back in !"); //is this enough ?
 			window.sessionStorage.setItem('logStatus', 'loggedOut');
 			window.sessionStorage.setItem('access_token', 'tokenNoRefresh');
-			backToDefaultPage();
+			await backToDefaultPage();
 			return (-1);
 		}
 		return (0);
@@ -732,7 +732,7 @@ export async function logoutUser(): Promise<void> {
 			window.localStorage.setItem('allowAutolog','false');
 			window.localStorage.setItem('delogAllOthers','true');
 			closeSocketCommunication(); // to check for error
-			backToDefaultPage();
+			await backToDefaultPage();
 		}
 	} 
 	catch (err) 
@@ -788,7 +788,7 @@ window.handleNewUserCreate = async function (event: Event): Promise<void> {
 			if (!setupSocketCommunication())
 					throw new Error(`Request failed: 401 ${JSON.stringify({ message: "Socket creation failed", errRef: "socketCreationFailed" })}`);
 			alertBoxMsg(`Welcome ${data.name} ! 😉`);
-			backToDefaultPage();
+			await backToDefaultPage();
 		}
 	} 
 	catch (err) 
@@ -873,7 +873,7 @@ window.handleLoginClick = async function (event: Event): Promise<void> {
 			return(window.handleLoginClick(event));
 		username.value = "";
 		password.value = "";
-		console.error('Login error !\n => ', err);
+		console.error('Failed to log-in !\n');
 		username.focus();
 		displayCorrectErrMsg(err as Error);
 	}
@@ -905,6 +905,14 @@ window.updateUserPassword = async function (event: Event): Promise<void> {
 			confirmNewPassword.value = '';
 			return ;
 		}
+		if (newPassword.value.length > 32)
+		{
+			requestResult.innerText = "❌ Password cannot be longer than 32 characters !";
+			newPassword.focus();
+			newPassword.value = '';
+			confirmNewPassword.value = '';
+			return ;
+		}
 		else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(newPassword.value))
 		{
 			requestResult.innerText = "❌ Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character !";
@@ -915,7 +923,7 @@ window.updateUserPassword = async function (event: Event): Promise<void> {
 		}
 		if (newPassword.value !== confirmNewPassword.value)
 		{
-			requestResult.innerText = "❌ New passwords do not match !";
+			requestResult.innerText = "❌ Passwords do not match !";
 			newPassword.value = '';
 			confirmNewPassword.value = '';
 			newPassword.focus();

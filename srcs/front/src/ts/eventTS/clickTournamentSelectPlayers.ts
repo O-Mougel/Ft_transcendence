@@ -35,7 +35,7 @@ export async function startTournament(expectedCount: number, event: Event): Prom
 	const socket = setupSocket();
 	if (!socket) {
 		alertBoxMsg("❌ Unable to establish socket connection");
-		backToDefaultPage();
+		await backToDefaultPage();
 		return;
 	}
 
