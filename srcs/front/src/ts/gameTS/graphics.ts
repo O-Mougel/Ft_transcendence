@@ -79,7 +79,6 @@ export function resetState(): void {
 }
 
 export function printGameOver(data: GameOverData): void {
-	console.log("printGameOver called with data:", data);
 	const { left, right } = data;
 	let { winner } = data;
 	const gameOverDiv = document.getElementById("GameOver");

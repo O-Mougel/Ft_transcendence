@@ -149,39 +149,6 @@ export default class PongView extends ViewTemplate {
 			alertBoxMsg("❌ No tournament found !");
 			return await backToDefaultPage();
 		}
-		// const socket = getSocket();
-		// if (!socket) {
-		// 	alertBoxMsg("❌ Reloading the page during a tournament is not allowed !");
-		// 	return backToDefaultPage();
-		// }
-		// socket.emit("tournament:retrieve", { tournamentId: CONTEXT.tournamentId });
-
-		// socket.on("tournament:sessionData", (data: unknown): void => {
-		// 	if (!data) {
-		// 		alertBoxMsg(`❌ Tournament session data could not be retrieved !`);
-		// 		if (window.sessionStorage.getItem("currentTournamentId"))
-		// 			window.sessionStorage.removeItem("currentTournamentId");
-		// 		backToDefaultPage();
-		// 		return ;
-		// 	}
-		// 	else {
-		// 		try {
-		// 			const result = tournamentStateSchema.validateSync(data) as TournamentStateData;
-		// 			if (!CONTEXT.tournamentId)
-		// 				CONTEXT.tournamentId = result.tournamentId;
-		// 			const nextMatch = findNextReadyMatch(result.tournament);
-		// 			if (nextMatch) {
-		// 				CONTEXT.leftName = nextMatch.player1;
-		// 				CONTEXT.rightName = nextMatch.player2;
-		// 			}
-		// 			console.log("Tournament session data retrieved successfully.");
-		// 		} catch (err) {
-		// 			console.error("Error validating tournament session data:", err, data);
-		// 			alertBoxMsg("❌ Error validating tournament session data.");
-		// 			backToDefaultPage();
-		// 		}
-		// 	}
-		// });
 		retrieveSessionData();
 
 		if (typeof module.initPong === "function")

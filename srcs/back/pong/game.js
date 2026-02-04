@@ -126,7 +126,6 @@ export class Game {
   }
 
   incrementBallSpeed(side) {
-    console.log('Ball speed: ', this.ball.speed);
     if (side !== this.ball.lastSidePossession) { // only increase speed if the ball bounces on the opposite side paddle
       if (this.ball.speed < MAX_BALL_SPEED) {
         this.incrementNbExchanges();
@@ -258,7 +257,7 @@ export class Game {
     const maxY = paddle.y + paddle.height + r;
 
 
-    if (x0 >= minX && x0 <= maxX && y0 >= minY && y0 <= maxY) return false; // i=If ball starts inside paddle, ignore collision
+    if (x0 >= minX && x0 <= maxX && y0 >= minY && y0 <= maxY) return false; // if ball starts inside paddle, ignore collision
 
     const hit = this.sweepSphereAABB(x0, y0, vx, vy, minX, minY, maxX, maxY);
     if (!hit) return false;
@@ -347,7 +346,6 @@ export class Game {
     if (this.tournamentId)
       this.tournamentRound = getTournamentRound(data?.tournament);
     const gameMode = ["AI", "2 Players", "4 Players", "Ranked"];
-    console.log('Game started', gameMode[data.mode], " id:", this.id);
     if (this.mode === 0) {
       this.AIPlayer = new AIPlayer(this.rightPaddle, this.leftPaddle, this);
     }
@@ -356,7 +354,6 @@ export class Game {
   }
 
   stop() {
-    console.log('Game stopped id:', this.id);
     this.isGameStarted = false;
     this.reset();
     this.startTime = null;
