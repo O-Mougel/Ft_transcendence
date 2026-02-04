@@ -86,7 +86,7 @@ export async function loginHandler(request, reply) {
 	const user = await findUserByName(request.name);
 
 	if (!user) {
-		return reply.status(404).send({
+		return reply.status(401).send({
 			message: "User does not exist ! Try again!",
 			errRef:"loginInvalidName"
 		});
@@ -135,7 +135,7 @@ export async function loginMatchHandler(request, reply) {
 	const user = await findUserByName(body.name);
 
 	if (!user) {
-		return reply.status(404).send({
+		return reply.status(401).send({
 			message: "Invalid name. Try again!",
 			errRef:"loginMatchUserNotFound"
 		});

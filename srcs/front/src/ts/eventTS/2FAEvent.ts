@@ -39,7 +39,7 @@ window.showQRCode = async function (event: Event): Promise<void> {
 	} catch (err) {
 		if (await fetchErrcodeHandler(err as Error) === 0)
 			return window.showQRCode(event);
-		console.error('Failed to activate 2FA!\n => ', err);
+		console.error('Failed to activate 2FA!\n');
 		displayCorrectErrMsg(err as Error);
 	}
 };
@@ -67,7 +67,7 @@ window.disable2FA = async function (): Promise<void> {
 	} catch (err) {
 		if (await fetchErrcodeHandler(err as Error) === 0)
 			return window.disable2FA();
-		console.error('Failed to disable 2FA!\n => ', err);
+		console.error('Failed to disable 2FA!\n');
 		displayCorrectErrMsg(err as Error);
 	}
 }
@@ -113,7 +113,7 @@ window.validate2FACode = async function (event: Event): Promise<void> {
 	} catch (err) {
 		if (await fetchErrcodeHandler(err as Error) === 0)
 			return window.validate2FACode(event);
-		console.error('Failed to activate 2FA!\n => ', err);
+		console.error('Failed to activate 2FA!\n');
 		displayCorrectErrMsg(err as Error);
 	}
 }
@@ -163,7 +163,8 @@ window.loginWith2FACode = async function (event: Event): Promise<void> {
 	} catch (err) {
 		if (await fetchErrcodeHandler(err as Error) === 0)
 			return window.loginWith2FACode(event);
-		console.error('Failed to log with 2FA!\n => ', err);
+		console.error('Failed to log with 2FA!\n');
+		alertBoxMsg("❌ Failed to log-in using 2FA !");
 	}
 }
 
@@ -232,6 +233,7 @@ window.player2TwoFAValidation = async function (event: Event): Promise<void> {
 	} catch (err) {
 		if (await fetchErrcodeHandler(err as Error) === 0)
 			return window.player2TwoFAValidation(event);
-		console.error('Failed to validate 2FA!\n => ', err);
+		console.error('Failed to validate 2FA!\n');
+		alertBoxMsg("❌ Failed to validate 2FA !");
 	}
 }

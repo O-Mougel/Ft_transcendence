@@ -6,29 +6,29 @@ const interpretSocketMsg = async (socketMsgType: string): Promise<void> => {
 
 	switch (socketMsgType) {
 		case "friend_presence":
-			console.info("A friend updated their log status, reloading..");
+			// console.info("A friend updated their log status, reloading..");
 			displayUserFriends();
 			break;
 		case "friend:update":
-			console.info("A friend was added to the list, reloading..");
+			// console.info("A friend was added to the list, reloading..");
 			alertBoxMsg("✅ A new friend has been added to your friends list !");
 			displayUserFriends();
 			checkForFriendRequests();
 			break;
 		case "delete:update":
-			console.info("A friend was deleted, reloading..");
+			// console.info("A friend was deleted, reloading..");
 			displayUserFriends();
 			break;
 		case "request:update":
-			console.info("You got a new friend request !");
+			// console.info("You got a new friend request !");
 			checkForFriendRequests();
 			break;
 		case "reject:update":
-			console.info("Request rejected.");
+			// console.info("Request rejected.");
 			checkForFriendRequests();
 			break;
 		case "user:alter":
-			console.info("A friend update his profile");
+			// console.info("A friend updated his profile");
 			displayUserFriends();
 			checkForFriendRequests();
 			break;
