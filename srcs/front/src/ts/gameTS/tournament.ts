@@ -1,6 +1,5 @@
 import { CONTEXT } from "./context.js";
 import { setupSocket, getSocket } from "./socket.js";
-// import type { Socket } from '../types/socket.types';
 import type { Tournament, TournamentStateData, MatchStartedData, TournamentEndedData } from '../types/socket.types';
 import { tournamentStateSchema, matchStartedSchema, tournamentEndedSchema, messageSchema } from "./schemaYup.js";
 import { alertBoxMsg, backToDefaultPage } from "../eventTS/userLog.js";
@@ -29,7 +28,6 @@ export function initTournament(): void {
 
 	if (quitBtn && socket) {
 		quitBtn.onclick = (): void => {
-			console.log("Leaving tournament:", tournamentId);
 			if (window.sessionStorage.getItem("currentTournamentId"))
 				sessionStorage.removeItem("currentTournamentId");
 			window.sessionStorage.setItem("tournamentEnded", "true");
@@ -50,7 +48,6 @@ export function initTournament(): void {
 		} else {
 			CONTEXT.tournamentId = tournamentId;
 			nextMatchBtn.onclick = (): void => {
-				console.log("Presenting next match in tournament:", tournamentId);
 				window.history.pushState(null, "", "/pongTournament");
 				router();
 			};
@@ -97,7 +94,6 @@ function tournamentStateSetup(socket: ReturnType<typeof getSocket>, tournamentId
 					nextMatchBtn.style.display = "none";
 				nextMatchBtn?.remove();
 				window.sessionStorage.setItem("tournamentEnded", "true");
-				// window.sessionStorage.removeItem("currentTournamentId");
 			}
 			renderTournament(result.tournament);
 			const nextMatch = findNextReadyMatch(result.tournament);
@@ -152,7 +148,6 @@ function tournamentEndedSetup(socket: ReturnType<typeof getSocket>, tournamentId
 		try {
 			const endData = tournamentEndedSchema.validateSync(data) as TournamentEndedData;
 			if (endData.tournamentId !== tournamentId) return;
-			console.log("Tournament ended, winner:", endData.winner);
 			window.sessionStorage.setItem("tournamentEnded", "true");
 		}
 		catch (err) {
@@ -185,7 +180,7 @@ function tournamentErrorSetup(socket: ReturnType<typeof getSocket>): void {
 			alertBoxMsg("❌ " + (result.message));
 			window.sessionStorage.setItem("tournamentEnded", "true");
 			if (window.sessionStorage.getItem("currentTournamentId"))
-					window.sessionStorage.removeItem("currentTournamentId"); // if error in back, tournament deleted, so we remove it
+				window.sessionStorage.removeItem("currentTournamentId");
 			backToDefaultPage();
 		}
 		catch (err) {

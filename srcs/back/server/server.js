@@ -204,7 +204,7 @@ async function main() {
         console.log("Server listening at http://localhost:3000");
         
     } catch (error) {
-        console.error(error);
+        console.error("Fastify error: ", error);
         process.exit(1);
     }
 }

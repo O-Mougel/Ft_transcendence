@@ -1,4 +1,3 @@
-import { time } from "console";
 import { TOURNAMENT_TIMEOUT } from "./config.js";
 
 function generateTournamentId() {
@@ -92,7 +91,6 @@ export class TournamentManager {
     const loweredNames = cleanedArray.map(n => n.toLowerCase());
     if (new Set(loweredNames).size !== loweredNames.length) throw new Error("Names must be unique");
 
-    // if lower than 3 or greater than 13 or contain invalid chars
     for (const name of cleanedArray) {
       if (name.length < 3 || name.length > 13 || !/^[a-zA-Z0-9_]+$/.test(name)) {
         throw new Error("Names must be 3-13 characters long and contain only letters, numbers, and underscores");
@@ -222,7 +220,6 @@ export class TournamentManager {
   }
 
   deleteTournament(tournamentId) {
-    console.log("Deleting tournament:", tournamentId);
     const tournament = this.tournaments.get(tournamentId);
     if (!tournament) return false;
 

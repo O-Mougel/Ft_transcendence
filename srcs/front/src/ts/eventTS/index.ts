@@ -63,10 +63,6 @@ const loadURL = (url: string): void => {
 	router();
 };
 
-// const refreshProfile = (): void => {
-// 	console.log("Tick tick tick ...");
-// };
-
 window.confirmFriendRemoval = async (): Promise<void> => {
 	const friendRemover2000 = document.getElementById("selectBoxFriendRemover") as HTMLSelectElement | null;
 
@@ -659,7 +655,6 @@ export const adjustNavbar = async (path: string): Promise<void> => {
 		hideProfileButtons();
 		grabCustomizationPageInfo();
 	} else if (path === "/profileStats") {
-		// hideProfileButtons();
 		grabUserStatsAndInfo();
 	} else if (path === "/setup2FA") {
 		hideProfileButtons();
