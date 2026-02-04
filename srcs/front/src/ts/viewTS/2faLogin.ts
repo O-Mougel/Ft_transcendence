@@ -27,7 +27,7 @@ export default class TwoFALoginView extends ViewTemplate {
 		if (!sessionStorage.getItem("temp_token"))
 		{
 			alertBoxMsg("❌ You are not allowed to be here !");
-			return backToDefaultPage();
+			return await backToDefaultPage();
 		}
 	}
 }

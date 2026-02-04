@@ -91,7 +91,7 @@ window.addEventListener('storage', async (event) => {
 			window.sessionStorage.setItem('access_token', 'userSelfLogoutToken');
 			window.localStorage.setItem('allowAutolog','false');
 			console.info("You logged out in another tab !");
-			backToDefaultPage();
+			await backToDefaultPage();
 		}
 	}
 });
