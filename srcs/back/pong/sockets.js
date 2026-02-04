@@ -14,6 +14,7 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
     console.log("User connected, socket id: ", socket.id);
 
     const limiter = messageRateLimits.get(socket.id);
+    const count = 0;
 
     socket.use((packet, next) => {
       if (!limiter) return next();
@@ -25,13 +26,15 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
       console.log(`Socket ${socket.id} message count: ${limiter.count}`);
       if (++limiter.count > 500) {
         console.warn(`High message rate for ${socket.id}`);
+        count++;
         return;
       }
-      if (limiter.count > 8000) {
+      if (limiter.count > 8000 || count > 5) {
         console.warn(`Rate limit exceeded for ${socket.id}`);
         socket.disconnect();
         return;
       }
+      count = 0;
       next();
     });
 
