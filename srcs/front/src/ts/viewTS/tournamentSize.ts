@@ -69,9 +69,6 @@ export default class TournamentSizeView extends ViewTemplate {
 	
 	async init(): Promise<void> {
 		if (window.sessionStorage.getItem("currentTournamentId"))
-		{
-			console.info("Tournament going on !", window.sessionStorage.getItem("currentTournamentId"));
 			alterTournamentSelectPage();
-		}
 	}
 }

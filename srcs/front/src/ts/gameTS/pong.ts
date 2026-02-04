@@ -48,7 +48,6 @@ export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 
 	// initial size and keep responsive on resize
 	resizeCanvasToElement();
-	// window.addEventListener("resize", resizeCanvasToElement);
 	
 	createGameElements();
 	if (!setupSocket())
@@ -89,10 +88,6 @@ export function initPong(mode: GameInitOptions = { mode: 0 }): void {
 
 	if (CONTEXT.tournamentId && window.location.href.includes("/pongTournament") && CONTEXT.backButton) {
 		CONTEXT.backButton.classList.remove("hidden");
-		// CONTEXT.backButton.onclick = (): void => {
-		// 	window.history.pushState(null, "", `/tournament`);
-		// 	router();
-		// };
 	}
 
 	draw();
@@ -136,8 +131,6 @@ export function updateGameScene(data: GameStateData): void {
 function startGame(): void {
 	if (!isSocketConnected())
 		return;
-
-	console.log("Game Started");
 
 	waitStartGame();
 	resetState();
@@ -186,7 +179,6 @@ export function retrieveSessionData(): void {
 	socket.emit("tournament:retrieve", { tournamentId: CONTEXT.tournamentId });
 
 	socket.on("tournament:sessionData", (data: unknown): void => {
-		console.log("tournament:sessionData received:", data);
 		if (!data) {
 			alertBoxMsg(`❌ Tournament session data could not be retrieved !`);
 			if (window.sessionStorage.getItem("currentTournamentId"))
@@ -200,7 +192,6 @@ export function retrieveSessionData(): void {
 				if (!CONTEXT.tournamentId)
 					CONTEXT.tournamentId = result.tournamentId;
 				const nextMatch = findNextReadyMatch(result.tournament);
-				console.log("Next match found:", nextMatch);
 				if (nextMatch) {
 					CONTEXT.leftName = nextMatch.player1;
 					CONTEXT.rightName = nextMatch.player2;
@@ -209,7 +200,6 @@ export function retrieveSessionData(): void {
 					if (nextMatch.player2)
 						document.getElementById("RightPlayer")!.textContent = nextMatch.player2;
 				}
-				console.log("Tournament session data retrieved successfully.");
 			} catch (err) {
 				console.error("Error validating tournament session data:", err, data);
 				alertBoxMsg("❌ Error validating tournament session data.");

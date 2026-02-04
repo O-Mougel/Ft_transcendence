@@ -7,10 +7,8 @@ function generateGameId() {
 export function registerSocketHandlers(io, manager, tournamentManager, messageRateLimits) {
   io.on("connection", (socket) => {
     if (socket.recovered) {
-      console.log(`Socket reconnected: ${socket.id}`);
       return;
     }
-    console.log("New socket connection established");
     console.log("User connected, socket id: ", socket.id);
 
     const limiter = messageRateLimits.get(socket.id);
@@ -112,10 +110,7 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
           socket.data.gameId = null;
         }
 
-        // If a tournament is already ongoing for this socket, delete it first
         if (socket.data.tournamentId) {
-          // console.log("User already in a tournament:", socket.data.tournamentId);
-          // return;
           tournamentManager.deleteTournament(socket.data.tournamentId, socket);
           socket.data.tournamentId = null;
         }
@@ -194,7 +189,7 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         
         socket.emit("tournament:state", { tournamentId, tournament });
       } catch (err) {
-        console.log("tournament:nextMatch error: ", err.message);
+        console.error("tournament:nextMatch error: ", err.message);
         if (err.errors && err.errors.length > 0)
           socket.emit("game:error", { message: err.errors[0].message || "Invalid data" });
         else
@@ -235,7 +230,6 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
           throw new Error("Failed to delete tournament on leave");
         }
         socket.data.tournamentId = null;
-        console.log("Tournament deleted: ", tournamentId);
       }
       catch (err) {
         console.error("tournament:leave error: ", err.message);

@@ -3,7 +3,6 @@ import { CONTEXT } from "./context.js";
 import type { GameOverData } from '../types/game.types';
 
 export function handleGameStopped(): void {
-	console.log("Game Stopped by server");
 	CONTEXT.isGameStarted = false;
 	CONTEXT.gameId = null;
 	document.body.style.overflow = "auto";

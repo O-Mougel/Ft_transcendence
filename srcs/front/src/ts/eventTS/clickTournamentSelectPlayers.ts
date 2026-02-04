@@ -53,13 +53,10 @@ export async function startTournament(expectedCount: number, event: Event): Prom
 		return;
 	}
 
-	console.log("Creating tournament with players:", names);
-
 	socket.emit("tournament:create", { size: expectedCount, names });
 
 	socket.once("tournament:state", (data: unknown) => {
 		const { tournamentId } = data as TournamentStateEvent;
-		console.log("Tournament created with ID:", tournamentId);
 		sessionStorage.setItem("currentTournamentId", tournamentId);
 		window.history.pushState(null, "", `/tournament`);
 		router();

@@ -5,7 +5,6 @@ import { updateGameScene } from "./pong.js";
 import { alertBoxMsg, backToDefaultPage, fetchErrcodeHandler } from "../eventTS/userLog.js";
 import type { GameStateData, GameStartedData, Socket as SocketType } from '../types/socket.types';
 import type { GameOverData } from '../types/game.types';
-// import Paddle from "./paddle.js";
 import { gameStateSchema, gameOverSchema, gameStartedSchema, reasonSchema, errorSchema, messageSchema } from "./schemaYup.js";
 
 let socket: SocketType | null = null;
@@ -35,13 +34,9 @@ export function setupSocket(): SocketType | null {
 	});
 
 	socket.on("disconnect", (reason: unknown) => {
-		
-		console.info("Socket detected a disconnect !");
 		try {
 			const result = reasonSchema.validateSync({ reason });
 			console.log("WebSocket disconnected:", result);
-			// if (sessionStorage.getItem("currentTournamentId"))
-				// sessionStorage.removeItem("currentTournamentId");
 		}
 		catch (err) {
 			console.error("Error parsing disconnect reason:", err);
@@ -142,7 +137,6 @@ export async function waitStartGame(): Promise<void> {
 		if (!socket) return;
 
 		if (CONTEXT.gameMode === 0) {
-			console.log("Starting single-player game against AI opponent");
 			socket.emit("game:start", {
 				mode: 0,
 				player1Token: tokenP1,
@@ -174,7 +168,7 @@ export async function waitStartGame(): Promise<void> {
 		socket.once("game:started", ( id: unknown) => {
 			try {
 				const result = gameStartedSchema.validateSync(id) as GameStartedData;
-				console.log("Game started with data:", result);
+				CONTEXT.gameId = result.gameId;
 			}
 			catch (err) {
 				console.error("Error handling game started:", err);
@@ -183,8 +177,8 @@ export async function waitStartGame(): Promise<void> {
 	} catch (err) {
 		if (await fetchErrcodeHandler(err as Error) === 0)
 					return waitStartGame();
-		console.error('Couldn\'t start beacause of invalid profile info!');
-		alertBoxMsg("⚠️ Couldn\'t start game, invalid profile info!");
+		console.error('Couldn\'t start game\n', err);
+		alertBoxMsg("⚠️ Couldn\'t start game!");
 		backToDefaultPage();
 	}
 }
@@ -233,7 +227,6 @@ export function updateGameState(): void {
 
 export function handleEscapeKey(): void {
 	if (!isSocketConnected() || !socket) {
-		console.log("Cannot stop game: Not connected to server");
 		return;
 	}
 	if (!CONTEXT.isGameStarted || window.location.href.includes("/pongTournament")) return;
