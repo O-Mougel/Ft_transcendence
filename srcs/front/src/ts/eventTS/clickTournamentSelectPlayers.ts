@@ -1,4 +1,4 @@
-import { setupSocket, getSocket } from "../gameTS/socket.js";
+import { setupSocket } from "../gameTS/socket.js";
 import { alertBoxMsg, backToDefaultPage } from "./userLog.js";
 import { messageSchema } from "../gameTS/schemaYup.js";
 import { router } from "./index.js";

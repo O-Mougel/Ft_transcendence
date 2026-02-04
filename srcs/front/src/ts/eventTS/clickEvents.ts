@@ -1,6 +1,5 @@
 import { fetchErrcodeHandler, alertBoxMsg, displayCorrectErrMsg, backToDefaultPage } from "./userLog.js";
 import { closeSocketCommunication } from "./userSocket.js";
-import { router } from "./index.js";
 import { startTournament } from "./clickTournamentSelectPlayers.js";
 import type { FileUploadResponse, ProfileEditData } from "../types/api.types";
 import { CONTEXT } from "../gameTS/context.js";
