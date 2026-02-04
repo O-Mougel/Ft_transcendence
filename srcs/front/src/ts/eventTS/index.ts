@@ -102,7 +102,7 @@ window.confirmFriendRemoval = async (): Promise<void> => {
 	} catch (err) {
 		if (await fetchErrcodeHandler(err as Error) === 0)
 			return window.confirmFriendRemoval();
-		console.error('⚠️ Couldn\'t delete selected friend !\n => ', err);
+		console.error('⚠️ Couldn\'t delete selected friend !\n');
 		displayCorrectErrMsg(err as Error);
 	}
 };
@@ -138,9 +138,9 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 	if (!winLossDoughnutChart || !winRatioBar || !multiChart || !noMatchesMessage) return;
 
 	
-	if (Chart.getChart(winLossChart)) { try {	(Chart.getChart(winLossChart)).destroy(); } catch(err) {console.log("Could not destroy !", err)} winLossChart = null;}
-	if (Chart.getChart(winRatioChart)) { try { (Chart.getChart(winRatioChart)).destroy(); } catch(err) {console.log("Could not destroy !", err)} winRatioChart = null; }
-	if (Chart.getChart(multiChartObject)) { try { (Chart.getChart(multiChartObject)).destroy(); } catch(err) {console.log("Could not destroy !", err)} multiChartObject = null; }
+	if (Chart.getChart(winLossChart)) { try {	(Chart.getChart(winLossChart)).destroy(); } catch(err) {console.log("Could not destroy Chart!", err)} winLossChart = null;}
+	if (Chart.getChart(winRatioChart)) { try { (Chart.getChart(winRatioChart)).destroy(); } catch(err) {console.log("Could not destroy Chart!", err)} winRatioChart = null; }
+	if (Chart.getChart(multiChartObject)) { try { (Chart.getChart(multiChartObject)).destroy(); } catch(err) {console.log("Could not destroy Chart!", err)} multiChartObject = null; }
 
 	try {
 		const loggedUserStatsRequestResponse = await fetch('/match/self', {
@@ -239,7 +239,8 @@ window.grabLoggedUserStats = async (): Promise<void> => {
 	} catch (err) {
 		if (await fetchErrcodeHandler(err as Error) === 0)
 			return window.grabLoggedUserStats();
-		console.error('⚠️ Couldn\'t fetch logged user stats !\n => ', err);
+		console.error('⚠️ Couldn\'t fetch logged user stats !\n');
+		alertBoxMsg('⚠️ Couldn\'t fetch logged user stats !');
 	}
 };
 
@@ -364,7 +365,8 @@ window.fetchPlayerStats = async (playerId: string, playerUsername: string): Prom
 	} catch (err) {
 		if (await fetchErrcodeHandler(err as Error) === 0)
 			return window.fetchPlayerStats(playerId, playerUsername);
-		console.error('⚠️ Couldn\'t fetch user stats in profileStat!\n => ', err);
+		console.error('⚠️ Couldn\'t fetch user stats in profileStat!\n');
+		alertBoxMsg('⚠️ Couldn\'t fetch user stats in profileStat!');
 	}
 };
 
@@ -407,7 +409,7 @@ export const show2FAStatus = async (): Promise<void> => {
 	} catch (err) {
 		if (await fetchErrcodeHandler(err as Error) === 0)
 			return show2FAStatus();
-		console.error('⚠️ Failed to display 2FA status!\n => ', err);
+		console.error('⚠️ Failed to display 2FA status!\n');
 	}
 };
 
@@ -455,7 +457,8 @@ const createFriendsStatLink = async (): Promise<void> => {
 	} catch (err) {
 		if (await fetchErrcodeHandler(err as Error) === 0)
 			return createFriendsStatLink();
-		console.error('⚠️ Couldn\'t recover user friendlist!\n => ', err);
+		console.error('⚠️ Couldn\'t recover user friendlist!\n');
+		alertBoxMsg('⚠️ Couldn\'t recover user friendlist!\n');
 	}
 };
 
@@ -495,7 +498,8 @@ const grabUserStatsAndInfo = async (): Promise<void> => {
 	} catch (err) {
 		if (await fetchErrcodeHandler(err as Error) === 0)
 			return grabUserStatsAndInfo();
-		console.error('⚠️ Couldn\'t display user profile !\n => ', err);
+		console.error('⚠️ Couldn\'t display user profile !\n');
+		alertBoxMsg('⚠️ Couldn\'t display user profile !\n');
 	}
 	createFriendsStatLink();
 };
@@ -529,7 +533,8 @@ const grabCustomizationPageInfo = async (): Promise<void> => {
 	} catch (err) {
 		if (await fetchErrcodeHandler(err as Error) === 0)
 			return grabCustomizationPageInfo();
-		console.error('⚠️ Couldn\'t grab user info!\n => ', err);
+		console.error('⚠️ Couldn\'t grab user info!\n');
+		alertBoxMsg('⚠️ Couldn\'t grab user info!\n');
 	}
 };
 
