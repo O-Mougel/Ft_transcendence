@@ -14,7 +14,7 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
     console.log("User connected, socket id: ", socket.id);
 
     const limiter = messageRateLimits.get(socket.id);
-    const count = 0;
+    let count = 0;
 
     socket.use((packet, next) => {
       if (!limiter) return next();
@@ -23,7 +23,6 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         limiter.count = 0;
         limiter.resetAt = now + 1000;
       }
-      console.log(`Socket ${socket.id} message count: ${limiter.count}`);
       if (++limiter.count > 500) {
         console.warn(`High message rate for ${socket.id}`);
         count++;
@@ -43,7 +42,7 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
       const gameId = socket.data.gameId;
       if (gameId) {
         if (tournamentManager.isGameInTournament(gameId))
-			tournamentManager.onGameStopped(gameId);
+			    tournamentManager.onGameStopped(gameId);
         manager.leaveGame(gameId, socket);
         socket.data.gameId = null;
       }
@@ -66,9 +65,9 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
       catch (err) {
         console.error("game:start error:", err);
         if (err.errors && err.errors.length > 0)
-          socket.emit("game:error", { message: err.errors[0].message || "Invalid start data" });
+          socket.emit("game:error", { message: "Invalid start data" });
         else
-          socket.emit("game:error", { message: err.message || "Can't start game" });
+          socket.emit("game:error", { message: "Can't start game" });
       }
     });
 
@@ -92,9 +91,9 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
       catch (err) {
         console.error("game:move error:", err);
         if (err.errors && err.errors.length > 0)
-          socket.emit("game:error", { message: err.errors[0].message || "Invalid movement data" });
+          socket.emit("game:error", { message: "Invalid movement data" });
         else
-          socket.emit("game:error", { message: err.message || "Invalid movement data" });
+          socket.emit("game:error", { message: "Invalid movement data" });
       }
     });
 
@@ -105,15 +104,6 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
         const size = Number(result.size);
         const names = result.names;
 
-        // If a tournament is already ongoing for this socket, reject
-        if (socket.data.tournamentId) {
-          console.log("User already in a tournament:", socket.data.tournamentId);
-          return;
-        }
-        const tournamentId = tournamentManager.createTournament(size, names);
-        if (!tournamentId)
-          throw new Error("Failed to create tournament");
-
         if (socket.data.gameId) {
           if (tournamentManager.isGameInTournament(socket.data.gameId))
             tournamentManager.onGameStopped(socket.data.gameId);
@@ -121,11 +111,18 @@ export function registerSocketHandlers(io, manager, tournamentManager, messageRa
             manager.leaveGame(socket.data.gameId, socket);
           socket.data.gameId = null;
         }
-        // if (socket.data.tournamentId) {
-        //   if (!tournamentManager.deleteTournament(socket.data.tournamentId, socket))
-        //     throw new Error("Failed to delete existing tournament");
-        //   socket.data.tournamentId = null;
-        // } 
+
+        // If a tournament is already ongoing for this socket, delete it first
+        if (socket.data.tournamentId) {
+          // console.log("User already in a tournament:", socket.data.tournamentId);
+          // return;
+          tournamentManager.deleteTournament(socket.data.tournamentId, socket);
+          socket.data.tournamentId = null;
+        }
+        const tournamentId = tournamentManager.createTournament(size, names);
+        if (!tournamentId)
+          throw new Error("Failed to create tournament");
+
 
         socket.data.tournamentId = tournamentId;
 
