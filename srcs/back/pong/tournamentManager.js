@@ -1,4 +1,3 @@
-import { time } from "console";
 import { TOURNAMENT_TIMEOUT } from "./config.js";
 
 function generateTournamentId() {
@@ -221,7 +220,6 @@ export class TournamentManager {
   }
 
   deleteTournament(tournamentId) {
-    console.log("Deleting tournament:", tournamentId);
     const tournament = this.tournaments.get(tournamentId);
     if (!tournament) return false;
 
