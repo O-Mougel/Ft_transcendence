@@ -17,7 +17,6 @@ export class GameManager {
     this.onGameOver = gameState;
   }
 
-  // Ensure a game entry exists for the given gameId
   ensureGameExist(gameId) {
     if (this.games.has(gameId)) return;
 
