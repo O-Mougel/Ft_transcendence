@@ -342,8 +342,7 @@ export async function isUserAllowedHere(): Promise<number> {
 		if (await fetchErrcodeHandler(err as Error) == 0)
 			return (isUserAllowedHere());
 		alertBoxMsg(`❌ You are not allowed to be here ! Log-in first !`);
-		console.error("\n❌No valid credentials ! Back to Login page !\n");
-		console.error(err);
+		console.error("\n❌No valid credentials ! Back to Login page !\n", err);
 		return (0); //no valid credentials
 	}
 	return(0);

@@ -28,7 +28,6 @@ export function initTournament(): void {
 
 	if (quitBtn && socket) {
 		quitBtn.onclick = (): void => {
-			console.log("Leaving tournament:", tournamentId);
 			if (window.sessionStorage.getItem("currentTournamentId"))
 				sessionStorage.removeItem("currentTournamentId");
 			window.sessionStorage.setItem("tournamentEnded", "true");
@@ -49,7 +48,6 @@ export function initTournament(): void {
 		} else {
 			CONTEXT.tournamentId = tournamentId;
 			nextMatchBtn.onclick = (): void => {
-				console.log("Presenting next match in tournament:", tournamentId);
 				window.history.pushState(null, "", "/pongTournament");
 				router();
 			};
@@ -150,7 +148,6 @@ function tournamentEndedSetup(socket: ReturnType<typeof getSocket>, tournamentId
 		try {
 			const endData = tournamentEndedSchema.validateSync(data) as TournamentEndedData;
 			if (endData.tournamentId !== tournamentId) return;
-			console.log("Tournament ended, winner:", endData.winner);
 			window.sessionStorage.setItem("tournamentEnded", "true");
 		}
 		catch (err) {

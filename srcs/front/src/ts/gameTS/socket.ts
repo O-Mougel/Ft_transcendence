@@ -34,8 +34,6 @@ export function setupSocket(): SocketType | null {
 	});
 
 	socket.on("disconnect", (reason: unknown) => {
-		
-		console.info("Socket detected a disconnect !");
 		try {
 			const result = reasonSchema.validateSync({ reason });
 			console.log("WebSocket disconnected:", result);
@@ -139,7 +137,6 @@ export async function waitStartGame(): Promise<void> {
 		if (!socket) return;
 
 		if (CONTEXT.gameMode === 0) {
-			console.log("Starting single-player game against AI opponent");
 			socket.emit("game:start", {
 				mode: 0,
 				player1Token: tokenP1,
@@ -171,7 +168,7 @@ export async function waitStartGame(): Promise<void> {
 		socket.once("game:started", ( id: unknown) => {
 			try {
 				const result = gameStartedSchema.validateSync(id) as GameStartedData;
-				console.log("Game started with data:", result);
+				CONTEXT.gameId = result.gameId;
 			}
 			catch (err) {
 				console.error("Error handling game started:", err);
@@ -230,7 +227,6 @@ export function updateGameState(): void {
 
 export function handleEscapeKey(): void {
 	if (!isSocketConnected() || !socket) {
-		console.log("Cannot stop game: Not connected to server");
 		return;
 	}
 	if (!CONTEXT.isGameStarted || window.location.href.includes("/pongTournament")) return;

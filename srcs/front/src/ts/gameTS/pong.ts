@@ -132,8 +132,6 @@ function startGame(): void {
 	if (!isSocketConnected())
 		return;
 
-	console.log("Game Started");
-
 	waitStartGame();
 	resetState();
 
@@ -181,7 +179,6 @@ export function retrieveSessionData(): void {
 	socket.emit("tournament:retrieve", { tournamentId: CONTEXT.tournamentId });
 
 	socket.on("tournament:sessionData", (data: unknown): void => {
-		console.log("tournament:sessionData received:", data);
 		if (!data) {
 			alertBoxMsg(`❌ Tournament session data could not be retrieved !`);
 			if (window.sessionStorage.getItem("currentTournamentId"))
@@ -195,7 +192,6 @@ export function retrieveSessionData(): void {
 				if (!CONTEXT.tournamentId)
 					CONTEXT.tournamentId = result.tournamentId;
 				const nextMatch = findNextReadyMatch(result.tournament);
-				console.log("Next match found:", nextMatch);
 				if (nextMatch) {
 					CONTEXT.leftName = nextMatch.player1;
 					CONTEXT.rightName = nextMatch.player2;
@@ -204,7 +200,6 @@ export function retrieveSessionData(): void {
 					if (nextMatch.player2)
 						document.getElementById("RightPlayer")!.textContent = nextMatch.player2;
 				}
-				console.log("Tournament session data retrieved successfully.");
 			} catch (err) {
 				console.error("Error validating tournament session data:", err, data);
 				alertBoxMsg("❌ Error validating tournament session data.");
