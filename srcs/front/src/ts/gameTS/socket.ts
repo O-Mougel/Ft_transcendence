@@ -5,7 +5,6 @@ import { updateGameScene } from "./pong.js";
 import { alertBoxMsg, backToDefaultPage, fetchErrcodeHandler } from "../eventTS/userLog.js";
 import type { GameStateData, GameStartedData, Socket as SocketType } from '../types/socket.types';
 import type { GameOverData } from '../types/game.types';
-// import Paddle from "./paddle.js";
 import { gameStateSchema, gameOverSchema, gameStartedSchema, reasonSchema, errorSchema, messageSchema } from "./schemaYup.js";
 
 let socket: SocketType | null = null;
@@ -40,8 +39,6 @@ export function setupSocket(): SocketType | null {
 		try {
 			const result = reasonSchema.validateSync({ reason });
 			console.log("WebSocket disconnected:", result);
-			// if (sessionStorage.getItem("currentTournamentId"))
-				// sessionStorage.removeItem("currentTournamentId");
 		}
 		catch (err) {
 			console.error("Error parsing disconnect reason:", err);
