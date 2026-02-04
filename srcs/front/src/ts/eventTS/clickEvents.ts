@@ -443,7 +443,7 @@ window.saveProfileInfo = async function (): Promise<void> {
 		username.value = "";
 		fileInput.value = "";
 		selectedFileName.textContent = '';
-		console.error('⚠️ Could not edit user info!\n', err);
+		console.error('⚠️ Could not edit user info!\n');
 		displayCorrectErrMsg(err as Error);
 	}
 };

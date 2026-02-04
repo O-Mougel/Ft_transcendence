@@ -419,7 +419,7 @@ window.acceptFriend = async (friendId: number): Promise<void> => {
 	{
 		if (await fetchErrcodeHandler(err as Error) == 0)
 			return window.acceptFriend(friendId);
-		console.error('⚠️ Couldn\'t accept friend request !\n =>', err);
+		console.error('⚠️ Couldn\'t accept friend request !\n');
 		displayCorrectErrMsg(err as Error);
 	}
 }
@@ -468,7 +468,7 @@ window.rejectFriend = async (friendId: number): Promise<void> => {
 	{
 		if (await fetchErrcodeHandler(err as Error) == 0)
 			return window.rejectFriend(friendId);
-		console.error('⚠️ Couldn\'t reject friend request !\n =>', err);
+		console.error('⚠️ Couldn\'t reject friend request !\n');
 		displayCorrectErrMsg(err as Error);
 	}
 }
@@ -530,7 +530,8 @@ export	const checkForFriendRequests = async (): Promise<void> => {
 	{
 		if (await fetchErrcodeHandler(err as Error) == 0)
 			return(checkForFriendRequests());
-		console.error('⚠️ Couldn\'t display friend requests !\n =>', err);
+		console.error('⚠️ Couldn\'t display friend requests !\n');
+		alertBoxMsg('⚠️ Couldn\'t display friend requests !\n');
 	}
 
 }
@@ -579,7 +580,8 @@ export const displayUserFriends = async (): Promise<void> => {
 	{
 		if (await fetchErrcodeHandler(err as Error) == 0)
 			return(displayUserFriends());
-		console.error('⚠️ Couldn\'t grab user friend info !\n => ', err);
+		console.error('⚠️ Couldn\'t grab user friend info !\n');
+		alertBoxMsg('⚠️ Couldn\'t grab user friend info !\n');
 	}
 
 }
@@ -627,7 +629,8 @@ window.grabProfileInfo = async function (): Promise<void> {
 	{
 		if (await fetchErrcodeHandler(err as Error) == 0)
 			return (window.grabProfileInfo());
-		console.error('Profile info grab failed !\n => ', err);
+		console.error('Profile info grab failed !\n');
+		alertBoxMsg('Profile info grab failed !\n');
 		return ;
 	}
 	displayUserFriends();
@@ -688,7 +691,7 @@ window.sendNewFriendRequest = async function (event): Promise<void> {
 	{
 		if (await fetchErrcodeHandler(err as Error) == 0)
 			return(window.sendNewFriendRequest(event));
-		console.error('Could not send friend request !\n => ', err);
+		console.error('Could not send friend request !\n');
 		
 		if (friendSearchResults)
 			friendSearchResults.textContent = "Invalid friend request !";
@@ -739,7 +742,8 @@ export async function logoutUser(): Promise<void> {
 	{
 		if (await fetchErrcodeHandler(err as Error) == 0)
 			return(window.logoutUser());
-		console.error('⚠️ Couldn\'t log out user !\n => ', err);
+		console.error('⚠️ Couldn\'t log out user !\n');
+		alertBoxMsg('⚠️ Couldn\'t log out user properly!\n');
 	}
 }
 
@@ -785,6 +789,7 @@ window.handleNewUserCreate = async function (event: Event): Promise<void> {
 			if (passwordConfirm) passwordConfirm.value = "";
 			window.sessionStorage.setItem('logStatus','loggedIn');
 			window.sessionStorage.setItem('access_token',result.token);
+			window.localStorage.setItem('allowAutolog','true');
 			if (!setupSocketCommunication())
 					throw new Error(`Request failed: 401 ${JSON.stringify({ message: "Socket creation failed", errRef: "socketCreationFailed" })}`);
 			alertBoxMsg(`Welcome ${data.name} ! 😉`);
@@ -795,7 +800,7 @@ window.handleNewUserCreate = async function (event: Event): Promise<void> {
 	{
 		if (await fetchErrcodeHandler(err as Error) == 0)
 			return(window.handleNewUserCreate(event));
-		console.error('Could not create new user !\n => ', err);
+		console.error('Could not create new user !\n');
 		displayCorrectErrMsg(err as Error);
 	}
 };
@@ -959,7 +964,7 @@ window.updateUserPassword = async function (event: Event): Promise<void> {
 	{
 		if (await fetchErrcodeHandler(err as Error) == 0)
 			return(window.updateUserPassword(event));
-		console.error('Failed to update password!\n => ', err);
+		console.error('Failed to update password!\n');
 		displayCorrectErrMsg(err as Error);
 	}
 }
@@ -1049,7 +1054,7 @@ window.loginPlayer2 = async function (event: Event): Promise<void> {
 			return(window.loginPlayer2(event));
 		username.value = "";
 		password.value = "";
-		console.error('Login error !\n => ', err);
+		console.error('Login error !\n');
 		displayCorrectErrMsg(err as Error);
 	}
 };
@@ -1120,7 +1125,8 @@ window.buildMatchHistoryPage = async function (): Promise<void> {
 	{
 		if (await fetchErrcodeHandler(err as Error) == 0)
 			return(window.buildMatchHistoryPage());
-		console.error('⚠️ Couldn\'t recover user history!\n => ', err);
+		console.error('⚠️ Couldn\'t recover user history!\n');
+		alertBoxMsg('⚠️ Couldn\'t recover user history!\n');
 	}
 }
 
@@ -1153,7 +1159,8 @@ window.loadProfileData = async function (): Promise<void> {
 	{
 		if (await fetchErrcodeHandler(err as Error) == 0)
 			return (window.loadProfileData());
-		console.error('Profile info grab failed !\n => ', err);
+		console.error('Profile info grab failed !\n');
+		alertBoxMsg('Profile info grab failed !\n');
 		return ;
 	}
 }
@@ -1186,7 +1193,8 @@ window.loadPlayer2Data = async function (): Promise<void> {
 	{
 		if (await fetchErrcodeHandler(err as Error) == 0)
 			return (window.loadPlayer2Data());
-		console.error('Profile info grab failed !\n => ', err);
+		console.error('Profile info grab failed !\n');
+		alertBoxMsg('Profile info grab failed !\n');
 		return ;
 	}
 }
@@ -1222,7 +1230,8 @@ window.handlePongModeDisplay = async function (mode: number, leftName: string | 
 	{
 		if (await fetchErrcodeHandler(err as Error) == 0)
 			return window.handlePongModeDisplay(mode, leftName, rightName);
-		console.error('Profile info grab failed !\n => ', err);
+		console.error('Profile info grab failed !\n');
+		alertBoxMsg('Profile info grab failed !\n');
 		return ;
 	}
 
@@ -1272,7 +1281,8 @@ window.handlePongModeDisplay = async function (mode: number, leftName: string | 
 		{
 			if (await fetchErrcodeHandler(err as Error) == 0)
 				return window.handlePongModeDisplay(mode, leftName, rightName);
-			console.error('Profile info grab failed !\n => ', err);
+			console.error('Profile info grab failed !\n');
+			alertBoxMsg('Profile info grab failed !\n');
 			return ;
 		}
 		}
