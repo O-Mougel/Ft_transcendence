@@ -33,3 +33,7 @@ L’application sera ensuite accessible depuis votre navigateur.
 
 ## Auteur
 Projet réalisé dans le cadre du cursus 42 School.
+ - Ophélia MOUGEL (https://github.com/O-Mougel)
+ - Bemjamin HUMEAU (https://github.com/Ibaos)
+ - Léo CHAPARD (https://github.com/Oxigety)
+ - Vincent DOMASCHIO (https://github.com/vdomasch)
