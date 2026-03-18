@@ -29,11 +29,11 @@ Ce projet vise à développer la capacité à concevoir une application complexe
 ```bash
 > make
 ```
-L’application sera ensuite accessible depuis votre navigateur.
+L’application sera ensuite accessible depuis votre navigateur à l'adresse localhost sur le port 4430.
 
-## Auteur
+## Auteurs
 Projet réalisé dans le cadre du cursus 42 School.
  - Ophélia MOUGEL (https://github.com/O-Mougel)
  - Benjamin HUMEAU (https://github.com/Ibaos)
- - Léo CHAPARD (https://github.com/Oxigety)
+ - Oxigety (https://github.com/Oxigety)
  - Vincent DOMASCHIO (https://github.com/vdomasch)
